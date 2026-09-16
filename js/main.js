@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
   wireCountUp();
   wireScrollEffects();
   wireReviewMode();
-  wireViewfinderVideo();
 });
 
 // Modo revisão (classe "modo-revisao" no <html>, ligada por uma linha no <head>):
@@ -282,70 +281,75 @@ function wireScrollReveal() {
   targets.forEach((el) => observer.observe(el));
 }
 
-// Balões da seção "Você se reconhece?": em vez de aparecerem todos juntos ao
-// entrar na tela, saem um de cada vez conforme a pessoa rola a página — presos
-// ao progresso da rolagem, não a um tempo fixo (por isso ficam fora do
-// wireScrollReveal, que só olha "entrou ou não entrou na tela").
+// Sequência da seção "Você se reconhece?": ao chegar no bloco, o vídeo começa
+// a tocar e os balões saem em cascata enquanto ele toca. Só quando o vídeo
+// termina de verdade (nunca antes) é que a câmera gira e sai de cena — aí sim
+// os balões sobem pra perto do título, se juntam mais e crescem um pouco,
+// ocupando o espaço que ela deixou.
 function wireThoughtsReveal() {
   const container = document.querySelector(".thoughts");
   if (!container) return;
   const items = [...container.querySelectorAll(".thought")];
   if (!items.length) return;
   const person = container.querySelector(".thoughts-person");
-
-  // Assim que o último pensamento aparece, a câmera gira e some da tela.
-  function sendPersonAway() {
-    if (person) person.classList.add("is-leaving");
-  }
+  const video = container.querySelector(".viewfinder-video");
+  const skipSeconds = 1;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   items.forEach((el) => el.classList.add("reveal"));
 
-  if (
-    !("IntersectionObserver" in window) ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
+  function startVideo() {
+    if (!video) return;
+    const play = () => {
+      try { video.currentTime = skipSeconds; } catch (e) { /* metadata ainda não carregou */ }
+      video.play().catch(() => {});
+    };
+    if (video.readyState >= 1) play();
+    else video.addEventListener("loadedmetadata", play, { once: true });
+  }
+
+  function sendPersonAway() {
+    if (person) person.classList.add("is-leaving");
+    window.setTimeout(() => container.classList.add("is-collapsed"), 300);
+  }
+
+  if (reducedMotion || !("IntersectionObserver" in window)) {
     items.forEach((el) => el.classList.add("is-visible"));
     sendPersonAway();
     return;
   }
 
-  let start = 0;
-  let span = 1;
-  let revealedCount = 0;
-  let ticking = false;
+  // O vídeo (cortado o 1º segundo) dura uns 3,3s — os balões saem nesse
+  // intervalo, terminando um pouco antes do vídeo, nunca depois.
+  const delays = [0, 550, 1100, 1650, 2200];
+  let triggered = false;
 
-  function measure() {
-    const top = container.getBoundingClientRect().top + window.scrollY;
-    const height = container.offsetHeight;
-    // Começa a soltar o primeiro balão um pouco antes do topo do bloco chegar
-    // ao fim da tela, e solta o último perto de a rolagem passar do bloco —
-    // assim o "um de cada vez" acontece na rolagem real, não num timer.
-    start = top - window.innerHeight * 0.75;
-    span = Math.max(1, height + window.innerHeight * 0.35);
-    update();
-  }
-
-  function update() {
-    ticking = false;
-    const progress = clamp((window.scrollY - start) / span);
-    const count = progress <= 0 ? 0 : Math.min(items.length, Math.ceil(progress * items.length));
-    for (let i = revealedCount; i < count; i++) items[i].classList.add("is-visible");
-    const wasComplete = revealedCount >= items.length;
-    revealedCount = Math.max(revealedCount, count);
-    if (!wasComplete && revealedCount >= items.length) sendPersonAway();
-  }
-
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(update);
+  function reveal() {
+    if (triggered) return;
+    triggered = true;
+    startVideo();
+    items.forEach((el, i) => {
+      window.setTimeout(() => el.classList.add("is-visible"), delays[i] ?? (i * 550));
+    });
+    if (video) {
+      video.addEventListener("ended", sendPersonAway, { once: true });
+    } else {
+      window.setTimeout(sendPersonAway, delays[items.length - 1] + 1100);
     }
-  }, { passive: true });
-  window.addEventListener("resize", measure, { passive: true });
-  window.addEventListener("load", measure);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+  }
 
-  measure();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          reveal();
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+  observer.observe(container);
 }
 
 // Números de destaque ("4 medos", "7 níveis") contam de 0 até o valor final
@@ -396,19 +400,3 @@ function wireCountUp() {
   targets.forEach((el) => observer.observe(el));
 }
 
-// Vídeo do visor da câmera: pula o primeiro segundo (sem precisar reeditar o
-// arquivo) e toca só uma vez — no fim, fica parado no último quadro até a
-// câmera girar e sair de cena (ver wireThoughtsReveal).
-function wireViewfinderVideo() {
-  const video = document.querySelector(".viewfinder-video");
-  if (!video) return;
-  const skipSeconds = 1;
-
-  const start = () => {
-    try { video.currentTime = skipSeconds; } catch (e) { /* metadata ainda não carregou */ }
-    video.play().catch(() => {});
-  };
-
-  if (video.readyState >= 1) start();
-  else video.addEventListener("loadedmetadata", start, { once: true });
-}
