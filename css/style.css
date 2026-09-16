@@ -582,7 +582,7 @@ html { scroll-padding-top: var(--header-h, 85px); }
    sobrepostos, como pensamentos de verdade — não uma lista arrumada do lado. */
 .thoughts {
   position: relative;
-  height: 580px;
+  height: 610px;
   max-width: 360px;
   margin: 1.6rem auto 0;
 }
@@ -645,10 +645,12 @@ html { scroll-padding-top: var(--header-h, 85px); }
   font-size: .78rem;
   line-height: 1.32;
   color: var(--text-muted);
-  /* Quando a câmera sai (.thoughts.is-collapsed), os balões deslizam pra mais
-     perto um do outro e crescem um pouco, pra ocupar o espaço que ela deixou. */
+  /* Quando a câmera sai (.thoughts.is-collapsed), os balões deslizam devagar pra
+     mais perto um do outro, sem mudar de tamanho (largura fica igual — mudar
+     largura no meio do caminho fazia o texto quebrar linha de repente, um corte
+     feio no meio do movimento). */
   transition: top 1.6s cubic-bezier(.22, .61, .36, 1), left 1.6s cubic-bezier(.22, .61, .36, 1),
-    right 1.6s cubic-bezier(.22, .61, .36, 1), width 1.6s cubic-bezier(.22, .61, .36, 1);
+    right 1.6s cubic-bezier(.22, .61, .36, 1);
 }
 .thought strong { color: var(--white); font-weight: 600; }
 /* Flutuação contínua, sutil e fora de sincronia entre os balões — pra parecer
@@ -684,25 +686,25 @@ html { scroll-padding-top: var(--header-h, 85px); }
 .thought-col-left .thought::after { right: -28px; }
 .thought-col-right .thought::before { left: -18px; }
 .thought-col-right .thought::after { left: -28px; }
-/* Posições espalhadas: só uma tocadinha leve na moldura da câmera (que precisa
-   continuar visível e legível enquanto toca), não por cima do rosto. */
+/* Posições espalhadas: ritmo vertical uniforme entre os 5 (mesmo intervalo entre
+   um e outro), só uma tocadinha leve na moldura da câmera. */
 .thought-col-left .thought:nth-child(1) { top: 0; left: -11%; }
-.thought-col-left .thought:nth-child(2) { top: 176px; left: -11%; }
-.thought-col-left .thought:nth-child(3) { top: 372px; left: -11%; }
-.thought-col-right .thought:nth-child(1) { top: 90px; right: -11%; }
-.thought-col-right .thought:nth-child(2) { top: 450px; right: -11%; }
-/* Sem a câmera, os balões sobem pra perto do título, se juntam mais e crescem
-   um pouco, ocupando o espaço que ela deixou. */
-.thoughts.is-collapsed .thought-col-left .thought:nth-child(1) { top: 0; left: -6%; width: 60%; }
-.thoughts.is-collapsed .thought-col-left .thought:nth-child(2) { top: 74px; left: -6%; width: 60%; }
-.thoughts.is-collapsed .thought-col-left .thought:nth-child(3) { top: 156px; left: -6%; width: 60%; }
-.thoughts.is-collapsed .thought-col-right .thought:nth-child(1) { top: 38px; right: -6%; width: 60%; }
-.thoughts.is-collapsed .thought-col-right .thought:nth-child(2) { top: 190px; right: -6%; width: 60%; }
+.thought-col-left .thought:nth-child(2) { top: 250px; left: -11%; }
+.thought-col-left .thought:nth-child(3) { top: 500px; left: -11%; }
+.thought-col-right .thought:nth-child(1) { top: 125px; right: -11%; }
+.thought-col-right .thought:nth-child(2) { top: 375px; right: -11%; }
+/* Sem a câmera, os balões sobem pra perto do título e se aproximam um pouco
+   mais devagar, sem crescer de tamanho. */
+.thoughts.is-collapsed .thought-col-left .thought:nth-child(1) { top: 0; left: -9%; }
+.thoughts.is-collapsed .thought-col-left .thought:nth-child(2) { top: 87px; left: -9%; }
+.thoughts.is-collapsed .thought-col-left .thought:nth-child(3) { top: 175px; left: -9%; }
+.thoughts.is-collapsed .thought-col-right .thought:nth-child(1) { top: 44px; right: -9%; }
+.thoughts.is-collapsed .thought-col-right .thought:nth-child(2) { top: 131px; right: -9%; }
 
 /* Tablet (700–959px): mesma ideia dos balões flutuando sobre a câmera, só que
    com mais espaço pra respirar (sobreposição bem mais leve que no celular). */
 @media (min-width: 700px) and (max-width: 959.98px) {
-  .thoughts { height: 640px; max-width: 620px; margin: 2.6rem auto 0; }
+  .thoughts { height: 660px; max-width: 620px; margin: 2.6rem auto 0; }
   .thoughts-person { top: 110px; width: min(230px, 30vw); }
   .thought { width: 38%; font-size: .95rem; padding: 1rem 1.15rem; line-height: 1.45; }
   .thought::before { width: 13px; height: 13px; }
@@ -712,17 +714,16 @@ html { scroll-padding-top: var(--header-h, 85px); }
   .thought-col-right .thought::before { left: -20px; }
   .thought-col-right .thought::after { left: -32px; }
   .thought-col-left .thought:nth-child(1) { top: 0; left: -4%; }
-  .thought-col-left .thought:nth-child(2) { top: 210px; left: -4%; }
-  .thought-col-left .thought:nth-child(3) { top: 440px; left: -4%; }
-  .thought-col-right .thought:nth-child(1) { top: 100px; right: -4%; }
+  .thought-col-left .thought:nth-child(2) { top: 280px; left: -4%; }
+  .thought-col-left .thought:nth-child(3) { top: 560px; left: -4%; }
+  .thought-col-right .thought:nth-child(1) { top: 140px; right: -4%; }
   .thought-col-right .thought:nth-child(2) { top: 420px; right: -4%; }
 
-  .thoughts.is-collapsed .thought { width: 46%; }
   .thoughts.is-collapsed .thought-col-left .thought:nth-child(1) { top: 0; left: -3%; }
-  .thoughts.is-collapsed .thought-col-left .thought:nth-child(2) { top: 88px; left: -3%; }
-  .thoughts.is-collapsed .thought-col-left .thought:nth-child(3) { top: 185px; left: -3%; }
-  .thoughts.is-collapsed .thought-col-right .thought:nth-child(1) { top: 42px; right: -3%; }
-  .thoughts.is-collapsed .thought-col-right .thought:nth-child(2) { top: 176px; right: -3%; }
+  .thoughts.is-collapsed .thought-col-left .thought:nth-child(2) { top: 98px; left: -3%; }
+  .thoughts.is-collapsed .thought-col-left .thought:nth-child(3) { top: 196px; left: -3%; }
+  .thoughts.is-collapsed .thought-col-right .thought:nth-child(1) { top: 49px; right: -3%; }
+  .thoughts.is-collapsed .thought-col-right .thought:nth-child(2) { top: 147px; right: -3%; }
 }
 
 /* A partir de 960px: a câmera no centro e os seis pensamentos em volta dela,
@@ -742,20 +743,19 @@ html { scroll-padding-top: var(--header-h, 85px); }
   }
   .thought::before,
   .thought::after { display: block; }
-  .thought-col-left .thought:nth-child(1) { top: 60px; right: calc(50% + 98px); }
-  .thought-col-left .thought:nth-child(2) { top: 175px; right: calc(50% + 112px); }
-  .thought-col-left .thought:nth-child(3) { top: 317px; right: calc(50% + 91px); }
-  .thought-col-right .thought:nth-child(1) { top: 85px; left: calc(50% + 94px); }
-  .thought-col-right .thought:nth-child(2) { top: 260px; left: calc(50% + 100px); }
+  .thought-col-left .thought:nth-child(1) { top: 0; right: calc(50% + 98px); }
+  .thought-col-left .thought:nth-child(2) { top: 180px; right: calc(50% + 112px); }
+  .thought-col-left .thought:nth-child(3) { top: 360px; right: calc(50% + 91px); }
+  .thought-col-right .thought:nth-child(1) { top: 90px; left: calc(50% + 94px); }
+  .thought-col-right .thought:nth-child(2) { top: 270px; left: calc(50% + 100px); }
   .thought::before { top: calc(50% - 6px); }
   .thought::after { top: calc(50% + 9px); }
 
-  .thoughts.is-collapsed .thought { width: 250px; }
-  .thoughts.is-collapsed .thought-col-left .thought:nth-child(1) { top: 30px; right: calc(50% + 50px); }
-  .thoughts.is-collapsed .thought-col-left .thought:nth-child(2) { top: 81px; right: calc(50% + 56px); }
-  .thoughts.is-collapsed .thought-col-left .thought:nth-child(3) { top: 145px; right: calc(50% + 46px); }
-  .thoughts.is-collapsed .thought-col-right .thought:nth-child(1) { top: 41px; left: calc(50% + 47px); }
-  .thoughts.is-collapsed .thought-col-right .thought:nth-child(2) { top: 151px; left: calc(50% + 50px); }
+  .thoughts.is-collapsed .thought-col-left .thought:nth-child(1) { top: 0; right: calc(50% + 85px); }
+  .thoughts.is-collapsed .thought-col-left .thought:nth-child(2) { top: 81px; right: calc(50% + 90px); }
+  .thoughts.is-collapsed .thought-col-left .thought:nth-child(3) { top: 162px; right: calc(50% + 75px); }
+  .thoughts.is-collapsed .thought-col-right .thought:nth-child(1) { top: 40px; left: calc(50% + 78px); }
+  .thoughts.is-collapsed .thought-col-right .thought:nth-child(2) { top: 121px; left: calc(50% + 82px); }
 }
 
 /* ---------- A causa: a trava contada como linha do tempo ---------- */
