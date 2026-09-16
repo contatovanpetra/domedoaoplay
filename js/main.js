@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   wireAccordions();
   wireScrollReveal();
   wireThoughtsReveal();
-  wireQuiz();
   wireCountUp();
   wireScrollEffects();
   wireReviewMode();
@@ -292,6 +291,12 @@ function wireThoughtsReveal() {
   if (!container) return;
   const items = [...container.querySelectorAll(".thought")];
   if (!items.length) return;
+  const person = container.querySelector(".thoughts-person");
+
+  // Assim que o último pensamento aparece, a câmera gira e some da tela.
+  function sendPersonAway() {
+    if (person) person.classList.add("is-leaving");
+  }
 
   items.forEach((el) => el.classList.add("reveal"));
 
@@ -300,6 +305,7 @@ function wireThoughtsReveal() {
     window.matchMedia("(prefers-reduced-motion: reduce)").matches
   ) {
     items.forEach((el) => el.classList.add("is-visible"));
+    sendPersonAway();
     return;
   }
 
@@ -324,7 +330,9 @@ function wireThoughtsReveal() {
     const progress = clamp((window.scrollY - start) / span);
     const count = progress <= 0 ? 0 : Math.min(items.length, Math.ceil(progress * items.length));
     for (let i = revealedCount; i < count; i++) items[i].classList.add("is-visible");
+    const wasComplete = revealedCount >= items.length;
     revealedCount = Math.max(revealedCount, count);
+    if (!wasComplete && revealedCount >= items.length) sendPersonAway();
   }
 
   window.addEventListener("scroll", () => {
@@ -388,141 +396,19 @@ function wireCountUp() {
   targets.forEach((el) => observer.observe(el));
 }
 
-// Teste rápido: autoavaliação de 3 perguntas que mapeia pro nível da escada de exposição.
-// Cada resposta vale 1 (mais solta) a 3 (mais travada), então a soma vai de 3 a 9.
-// Soma BAIXA = pessoa já avançada = níveis ALTOS da escada (a escada vai de 1, "só
-// você", até 7, "público"). Antes os títulos estavam invertidos em relação aos textos.
-function wireQuiz() {
-  const card = document.getElementById("quiz-card");
-  if (!card) return;
-
-  const states = card.querySelectorAll(".quiz-state");
-  const startBtn = card.querySelector("[data-quiz-start]");
-  const restartBtn = card.querySelector("[data-quiz-restart]");
-  const backBtns = card.querySelectorAll("[data-quiz-back]");
-  const questionStates = card.querySelectorAll('.quiz-state[data-state="question"]');
-  const resultTitle = document.getElementById("quiz-result-title");
-  const resultText = document.getElementById("quiz-result-text");
-
-  // O resultado diz onde a pessoa está HOJE. No curso a escada é sequencial (briefing:
-  // um nível por módulo, ninguém pula etapa), então nenhum texto promete começar no meio.
-  const RESULTS = [
-    {
-      max: 3,
-      title: "Hoje você está perto dos Níveis 6 e 7",
-      text: "Você já grava e mostra pra muita gente. No curso você passa por todos os níveis, e o que mais vai somar são as técnicas de voz, dicção e linguagem corporal, pra aparecer com mais segurança do que já aparece.",
-    },
-    {
-      max: 5,
-      title: "Hoje você está perto dos Níveis 4 e 5",
-      text: "Você já grava e mostra pra algumas pessoas, mas a tensão aumenta quando o grupo cresce. A escada trabalha justamente essa passagem: do círculo fechado até o público, um degrau de cada vez.",
-    },
-    {
-      max: 7,
-      title: "Hoje você está perto dos Níveis 2 e 3",
-      text: "Você até grava, mas ainda trava e só mostra pra quem é muito próximo. É aqui que a escada faz mais diferença: sair do círculo de confiança sem pular etapa.",
-    },
-    {
-      max: 9,
-      title: "Hoje você está no Nível 1",
-      text: "Você trava antes mesmo de mostrar pra alguém. A escada foi desenhada pra começar exatamente daqui: um vídeo que fica só com você.",
-    },
-  ];
-
-  let currentQuestion = 0;
-  const answers = [];
-
-  function showState(name, questionIndex) {
-    let active = null;
-    states.forEach((state) => {
-      const matches =
-        state.dataset.state === name &&
-        (name !== "question" || Number(state.dataset.question) === questionIndex);
-      state.classList.toggle("is-active", matches);
-      if (matches) active = state;
-    });
-    // O botão clicado some junto com a tela anterior; sem isso o foco do teclado
-    // (e do leitor de tela) caía no topo da página.
-    const heading = active && active.querySelector(".quiz-question-title, h2");
-    if (heading) {
-      heading.setAttribute("tabindex", "-1");
-      heading.focus({ preventScroll: true });
-    }
-  }
-
-  function updateProgress(questionState, index) {
-    const dots = questionState.querySelectorAll(".quiz-progress span");
-    dots.forEach((dot, i) => dot.classList.toggle("done", i <= index));
-  }
-
-  function goToQuestion(index) {
-    currentQuestion = index;
-    const state = card.querySelector(`.quiz-state[data-question="${index}"]`);
-    showState("question", index);
-    if (state) updateProgress(state, index);
-  }
-
-  function showResult() {
-    const score = answers.reduce((sum, v) => sum + v, 0);
-    const result = RESULTS.find((r) => score <= r.max) || RESULTS[RESULTS.length - 1];
-    resultTitle.textContent = result.title;
-    resultText.textContent = result.text;
-    showState("result");
-  }
-
-  if (startBtn) {
-    startBtn.addEventListener("click", () => {
-      answers.length = 0;
-      goToQuestion(0);
-    });
-  }
-
-  questionStates.forEach((state) => {
-    const index = Number(state.dataset.question);
-    state.querySelectorAll(".quiz-option").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        answers[index] = Number(btn.dataset.value);
-        if (index + 1 < questionStates.length) {
-          goToQuestion(index + 1);
-        } else {
-          showResult();
-        }
-      });
-    });
-  });
-
-  backBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (currentQuestion === 0) {
-        showState("intro");
-      } else {
-        goToQuestion(currentQuestion - 1);
-      }
-    });
-  });
-
-  if (restartBtn) {
-    restartBtn.addEventListener("click", () => {
-      answers.length = 0;
-      showState("intro");
-    });
-  }
-}
-
 // Vídeo do visor da câmera: pula o primeiro segundo (sem precisar reeditar o
-// arquivo) e faz o loop voltar pra esse mesmo ponto, não pro começo.
+// arquivo) e toca só uma vez — no fim, fica parado no último quadro até a
+// câmera girar e sair de cena (ver wireThoughtsReveal).
 function wireViewfinderVideo() {
   const video = document.querySelector(".viewfinder-video");
   if (!video) return;
   const skipSeconds = 1;
 
-  const restart = () => {
+  const start = () => {
     try { video.currentTime = skipSeconds; } catch (e) { /* metadata ainda não carregou */ }
     video.play().catch(() => {});
   };
 
-  if (video.readyState >= 1) restart();
-  else video.addEventListener("loadedmetadata", restart, { once: true });
-
-  video.addEventListener("ended", restart);
+  if (video.readyState >= 1) start();
+  else video.addEventListener("loadedmetadata", start, { once: true });
 }

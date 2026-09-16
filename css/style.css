@@ -302,10 +302,6 @@ html { scroll-padding-top: var(--header-h, 85px); }
   mask: var(--ico) center / contain no-repeat;
 }
 
-/* O teste move o foco pro título de cada tela (acessibilidade); título não é
-   clicável, então não precisa do contorno de foco. */
-.quiz-state [tabindex="-1"]:focus { outline: none; }
-
 /* Link dentro de texto corrido (ex.: FAQ): precisa parecer link. */
 .inline-link {
   color: var(--orange-light);
@@ -595,10 +591,10 @@ html { scroll-padding-top: var(--header-h, 85px); }
   position: absolute;
   z-index: 1;
   top: 90px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   width: min(148px, 42vw);
-  margin: 0;
+  margin: 0 auto;
 }
 .thoughts-person svg { display: block; width: 100%; height: auto; }
 /* Visor da câmera: o vídeo real fica dentro da moldura (recorte com os mesmos
@@ -621,6 +617,20 @@ html { scroll-padding-top: var(--header-h, 85px); }
   height: 100%;
   display: block;
   pointer-events: none;
+}
+/* Depois que todos os pensamentos aparecem (wireThoughtsReveal, main.js), a
+   câmera gira e sai de cena, como se estivesse indo embora, deixando só os
+   balões na tela. */
+@keyframes viewfinder-exit {
+  0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(60%, -14%) rotate(55deg) scale(.78); opacity: 0; }
+}
+.thoughts-person.is-leaving {
+  animation: viewfinder-exit 1.1s cubic-bezier(.5, 0, .75, 0) forwards;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .thoughts-person.is-leaving { animation: none; opacity: 0; }
 }
 .thought {
   position: absolute;
@@ -839,79 +849,6 @@ html { scroll-padding-top: var(--header-h, 85px); }
 }
 .big-fact p { margin: 0; font-size: .94rem; line-height: 1.45; }
 .big-fact strong { color: var(--orange-light); }
-
-/* ---------- Teste rápido (quiz de autoavaliação) ---------- */
-.quiz-section { padding-top: 0; }
-/* Painel no azul aço da marca: quebra o escuro e destaca o teste do resto. */
-.quiz-card {
-  background:
-    linear-gradient(150deg, rgba(255, 255, 255, .07), transparent 42%),
-    linear-gradient(160deg, #3d74a1, #245078 70%);
-  border: 1px solid rgba(255, 255, 255, .16);
-  border-radius: var(--radius-lg);
-  padding: clamp(1.8rem, 5vw, 3rem);
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-  min-height: 300px;
-}
-.quiz-card .section-lead { color: rgba(255, 255, 255, .82); }
-.quiz-card .eyebrow { color: #ffdcae; }
-.quiz-card .eyebrow::before { background: #ffdcae; box-shadow: 0 0 0 3px rgba(255, 220, 174, .2); }
-.quiz-state { display: none; }
-.quiz-state.is-active { display: block; animation: quiz-fade .3s ease; }
-@keyframes quiz-fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-.quiz-actions { margin-top: 1.6rem; display: flex; flex-direction: column; align-items: center; gap: .9rem; }
-
-.quiz-progress { display: flex; gap: 6px; margin-bottom: 1.8rem; }
-.quiz-progress span {
-  flex: 1;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--border);
-}
-.quiz-progress span.done { background: var(--orange-light); }
-
-.quiz-question-title {
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(1.2rem, 3vw, 1.5rem);
-  color: var(--white);
-  text-align: center;
-  max-width: 520px;
-  margin: 0 auto 1.8rem;
-}
-.quiz-options { display: grid; gap: .8rem; max-width: 480px; margin: 0 auto; }
-.quiz-option {
-  font-family: var(--font-body);
-  font-size: .98rem;
-  font-weight: 600;
-  color: var(--text);
-  text-align: left;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 1em 1.3em;
-  cursor: pointer;
-  transition: border-color .2s ease, background .2s ease, transform .15s ease;
-}
-.quiz-option:hover { border-color: var(--orange-light); background: rgba(215, 119, 19, 0.08); transform: translateX(2px); }
-
-.quiz-back {
-  display: flex;
-  align-items: center;
-  gap: .4em;
-  width: fit-content;
-  margin: 1.6rem auto 0;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: .88rem;
-  cursor: pointer;
-}
-.quiz-back:hover { color: var(--white); }
 
 /* ---------- Split (causa) ---------- */
 .split { display: grid; grid-template-columns: 1.2fr .8fr; gap: 3rem; align-items: center; }
