@@ -1350,6 +1350,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- ABERTURA: seção presa na rolagem ----------
    Ela faz parte da página, então dá pra subir e rever a animação inteira:
    a rolagem é que move as cenas (ver wireIntroStage em main.js). */
+/* Depois que a abertura termina (rolou pra além da travessia), a réplica
+   do cabeçalho/hero que cresceu dentro do celular fica escondida — sem
+   isso ela ficava sobreposta à página de verdade e duplicava o hero. */
+.intro-stage.intro-done { display: none; }
 .intro-stage {
   position: relative;
   /* Abaixo do cabeçalho (100) e da trilha de leitura (200): a abertura é uma

@@ -527,6 +527,13 @@ function wireIntroStage() {
         if (cue) cue.classList.toggle("is-on", introBeatsDone && self.progress < .93);
         if (cueText) cueText.textContent = self.progress > .62 ? "continue" : "deslize";
       },
+      // Depois que o clarão termina, a réplica dentro do celular (cabeçalho +
+      // hero clonados) já cresceu até o tamanho da janela e não some sozinha:
+      // sem isto, ela ficava por cima da página de verdade e duplicava o
+      // cabeçalho do hero. Ao voltar rolando pra cima, ela reaparece — a
+      // abertura continua reversível como antes.
+      onLeave: () => stage.classList.add("intro-done"),
+      onEnterBack: () => stage.classList.remove("intro-done"),
     },
   });
 
