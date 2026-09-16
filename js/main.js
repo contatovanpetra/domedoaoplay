@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireCountUp();
   wireScrollEffects();
   wireReviewMode();
+  wireViewfinderVideo();
 });
 
 // Modo revisão (classe "modo-revisao" no <html>, ligada por uma linha no <head>):
@@ -506,4 +507,22 @@ function wireQuiz() {
       showState("intro");
     });
   }
+}
+
+// Vídeo do visor da câmera: pula o primeiro segundo (sem precisar reeditar o
+// arquivo) e faz o loop voltar pra esse mesmo ponto, não pro começo.
+function wireViewfinderVideo() {
+  const video = document.querySelector(".viewfinder-video");
+  if (!video) return;
+  const skipSeconds = 1;
+
+  const restart = () => {
+    try { video.currentTime = skipSeconds; } catch (e) { /* metadata ainda não carregou */ }
+    video.play().catch(() => {});
+  };
+
+  if (video.readyState >= 1) restart();
+  else video.addEventListener("loadedmetadata", restart, { once: true });
+
+  video.addEventListener("ended", restart);
 }
