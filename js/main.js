@@ -283,9 +283,10 @@ function wireScrollReveal() {
 
 // Sequência da seção "Você se reconhece?": ao chegar no bloco, o vídeo começa
 // a tocar e os balões saem em cascata enquanto ele toca. Só quando o vídeo
-// termina de verdade (nunca antes) é que a câmera gira e sai de cena — aí sim
-// os balões sobem pra perto do título, se juntam mais e crescem um pouco,
-// ocupando o espaço que ela deixou.
+// termina de verdade (nunca antes) é que a câmera gira e sai de cena — aí sim,
+// devagar, os balões sobem pra perto do título, se juntam mais e crescem um
+// pouco, ocupando o espaço que ela deixou. Ao sair da seção tudo volta ao
+// estado inicial, pra repetir do zero quando a pessoa voltar.
 function wireThoughtsReveal() {
   const container = document.querySelector(".thoughts");
   if (!container) return;
@@ -298,53 +299,75 @@ function wireThoughtsReveal() {
 
   items.forEach((el) => el.classList.add("reveal"));
 
-  function startVideo() {
-    if (!video) return;
-    const play = () => {
-      try { video.currentTime = skipSeconds; } catch (e) { /* metadata ainda não carregou */ }
-      video.play().catch(() => {});
-    };
-    if (video.readyState >= 1) play();
-    else video.addEventListener("loadedmetadata", play, { once: true });
-  }
-
-  function sendPersonAway() {
-    if (person) person.classList.add("is-leaving");
-    window.setTimeout(() => container.classList.add("is-collapsed"), 300);
-  }
-
   if (reducedMotion || !("IntersectionObserver" in window)) {
     items.forEach((el) => el.classList.add("is-visible"));
-    sendPersonAway();
+    if (person) person.classList.add("is-leaving");
+    container.classList.add("is-collapsed");
     return;
   }
 
   // O vídeo (cortado o 1º segundo) dura uns 3,3s — os balões saem nesse
-  // intervalo, terminando um pouco antes do vídeo, nunca depois.
+  // intervalo, terminando um pouco antes do vídeo, nunca depois. Só depois
+  // que a câmera termina de girar e sumir é que os balões começam a se juntar
+  // (daí o atraso maior antes do .is-collapsed).
   const delays = [0, 550, 1100, 1650, 2200];
-  let triggered = false;
+  const collapseDelay = 850;
+  let timers = [];
+  let running = false;
+  let onEnded = null;
+
+  function clearTimers() {
+    timers.forEach((id) => window.clearTimeout(id));
+    timers = [];
+  }
+
+  function sendPersonAway() {
+    if (person) person.classList.add("is-leaving");
+    timers.push(window.setTimeout(() => container.classList.add("is-collapsed"), collapseDelay));
+  }
 
   function reveal() {
-    if (triggered) return;
-    triggered = true;
-    startVideo();
+    if (running) return;
+    running = true;
+    if (video) {
+      const play = () => {
+        try { video.currentTime = skipSeconds; } catch (e) { /* metadata ainda não carregou */ }
+        video.play().catch(() => {});
+      };
+      if (video.readyState >= 1) play();
+      else video.addEventListener("loadedmetadata", play, { once: true });
+    }
     items.forEach((el, i) => {
-      window.setTimeout(() => el.classList.add("is-visible"), delays[i] ?? (i * 550));
+      timers.push(window.setTimeout(() => el.classList.add("is-visible"), delays[i] ?? (i * 550)));
     });
     if (video) {
-      video.addEventListener("ended", sendPersonAway, { once: true });
+      onEnded = sendPersonAway;
+      video.addEventListener("ended", onEnded, { once: true });
     } else {
-      window.setTimeout(sendPersonAway, delays[items.length - 1] + 1100);
+      timers.push(window.setTimeout(sendPersonAway, delays[items.length - 1] + 1100));
+    }
+  }
+
+  // Saiu da seção: para tudo e desfaz, pra repetir do zero na próxima entrada.
+  function reset() {
+    running = false;
+    clearTimers();
+    items.forEach((el) => el.classList.remove("is-visible"));
+    if (person) person.classList.remove("is-leaving");
+    container.classList.remove("is-collapsed");
+    if (video) {
+      if (onEnded) video.removeEventListener("ended", onEnded);
+      onEnded = null;
+      video.pause();
+      try { video.currentTime = skipSeconds; } catch (e) { /* metadata ainda não carregou */ }
     }
   }
 
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          reveal();
-          observer.unobserve(entry.target);
-        }
+        if (entry.isIntersecting) reveal();
+        else reset();
       });
     },
     { threshold: 0.2 }

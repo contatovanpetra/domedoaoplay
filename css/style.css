@@ -647,8 +647,8 @@ html { scroll-padding-top: var(--header-h, 85px); }
   color: var(--text-muted);
   /* Quando a câmera sai (.thoughts.is-collapsed), os balões deslizam pra mais
      perto um do outro e crescem um pouco, pra ocupar o espaço que ela deixou. */
-  transition: top .7s cubic-bezier(.34, 1.2, .4, 1), left .7s cubic-bezier(.34, 1.2, .4, 1),
-    right .7s cubic-bezier(.34, 1.2, .4, 1), width .7s cubic-bezier(.34, 1.2, .4, 1);
+  transition: top 1.6s cubic-bezier(.22, .61, .36, 1), left 1.6s cubic-bezier(.22, .61, .36, 1),
+    right 1.6s cubic-bezier(.22, .61, .36, 1), width 1.6s cubic-bezier(.22, .61, .36, 1);
 }
 .thought strong { color: var(--white); font-weight: 600; }
 /* Flutuação contínua, sutil e fora de sincronia entre os balões — pra parecer
