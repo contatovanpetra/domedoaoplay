@@ -216,6 +216,9 @@ function wireAccordions() {
         items.forEach((other) => {
           const otherTrigger = other.querySelector(".accordion-trigger");
           const otherPanel = other.querySelector(".accordion-panel");
+          // Módulos ainda sem aulas definidas (.module-static) não têm painel
+          // nem botão de verdade — só um rótulo. Nada a fechar neles.
+          if (!otherTrigger || !otherPanel) return;
           other.classList.remove("open");
           otherTrigger.setAttribute("aria-expanded", "false");
           otherPanel.style.maxHeight = null;
