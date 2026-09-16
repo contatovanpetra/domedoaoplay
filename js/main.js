@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireCheckoutLinks();
   wireAccordions();
   wireScrollReveal();
+  wireThoughtsReveal();
   wireQuiz();
   wireCountUp();
   wireScrollEffects();
@@ -251,9 +252,11 @@ function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
+  // Os balões de pensamento (.thought) têm a própria revelação, presa à rolagem
+  // (ver wireThoughtsReveal) — por isso ficam de fora daqui.
   const targets = [...document.querySelectorAll(
     ".section .container > *, .ladder-step, .accordion-item, .fact-card, .compare-col, " +
-    ".thought, .thoughts-person, .timeline li, .front-card, .big-fact"
+    ".thoughts-person, .timeline li, .front-card, .big-fact"
   )].filter((el) => !el.matches(
     ".thoughts, .thought-col, .timeline, .two-fronts, .big-facts, .compare-grid, .ladder, .accordion"
   ));
@@ -277,6 +280,63 @@ function wireScrollReveal() {
   );
 
   targets.forEach((el) => observer.observe(el));
+}
+
+// Balões da seção "Você se reconhece?": em vez de aparecerem todos juntos ao
+// entrar na tela, saem um de cada vez conforme a pessoa rola a página — presos
+// ao progresso da rolagem, não a um tempo fixo (por isso ficam fora do
+// wireScrollReveal, que só olha "entrou ou não entrou na tela").
+function wireThoughtsReveal() {
+  const container = document.querySelector(".thoughts");
+  if (!container) return;
+  const items = [...container.querySelectorAll(".thought")];
+  if (!items.length) return;
+
+  items.forEach((el) => el.classList.add("reveal"));
+
+  if (
+    !("IntersectionObserver" in window) ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    items.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+
+  let start = 0;
+  let span = 1;
+  let revealedCount = 0;
+  let ticking = false;
+
+  function measure() {
+    const top = container.getBoundingClientRect().top + window.scrollY;
+    const height = container.offsetHeight;
+    // Começa a soltar o primeiro balão um pouco antes do topo do bloco chegar
+    // ao fim da tela, e solta o último perto de a rolagem passar do bloco —
+    // assim o "um de cada vez" acontece na rolagem real, não num timer.
+    start = top - window.innerHeight * 0.75;
+    span = Math.max(1, height + window.innerHeight * 0.35);
+    update();
+  }
+
+  function update() {
+    ticking = false;
+    const progress = clamp((window.scrollY - start) / span);
+    const count = progress <= 0 ? 0 : Math.min(items.length, Math.ceil(progress * items.length));
+    for (let i = revealedCount; i < count; i++) items[i].classList.add("is-visible");
+    revealedCount = Math.max(revealedCount, count);
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+  }, { passive: true });
+  window.addEventListener("resize", measure, { passive: true });
+  window.addEventListener("load", measure);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+
+  measure();
 }
 
 // Números de destaque ("4 medos", "7 níveis") contam de 0 até o valor final

@@ -102,8 +102,9 @@
       <p class="chapter"><span class="chapter-num">01</span> Você se reconhece?</p>
       <h2 id="diagnostico-title" class="section-title center">Toda vez que a câmera liga, <br class="hide-mobile">alguma coisa trava.</h2>
 
-      <!-- A pessoa vista pelo visor da câmera, parada em 00:00, e em volta os pensamentos
-           de quem trava. Ilustração em SVG (sem foto, sem IA). -->
+      <!-- Vídeo real dentro do visor da câmera (cronômetro parado em 00:00), e em volta
+           os pensamentos de quem trava. A moldura, o REC e o botão de gravar continuam
+           em SVG por cima do vídeo. -->
       <div class="thoughts">
         <ul class="thought-col thought-col-left">
           <li class="thought">Já gravei esse vídeo 10 vezes e <strong>ainda não ficou bom</strong>.</li>
@@ -112,49 +113,27 @@
         </ul>
 
         <figure class="thoughts-person">
-          <svg viewBox="0 0 300 420" role="img" aria-label="Pessoa em frente à câmera do celular, com o cronômetro parado em 00:00" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="vf-bg" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#1B3046"/>
-                <stop offset="1" stop-color="#0E1D30"/>
-              </linearGradient>
-              <radialGradient id="vf-glow" cx="50%" cy="40%" r="55%">
-                <stop offset="0" stop-color="#4682B4" stop-opacity=".6"/>
-                <stop offset="1" stop-color="#4682B4" stop-opacity="0"/>
-              </radialGradient>
-              <linearGradient id="vf-rim" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#90BED9" stop-opacity=".95"/>
-                <stop offset="1" stop-color="#90BED9" stop-opacity=".12"/>
-              </linearGradient>
-              <clipPath id="vf-clip"><rect x="10" y="10" width="280" height="400" rx="28"/></clipPath>
-            </defs>
-            <rect x="10" y="10" width="280" height="400" rx="28" fill="url(#vf-bg)"/>
-            <g clip-path="url(#vf-clip)">
-              <ellipse cx="150" cy="180" rx="160" ry="175" fill="url(#vf-glow)"/>
-              <path d="M86 200C80 130 110 92 150 92C192 92 222 130 214 204C212 236 216 262 226 292H74C84 262 88 236 86 200Z" fill="#0A1524"/>
-              <path d="M128 244H172L168 300C158 308 142 308 132 300Z" fill="#0F1E31"/>
-              <path d="M20 420C24 352 62 318 112 306C124 303 134 298 140 290H160C166 298 176 303 188 306C238 318 276 352 280 420Z" fill="#0F1E31" stroke="url(#vf-rim)" stroke-width="2"/>
-              <ellipse cx="150" cy="184" rx="50" ry="62" fill="#132740" stroke="url(#vf-rim)" stroke-width="2"/>
-              <path d="M100 178C99 128 122 106 152 106C184 106 204 130 202 178C190 152 170 141 150 143C128 145 112 157 100 178Z" fill="#0A1524"/>
-            </g>
-            <rect x="10" y="10" width="280" height="400" rx="28" fill="none" stroke="#90BED9" stroke-opacity=".45" stroke-width="2"/>
-            <g fill="none" stroke="#F5F5F5" stroke-opacity=".55" stroke-width="2.5" stroke-linecap="round">
-              <path d="M84 112V96H100"/>
-              <path d="M200 96H216V112"/>
-              <path d="M84 262V278H100"/>
-              <path d="M200 278H216V262"/>
-            </g>
-            <circle cx="36" cy="40" r="5" fill="#D77713"/>
-            <text x="48" y="44.5" font-family="Nunito Sans, Arial, sans-serif" font-weight="600" font-size="13" fill="#F5F5F5">REC</text>
-            <text x="264" y="44.5" text-anchor="end" font-family="Nunito Sans, Arial, sans-serif" font-weight="600" font-size="13" fill="#C0CBD6">00:00</text>
-            <circle cx="150" cy="372" r="17" fill="none" stroke="#F5F5F5" stroke-opacity=".85" stroke-width="3"/>
-            <circle cx="150" cy="372" r="11" fill="#D77713"/>
-          </svg>
+          <div class="viewfinder">
+            <video class="viewfinder-video" src="assets/video/visor-exemplo.mov" autoplay muted loop playsinline aria-hidden="true"></video>
+            <svg class="viewfinder-ui" viewBox="0 0 300 420" role="img" aria-label="Visor da câmera do celular gravando, com o cronômetro em 00:00" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="10" width="280" height="400" rx="28" fill="none" stroke="#90BED9" stroke-opacity=".45" stroke-width="2"/>
+              <g fill="none" stroke="#F5F5F5" stroke-opacity=".55" stroke-width="2.5" stroke-linecap="round">
+                <path d="M84 112V96H100"/>
+                <path d="M200 96H216V112"/>
+                <path d="M84 262V278H100"/>
+                <path d="M200 278H216V262"/>
+              </g>
+              <circle cx="36" cy="40" r="5" fill="#D77713"/>
+              <text x="48" y="44.5" font-family="Nunito Sans, Arial, sans-serif" font-weight="600" font-size="13" fill="#F5F5F5">REC</text>
+              <text x="264" y="44.5" text-anchor="end" font-family="Nunito Sans, Arial, sans-serif" font-weight="600" font-size="13" fill="#C0CBD6">00:00</text>
+              <circle cx="150" cy="372" r="17" fill="none" stroke="#F5F5F5" stroke-opacity=".85" stroke-width="3"/>
+              <circle cx="150" cy="372" r="11" fill="#D77713"/>
+            </svg>
+          </div>
         </figure>
 
         <ul class="thought-col thought-col-right">
           <li class="thought"><strong>Semana que vem eu gravo.</strong> Faz meses que eu falo isso.</li>
-          <li class="thought">Essa voz gravada <strong>é mesmo a minha</strong>?</li>
           <li class="thought">Sei que <strong>preciso aparecer pra vender</strong>, e mesmo assim não gravo.</li>
         </ul>
       </div>
