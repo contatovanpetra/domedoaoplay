@@ -231,29 +231,12 @@ html { scroll-padding-top: var(--header-h, 85px); }
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: .5em;
   font-family: var(--font-head);
   font-weight: 700;
   font-size: .78rem;
   letter-spacing: .02em;
   color: var(--orange-light);
   margin-bottom: 1rem;
-}
-.eyebrow::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: var(--orange-light);
-}
-/* Só a luz "gravando" do topo pisca, e só com opacidade (roda na GPU).
-   Antes todas as ~10 piscavam animando box-shadow: a página repintava a cada
-   quadro mesmo parada e gastava quase metade do processador de um celular médio. */
-.hero .eyebrow::before { animation: eyebrow-pulse 2.6s ease-in-out infinite; }
-@keyframes eyebrow-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .45; }
 }
 .eyebrow-center { display: flex; width: fit-content; margin-left: auto; margin-right: auto; }
 
@@ -343,21 +326,20 @@ html { scroll-padding-top: var(--header-h, 85px); }
 .refund-link:hover { text-decoration-color: var(--orange-light); }
 
 /* Capítulo numerado: dá a sensação de progressão, do problema até a decisão.
-   Sem as linhas divisórias dos dois lados (mesma pesquisa do .eyebrow acima):
-   texto pequeno e discreto, sem moldura. */
+   Mesmo texto pequeno e discreto do .eyebrow, sem moldura, sem linha e sem
+   cor diferente — é o mesmo tratamento usado em toda seção da página. */
 .chapter {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: .5em;
+  gap: .3em;
   font-family: var(--font-head);
   font-weight: 700;
   font-size: .78rem;
   letter-spacing: .02em;
-  color: var(--blue-light);
+  color: var(--orange-light);
   margin: 0 0 1rem;
 }
-.chapter-num { color: var(--orange-light); }
 
 /* Barra de progresso de leitura. */
 /* Só uma barra de rolagem na página: a colorida da direita. A nativa some,
