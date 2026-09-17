@@ -87,6 +87,7 @@ function wireScrollEffects() {
   const inner = document.querySelector(".hero-inner");
   const copy = document.querySelector(".hero-copy");
   const bar = document.querySelector(".read-progress");
+  const introStage = document.getElementById("intro-stage");
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
 
@@ -123,7 +124,13 @@ function wireScrollEffects() {
     ticking = false;
     const y = window.scrollY;
 
-    if (bar) bar.style.setProperty("--read", maxScroll > 0 ? clamp(y / maxScroll).toFixed(4) : "0");
+    // Enquanto a abertura ainda está presa, a rolagem "de verdade" só serve pra
+    // avançar o túnel/pensamentos (ver autoAdvance em wireIntroStage) e não
+    // corresponde a progresso de leitura nenhum — sem esta checagem, a trilha
+    // enchia sozinha (uma linha laranja subindo na borda direita) durante a
+    // abertura inteira, em qualquer tamanho de tela.
+    const introActive = introStage && !introStage.classList.contains("intro-done");
+    if (bar) bar.style.setProperty("--read", introActive || maxScroll <= 0 ? "0" : clamp(y / maxScroll).toFixed(4));
     if (!cinema) return;
 
     if (track <= 0) {
@@ -237,10 +244,7 @@ function wireAccordions() {
       trigger.setAttribute("type", "button");
 
       const isOpenInitially = trigger.getAttribute("aria-expanded") === "true";
-      if (isOpenInitially) {
-        item.classList.add("open");
-        panel.style.maxHeight = panel.scrollHeight + "px";
-      }
+      if (isOpenInitially) item.classList.add("open");
 
       trigger.addEventListener("click", () => {
         const willOpen = !item.classList.contains("open");
@@ -253,33 +257,15 @@ function wireAccordions() {
           if (!otherTrigger || !otherPanel) return;
           other.classList.remove("open");
           otherTrigger.setAttribute("aria-expanded", "false");
-          otherPanel.style.maxHeight = null;
         });
 
         if (willOpen) {
           item.classList.add("open");
           trigger.setAttribute("aria-expanded", "true");
-          panel.style.maxHeight = panel.scrollHeight + "px";
         }
       });
     });
   });
-
-  function refitOpenPanels() {
-    document.querySelectorAll(".accordion-item.open .accordion-panel").forEach((panel) => {
-      // scrollHeight lê 0 se o painel (ou um ancestral) estiver display:none no
-      // instante da medição (ex.: troca de aba, teclado virtual). Nunca gravar isso.
-      if (panel.scrollHeight > 0) {
-        panel.style.maxHeight = panel.scrollHeight + "px";
-      }
-    });
-  }
-
-  window.addEventListener("resize", refitOpenPanels);
-  // O módulo que já vem aberto era medido antes das fontes carregarem; quando a
-  // fonte chegava o texto crescia e a última linha ficava cortada.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refitOpenPanels);
-  window.addEventListener("load", refitOpenPanels);
 }
 
 function wireScrollReveal() {
@@ -642,7 +628,13 @@ function wireIntroStage() {
     .to(inner, { opacity: 0, y: -24, duration: .5 })
     .fromTo(scene2, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, "<")
     .fromTo(burstPre, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5 })
-    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .6, ease: "power2.inOut" }, "+=.1")
+    // A moldura da câmera começava a desenhar só depois do texto "E se, em vez
+    // de travar..." terminar de aparecer — rolando pra baixo isso nem se nota
+    // (é rápido e o auto-avanço não para no meio), mas rolando de volta pra
+    // cima manualmente, dava pra parar bem nesse intervalo e a tela ficava só
+    // com o texto solto num fundo escuro, sem nada mais (parecia tela vazia/
+    // azul). Desenhando junto com o texto, sempre tem algo na tela.
+    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .6, ease: "power2.inOut" }, "<")
     .to(bfPaths.slice(2), { strokeDashoffset: 0, duration: .55, ease: "power2.inOut" }, "-=.2")
     .to(bfRec, { opacity: 1, duration: .3 }, "-=.1")
     .to(bfCorners, { opacity: 1, duration: .3 }, "-=.15")
