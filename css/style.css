@@ -639,25 +639,41 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Split (causa) ---------- */
 .split { display: grid; grid-template-columns: 1.2fr .8fr; gap: 3rem; align-items: center; }
 .split-visual { display: grid; gap: 1.2rem; }
+/* Com três parágrafos seguidos, o negrito sozinho (mesma cor do resto) some
+   numa leitura corrida. Aqui ele ganha a cor mais clara da paleta pra quem
+   só passa o olho ainda pegar o benefício de cada frase. */
+.split-text p strong { color: var(--white); }
 
 /* ---------- Quote card (autoridade) ---------- */
-/* Card "Quem ensina": só o que é verdade e verificável, sem citação. */
+/* Card "Quem ensina": só o que é verdade e verificável, sem citação.
+   A foto ocupa metade do card, do lado do texto, em vez de um avatar
+   pequeno em cima de tudo: numa seção que existe pra dar rosto e
+   autoridade a quem ensina, a foto minúscula em bolinha enterrava
+   justamente isso. */
 .authority-card {
   position: relative;
+  display: flex;
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-left: 3px solid var(--blue-light);
   border-radius: var(--radius-lg);
-  padding: 1.8rem 2rem;
+  padding: 0;
   margin: 0;
+  overflow: hidden;
 }
-.authority-header {
+.authority-photo {
+  flex: 0 0 42%;
+  align-self: stretch;
+  min-height: 220px;
+}
+.authority-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.authority-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1.8rem 2rem;
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding-bottom: 1.2rem;
-  margin-bottom: 1.2rem;
-  border-bottom: 1px solid var(--border);
+  flex-direction: column;
+  gap: 1.2rem;
 }
 .authority-card ul { display: grid; gap: .85rem; margin: 0; }
 .authority-card li {
@@ -683,7 +699,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   flex-direction: column;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   color: var(--white);
 }
 .authority-name-text span {
@@ -693,21 +709,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: .82rem;
   margin-top: .2rem;
 }
-.authority-avatar {
-  flex-shrink: 0;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--bg);
-  border: 2px solid var(--blue-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--blue-light);
-  overflow: hidden;
-}
-.authority-avatar svg { width: 58%; height: 58%; }
-.authority-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Antes / Depois ---------- */
 .compare-grid {
@@ -719,14 +720,47 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .compare-col {
   border-radius: var(--radius-lg);
-  padding: 2rem;
+  padding: 2.2rem 2rem;
   border: 1px solid var(--border);
+  border-top-width: 3px;
 }
 /* Antes é azul (o túnel no começo), Depois é laranja (a saída do túnel) — a
-   mesma jornada de cor da abertura. */
-.compare-antes { background: linear-gradient(160deg, rgba(70, 130, 180, 0.16), rgba(70, 130, 180, 0.03)); border-color: rgba(70, 130, 180, 0.3); }
-.compare-depois { background: linear-gradient(160deg, rgba(215, 119, 19, 0.2), rgba(215, 119, 19, 0.06)); border-color: rgba(215, 119, 19, 0.35); }
-.compare-col h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+   mesma jornada de cor da abertura. Borda de cima mais grossa e fundo/sombra
+   um pouco mais fortes: os dois cards estavam parecendo iguais demais, sem
+   puxar o olho pra qual lado é o ganho. */
+.compare-antes {
+  background: linear-gradient(160deg, rgba(70, 130, 180, 0.2), rgba(70, 130, 180, 0.04));
+  border-color: rgba(70, 130, 180, 0.4);
+  border-top-color: var(--blue-light);
+}
+.compare-depois {
+  background: linear-gradient(160deg, rgba(215, 119, 19, 0.26), rgba(215, 119, 19, 0.07));
+  border-color: rgba(215, 119, 19, 0.55);
+  border-top-color: var(--orange-light);
+  box-shadow: var(--shadow-md), 0 0 32px -18px rgba(215, 119, 19, 0.7);
+}
+.compare-col h3 {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  font-family: var(--font-head);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+}
+.compare-col h3::before {
+  content: "";
+  flex-shrink: 0;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  -webkit-mask: var(--ico) center / 52% no-repeat;
+  mask: var(--ico) center / 52% no-repeat;
+}
+.compare-antes h3 { --ico: var(--ico-x); }
+.compare-antes h3::before { background: var(--silver); }
+.compare-depois h3 { --ico: var(--ico-check); }
+.compare-depois h3::before { background: var(--orange-light); }
 .compare-col ul { display: grid; gap: .8rem; }
 .compare-col li {
   position: relative;
@@ -734,6 +768,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: .98rem;
   color: var(--text);
 }
+.compare-depois li strong { color: var(--white); }
 .compare-antes li::before { --ico: var(--ico-dot); background: var(--silver); }
 .compare-depois li::before { --ico: var(--ico-check); background: var(--orange-light); }
 
@@ -1751,12 +1786,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .section { padding: 64px 0; }
   .accordion { margin-top: 1.4rem; gap: .6rem; }
   .accordion-trigger { padding: 1rem 1.1rem; }
+  /* Card da educadora: foto ao lado do texto fica espremida demais numa tela
+     estreita. Aqui ela sobe pro topo, em tela cheia, e o texto vem embaixo. */
+  .authority-card { flex-direction: column; }
+  .authority-photo { flex-basis: auto; min-height: 200px; }
+  .authority-body { padding: 1.5rem 1.4rem; }
   .modulos-footer { margin-top: 1.2rem; gap: .6rem; }
   .bonus-grid { grid-template-columns: 1fr; }
   /* Antes/Depois lado a lado mesmo no celular: card mais compacto pra caber. */
   .compare-grid { gap: .6rem; margin-top: 1.8rem; }
   .compare-col { padding: 1rem .85rem; }
-  .compare-col h3 { font-size: 1rem; margin-bottom: .7rem; }
+  .compare-col h3 { font-size: 1rem; gap: .4rem; margin-bottom: .7rem; }
+  .compare-col h3::before { width: 1.3rem; height: 1.3rem; }
   .compare-col ul { gap: .55rem; }
   .compare-col li { font-size: .78rem; line-height: 1.32; padding-left: 1.15rem; }
   /* No celular, 7 níveis empilhados verticalmente é a mesma rolagem infinita
