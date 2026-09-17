@@ -325,22 +325,6 @@ html { scroll-padding-top: var(--header-h, 85px); }
 }
 .refund-link:hover { text-decoration-color: var(--orange-light); }
 
-/* Capítulo numerado: dá a sensação de progressão, do problema até a decisão.
-   Mesmo texto pequeno e discreto do .eyebrow, sem moldura, sem linha e sem
-   cor diferente — é o mesmo tratamento usado em toda seção da página. */
-.chapter {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .3em;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: .78rem;
-  letter-spacing: .02em;
-  color: var(--orange-light);
-  margin: 0 0 1rem;
-}
-
 /* Barra de progresso de leitura. */
 /* Só uma barra de rolagem na página: a colorida da direita. A nativa some,
    sem tirar a rolagem em si. */
