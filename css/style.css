@@ -935,23 +935,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .accordion-panel li::before { --ico: var(--ico-dash); background: var(--silver); }
 .accordion-panel p { font-size: .95rem; margin: 0; }
 
-.modulos-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .8rem;
-  justify-content: center;
-  margin-top: 2rem;
-}
-.modulos-chip {
-  background: rgba(70, 130, 180, 0.14);
-  border-radius: var(--radius-sm);
-  padding: .5em 1.2em;
-  font-size: .85rem;
-  font-family: var(--font-head);
-  font-weight: 600;
-  color: var(--blue-light);
-}
-
 /* ---------- Qualify ---------- */
 .qualify-grid {
   display: grid;
@@ -1044,10 +1027,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Bônus ---------- */
 /* Cada bônus descrito por inteiro antes da compra (briefing, seção 07: bônus e
    condição de acesso nunca em letra miúda). Identidade própria vem de cada card
-   usar uma cor diferente da marca (azul e laranja), não do fundo da seção. */
-.bonus-eyebrow { display: inline-flex; align-items: center; gap: .4rem; }
-.bonus-eyebrow::before { display: none; }
-.bonus-eyebrow-icon { width: 15px; height: 15px; color: var(--orange-light); flex-shrink: 0; }
+   usar uma cor diferente da marca (azul e laranja), não do fundo da seção.
+   Fica dentro da seção de módulos, não numa seção à parte: é tudo o mesmo
+   pacote que a pessoa recebe ao entrar. */
+.modulos-bonus {
+  margin-top: 2.6rem;
+  padding-top: 2.2rem;
+  border-top: 1px solid var(--border);
+}
+.modulos-bonus-label {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange-light);
+  margin: 0 0 1.3rem;
+}
+.bonus-eyebrow-icon { width: 16px; height: 16px; color: var(--orange-light); flex-shrink: 0; }
 .bonus-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1824,7 +1824,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .authority-card { flex-direction: column; }
   .authority-photo { flex-basis: auto; min-height: 200px; }
   .authority-body { padding: 1.5rem 1.4rem; }
-  .modulos-footer { margin-top: 1.2rem; gap: .6rem; }
+  .modulos-bonus { margin-top: 2rem; padding-top: 1.6rem; }
   .bonus-grid { grid-template-columns: 1fr; }
   /* Antes/Depois lado a lado mesmo no celular: card mais compacto pra caber. */
   .compare-grid { gap: .6rem; margin-top: 1.8rem; }

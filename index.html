@@ -501,40 +501,30 @@
       </div>
       <p class="modulos-pendente" data-confirmar="aulas do Módulo 6 ainda em construção no briefing"></p>
 
-      <div class="modulos-footer">
-        <div class="modulos-chip">7 módulos</div>
-        <div class="modulos-chip">29 aulas de 7 a 10 min</div>
-        <div class="modulos-chip" data-confirmar="os 7 checklists ainda não foram produzidos">Checklist em PDF por módulo</div>
-        <div class="modulos-chip">Grupo de acompanhamento</div>
-        <div class="modulos-chip" data-confirmar="certificado habilitado e configurado na Hotmart">Certificado ao final</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== BÔNUS ===== -->
-  <section class="section bonus-section" aria-labelledby="bonus-title">
-    <div class="container narrow center">
-      <p class="eyebrow eyebrow-center bonus-eyebrow">
-        <svg class="bonus-eyebrow-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8c-1.9 0-3.2-1.3-3.2-2.7C8.8 3.9 10.2 3 12 3s3.2.9 3.2 2.3C15.2 6.7 13.9 8 12 8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><rect x="3.5" y="8" width="17" height="4.5" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 12.5h15V20a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-7.5ZM12 8v13" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-        BÔNUS EXCLUSIVO
-      </p>
-      <h2 id="bonus-title" class="section-title center">Um empurrão extra pra você começar mais rápido</h2>
-      <div class="bonus-grid">
-        <div class="bonus-card" data-confirmar="limite de uso, de mensagens ou de prazo do assistente: escrever aqui antes da compra e testar antes do lançamento">
-          <span class="bonus-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="7" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.6"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/><path d="M12 7V4M9 4h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-          <h3>Assistente de IA pra gravar melhor</h3>
-          <ul>
-            <li>Analisa uma foto do seu setup e ajusta áudio, luz e altura</li>
-            <li>Ajuda a escolher o assunto e revisa sua fala</li>
-          </ul>
-        </div>
-        <div class="bonus-card" data-confirmar="curadoria dos equipamentos das três faixas ainda em produção">
-          <span class="bonus-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h9l3 3v14H6V3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 3.5v3h3M9 12h6M9 15h6M9 9h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-          <h3>Ebook de equipamento e referência</h3>
-          <ul>
-            <li>Guia em 3 faixas: iniciante, intermediário e avançado</li>
-            <li>Indicação de material extra pra quem quiser ir além</li>
-          </ul>
+      <!-- Bônus junto dos módulos, não numa seção à parte: é tudo parte do
+           mesmo pacote que a pessoa recebe ao entrar. -->
+      <div class="modulos-bonus">
+        <p class="modulos-bonus-label">
+          <svg class="bonus-eyebrow-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8c-1.9 0-3.2-1.3-3.2-2.7C8.8 3.9 10.2 3 12 3s3.2.9 3.2 2.3C15.2 6.7 13.9 8 12 8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><rect x="3.5" y="8" width="17" height="4.5" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 12.5h15V20a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-7.5ZM12 8v13" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          + 2 bônus inclusos
+        </p>
+        <div class="bonus-grid">
+          <div class="bonus-card" data-confirmar="limite de uso, de mensagens ou de prazo do assistente: escrever aqui antes da compra e testar antes do lançamento">
+            <span class="bonus-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="7" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.6"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/><path d="M12 7V4M9 4h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+            <h3>Assistente de IA pra gravar melhor</h3>
+            <ul>
+              <li>Analisa uma foto do seu setup e ajusta áudio, luz e altura</li>
+              <li>Ajuda a escolher o assunto e revisa sua fala</li>
+            </ul>
+          </div>
+          <div class="bonus-card" data-confirmar="curadoria dos equipamentos das três faixas ainda em produção">
+            <span class="bonus-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h9l3 3v14H6V3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 3.5v3h3M9 12h6M9 15h6M9 9h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
+            <h3>Ebook de equipamento e referência</h3>
+            <ul>
+              <li>Guia em 3 faixas: iniciante, intermediário e avançado</li>
+              <li>Indicação de material extra pra quem quiser ir além</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
