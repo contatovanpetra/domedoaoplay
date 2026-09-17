@@ -301,7 +301,7 @@
           <div class="ladder-body">
             <span class="ladder-level">Nível 2</span>
             <h3>Uma pessoa de confiança</h3>
-            <p>Grava um vídeo novo sobre a sua semana e manda pra 1 pessoa de confiança.</p>
+            <p>Grava um vídeo novo e manda pra 1 pessoa de confiança.</p>
           </div>
         </li>
         <li class="ladder-step" style="--i:2">
@@ -309,7 +309,7 @@
           <div class="ladder-body">
             <span class="ladder-level">Nível 3</span>
             <h3>Mais gente de confiança</h3>
-            <p>Grava sobre um momento específico e manda pra 2 ou 3 pessoas de confiança, ainda fora das redes.</p>
+            <p>Grava um vídeo novo e manda pra 2 ou 3 pessoas de confiança, ainda fora das redes.</p>
           </div>
         </li>
         <li class="ladder-step" style="--i:3" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
@@ -349,11 +349,6 @@
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         arraste para ver os 7 níveis
       </p>
-
-      <!-- Regra da escada (briefing, seção 04): expor pra destravar, não pra colher validação. -->
-      <div class="ladder-note">
-        <p><strong>Compartilhar serve pra destravar o ato de postar, não pra colher elogio.</strong> Quem avalia o vídeo é você, com a lista de conferência do curso. Por isso vale compartilhar mesmo quando o vídeo não ficou bom. A partir do Nível 2, é sempre por uma tela: mensagem, WhatsApp ou rede.</p>
-      </div>
     </div>
   </section>
 
@@ -555,7 +550,7 @@
       <div class="guarantee-badge" aria-hidden="true">7 dias</div>
       <h2 id="garantia-title" class="section-title center">Garantia simples, sem letra miúda</h2>
       <!-- Briefing (seção 07): processo de reembolso visível, simples e testado antes do lançamento. -->
-      <p class="section-lead" data-confirmar="7 dias é o prazo que a lei já obriga: manter 7 dias e parar de chamar de garantia, ou aumentar o prazo (e conferir o que a Hotmart permite)">Você tem 7 dias de garantia incondicional a partir da compra. É o mesmo prazo do direito de arrependimento previsto em lei pra compras online. Se não for pra você, é só pedir o reembolso pela Hotmart, no link aqui embaixo.</p>
+      <p class="section-lead" data-confirmar="7 dias é o prazo que a lei já obriga: manter 7 dias e parar de chamar de garantia, ou aumentar o prazo (e conferir o que a Hotmart permite)">Você testa o curso inteiro por 7 dias, sem risco nenhum. Não é pra você? Pede o reembolso pela Hotmart e pronto, sem pergunta e sem letra miúda.</p>
       <a class="refund-link" href="https://help.hotmart.com/pt-br/article/360061973392/como-solicitar-o-reembolso-da-minha-compra-" target="_blank" rel="noopener">Solicitar reembolso na Hotmart</a>
     </div>
   </section>
@@ -631,10 +626,22 @@
   <section class="section final-cta" aria-labelledby="final-cta-title">
     <div class="portal-glow final-glow" aria-hidden="true"></div>
     <canvas id="confetti-cta" aria-hidden="true"></canvas>
-    <div class="container narrow center">
-      <h2 id="final-cta-title" class="section-title center">Sua versão que aparece já existe.</h2>
-      <p class="section-lead">Ela só precisa da técnica certa, aplicada um degrau de cada vez, com acompanhamento do começo ao fim.</p>
-      <a href="#" data-checkout-link id="final-cta-btn" class="btn btn-primary btn-large">Quero aparecer</a>
+    <div class="container final-cta-grid">
+      <!-- O mesmo túnel em arcos da abertura, parado (sem animação): fecha a
+           história em vez de só repetir o CTA solto num fundo. -->
+      <svg class="final-tunnel" viewBox="0 0 360 400" aria-hidden="true">
+        <g fill="none" stroke-width="2.5" stroke-linejoin="round">
+          <path d="M 100,358 H 260 Q 315,358 315,303 V 173 A 135,135 0 0 0 45,173 V 303 Q 45,358 100,358 Z" stroke="#3A6E92" transform="translate(180,198) scale(1.65) translate(-180,-198)" opacity=".55"/>
+          <path d="M 100,358 H 260 Q 315,358 315,303 V 173 A 135,135 0 0 0 45,173 V 303 Q 45,358 100,358 Z" stroke="#5C8FAF" transform="translate(180,198) scale(1.15) translate(-180,-198)" opacity=".7"/>
+          <path d="M 100,358 H 260 Q 315,358 315,303 V 173 A 135,135 0 0 0 45,173 V 303 Q 45,358 100,358 Z" stroke="#8FB9CE" transform="translate(180,198) scale(.78) translate(-180,-198)" opacity=".85"/>
+          <path d="M 100,358 H 260 Q 315,358 315,303 V 173 A 135,135 0 0 0 45,173 V 303 Q 45,358 100,358 Z" stroke="#E08A2A" transform="translate(180,198) scale(.5) translate(-180,-198)"/>
+        </g>
+      </svg>
+      <div class="final-cta-copy">
+        <h2 id="final-cta-title" class="section-title">Sua versão que aparece já existe.</h2>
+        <p class="section-lead">Ela só precisa da técnica certa, aplicada um degrau de cada vez, com acompanhamento do começo ao fim.</p>
+        <a href="#" data-checkout-link id="final-cta-btn" class="btn btn-primary btn-large">Quero aparecer</a>
+      </div>
     </div>
   </section>
 
@@ -646,14 +653,15 @@
     <a href="#topo" class="logo logo-footer" aria-label="Do Medo ao Play, voltar ao início">
       <img class="logo-mark" src="assets/img/logo.svg" alt="Do Medo ao Play" width="102" height="40" loading="lazy">
     </a>
-    <a href="#" data-checkout-link class="btn btn-primary btn-small footer-cta">Quero aparecer</a>
-    <!-- TODO: o Hotmart exige/recomenda estes links na página de vendas — trocar "#" pelas páginas reais antes de publicar -->
-    <nav class="footer-legal" aria-label="Informações legais" data-confirmar="páginas de Política de Privacidade, Termos de Uso e Suporte (links vazios)">
-      <a href="#">Política de Privacidade</a>
-      <a href="#">Termos de Uso</a>
-      <a href="#">Suporte</a>
-    </nav>
-    <p class="footer-copy">© 2026 Do Medo ao Play, por Vitória Caroline. Todos os direitos reservados.</p>
+    <div class="footer-meta">
+      <!-- TODO: o Hotmart exige/recomenda estes links na página de vendas — trocar "#" pelas páginas reais antes de publicar -->
+      <nav class="footer-legal" aria-label="Informações legais" data-confirmar="páginas de Política de Privacidade, Termos de Uso e Suporte (links vazios)">
+        <a href="#">Política de Privacidade</a>
+        <a href="#">Termos de Uso</a>
+        <a href="#">Suporte</a>
+      </nav>
+      <p class="footer-copy">© 2026 Do Medo ao Play, por Vitória Caroline. Todos os direitos reservados.</p>
+    </div>
   </div>
 </footer>
 
