@@ -223,33 +223,29 @@ html { scroll-padding-top: var(--header-h, 85px); }
 
 /* ---------- Eyebrow / Section titles ---------- */
 /* Indicador "gravando", não pílula genérica: liga direto com o tema do curso (câmera). */
-/* Selo em pílula, não só texto solto com uma bolinha: era a mesma marcação
-   discreta usada em todo canto (dúvidas, bônus, autoridade...), o suficiente
-   pra passar despercebida. A borda e o fundo leve dão o peso de "etiqueta"
-   que a home tava sem. */
+/* Pesquisa em páginas de referência (Stripe, Linear, Superhuman, Framer,
+   Apple): nenhuma usa selo em pílula com borda e fundo pra marcar seção —
+   é textinho pequeno e discreto, sem caixa nenhuma. A pílula que a gente
+   tinha era o oposto disso: o mesmo enfeite de template genérico que
+   aparece em qualquer página de curso. */
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: .55em;
+  gap: .5em;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: .66rem;
-  letter-spacing: .13em;
+  font-size: .78rem;
+  letter-spacing: .02em;
   color: var(--orange-light);
-  margin-bottom: 1.2rem;
-  padding: .5em .95em .5em .75em;
-  border: 1px solid rgba(215, 119, 19, .32);
-  border-radius: 999px;
-  background: rgba(215, 119, 19, .07);
+  margin-bottom: 1rem;
 }
 .eyebrow::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--orange-light);
-  box-shadow: 0 0 0 3px rgba(215, 119, 19, .18);
 }
 /* Só a luz "gravando" do topo pisca, e só com opacidade (roda na GPU).
    Antes todas as ~10 piscavam animando box-shadow: a página repintava a cada
@@ -346,36 +342,22 @@ html { scroll-padding-top: var(--header-h, 85px); }
 }
 .refund-link:hover { text-decoration-color: var(--orange-light); }
 
-/* Capítulos numerados: dão a sensação de progressão, do problema até a decisão. */
+/* Capítulo numerado: dá a sensação de progressão, do problema até a decisão.
+   Sem as linhas divisórias dos dois lados (mesma pesquisa do .eyebrow acima):
+   texto pequeno e discreto, sem moldura. */
 .chapter {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1em;
+  gap: .5em;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: .68rem;
-  letter-spacing: .2em;
-  text-transform: uppercase;
+  font-size: .78rem;
+  letter-spacing: .02em;
   color: var(--blue-light);
-  margin: 0 0 1.4rem;
-}
-.chapter::before,
-.chapter::after {
-  content: "";
-  height: 1px;
-  width: min(90px, 14vw);
-  background: rgba(144, 190, 217, .3);
+  margin: 0 0 1rem;
 }
 .chapter-num { color: var(--orange-light); }
-/* Dentro do card da oferta, no celular, as linhas laterais espremiam o texto em duas linhas. */
-@media (max-width: 699.98px) {
-  .offer-card .chapter::before,
-  .offer-card .chapter::after { width: 18px; }
-  .offer-card .chapter { gap: .6em; letter-spacing: .16em; }
-}
-.split-text .chapter { justify-content: flex-start; }
-.split-text .chapter::before { display: none; }
 
 /* Barra de progresso de leitura. */
 /* Só uma barra de rolagem na página: a colorida da direita. A nativa some,
