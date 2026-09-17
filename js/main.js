@@ -87,6 +87,7 @@ function wireScrollEffects() {
   const inner = document.querySelector(".hero-inner");
   const copy = document.querySelector(".hero-copy");
   const bar = document.querySelector(".read-progress");
+  const introStage = document.getElementById("intro-stage");
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
 
@@ -123,7 +124,13 @@ function wireScrollEffects() {
     ticking = false;
     const y = window.scrollY;
 
-    if (bar) bar.style.setProperty("--read", maxScroll > 0 ? clamp(y / maxScroll).toFixed(4) : "0");
+    // Enquanto a abertura ainda está presa, a rolagem "de verdade" só serve pra
+    // avançar o túnel/pensamentos (ver autoAdvance em wireIntroStage) e não
+    // corresponde a progresso de leitura nenhum — sem esta checagem, a trilha
+    // enchia sozinha (uma linha laranja subindo na borda direita) durante a
+    // abertura inteira, em qualquer tamanho de tela.
+    const introActive = introStage && !introStage.classList.contains("intro-done");
+    if (bar) bar.style.setProperty("--read", introActive || maxScroll <= 0 ? "0" : clamp(y / maxScroll).toFixed(4));
     if (!cinema) return;
 
     if (track <= 0) {
