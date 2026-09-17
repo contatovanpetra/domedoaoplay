@@ -669,7 +669,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   align-self: stretch;
   min-height: 220px;
 }
-.authority-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Foto de palestra (corpo inteiro): ancora o recorte no rosto/tronco em
+   vez do centro, senão o object-fit:cover corta a cabeça pra mostrar as
+   pernas. */
+.authority-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; display: block; }
 /* Moldura da foto: um véu azul (a mesma cor da marca, não um filtro novo)
    costura a foto ao painel, e o canto escurece pro texto começar — em vez
    de um recorte seco, a foto parece parte do card, não uma imagem colada
