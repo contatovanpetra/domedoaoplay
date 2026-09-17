@@ -25,10 +25,9 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- GSAP vem de CDN só no fim do body, mas a conexão (DNS/TLS) começa aqui,
-     bem mais cedo, pra a abertura não perder tempo esperando a rede na hora
-     de carregar o script. -->
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<!-- GSAP/ScrollTrigger ficam local (js/vendor), não em CDN externo: a abertura
+     depende deles pra rodar, e um bloqueio de rede/proxy no ambiente de quem
+     visualiza (preview, sandbox etc.) não pode derrubar a animação inteira. -->
 <!-- Só os pesos do manual: Quicksand 600/700 (títulos) e Nunito Sans 400/600 (texto e botões).
      Carregado sem bloquear a primeira pintura: antes a página inteira esperava o
      servidor de fontes do Google (de 0,3 a 1,4 s num celular em 4G). -->
@@ -685,8 +684,8 @@
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="js/vendor/gsap.min.js"></script>
+<script src="js/vendor/ScrollTrigger.min.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
