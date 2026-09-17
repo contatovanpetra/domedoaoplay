@@ -264,12 +264,8 @@ html { scroll-padding-top: var(--header-h, 85px); }
    fica idêntico em qualquer celular. Os ícones em linha herdam a cor do texto;
    os marcadores de lista usam máscara pra poder trocar a cor por variante. */
 :root {
-  --ico-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.2 4.2L19 7'/%3E%3C/svg%3E");
   --ico-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7 7 17'/%3E%3C/svg%3E");
-  --ico-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M7 12h10'/%3E%3C/svg%3E");
-  --ico-dot: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4.6' fill='black'/%3E%3C/svg%3E");
   --ico-play: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5.5v13l11-6.5z' fill='black'/%3E%3C/svg%3E");
-  --ico-quote: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 5.2C6 6.6 3.8 9.6 3.8 13.6v5.2h6.4v-6.4H7.1c.2-2.3 1.4-4 3.4-5.1L9.4 5.2zm10.2 0c-3.4 1.4-5.6 4.4-5.6 8.4v5.2h6.4v-6.4h-3.1c.2-2.3 1.4-4 3.4-5.1l-1.1-2.1z'/%3E%3C/svg%3E");
 }
 .icon {
   width: 1.1em;
@@ -280,21 +276,6 @@ html { scroll-padding-top: var(--header-h, 85px); }
   stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-/* Marcadores de lista desenhados por máscara SVG. */
-.compare-col li::before,
-.qualify-card li::before,
-.accordion-panel li::before,
-.offer-includes li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .32em;
-  width: 1em;
-  height: 1em;
-  -webkit-mask: var(--ico) center / contain no-repeat;
-  mask: var(--ico) center / contain no-repeat;
 }
 
 /* Link dentro de texto corrido (ex.: FAQ): precisa parecer link. */
@@ -522,29 +503,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .hero-lead-list {
   display: flex;
   flex-direction: column;
-  gap: .6rem;
+  gap: .55rem;
   margin: 1.1rem 0 0;
   padding: 0;
   list-style: none;
 }
-.hero-lead-list li {
-  position: relative;
-  padding-left: 1.5rem;
-  font-size: .95rem;
-  line-height: 1.4;
-  color: var(--text);
-}
-.hero-lead-list li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .32em;
-  width: 1em;
-  height: 1em;
-  -webkit-mask: var(--ico-check) center / contain no-repeat;
-  mask: var(--ico-check) center / contain no-repeat;
-  background: var(--orange-light);
-}
+.hero-lead-list li { font-size: .95rem; line-height: 1.4; color: var(--text); }
 .hero-actions { margin-top: 1.6rem; }
 .hero-microcopy {
   margin-top: .8rem;
@@ -636,24 +600,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: 1.2rem;
 }
 .authority-card ul { display: grid; gap: .85rem; margin: 0; }
-.authority-card li {
-  position: relative;
-  padding-left: 1.6rem;
-  font-size: .98rem;
-  line-height: 1.45;
-  color: var(--text);
-}
-.authority-card li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .28em;
-  width: 1em;
-  height: 1em;
-  background: var(--blue-light);
-  -webkit-mask: var(--ico-check) center / contain no-repeat;
-  mask: var(--ico-check) center / contain no-repeat;
-}
+.authority-card li { font-size: .98rem; line-height: 1.45; color: var(--text); }
 .authority-name-text {
   display: flex;
   flex-direction: column;
@@ -712,15 +659,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .compare-depois h3 { --ico: var(--ico-play); }
 .compare-depois h3::before { background: var(--orange-light); }
 .compare-col ul { display: grid; gap: .8rem; }
-.compare-col li {
-  position: relative;
-  padding-left: 1.4rem;
-  font-size: .98rem;
-  color: var(--text);
-}
+.compare-col li { font-size: .98rem; line-height: 1.45; color: var(--text); }
 .compare-depois li strong { color: var(--white); }
-.compare-antes li::before { --ico: var(--ico-dot); background: var(--silver); }
-.compare-depois li::before { --ico: var(--ico-check); background: var(--orange-light); }
 
 /* ---------- Ladder (método) ---------- */
 /* Escada de exposição: uma trilha vertical conectada, não uma grade de cards.
@@ -858,13 +798,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .accordion-item.open .accordion-panel { padding-bottom: 1.3rem; }
 .accordion-panel ul { display: grid; gap: .55rem; }
-.accordion-panel li {
-  position: relative;
-  padding-left: 1.2rem;
-  font-size: .95rem;
-  color: var(--text-muted);
-}
-.accordion-panel li::before { --ico: var(--ico-dash); background: var(--silver); }
+.accordion-panel li { font-size: .95rem; color: var(--text-muted); }
 .accordion-panel p { font-size: .95rem; margin: 0; }
 
 /* ---------- Qualify ---------- */
@@ -888,9 +822,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .qualify-card h3 { font-size: 1.15rem; margin-bottom: 1rem; }
 .qualify-card ul { display: grid; gap: .8rem; }
-.qualify-card li { position: relative; padding-left: 1.4rem; font-size: .95rem; color: var(--text); }
-.qualify-yes li::before { --ico: var(--ico-check); background: var(--blue-light); }
-.qualify-no li::before { --ico: var(--ico-x); background: var(--silver); }
+.qualify-card li { font-size: .95rem; line-height: 1.45; color: var(--text); }
 
 /* ---------- Offer ---------- */
 .offer-section { padding-top: 40px; }
@@ -924,8 +856,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   max-width: 440px;
   margin: 0 auto;
 }
-.offer-includes li { position: relative; padding-left: 1.6rem; font-size: 1rem; color: var(--text); }
-.offer-includes li::before { --ico: var(--ico-check); background: var(--orange-light); }
+.offer-includes li { font-size: 1rem; line-height: 1.5; color: var(--text); }
 
 /* ---------- Guarantee ---------- */
 .guarantee-block { display: flex; flex-direction: column; align-items: center; }
@@ -1752,7 +1683,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .compare-col h3 { font-size: 1rem; gap: .4rem; margin-bottom: .7rem; }
   .compare-col h3::before { width: 1.3rem; height: 1.3rem; }
   .compare-col ul { gap: .55rem; }
-  .compare-col li { font-size: .78rem; line-height: 1.32; padding-left: 1.15rem; }
+  .compare-col li { font-size: .78rem; line-height: 1.32; }
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
      celular só ganha nós e texto um pouco menores pra caber melhor. */
   .ladder-node { width: 38px; height: 38px; }
