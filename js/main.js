@@ -10,7 +10,14 @@ const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI";
 //    em três cenas. Sem eles (falha de rede, bloqueio de script), a abertura
 //    é pulada e a página abre direto: nada fica preso.
 const hasGSAP = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
-if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
+if (hasGSAP) {
+  gsap.registerPlugin(ScrollTrigger);
+  // No celular, a barra de endereço soma/tira uns pixels de altura da janela
+  // conforme a pessoa rola. Sem isto, cada vez que ela some/aparece dispara um
+  // resize que recalcula a rolagem presa da abertura (5200px) no meio do
+  // caminho — e a rolagem parece "voltar do nada" pro início da abertura.
+  ScrollTrigger.config({ ignoreMobileResize: true });
+}
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // A abertura cria uma réplica da página dentro do celular, e essa réplica fica
@@ -279,13 +286,10 @@ function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
-  // Os balões de pensamento (.thought) têm a própria revelação, presa à rolagem
-  // (ver wireThoughtsReveal) — por isso ficam de fora daqui.
   const targets = [...document.querySelectorAll(
-    ".section .container > *, .ladder-step, .accordion-item, .fact-card, .compare-col, " +
-    ".thoughts-person, .timeline li, .front-card, .big-fact"
+    ".section .container > *, .ladder-step, .accordion-item, .compare-col"
   )].filter((el) => !el.matches(
-    ".thoughts, .thought-col, .timeline, .two-fronts, .big-facts, .compare-grid, .ladder, .accordion"
+    ".compare-grid, .ladder, .accordion"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 
@@ -382,7 +386,6 @@ function wireIntroStage() {
   const glMain = travar ? travar.querySelector(".gl-main") : null;
   const thoughts = [...document.querySelectorAll("#hi-thoughts span")];
   const cue = document.getElementById("hi-cue");
-  const cueText = document.getElementById("hi-cue-text");
   const hero = REAL_HERO;
 
   // Cena 2
@@ -412,7 +415,7 @@ function wireIntroStage() {
   // da marca) acompanham o quanto já foi percorrido.
   const rings = [...document.querySelectorAll(".t-ring")];
   const ringBase = [.16, .3, .5, .78, 1.15, 1.65];
-  const CORE = ["#0A1826", "#12354F", "#2A6A97", "#B25E12", "#F8A132"];
+  const CORE = ["#0A1826", "#12354F", "#2A6A97", "#B25E12", "#D77713"];
   const MID = ["#050D16", "#081C2C", "#0E3450", "#5C3310", "#A85A12"];
   const EDGE = ["#01040A", "#020810", "#04121F", "#0A1724", "#14202E"];
   const RING = ["#16304A", "#2E6A94", "#6FA9CC", "#E08A2A", "#FFC06A"];
@@ -511,35 +514,95 @@ function wireIntroStage() {
   gsap.set(burstStage, { rotationY: -26, rotationX: 9, transformPerspective: 1000, transformOrigin: "50% 50%" });
   paintTunnel(0);
 
+  // Quanto a rolagem "presa" dura, no total. O GSAP, por padrão, reserva
+  // sozinho o espaço de rolagem de uma seção presa somando a altura de
+  // repouso dela (a tela cheia, ~100dvh) A MAIS por cima dessa distância —
+  // isso deixava uma tela inteira em branco entre o fim da abertura (a
+  // réplica já tinha sumido) e o hero de verdade aparecer (que só começava
+  // bem mais embaixo). Mesmo com pinSpacing desligado, o GSAP ainda reserva
+  // sozinho a altura "de repouso" (~100dvh); este spacer manual cobre só o
+  // que falta além dela, pra o total bater com o fim da rolagem presa.
+  const SCRUB_DISTANCE = 5200;
+  const spacer = document.createElement("div");
+  spacer.setAttribute("aria-hidden", "true");
+  stage.insertAdjacentElement("afterend", spacer);
+  const syncSpacer = () => {
+    spacer.style.height = Math.max(0, SCRUB_DISTANCE - stage.offsetHeight) + "px";
+  };
+  syncSpacer();
+  window.addEventListener("resize", syncSpacer);
+  window.addEventListener("orientationchange", syncSpacer);
   const tl = gsap.timeline({
     scrollTrigger: {
       trigger: stage,
       start: "top top",
-      end: "+=5200",
+      end: "+=" + SCRUB_DISTANCE,
       scrub: .7,
       pin: true,
+      pinSpacing: false,
       anticipatePin: 1,
-      invalidateOnRefresh: true,
+      // Sem invalidateOnRefresh: com a seção escondida (display:none) depois
+      // de pronta, um refresh perdido nesse meio tempo tentava remedir um
+      // elemento colapsado e embaralhava o início/fim da rolagem presa — a
+      // página parecia "voltar" sozinha pro meio da abertura.
       onUpdate: (self) => {
         paintTunnel(self.progress);
         fitMini();
-        // O "deslize" acompanha: aparece durante a viagem e some na chegada.
-        if (cue) cue.classList.toggle("is-on", introBeatsDone && self.progress < .93);
-        if (cueText) cueText.textContent = self.progress > .62 ? "continue" : "deslize";
       },
       // Depois que o clarão termina, a réplica dentro do celular (cabeçalho +
       // hero clonados) já cresceu até o tamanho da janela e não some sozinha:
       // sem isto, ela ficava por cima da página de verdade e duplicava o
       // cabeçalho do hero. Ao voltar rolando pra cima, ela reaparece — a
-      // abertura continua reversível como antes.
+      // abertura continua reversível como antes. Precisa ser na hora (sem
+      // atraso): com pinSpacing desligado, se ela ficasse position:relative
+      // por um instante antes do display:none, empurraria o hero pra baixo
+      // e desfaria o ajuste do espaçador manual.
       onLeave: () => stage.classList.add("intro-done"),
       onEnterBack: () => stage.classList.remove("intro-done"),
     },
   });
 
-  // CENA 1 — as três falas de abertura rodam sozinhas assim que a página abre.
-  // Elas não dependem da rolagem: a pessoa chega, vê a frase, a virada e o
-  // VOCÊ TRAVA, e só então aparece o "deslize" convidando a seguir.
+  // A cena 2 (túnel, câmera, estouro) roda sozinha depois de um único gesto
+  // de rolagem: em vez de exigir rolagem manual do início ao fim, a gente
+  // move a própria rolagem da página até o fim da seção presa assim que a
+  // pessoa desliza uma vez. O scrub e o pin continuam existindo do mesmo
+  // jeito (é só a rolagem que passa a ser automática a partir daí) — por
+  // isso rolar de novo no meio ainda cancela e devolve o controle pra
+  // pessoa, e a abertura continua reversível.
+  function autoAdvance() {
+    const trig = tl.scrollTrigger;
+    if (!trig) return;
+    const state = { y: window.scrollY };
+    let cancelled = false;
+    const cancel = () => { cancelled = true; };
+    // Um deslize de verdade (dedo ou trackpad) dispara uma sequência de
+    // wheel/touchmove ao longo de uns 300-600ms, não um evento só. Se a
+    // gente já ligasse o cancelamento aqui, o rabo do MESMO gesto que
+    // acabou de ligar a cena 2 automática cancelava ela de novo em
+    // milissegundos, era por isso que "funcionava uma hora, na outra não":
+    // dependia do gesto ser curto (mouse) ou longo (touch/trackpad). Por
+    // isso a gente espera o gesto atual esfriar antes de escutar um novo.
+    let armTimer = setTimeout(() => {
+      window.addEventListener("wheel", cancel, { passive: true, once: true });
+      window.addEventListener("touchmove", cancel, { passive: true, once: true });
+      window.addEventListener("keydown", cancel, { once: true });
+    }, 500);
+    gsap.to(state, {
+      y: trig.end,
+      duration: 7,
+      ease: "power1.inOut",
+      // behavior:"instant" é essencial aqui: o <html> usa scroll-behavior:smooth
+      // pros links âncora, e sem isso CADA chamada (várias por segundo) disparava
+      // sua própria animação suave, todas brigando entre si — a rolagem ficava
+      // instável e às vezes "voltava" sozinha no meio do caminho.
+      onUpdate: () => { if (!cancelled) window.scrollTo({ top: state.y, left: 0, behavior: "instant" }); },
+    });
+  }
+
+  // CENA 1 — toda a primeira cena roda sozinha assim que a página abre: a
+  // frase, a virada, o VOCÊ TRAVA e os pensamentos aparecem em sequência, um
+  // atrás do outro, sem depender de rolagem. Só depois de tudo aparecer é que
+  // a cena 2 começa a rolar sozinha.
   gsap.timeline({ delay: .35 })
     .fromTo(line1, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .7, ease: "power3.out" })
     .fromTo(line2, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .9, ease: "power1.out" }, "+=.5")
@@ -547,18 +610,34 @@ function wireIntroStage() {
     .fromTo(glMain, { opacity: 0 }, { opacity: 1, duration: .1 }, "<")
     .fromTo(inner, { x: 0 }, { x: () => gsap.utils.random(-7, 7), duration: .05, repeat: 7, yoyo: true, ease: "none" }, "<")
     .set(inner, { x: 0 })
-    .call(() => {
-      introBeatsDone = true;
-      if (cue) cue.classList.add("is-on");
-    });
-
-  tl
-    // A partir daqui é a rolagem que manda: os pensamentos, um por trecho rolado
     .fromTo(thoughts,
       { opacity: 0, x: (i) => (i % 2 === 0 ? -26 : 26), y: 6 },
       { opacity: 1, x: 0, y: 0, duration: .5, stagger: .55 },
       "+=.3")
-    .to({}, { duration: .5 })
+    .call(() => {
+      introBeatsDone = true;
+      if (cue) cue.classList.add("is-on");
+      // Um só gesto liga a cena 2 no automático — depois disso a pessoa não
+      // precisa mais continuar rolando até o hero aparecer. Escuta "scroll"
+      // (dispara com qualquer forma de rolar: touch, roda do mouse, trackpad,
+      // teclado) em vez de "wheel"/"touchmove" direto, porque no celular nem
+      // sempre esses dois disparam de um jeito que o navegador deixa a gente
+      // ouvir — "scroll" é o sinal que sempre chega, não importa como a
+      // pessoa rolou. "keydown" fica como atalho extra pra quem usa teclado.
+      let started = false;
+      const start = () => {
+        if (started) return;
+        started = true;
+        if (cue) cue.classList.remove("is-on");
+        window.removeEventListener("scroll", start);
+        window.removeEventListener("keydown", start);
+        autoAdvance();
+      };
+      window.addEventListener("scroll", start, { passive: true });
+      window.addEventListener("keydown", start);
+    });
+
+  tl
     // CENA 2 — a cena 1 sai e a câmera se desenha
     .to(inner, { opacity: 0, y: -24, duration: .5 })
     .fromTo(scene2, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, "<")
@@ -617,12 +696,11 @@ function wireHeaderReveal() {
 // sequência quando o hero chega na tela — e desfazem ao subir, pra combinar
 // com a abertura, que também é reversível.
 function playHeroIntro() {
-  const eyebrow = document.getElementById("hero-eyebrow");
   const title = document.getElementById("hero-title");
   const lead = document.getElementById("hero-lead");
   const actions = document.getElementById("hero-actions-el");
   const cue = document.getElementById("hero-scrollcue");
-  const items = [eyebrow, title, lead, actions, cue].filter(Boolean);
+  const items = [title, lead, actions, cue].filter(Boolean);
   if (!items.length) return;
 
   if (!hasGSAP || prefersReducedMotion) {
@@ -630,17 +708,21 @@ function playHeroIntro() {
     return;
   }
 
-  gsap.fromTo(items,
+  const tween = gsap.fromTo(items,
     { opacity: 0, y: 16 },
-    {
-      opacity: 1, y: 0, duration: .7, stagger: .16, ease: "power3.out",
-      scrollTrigger: {
-        trigger: REAL_HERO,
-        start: "top 65%",
-        toggleActions: "play none none reverse",
-      },
-    }
+    { opacity: 1, y: 0, duration: .7, stagger: .16, ease: "power3.out", paused: true }
   );
+
+  // Um pequeno atraso antes de tocar ou desfazer: sem isso, um solavanco da
+  // rolagem por inércia bem em cima da linha "top 65%" (comum no celular)
+  // disparava entra-sai-entra rapidinho, e o hero parecia aparecer duas vezes.
+  let heroIntroTimer = null;
+  ScrollTrigger.create({
+    trigger: REAL_HERO,
+    start: "top 65%",
+    onEnter: () => { clearTimeout(heroIntroTimer); heroIntroTimer = setTimeout(() => tween.play(), 120); },
+    onLeaveBack: () => { clearTimeout(heroIntroTimer); heroIntroTimer = setTimeout(() => tween.reverse(), 120); },
+  });
 }
 
 // Indicador de "role para continuar" no hero: some assim que a pessoa começa
@@ -687,7 +769,7 @@ class Confetti {
     this.ctx = canvas.getContext("2d");
     this.particles = [];
     this.raf = null;
-    this.colors = ["#F8A132", "#D77713", "#4682B4", "#90BED9", "#F5F5F5"];
+    this.colors = ["#D77713", "#B65B08", "#4682B4", "#90BED9", "#F5F5F5"];
     this.resize();
     window.addEventListener("resize", () => this.resize());
   }
