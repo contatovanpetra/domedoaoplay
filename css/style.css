@@ -514,33 +514,37 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .hero h1 { font-size: clamp(2.4rem, 4.6vw, 3.6rem); line-height: 1.05; letter-spacing: -.045em; margin-bottom: .5em; }
 .hero-lead { font-size: 1.08rem; max-width: 520px; }
-.hero-lead-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; margin-top: 1.1rem; }
-.hero-lead-card {
+/* Antes eram 4 cards com borda, cada um com seu próprio ícone (tag, wifi,
+   pin, estrela) — exatamente o padrão "um pictograma por frase" que hoje
+   é reconhecido como cara de gerado por IA/template, pesquisa em várias
+   referências premium confirma que elas resolvem isso com texto simples,
+   sem caixa. Vira uma lista só, com uma marcação pequena e discreta. */
+.hero-lead-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: .5rem;
-  background: linear-gradient(160deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .015));
-  border: 1px solid var(--border);
-  border-top: 2px solid var(--orange);
-  border-radius: var(--radius-md);
-  padding: .9rem .8rem;
-  box-shadow: var(--shadow-sm);
+  gap: .6rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
 }
-.hero-lead-card p { margin: 0; font-size: .82rem; line-height: 1.4; color: var(--text); }
-.hero-lead-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(215, 119, 19, 0.14);
-  color: var(--orange-light);
-  flex-shrink: 0;
+.hero-lead-list li {
+  position: relative;
+  padding-left: 1.5rem;
+  font-size: .95rem;
+  line-height: 1.4;
+  color: var(--text);
 }
-.hero-lead-icon svg { width: 16px; height: 16px; }
+.hero-lead-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .32em;
+  width: 1em;
+  height: 1em;
+  -webkit-mask: var(--ico-check) center / contain no-repeat;
+  mask: var(--ico-check) center / contain no-repeat;
+  background: var(--orange-light);
+}
 .hero-actions { margin-top: 1.6rem; }
 .hero-microcopy {
   margin-top: .8rem;
@@ -1645,9 +1649,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
       linear-gradient(180deg, transparent 84%, var(--bg) 100%);
   }
   .hero-lead { margin-left: auto; margin-right: auto; font-size: .85rem; line-height: 1.4; margin-bottom: .3rem; }
-  .hero-lead-cards { gap: .5rem; }
-  .hero-lead-card { padding: .7rem .65rem; }
-  .hero-lead-card p { font-size: .74rem; line-height: 1.32; }
+  .hero-lead-list { text-align: left; width: fit-content; margin-left: auto; margin-right: auto; }
   .eyebrow { font-size: .62rem; margin-bottom: .55rem; }
   .hero h1 { font-size: 2.15rem; line-height: 1.08; margin-bottom: .42em; }
   .hero-actions { margin-top: 1rem; }
