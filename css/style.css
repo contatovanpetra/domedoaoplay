@@ -223,22 +223,29 @@ html { scroll-padding-top: var(--header-h, 85px); }
 
 /* ---------- Eyebrow / Section titles ---------- */
 /* Indicador "gravando", não pílula genérica: liga direto com o tema do curso (câmera). */
+/* Selo em pílula, não só texto solto com uma bolinha: era a mesma marcação
+   discreta usada em todo canto (dúvidas, bônus, autoridade...), o suficiente
+   pra passar despercebida. A borda e o fundo leve dão o peso de "etiqueta"
+   que a home tava sem. */
 .eyebrow {
   display: inline-flex;
-  align-items: flex-start;
-  gap: .65em;
+  align-items: center;
+  gap: .55em;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: .68rem;
-  letter-spacing: .14em;
+  font-size: .66rem;
+  letter-spacing: .13em;
   color: var(--orange-light);
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.2rem;
+  padding: .5em .95em .5em .75em;
+  border: 1px solid rgba(215, 119, 19, .32);
+  border-radius: 999px;
+  background: rgba(215, 119, 19, .07);
 }
 .eyebrow::before {
   content: "";
-  width: 7px;
-  height: 7px;
-  margin-top: .45em;
+  width: 6px;
+  height: 6px;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--orange-light);
@@ -282,6 +289,7 @@ html { scroll-padding-top: var(--header-h, 85px); }
   --ico-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7 7 17'/%3E%3C/svg%3E");
   --ico-dash: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M7 12h10'/%3E%3C/svg%3E");
   --ico-dot: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4.6' fill='black'/%3E%3C/svg%3E");
+  --ico-play: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5.5v13l11-6.5z' fill='black'/%3E%3C/svg%3E");
   --ico-quote: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9.4 5.2C6 6.6 3.8 9.6 3.8 13.6v5.2h6.4v-6.4H7.1c.2-2.3 1.4-4 3.4-5.1L9.4 5.2zm10.2 0c-3.4 1.4-5.6 4.4-5.6 8.4v5.2h6.4v-6.4h-3.1c.2-2.3 1.4-4 3.4-5.1l-1.1-2.1z'/%3E%3C/svg%3E");
 }
 .icon {
@@ -759,7 +767,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .compare-antes h3 { --ico: var(--ico-x); }
 .compare-antes h3::before { background: var(--silver); }
-.compare-depois h3 { --ico: var(--ico-check); }
+.compare-depois h3 { --ico: var(--ico-play); }
 .compare-depois h3::before { background: var(--orange-light); }
 .compare-col ul { display: grid; gap: .8rem; }
 .compare-col li {
@@ -1024,6 +1032,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    condição de acesso nunca em letra miúda). Identidade própria vem de cada card
    usar uma cor diferente da marca (azul e laranja), não do fundo da seção. */
 .bonus-eyebrow { display: inline-flex; align-items: center; gap: .4rem; }
+.bonus-eyebrow::before { display: none; }
 .bonus-eyebrow-icon { width: 15px; height: 15px; color: var(--orange-light); flex-shrink: 0; }
 .bonus-grid {
   display: grid;

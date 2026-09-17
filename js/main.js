@@ -649,7 +649,13 @@ function wireIntroStage() {
     .to(inner, { opacity: 0, y: -24, duration: .5 })
     .fromTo(scene2, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, "<")
     .fromTo(burstPre, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5 })
-    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .6, ease: "power2.inOut" }, "+=.1")
+    // A moldura da câmera começava a desenhar só depois do texto "E se, em vez
+    // de travar..." terminar de aparecer — rolando pra baixo isso nem se nota
+    // (é rápido e o auto-avanço não para no meio), mas rolando de volta pra
+    // cima manualmente, dava pra parar bem nesse intervalo e a tela ficava só
+    // com o texto solto num fundo escuro, sem nada mais (parecia tela vazia/
+    // azul). Desenhando junto com o texto, sempre tem algo na tela.
+    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .6, ease: "power2.inOut" }, "<")
     .to(bfPaths.slice(2), { strokeDashoffset: 0, duration: .55, ease: "power2.inOut" }, "-=.2")
     .to(bfRec, { opacity: 1, duration: .3 }, "-=.1")
     .to(bfCorners, { opacity: 1, duration: .3 }, "-=.15")
