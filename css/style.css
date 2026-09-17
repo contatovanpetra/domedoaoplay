@@ -675,26 +675,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin-top: 2.5rem;
 }
 .compare-col {
+  background: var(--bg-panel);
   border-radius: var(--radius-lg);
   padding: 2.2rem 2rem;
   border: 1px solid var(--border);
-  border-top-width: 3px;
 }
-/* Antes é azul (o túnel no começo), Depois é laranja (a saída do túnel) — a
-   mesma jornada de cor da abertura. Borda de cima mais grossa e fundo/sombra
-   um pouco mais fortes: os dois cards estavam parecendo iguais demais, sem
-   puxar o olho pra qual lado é o ganho. */
-.compare-antes {
-  background: linear-gradient(160deg, rgba(70, 130, 180, 0.2), rgba(70, 130, 180, 0.04));
-  border-color: rgba(70, 130, 180, 0.4);
-  border-top-color: var(--blue-light);
-}
-.compare-depois {
-  background: linear-gradient(160deg, rgba(215, 119, 19, 0.26), rgba(215, 119, 19, 0.07));
-  border-color: rgba(215, 119, 19, 0.55);
-  border-top-color: var(--orange-light);
-  box-shadow: var(--shadow-md), 0 0 32px -18px rgba(215, 119, 19, 0.7);
-}
+/* Antes era um gradiente colorido de ponta a ponta com borda saturada nos
+   dois cards: bonito à primeira vista, mas é o mesmo exagero de template
+   genérico que passa longe do "caro". Fundo e borda neutros, iguais nos
+   dois; quem diferencia "antes" de "depois" é o conteúdo (o ícone do
+   título, os ícones da lista), não a moldura. */
 .compare-col h3 {
   display: flex;
   align-items: center;
@@ -877,17 +867,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .qualify-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  align-items: start;
   gap: 1.6rem;
   margin-top: 2.5rem;
 }
+/* Fundo e borda neutros nos dois: o card "É pra você" tinha um azul
+   chapado que não combinava com o resto da página (nem nada mais lembra
+   esse tom), e sobrar espaço vazio embaixo do card mais curto (era
+   esticado pra igualar a altura do outro) reforçava o "não terminei o
+   design". Cada card fica do tamanho do próprio conteúdo agora. */
 .qualify-card {
+  background: var(--bg-panel);
   border-radius: var(--radius-lg);
   padding: 2rem;
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
 }
-.qualify-yes { background: rgba(70, 130, 180, 0.14); border-color: rgba(70, 130, 180, 0.3); }
-.qualify-no { background: rgba(255, 255, 255, 0.02); }
 .qualify-card h3 { font-size: 1.15rem; margin-bottom: 1rem; }
 .qualify-card ul { display: grid; gap: .8rem; }
 .qualify-card li { position: relative; padding-left: 1.4rem; font-size: .95rem; color: var(--text); }
