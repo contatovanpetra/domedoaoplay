@@ -244,10 +244,7 @@ function wireAccordions() {
       trigger.setAttribute("type", "button");
 
       const isOpenInitially = trigger.getAttribute("aria-expanded") === "true";
-      if (isOpenInitially) {
-        item.classList.add("open");
-        panel.style.maxHeight = panel.scrollHeight + "px";
-      }
+      if (isOpenInitially) item.classList.add("open");
 
       trigger.addEventListener("click", () => {
         const willOpen = !item.classList.contains("open");
@@ -260,33 +257,15 @@ function wireAccordions() {
           if (!otherTrigger || !otherPanel) return;
           other.classList.remove("open");
           otherTrigger.setAttribute("aria-expanded", "false");
-          otherPanel.style.maxHeight = null;
         });
 
         if (willOpen) {
           item.classList.add("open");
           trigger.setAttribute("aria-expanded", "true");
-          panel.style.maxHeight = panel.scrollHeight + "px";
         }
       });
     });
   });
-
-  function refitOpenPanels() {
-    document.querySelectorAll(".accordion-item.open .accordion-panel").forEach((panel) => {
-      // scrollHeight lê 0 se o painel (ou um ancestral) estiver display:none no
-      // instante da medição (ex.: troca de aba, teclado virtual). Nunca gravar isso.
-      if (panel.scrollHeight > 0) {
-        panel.style.maxHeight = panel.scrollHeight + "px";
-      }
-    });
-  }
-
-  window.addEventListener("resize", refitOpenPanels);
-  // O módulo que já vem aberto era medido antes das fontes carregarem; quando a
-  // fonte chegava o texto crescia e a última linha ficava cortada.
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refitOpenPanels);
-  window.addEventListener("load", refitOpenPanels);
 }
 
 function wireScrollReveal() {

@@ -442,7 +442,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    movimento no celular, ou sem JavaScript) a pessoa rolaria quase uma tela
    inteira sem nada mudar. A classe entra por um script no <head>, antes da
    primeira pintura, então não há salto de layout. */
-.cinema-on .hero { height: 195vh; }
+/* Era 195vh: sobrava tela vazia depois do "Atravesse o medo. Apareça." até a
+   próxima seção começar (a pista de rolagem seguia mesmo com a mensagem já
+   toda visível). Encurtada — a proporção de cada fase (ver update() em
+   main.js, tudo calculado como fração de hero.height - stage.height)
+   continua a mesma, só o final da pista chega mais cedo. */
+.cinema-on .hero { height: 178vh; }
 .cinema-stage {
   position: sticky;
   top: var(--header-h, 71px);
@@ -1089,13 +1094,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    (selo + ícone); o de #faq mantém o laranja fixo já existente. */
 #accordion-modulos .accordion-icon { color: var(--blue-light); }
 #accordion-modulos .accordion-item.open .accordion-icon { color: var(--orange); }
+/* Truque de grid-template-rows (0fr → 1fr) em vez de max-height: anima só
+   propriedades leves pro navegador, sem o JS precisar medir scrollHeight
+   a cada clique (era isso que dava a travadinha ao abrir/fechar). */
 .accordion-panel {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height .3s ease;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows .3s ease, padding-bottom .3s ease;
   padding: 0 1.4rem;
 }
-.accordion-item.open .accordion-panel { padding-bottom: 1.3rem; }
+.accordion-panel > ul,
+.accordion-panel > p {
+  min-height: 0;
+  overflow: hidden;
+}
+.accordion-item.open .accordion-panel { grid-template-rows: 1fr; padding-bottom: 1.3rem; }
 .accordion-panel ul { display: grid; gap: .55rem; }
 .accordion-panel li { font-size: .95rem; color: var(--text-muted); }
 .accordion-panel p { font-size: .95rem; margin: 0; }
@@ -1168,13 +1181,55 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--orange-light);
 }
 .price-note { font-size: .85rem; color: var(--text-muted); }
+/* Antes a lista inteira (o que inclui + certificado + garantia) era 6 linhas
+   soltas do mesmo peso — nada dizia "isso é o pacote" antes de começar a ler.
+   Um rótulo pequeno acima organiza a leitura, e certificado/garantia (que já
+   são reforçados alhures na página) viram um rodapé de confiança separado,
+   não mais dois itens perdidos no meio da lista. */
+.offer-includes-label {
+  text-align: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  margin: 0 0 .9rem;
+}
 .offer-includes {
   display: grid;
   gap: .75rem;
   max-width: 440px;
   margin: 0 auto;
 }
-.offer-includes li { font-size: 1rem; line-height: 1.5; color: var(--text); }
+.offer-includes li {
+  position: relative;
+  padding-left: 1.15rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.offer-includes li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .72em;
+  width: .6rem;
+  height: 2px;
+  background: var(--orange-light);
+}
+.offer-trust {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: .5rem 1.6rem;
+  max-width: 440px;
+  margin: 1.5rem auto 0;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+  font-size: .85rem;
+  color: var(--text-muted);
+}
 
 /* ---------- Guarantee ---------- */
 .guarantee-block { display: flex; flex-direction: column; align-items: center; }
@@ -1228,9 +1283,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin-top: 1.6rem;
   text-align: left;
 }
+/* Bônus precisa se destacar dos módulos ao lado (que são tier estrutural,
+   sem cor própria) — fundo ganha um tingimento real da cor do próprio
+   bônus, não só a borda de cima. */
 .bonus-card {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
+  background: linear-gradient(165deg, color-mix(in srgb, var(--bonus-accent, var(--blue-light)) 20%, var(--bg-panel)), var(--bg-panel) 70%);
+  border: 1px solid color-mix(in srgb, var(--bonus-accent, var(--blue-light)) 35%, var(--border));
   border-top: 3px solid var(--bonus-accent, var(--blue-light));
   border-radius: var(--radius-md);
   padding: 1.1rem 1rem;
@@ -1265,10 +1323,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   width: 40px;
   height: 40px;
   border-radius: var(--radius-sm);
-  background: rgba(144, 190, 217, 0.15);
+  background: rgba(144, 190, 217, 0.22);
   color: var(--bonus-accent, var(--blue-light));
 }
-.bonus-card:nth-child(2) .bonus-card-icon { background: rgba(215, 119, 19, 0.15); }
+.bonus-card:nth-child(2) .bonus-card-icon { background: rgba(215, 119, 19, 0.22); }
 .bonus-card-icon svg { width: 20px; height: 20px; }
 
 /* ---------- Final CTA ---------- */
@@ -1882,7 +1940,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .header-inner { padding-top: 10px; padding-bottom: 10px; gap: .75rem; }
   .logo-mark { height: 34px; }
   :root { --header-h: 65px; --portal-origin: 52% 58%; }
-  .cinema-on .hero { height: 178vh; height: 178svh; }
+  .cinema-on .hero { height: 162vh; height: 162svh; }
   .cinema-stage {
     padding: 28px 0 40px;
     flex-direction: column;
@@ -2111,10 +2169,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   white-space: normal;
 }
 /* Em blocos alinhados à esquerda, a etiqueta também fica à esquerda. */
-.modo-revisao :is(.ladder-step, .bonus-card, .authority-card, .accordion-panel ul, .accordion-panel p, .offer-includes li)[data-confirmar]::after {
+.modo-revisao :is(.ladder-step, .bonus-card, .authority-card, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
   margin-left: 0;
 }
-.modo-revisao .offer-includes li[data-confirmar]::after { margin-top: .4rem; }
+.modo-revisao .offer-trust span[data-confirmar]::after { margin-top: .4rem; flex-basis: 100%; }
 .modo-revisao .credential-item[data-confirmar]::after { flex-basis: 100%; margin-left: 0; }
 /* No carrossel (celular) e na trilha em grade (tablet/computador), a etiqueta
    ocupa a linha inteira em vez de espremer numa coluna/flex-item. */
