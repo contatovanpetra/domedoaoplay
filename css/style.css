@@ -850,7 +850,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   top: 6px;
   bottom: 6px;
   width: 2px;
-  background: linear-gradient(180deg, #4682B4, #5E8099 30%, #A77B49 65%, #D77713);
+  background: linear-gradient(180deg, var(--blue), color-mix(in srgb, var(--blue), var(--orange) 30%) 30%, color-mix(in srgb, var(--blue), var(--orange) 65%) 65%, var(--orange));
   opacity: .45;
 }
 .ladder-step {
@@ -860,14 +860,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   align-items: flex-start;
   gap: 1.1rem;
 }
-/* Progressão de cor azul → laranja: reforça a metáfora do portal (atravessar o escuro até a luz) */
-.ladder-step:nth-child(1) { --step-color: #4682B4; }
-.ladder-step:nth-child(2) { --step-color: #5E8099; }
-.ladder-step:nth-child(3) { --step-color: #767E7E; }
-.ladder-step:nth-child(4) { --step-color: #8F7D64; }
-.ladder-step:nth-child(5) { --step-color: #A77B49; }
-.ladder-step:nth-child(6) { --step-color: #BF792E; }
-.ladder-step-final, .ladder-step:nth-child(7) { --step-color: #D77713; }
+/* Progressão de cor azul → laranja: reforça a metáfora do portal (atravessar o escuro até a luz).
+   Sempre misturada a partir dos dois tokens de marca (--blue/--orange), nunca um hex novo. */
+.ladder-step:nth-child(1) { --step-color: var(--blue); }
+.ladder-step:nth-child(2) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 20%); }
+.ladder-step:nth-child(3) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 40%); }
+.ladder-step:nth-child(4) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 60%); }
+.ladder-step:nth-child(5) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 80%); }
+.ladder-step:nth-child(6) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 90%); }
+.ladder-step-final, .ladder-step:nth-child(7) { --step-color: var(--orange); }
 .ladder-node {
   flex: none;
   position: relative;
@@ -1081,7 +1082,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   border-radius: var(--radius-lg);
   padding: 2rem;
   border: 1px solid var(--border);
+  border-top-width: 3px;
 }
+/* Mesmo acento de 1 cor sólida no topo do card usado em .compare-antes/
+   .compare-depois: "é pra você" puxa pro laranja (avançar), "não é pra
+   você" fica no neutro cinza-prata — sem introduzir matiz nova. */
+.qualify-yes { border-top-color: var(--orange); }
+.qualify-no { border-top-color: var(--silver); }
 .qualify-card h3 { font-size: 1.15rem; margin-bottom: 1rem; }
 .qualify-card ul { display: grid; gap: .8rem; }
 .qualify-card li { font-size: .95rem; line-height: 1.45; color: var(--text); }
