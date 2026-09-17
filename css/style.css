@@ -856,16 +856,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .ladder-step h3 { font-size: 1.02rem; margin: 0 0 .3rem; }
 .ladder-step p { font-size: .88rem; line-height: 1.42; margin: 0; color: var(--silver); }
-.ladder-hint {
-  display: none;
-  align-items: center;
-  gap: .4em;
-  justify-content: center;
-  margin: .6rem 0 0;
-  font-size: .78rem;
-  color: var(--silver);
-}
-
 /* ---------- Accordion (módulos + FAQ) ---------- */
 .accordion { margin-top: 2.5rem; display: grid; gap: .9rem; }
 .accordion-item {
@@ -992,22 +982,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .offer-includes li::before { --ico: var(--ico-check); background: var(--orange-light); }
 
 /* ---------- Guarantee ---------- */
-/* Virou um cartão com borda e fundo, não mais texto solto direto no fundo da
-   seção: sem contorno nenhum, ela flutuava sem se conectar a nada ao redor. */
-.guarantee-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 3rem 2.5rem;
-  box-shadow: var(--shadow-sm);
-}
+.guarantee-block { display: flex; flex-direction: column; align-items: center; }
 .guarantee-block .section-lead { align-self: stretch; margin-left: 0; margin-right: 0; max-width: none; }
-@media (max-width: 699.98px) {
-  .guarantee-block { padding: 2.2rem 1.5rem; }
-}
 .guarantee-badge {
   width: 96px;
   height: 96px;
@@ -1833,42 +1809,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .compare-col h3::before { width: 1.3rem; height: 1.3rem; }
   .compare-col ul { gap: .55rem; }
   .compare-col li { font-size: .78rem; line-height: 1.32; padding-left: 1.15rem; }
-  /* No celular, 7 níveis empilhados verticalmente é a mesma rolagem infinita
-     que a gente tá tentando resolver. Em vez de lista, vira um carrossel: um
-     nível por vez, arrastando com o dedo, com uma espiadinha do próximo card
-     pra convidar a continuar. A trilha conectada (linha + nó) fica só pra
-     tablet/computador, onde ver os 7 de uma vez não pesa na rolagem. */
-  .ladder {
-    display: flex;
-    flex-direction: row;
-    gap: .8rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    margin: 1.6rem -1.1rem 0;
-    padding: .3rem 1.1rem 1rem;
-    max-width: none;
-  }
-  .ladder::before { display: none; }
-  .ladder-step {
-    scroll-snap-align: start;
-    flex: 0 0 80%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: .7rem;
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-top: 3px solid var(--step-color);
-    border-radius: var(--radius-md);
-    padding: 1.1rem 1.1rem 1.2rem;
-  }
-  .ladder-node { box-shadow: none; width: 38px; height: 38px; }
+  /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
+     celular só ganha nós e texto um pouco menores pra caber melhor. */
+  .ladder-node { width: 38px; height: 38px; }
   .ladder-node svg { width: 19px; height: 19px; }
-  .ladder-body { padding-top: 0; }
-  .ladder-level { margin-bottom: .2rem; font-size: .66rem; }
+  .ladder-level { font-size: .66rem; }
   .ladder-step h3 { font-size: .92rem; margin-bottom: .2rem; }
   .ladder-step p { font-size: .8rem; line-height: 1.35; }
-  .ladder-hint { display: flex; }
   .hide-mobile { display: none; }
 }
 
