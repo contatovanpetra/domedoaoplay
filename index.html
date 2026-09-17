@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0B1728">
 <title>Do Medo ao Play: atravesse o medo. Apareça.</title>
-<meta name="description" content="Trava toda vez que a câmera liga? São 7 níveis de exposição gradual pra você gravar e postar com naturalidade, com ou sem experiência de fala.">
+<meta name="description" content="Pra vender, viralizar ou aparecer, você precisa gravar, e é bem aí que a maioria trava. Prática gradual pra gravar de verdade e postar com naturalidade.">
 
 <!-- Open Graph / WhatsApp / Instagram preview -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Do Medo ao Play: atravesse o medo. Apareça.">
-<meta property="og:description" content="Trava toda vez que a câmera liga? São 7 níveis de exposição gradual pra você gravar e postar com naturalidade, com ou sem experiência de fala.">
+<meta property="og:description" content="Pra vender, viralizar ou aparecer, você precisa gravar, e é bem aí que a maioria trava. Prática gradual pra gravar de verdade e postar com naturalidade.">
 <!-- TODO: trocar COLOQUE-SEU-DOMINIO-AQUI pelo domínio real antes de divulgar o link.
      A capa (og-image.jpg, 1200x630) já está na raiz; WhatsApp e Instagram só aceitam endereço completo. -->
 <meta property="og:url" content="https://COLOQUE-SEU-DOMINIO-AQUI">
@@ -25,6 +25,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- GSAP vem de CDN só no fim do body, mas a conexão (DNS/TLS) começa aqui,
+     bem mais cedo, pra a abertura não perder tempo esperando a rede na hora
+     de carregar o script. -->
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <!-- Só os pesos do manual: Quicksand 600/700 (títulos) e Nunito Sans 400/600 (texto e botões).
      Carregado sem bloquear a primeira pintura: antes a página inteira esperava o
      servidor de fontes do Google (de 0,3 a 1,4 s num celular em 4G). -->
@@ -32,7 +36,7 @@
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
 
 <link rel="stylesheet" href="css/style.css">
-<noscript><style>#hero-eyebrow,#hero-title,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
+<noscript><style>#hero-title,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("cinema-on")</script>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
@@ -83,7 +87,7 @@
     </svg>
 
     <div class="hero-intro-inner" id="hero-intro-inner" aria-hidden="true">
-      <p class="hi-line1" id="hi-line1">Você tem o que dizer.</p>
+      <p class="hi-line1" id="hi-line1">Você quer vender, viralizar, aparecer.</p>
       <p class="hi-line2" id="hi-line2">Mas quando a câmera liga…</p>
       <p class="hi-travar glitch-word" id="hi-travar">
         <span class="glitch-layer gl-1" aria-hidden="true">VOCÊ TRAVA</span>
@@ -91,10 +95,10 @@
         <span class="gl-main">VOCÊ TRAVA</span>
       </p>
       <div class="hi-thoughts" id="hi-thoughts">
-        <span>Já gravei esse vídeo 10 vezes e <strong>ainda não ficou bom</strong>.</span>
-        <span>Ao vivo eu falo numa boa. <strong>Sozinho na frente do celular, eu travo.</strong></span>
+        <span>Ao vivo eu falo numa boa. <strong>Só que sozinho na frente da câmera, trava tudo.</strong></span>
+        <span><strong>Será que ninguém vai levar a sério</strong> o que eu tenho pra dizer?</span>
+        <span>E se eu <strong>pagasse alguém pra aparecer no meu lugar</strong>?</span>
         <span><strong>Semana que vem eu gravo.</strong> Faz meses que eu falo isso.</span>
-        <span>Sei que <strong>preciso aparecer pra vender</strong>, e mesmo assim não gravo.</span>
       </div>
     </div>
 
@@ -113,7 +117,7 @@
             <linearGradient id="burstGrad" gradientUnits="userSpaceOnUse" x1="240" y1="30" x2="40" y2="410">
               <stop offset="0" stop-color="#90BED9"/>
               <stop offset=".5" stop-color="#4682B4"/>
-              <stop offset="1" stop-color="#F8A132"/>
+              <stop offset="1" stop-color="#D77713"/>
             </linearGradient>
           </defs>
           <path id="bf-left" d="M40 384V56" stroke="url(#burstGrad)" stroke-width="2.5" stroke-linecap="round"/>
@@ -138,7 +142,7 @@
         </svg>
       </div>
       <h2 class="burst-title" id="burst-title">
-        <span>você</span> <span>entrasse</span> <span>em</span> <span class="text-orange">cena?</span>
+        <span>você</span> <span>desse</span> <span>o</span> <span class="text-orange">play?</span>
       </h2>
     </div>
 
@@ -164,9 +168,25 @@
       <div class="hero-scrim" aria-hidden="true"></div>
       <div class="container hero-inner">
         <div class="hero-copy">
-          <p class="eyebrow" id="hero-eyebrow">CURSO ONLINE · 7 NÍVEIS · 30 AULAS</p>
-          <h1 id="hero-title">Dá pra atravessar isso. <span class="text-orange">Um nível de cada vez.</span></h1>
-          <p class="hero-lead" id="hero-lead">Você começa gravando um vídeo que só você vai ver. Termina postando com naturalidade. No meio, sete níveis de exposição, um degrau por vez, com acompanhamento do começo ao fim.</p>
+          <h1 id="hero-title" class="sr-only">Dá. Um nível de cada vez.</h1>
+          <div class="hero-lead hero-lead-cards" id="hero-lead">
+            <div class="hero-lead-card" data-tilt>
+              <span class="hero-lead-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12.5 3.5h5.5a2 2 0 0 1 2 2v5.5a2 2 0 0 1-.6 1.4l-8 8a2 2 0 0 1-2.8 0l-5.5-5.5a2 2 0 0 1 0-2.8l8-8a2 2 0 0 1 1.4-.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="15.5" cy="8.5" r="1.2" fill="currentColor"/></svg></span>
+              <p>Venda pela internet de forma consistente.</p>
+            </div>
+            <div class="hero-lead-card" data-tilt>
+              <span class="hero-lead-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 12a4 4 0 0 1 8 0M5 9a8 8 0 0 1 14 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="15.2" r="1.5" fill="currentColor"/></svg></span>
+              <p>Viralize e atraia parcerias de marcas.</p>
+            </div>
+            <div class="hero-lead-card" data-tilt>
+              <span class="hero-lead-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21s7-7.5 7-12a7 7 0 1 0-14 0c0 4.5 7 12 7 12Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="9" r="2.2" stroke="currentColor" stroke-width="1.5"/></svg></span>
+              <p>Trabalhe de qualquer lugar, só com o celular.</p>
+            </div>
+            <div class="hero-lead-card" data-tilt>
+              <span class="hero-lead-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.2 1 5.9-5.2-2.8-5.2 2.8 1-5.9-4.3-4.2 5.9-.8L12 3.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></span>
+              <p>Construa autoridade no seu nicho.</p>
+            </div>
+          </div>
           <div class="hero-actions" id="hero-actions-el">
             <a href="#" data-checkout-link class="btn-play">
               <span class="btn-play-disc" aria-hidden="true">
@@ -182,107 +202,43 @@
           </div>
         </div>
       </div>
-      <div class="crossing-message" aria-hidden="true">
-        <span class="crossing-kicker">QUEM APARECE, CRESCE</span>
-        <p>Atravesse o medo. <span class="text-orange">Apareça.</span></p>
+      <div class="crossing-message">
+        <span class="crossing-kicker" aria-hidden="true">QUEM APARECE, CRESCE</span>
+        <p aria-hidden="true">Atravesse o medo. <span class="text-orange">Apareça.</span></p>
+        <p class="crossing-preview" aria-hidden="true">7 módulos, 29 aulas e 2 bônus exclusivos: do vídeo que só você vê até postar em qualquer rede.</p>
+        <a href="#" data-checkout-link class="btn btn-primary btn-small crossing-cta">Quero aparecer</a>
       </div>
 
       <div class="scroll-cue" aria-hidden="true" id="hero-scrollcue">
-        <span>role para continuar</span>
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15"/><path d="M5 12l7 7 7-7"/></svg>
       </div>
     </div>
   </section>
 
 
-  <!-- ===== POR QUE ACONTECE (lógica / justificar) ===== -->
-  <section class="section section-tone" aria-labelledby="causa-title">
-    <div class="container narrow">
-      <p class="chapter"><span class="chapter-num">01</span> Por que trava</p>
-      <!-- A explicação que o curso usa de verdade (Módulo 1). A tese "não é falta de talento"
-           foi descartada no projeto: parte da dificuldade de quem trava é real. -->
-      <h2 id="causa-title" class="section-title center" data-confirmar="nome ou passo próprio do mecanismo, pra virar o argumento central da página">Falar com alguém e falar com uma lente são duas coisas diferentes.</h2>
-      <p class="section-lead center">Numa conversa, a outra pessoa devolve reação o tempo todo, e é isso que guia a sua fala. A lente não devolve nada. Sem resposta, a atenção que deveria estar no que você diz volta pra você mesmo. É por isso que gente que conversa muito bem trava sozinha na frente do celular.</p>
-
-      <!-- Os três momentos da trava, sem marcação de segundos (nenhuma fonte sustenta tempo exato). -->
-      <ol class="timeline">
-        <li>
-          <span class="timeline-dot" aria-hidden="true"></span>
-          <div>
-            <span class="timeline-time">Assim que liga</span>
-            <p><strong>Você começa a conferir tudo ao mesmo tempo:</strong> a voz, o rosto, cada palavra.</p>
-          </div>
-        </li>
-        <li>
-          <span class="timeline-dot" aria-hidden="true"></span>
-          <div>
-            <span class="timeline-time">No meio da primeira frase</span>
-            <p><strong>Você já está pensando</strong> em quem vai assistir e no que vão comentar.</p>
-          </div>
-        </li>
-        <li>
-          <span class="timeline-dot" aria-hidden="true"></span>
-          <div>
-            <span class="timeline-time">Na terceira tentativa</span>
-            <p><strong>Você apaga e grava de novo.</strong> E a cada tentativa fica mais difícil, não mais fácil.</p>
-          </div>
-        </li>
-      </ol>
-
-      <!-- Briefing (SWOT): o formato ataca a causa (vergonha) e a técnica ao mesmo tempo;
-           a maioria dos concorrentes trata a trava só como técnica de comunicação. -->
-      <p class="statement">Vergonha de aparecer não passa com teoria.<br> <span class="text-orange">Passa gravando, um degrau de cada vez.</span></p>
-      <p class="statement-sub">A maioria dos cursos trata a trava só como técnica de comunicação. Só que ela tem duas partes, e uma não se resolve sem a outra:</p>
-
-      <!-- As duas frentes: o público do curso é misto, e a página precisa dizer isso. -->
-      <div class="two-fronts">
-        <div class="front-card" data-tilt>
-          <span class="front-num">01</span>
-          <p>A <strong>vergonha</strong> de se expor: quem vai ver, quem vai comentar, o que vão achar.</p>
-        </div>
-        <div class="front-card" data-tilt>
-          <span class="front-num">02</span>
-          <p>A <strong>técnica</strong> de gravar: pra onde olhar, o que falar, como organizar a fala num vídeo curto.</p>
-        </div>
-      </div>
-      <p class="two-fronts-note">O curso trabalha as duas frentes ao mesmo tempo.</p>
-
-      <div class="big-facts">
-        <div class="big-fact">
-          <span class="big-fact-num" data-count="30" data-suffix="%">30%</span>
-          <p>de quem usa internet no Brasil já postou algo criado por si mesmo. <strong>62% só compartilham</strong> o que os outros fazem. <span class="big-fact-source">Fonte: Cetic.br, TIC Domicílios 2025</span></p>
-        </div>
-        <div class="big-fact">
-          <span class="big-fact-num" data-count="7">7</span>
-          <p>níveis de exposição gradual, do vídeo que fica só com você até a publicação nas redes</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- ===== ANTES / DEPOIS ===== -->
   <section class="section" id="antes-depois" aria-labelledby="antes-depois-title">
     <div class="container">
-      <p class="eyebrow eyebrow-center">O ANTES E O DEPOIS</p>
+      <p class="eyebrow eyebrow-center">A DIFERENÇA NA PRÁTICA</p>
       <h2 id="antes-depois-title" class="section-title center">De travado a natural, nível por nível</h2>
 
       <div class="compare-grid">
         <div class="compare-col compare-antes">
-          <h3>Antes</h3>
+          <h3>Sem gravar</h3>
           <ul>
-            <li>Grava e apaga o mesmo vídeo várias vezes antes de desistir</li>
-            <li>Evita aparecer e deixa na mesa a chance de vender, divulgar o trabalho ou ganhar como afiliado</li>
-            <li>Acha que gravar bem depende de ser desinibido, e não de técnica e repetição</li>
-            <li>Trava sozinho, sem saber por onde começar a destravar</li>
+            <li>Vende pela internet? Sem vídeo, o produto não convence e a venda vai pra quem mostra</li>
+            <li>Divulga o próprio trabalho? Sem aparecer, o cliente escolhe quem ele já viu</li>
+            <li>Quer crescer como criadora? Trava no mesmo número de seguidores, sem sair do zero</li>
+            <li>Quer ser afiliada? Sem vídeo não sai comissão, e a liberdade financeira fica só no plano</li>
           </ul>
         </div>
         <div class="compare-col compare-depois">
-          <h3>Depois</h3>
+          <h3>Gravando</h3>
           <ul>
-            <li>Grava, revê rápido e posta sem o drama de sempre</li>
-            <li>Aparece com naturalidade toda semana, sem precisar de "dia inspirado"</li>
-            <li>Sabe que é treino: nível por nível, com técnica e repetição</li>
-            <li>Sobe a escada de exposição com um grupo de acompanhamento por perto</li>
+            <li>Vende mostrando o produto de verdade, não só descrevendo</li>
+            <li>Divulga o trabalho e vira a primeira opção de quem já viu ela em vídeo</li>
+            <li>Cresce como criadora, sai do zero e constrói audiência de verdade</li>
+            <li>Fatura como afiliada e ganha a liberdade financeira que queria</li>
           </ul>
         </div>
       </div>
@@ -295,21 +251,29 @@
       <div class="split">
         <div class="split-text">
           <p class="eyebrow">POR QUE ESTE CURSO</p>
-          <h2 id="autoridade-title" class="section-title">Do mesmo lado da câmera que você.</h2>
-          <!-- Espinha da autoridade (briefing, SWOT): nenhum concorrente mapeado ataca as duas
-               frentes ao mesmo tempo. Sem prova social informal e sem "nunca fiz curso". -->
-          <p>Entre os cursos que a gente mapeou, nenhum ataca as duas frentes da trava ao mesmo tempo. Quem trabalha o lado emocional costuma entregar um workshop curto, sem acompanhamento depois. Quem tem curso longo trata tudo como técnica de comunicação.</p>
-          <p>Aqui as duas frentes andam juntas, num programa sustentado, com prática contínua e escada de exposição: a vergonha de aparecer e a técnica de gravar.</p>
+          <h2 id="autoridade-title" class="section-title">Ataca a causa, não só o sintoma.</h2>
+          <!-- Espinha da autoridade: nosso diferencial em pé próprio, sem comparar com concorrente,
+               e sem separar "vergonha" de "técnica" como se fossem dois tratamentos distintos.
+               O mecanismo (a lente não devolve resposta) entra aqui, dentro da autoridade, em vez
+               de virar uma seção própria logo depois do hero — quem rolou até aqui já quer saber
+               do curso, não rever o motivo da trava. -->
+          <p>Numa conversa, a outra pessoa <strong>devolve reação o tempo todo</strong>, e é isso que guia a sua fala. <strong>A lente não devolve nada</strong>, e é aí que a maioria trava.</p>
+          <p>A saída não é entender por que trava. É <strong>aplicar a técnica certa em toda aula</strong>, um degrau de cada vez, <strong>com acompanhamento o tempo todo</strong>, até gravar de forma natural.</p>
+          <p><strong>Nada de teoria solta</strong> pra aplicar sozinho depois: cada módulo termina com <strong>uma gravação de verdade</strong>, sempre um pouco além da anterior, sempre com acompanhamento.</p>
         </div>
         <div class="split-visual">
           <div class="authority-card" data-confirmar="nome que assina o curso: Vivi ou Vitória Caroline">
-            <p class="authority-card-title">Quem ensina</p>
+            <div class="authority-header">
+              <span class="authority-avatar">
+                <img src="assets/img/vitoria-caroline-avatar.jpg" alt="Vitória Caroline" width="64" height="64" loading="lazy">
+              </span>
+              <span class="authority-name-text">Vitória Caroline<span>criadora do método Do Medo ao Play</span></span>
+            </div>
             <ul>
-              <li>Mostra cada técnica na frente da câmera, primeiro do jeito errado e depois do jeito certo</li>
-              <li>Continua ativa como criadora de conteúdo hoje</li>
-              <li>Fala do mesmo lugar de quem está aprendendo</li>
+              <li>Educadora há 13 anos</li>
+              <li>Grava pra internet profissionalmente há 4 anos</li>
+              <li data-confirmar="conferir com a Vitória se 3 anos é o número certo antes de publicar">Se especializou em comunicação e oratória nos últimos 3 anos</li>
             </ul>
-            <p class="authority-card-name">Vitória Caroline<span>criadora do Do Medo ao Play</span></p>
           </div>
         </div>
       </div>
@@ -319,65 +283,76 @@
   <!-- ===== MÉTODO / ESCADA DE EXPOSIÇÃO ===== -->
   <section class="section" id="metodo" aria-labelledby="metodo-title">
     <div class="container">
-      <p class="chapter"><span class="chapter-num">02</span> Como você destrava</p>
+      <p class="chapter"><span class="chapter-num">01</span> Como funciona na prática</p>
       <h2 id="metodo-title" class="section-title center">A escada de exposição</h2>
-      <p class="section-lead center">Cada módulo termina com uma gravação nova, compartilhada num nível de exposição um pouco maior que o anterior. Sempre gradual, sempre com acompanhamento, nunca exposto pra estranhos antes da hora.</p>
+      <p class="section-lead center">É assim que a técnica vira prática: a cada módulo você grava de novo, num nível de exposição um pouco maior que o anterior. Sempre gradual, sempre com acompanhamento, nunca exposto pra estranhos antes da hora.</p>
 
       <ol class="ladder">
         <li class="ladder-step" style="--i:0">
-          <span class="ladder-level">Nível 1</span>
-          <h3>Só você</h3>
-          <p>Grava e guarda só pra você. Ninguém mais vê ainda. É o seu "antes".</p>
+          <span class="ladder-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg></span>
+          <div class="ladder-body">
+            <span class="ladder-level">Nível 1</span>
+            <h3>Só você</h3>
+            <p>Grava e guarda só pra você. Ninguém mais vê ainda. É o seu "antes".</p>
+          </div>
         </li>
         <li class="ladder-step" style="--i:1">
-          <span class="ladder-level">Nível 2</span>
-          <h3>Uma pessoa de confiança</h3>
-          <p>Grava um vídeo novo sobre a sua semana e manda pra 1 pessoa de confiança.</p>
+          <span class="ladder-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="9" cy="12" r="2.3" fill="currentColor"/><circle cx="15" cy="12" r="2.3" fill="currentColor"/></svg></span>
+          <div class="ladder-body">
+            <span class="ladder-level">Nível 2</span>
+            <h3>Uma pessoa de confiança</h3>
+            <p>Grava um vídeo novo sobre a sua semana e manda pra 1 pessoa de confiança.</p>
+          </div>
         </li>
         <li class="ladder-step" style="--i:2">
-          <span class="ladder-level">Nível 3</span>
-          <h3>Mais gente de confiança</h3>
-          <p>Grava sobre um momento específico e manda pra 2 ou 3 pessoas de confiança, ainda fora das redes.</p>
+          <span class="ladder-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="8.4" cy="13.6" r="2" fill="currentColor"/><circle cx="12" cy="9.5" r="2" fill="currentColor"/><circle cx="15.6" cy="13.6" r="2" fill="currentColor"/></svg></span>
+          <div class="ladder-body">
+            <span class="ladder-level">Nível 3</span>
+            <h3>Mais gente de confiança</h3>
+            <p>Grava sobre um momento específico e manda pra 2 ou 3 pessoas de confiança, ainda fora das redes.</p>
+          </div>
         </li>
         <li class="ladder-step" style="--i:3" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-          <span class="ladder-level">Nível 4</span>
-          <h3>Círculo fechado</h3>
-          <p>Grava um vídeo novo e compartilha num grupo fechado ou no close friends.</p>
+          <span class="ladder-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.4"/><circle cx="8.6" cy="9" r="1.8" fill="currentColor"/><circle cx="15.4" cy="9" r="1.8" fill="currentColor"/><circle cx="8.6" cy="15" r="1.8" fill="currentColor"/><circle cx="15.4" cy="15" r="1.8" fill="currentColor"/></svg></span>
+          <div class="ladder-body">
+            <span class="ladder-level">Nível 4</span>
+            <h3>Círculo fechado</h3>
+            <p>Grava um vídeo novo e compartilha num grupo fechado ou no close friends.</p>
+          </div>
         </li>
         <li class="ladder-step" style="--i:4" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-          <span class="ladder-level">Nível 5</span>
-          <h3>Círculo ampliado</h3>
-          <p>Compartilha com um grupo fechado maior, ainda sem abrir pro público.</p>
+          <span class="ladder-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8.6" r="1.6" fill="currentColor"/><circle cx="12.6" cy="7.4" r="1.6" fill="currentColor"/><circle cx="16.4" cy="9.4" r="1.6" fill="currentColor"/><circle cx="7.6" cy="14.8" r="1.6" fill="currentColor"/><circle cx="16.6" cy="14.6" r="1.6" fill="currentColor"/><circle cx="12" cy="16.6" r="1.6" fill="currentColor"/></svg></span>
+          <div class="ladder-body">
+            <span class="ladder-level">Nível 5</span>
+            <h3>Círculo ampliado</h3>
+            <p>Compartilha com um grupo fechado maior, ainda sem abrir pro público.</p>
+          </div>
         </li>
         <li class="ladder-step" style="--i:5" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-          <span class="ladder-level">Nível 6</span>
-          <h3>Quase público</h3>
-          <p>Story aberto ou pros seus seguidores atuais, preparando o terreno pro geral.</p>
+          <span class="ladder-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M15.5 4.2a9.3 9.3 0 1 1-7 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8.6" r="1.6" fill="currentColor"/><circle cx="12.6" cy="7.4" r="1.6" fill="currentColor"/><circle cx="16.4" cy="9.4" r="1.6" fill="currentColor"/><circle cx="7.6" cy="14.8" r="1.6" fill="currentColor"/><circle cx="16.6" cy="14.6" r="1.6" fill="currentColor"/><circle cx="12" cy="16.6" r="1.6" fill="currentColor"/></svg></span>
+          <div class="ladder-body">
+            <span class="ladder-level">Nível 6</span>
+            <h3>Quase público</h3>
+            <p>Story aberto ou pros seus seguidores atuais, preparando o terreno pro geral.</p>
+          </div>
         </li>
         <li class="ladder-step ladder-step-final" style="--i:6">
-          <span class="ladder-level">Nível 7</span>
-          <h3>Público: o play final</h3>
-          <p>Grava o vídeo final, o seu "depois", e compartilha geral, valendo pra qualquer rede. Essa é a sua versão que aparece.</p>
+          <span class="ladder-node" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6.3 6.3l2.1 2.1M15.6 15.6l2.1 2.1M17.7 6.3l-2.1 2.1M8.4 15.6l-2.1 2.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <div class="ladder-body">
+            <span class="ladder-level">Nível 7</span>
+            <h3>Público: o play final</h3>
+            <p>Grava o vídeo final, o seu "depois", e compartilha geral, valendo pra qualquer rede. Essa é a sua versão que aparece.</p>
+          </div>
         </li>
       </ol>
+      <p class="ladder-hint" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        arraste para ver os 7 níveis
+      </p>
 
       <!-- Regra da escada (briefing, seção 04): expor pra destravar, não pra colher validação. -->
       <div class="ladder-note">
         <p><strong>Compartilhar serve pra destravar o ato de postar, não pra colher elogio.</strong> Quem avalia o vídeo é você, com a lista de conferência do curso. Por isso vale compartilhar mesmo quando o vídeo não ficou bom. A partir do Nível 2, é sempre por uma tela: mensagem, WhatsApp ou rede.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== COMUNIDADE FUNDADORA (honesto, sem depoimento fabricado) ===== -->
-  <section class="section section-tone" aria-labelledby="depoimentos-title">
-    <div class="container narrow">
-      <p class="eyebrow eyebrow-center">TURMA FUNDADORA</p>
-      <h2 id="depoimentos-title" class="section-title center">Prefiro te falar a verdade a inventar depoimento</h2>
-      <div class="honesty-card">
-        <span class="honesty-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20.5s-7.5-4.3-9.8-8.8C.6 8.2 2.1 4.8 5.4 4.1c2-.4 3.9.4 5 2 .1.1.4.1.5 0 1.1-1.6 3-2.4 5-2 3.3.7 4.8 4.1 3.2 7.6-2.3 4.5-9.8 8.8-9.8 8.8" fill="rgba(215,119,19,0.12)" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-        </span>
-        <p data-confirmar="acesso direto à Vivi é compromisso de atendimento (o projeto prevê grupo, não acesso individual): assumir ou mudar a frase">O curso é novo. Quem entra agora faz parte da primeira turma, com acesso direto à Vivi no grupo de acompanhamento. Os relatos reais entram aqui assim que os primeiros alunos completarem o Nível 7.</p>
       </div>
     </div>
   </section>
@@ -396,7 +371,7 @@
             <li>Trava assim que a câmera liga, mesmo já sabendo se comunicar bem ao vivo</li>
             <li>Nunca teve muita prática de falar sozinho e quer aprender do zero, gravando pra internet</li>
             <li>Quer gravar conteúdo pra internet, não discurso de palco ou entrevista de emprego</li>
-            <li>Prefere prática guiada a teoria de oratória genérica</li>
+            <li>Quer aprender fazendo, com técnica aplicada direto na prática</li>
             <li>Topa compartilhar um vídeo mesmo sem estar perfeito</li>
           </ul>
         </div>
@@ -416,10 +391,10 @@
   <section class="section section-tone" id="modulos" aria-labelledby="modulos-title">
     <div class="container narrow">
       <p class="eyebrow eyebrow-center">O QUE VOCÊ VAI TER</p>
-      <h2 id="modulos-title" class="section-title center" data-confirmar="as 30 aulas gravadas no dia 25 (a página diz que tudo libera na compra)">7 módulos, 30 aulas, um nível por vez</h2>
+      <h2 id="modulos-title" class="section-title center" data-confirmar="as 29 aulas gravadas no dia 25 (a página diz que tudo libera na compra)">7 módulos, 29 aulas, um nível por vez</h2>
       <!-- Briefing (seção 04): nas aulas práticas a Vitória faz errado e depois certo; o desafio
            é uma ação concreta, feita junto com a aula quando dá, fechando com "temia x aconteceu". -->
-      <p class="section-lead center">Aulas curtas, de 7 a 10 minutos, com uma técnica por aula. Nas aulas práticas, a Vivi mostra o jeito errado e o jeito certo, ela mesma na frente da câmera. Aí vem um desafio de aplicação, sempre uma ação concreta, feita junto com a aula quando dá pra fazer na hora, fechando com a comparação entre o que você temia que fosse acontecer e o que realmente aconteceu.</p>
+      <p class="section-lead center">Aulas objetivas, de 7 a 10 minutos, com uma técnica por aula. Nas aulas práticas, a Vivi mostra o jeito errado e o jeito certo, ela mesma na frente da câmera. Aí vem um desafio de aplicação, sempre uma ação concreta, feita junto com a aula quando dá pra fazer na hora, fechando com a comparação entre o que você temia que fosse acontecer e o que realmente aconteceu.</p>
       <p class="section-lead center">Todos os módulos liberam assim que você entra. Você segue a escada na ordem, um nível de cada vez.</p>
 
       <div class="accordion" id="accordion-modulos">
@@ -476,7 +451,7 @@
         <div class="accordion-item module-static">
           <div class="accordion-trigger">
             <span><span class="accordion-tag">Módulo 3</span><span class="accordion-title-text">Voz · Nível 4</span></span>
-            <span class="module-count">6 aulas</span>
+            <span class="module-count">5 aulas</span>
           </div>
         </div>
 
@@ -506,7 +481,7 @@
 
       <div class="modulos-footer">
         <div class="modulos-chip">7 módulos</div>
-        <div class="modulos-chip">30 aulas de 7 a 10 min</div>
+        <div class="modulos-chip">29 aulas de 7 a 10 min</div>
         <div class="modulos-chip" data-confirmar="os 7 checklists ainda não foram produzidos">Checklist em PDF por módulo</div>
         <div class="modulos-chip">Grupo de acompanhamento</div>
         <div class="modulos-chip" data-confirmar="certificado habilitado e configurado na Hotmart">Certificado ao final</div>
@@ -515,21 +490,29 @@
   </section>
 
   <!-- ===== BÔNUS ===== -->
-  <section class="section" aria-labelledby="bonus-title">
+  <section class="section bonus-section" aria-labelledby="bonus-title">
     <div class="container narrow center">
-      <p class="eyebrow eyebrow-center">BÔNUS</p>
+      <p class="eyebrow eyebrow-center bonus-eyebrow">
+        <svg class="bonus-eyebrow-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8c-1.9 0-3.2-1.3-3.2-2.7C8.8 3.9 10.2 3 12 3s3.2.9 3.2 2.3C15.2 6.7 13.9 8 12 8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><rect x="3.5" y="8" width="17" height="4.5" rx="1" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 12.5h15V20a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1v-7.5ZM12 8v13" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        BÔNUS EXCLUSIVO
+      </p>
       <h2 id="bonus-title" class="section-title center">Um empurrão extra pra você começar mais rápido</h2>
-      <p class="section-lead">Além dos 7 módulos, você leva 2 bônus. Tudo o que cada um faz está aqui, antes da compra.</p>
       <div class="bonus-grid">
         <div class="bonus-card" data-confirmar="limite de uso, de mensagens ou de prazo do assistente: escrever aqui antes da compra e testar antes do lançamento">
           <span class="bonus-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="7" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.6"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/><path d="M12 7V4M9 4h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
           <h3>Assistente de IA pra gravar melhor</h3>
-          <p>Disponível a qualquer hora. Manda uma foto de onde você grava e ele diz o que mudar no áudio, na luz, na altura da câmera e no apoio. Ajuda a escolher o assunto, devolve as palavras-chave pra colar do lado da câmera, confere o que você vai dizer e passa exercício de voz e dicção na hora.</p>
+          <ul>
+            <li>Analisa uma foto do seu setup e ajusta áudio, luz e altura</li>
+            <li>Ajuda a escolher o assunto e revisa sua fala</li>
+          </ul>
         </div>
         <div class="bonus-card" data-confirmar="curadoria dos equipamentos das três faixas ainda em produção">
           <span class="bonus-card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h9l3 3v14H6V3.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M15 3.5v3h3M9 12h6M9 15h6M9 9h3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
           <h3>Ebook de equipamento e referência</h3>
-          <p>Guia de equipamento pra gravar com resultado profissional, em três faixas: iniciante, intermediário e avançado. Fecha com indicação de material pra quem quiser continuar estudando fora do curso.</p>
+          <ul>
+            <li>Guia em 3 faixas: iniciante, intermediário e avançado</li>
+            <li>Indicação de material extra pra quem quiser ir além</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -539,7 +522,7 @@
   <section class="section offer-section" id="oferta" aria-labelledby="oferta-title">
     <div class="container narrow">
       <div class="offer-card">
-        <p class="chapter"><span class="chapter-num">03</span> A sua vez de aparecer</p>
+        <p class="chapter"><span class="chapter-num">02</span> A sua vez de aparecer</p>
         <!-- Briefing (seção 05): faixa de entrada do mercado, curso acessível e direto.
              Sem comparação de preço com concorrente (não há fonte no briefing). -->
         <h2 id="oferta-title" class="section-title center">Do medo ao play, num pagamento só.</h2>
@@ -551,7 +534,7 @@
         </div>
 
         <ul class="offer-includes">
-          <li>7 módulos · 30 aulas em vídeo, de 7 a 10 minutos</li>
+          <li>7 módulos · 29 aulas em vídeo, de 7 a 10 minutos</li>
           <li data-confirmar="checklists ainda não produzidos">Checklist em PDF por módulo</li>
           <li>Grupo de acompanhamento do começo ao fim</li>
           <li>Escada de exposição guiada, nível por nível</li>
@@ -603,7 +586,7 @@
             <span>Quando eu tenho acesso a tudo?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
           </button>
-          <div class="accordion-panel"><p>Assim que a compra é aprovada, você tem acesso a todo o curso: os 7 módulos e as 30 aulas. A escada continua na ordem, um nível de cada vez, pra você praticar cada degrau antes de subir pro próximo.</p></div>
+          <div class="accordion-panel"><p>Assim que a compra é aprovada, você tem acesso a todo o curso: os 7 módulos e as 29 aulas. A escada continua na ordem, um nível de cada vez, pra você praticar cada degrau antes de subir pro próximo.</p></div>
         </div>
         <div class="accordion-item">
           <button class="accordion-trigger" aria-expanded="false">
@@ -628,7 +611,7 @@
         </div>
         <div class="accordion-item">
           <button class="accordion-trigger" aria-expanded="false">
-            <span>Tenho alguma dúvida durante o curso: tem suporte?</span>
+            <span>Tenho alguma dúvida durante o curso: tem acompanhamento?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
           </button>
           <div class="accordion-panel"><p data-confirmar="se o grupo vai ser no WhatsApp ou no Telegram">Sim, pelo grupo de acompanhamento (WhatsApp ou Telegram), que segue a turma do começo ao fim. A ideia é responder com solução de verdade, não com resposta pronta genérica.</p></div>
@@ -650,7 +633,7 @@
     <canvas id="confetti-cta" aria-hidden="true"></canvas>
     <div class="container narrow center">
       <h2 id="final-cta-title" class="section-title center">Sua versão que aparece já existe.</h2>
-      <p class="section-lead">Ela só precisa atravessar o medo. Sete níveis, um vídeo por vez, com acompanhamento do começo ao fim.</p>
+      <p class="section-lead">Ela só precisa da técnica certa, aplicada um degrau de cada vez, com acompanhamento do começo ao fim.</p>
       <a href="#" data-checkout-link id="final-cta-btn" class="btn btn-primary btn-large">Quero aparecer</a>
     </div>
   </section>
