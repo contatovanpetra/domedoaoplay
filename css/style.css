@@ -549,38 +549,34 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .hero h1 { font-size: clamp(2.4rem, 4.6vw, 3.6rem); line-height: 1.05; letter-spacing: -.045em; margin-bottom: .5em; }
 .hero-lead { font-size: 1.08rem; max-width: 520px; }
-/* Antes eram 4 cards com borda, cada um com seu próprio ícone (tag, wifi,
-   pin, estrela) — exatamente o padrão "um pictograma por frase" que hoje
-   é reconhecido como cara de gerado por IA/template, pesquisa em várias
-   referências premium confirma que elas resolvem isso com texto simples,
-   sem caixa. Vira uma lista só, com uma marcação pequena e discreta. */
+/* Segunda tentativa (4 cards com ícone — tag, wifi, pin, estrela) e terceira
+   tentativa (lista com um traço curto por linha) foram as duas rejeitadas:
+   "um pictograma por frase" e depois "texto solto, texto solto" (4 linhas
+   empilhadas sem nada que as amarre, cada uma flutuando sozinha). Pesquisa
+   em referências premium (Stripe, Vercel, Linear, Apple) mostra que nenhuma
+   usa lista com marcador aqui: a Stripe funde as frases num único parágrafo
+   corrido, com 1-2 trechos em negrito/cor pra criar hierarquia dentro do
+   texto; a Vercel empilha linhas sem marcador nenhum, só espaçamento; a
+   Linear e a Apple reduzem a uma frase de apoio só. Aqui as 4 frases viram
+   um parágrafo só (mesma técnica da Stripe): correm juntas como texto
+   contínuo, sem marcador, e o destaque de cada ideia vem da tipografia
+   (negrito, e alternando com a cor de destaque que já existe no site via
+   .text-orange) — não de um símbolo por linha. */
 .hero-lead-list {
-  display: flex;
-  flex-direction: column;
-  gap: .7rem;
-  margin: 1.3rem 0 0;
+  display: block;
+  margin: 1.2rem 0 0;
   padding: 0;
-  list-style: none;
-}
-/* Mesmo traço curto usado em .compare-col li — não é um pictograma por
-   frase, só um marcador estrutural discreto que também aparece em
-   #antes-depois, reforçando a mesma linguagem visual no hero. */
-.hero-lead-list li {
-  position: relative;
-  padding-left: 1.15rem;
   font-size: 1rem;
-  line-height: 1.45;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+.hero-lead-list strong {
   color: var(--text);
+  font-weight: 700;
 }
-.hero-lead-list li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .72em;
-  width: .6rem;
-  height: 2px;
-  background: var(--blue-light);
-}
+/* .text-orange sozinho perdia pra especificidade de ".hero-lead-list strong"
+   e nunca pintava de laranja. */
+.hero-lead-list strong.text-orange { color: var(--orange-light); }
 .hero-actions { margin-top: 1.6rem; }
 .hero-microcopy {
   margin-top: .8rem;
@@ -1967,7 +1963,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
       linear-gradient(180deg, transparent 84%, var(--bg) 100%);
   }
   .hero-lead { margin-left: auto; margin-right: auto; font-size: .85rem; line-height: 1.4; margin-bottom: .3rem; }
-  .hero-lead-list { text-align: left; width: fit-content; margin-left: auto; margin-right: auto; }
   .eyebrow { font-size: .7rem; margin-bottom: .55rem; }
   .hero h1 { font-size: 2.15rem; line-height: 1.08; margin-bottom: .42em; }
   .hero-actions { margin-top: 1rem; }
