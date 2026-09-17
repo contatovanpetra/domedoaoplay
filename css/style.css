@@ -386,6 +386,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Sections generic ---------- */
 .section { padding: 96px 0; position: relative; }
 
+/* "Fumaça" de transição entre o fim do herói e a primeira seção comum: o
+   herói termina com cor sólida (.cinema-stage::after) e o resto da página
+   só tem o brilho fraco do .page-bg fixo — sem nada aqui, a costura entre
+   os dois aparece como um corte duro de tela. Este glow solto (mesmo azul
+   do .hero-bg/.page-bg, nada de cor nova) preenche só o topo da seção. */
+#antes-depois::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 55vh;
+  background: radial-gradient(65% 100% at 50% 0%, rgba(70, 130, 180, .26), transparent 78%);
+  z-index: -1;
+  pointer-events: none;
+}
+
 /* Fundo único e fixo atrás de toda a página (a partir do fim do hero):
    não rola nem se repete por seção, então não existe corte entre elas —
    o conteúdo flutua por cima de uma só camada parada. */
@@ -845,6 +862,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .compare-antes li::before { background: var(--silver); }
 .compare-depois li::before { background: var(--orange); }
+.compare-antes li strong { color: var(--white); }
 .compare-depois li strong { color: var(--white); }
 
 /* ---------- Ladder (método) ---------- */
@@ -1011,11 +1029,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .accordion-trigger > span:first-child {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   column-gap: .6em;
   row-gap: .4rem;
   min-width: 0;
-  padding-top: .1rem;
 }
 /* Selo circular: o "nó" da trilha de progressão (ver #accordion-modulos
    acima), não mais uma pílula com texto correndo na largura. Mantém o texto
@@ -1048,11 +1065,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   transform: scale(1.06);
   box-shadow: var(--shadow-sm);
 }
-.accordion-title-text { flex: 1 1 auto; min-width: 0; }
+.accordion-title-text { flex: 0 1 auto; min-width: 0; }
+/* Contador de aulas fica colado ao título (mesmo separador "·" que antes
+   marcava o nível ali), não mais solto no meio do header por conta do
+   space-between do .accordion-trigger. */
+.module-count {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: .78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.module-count::before { content: "· "; }
 .accordion-icon {
   display: flex;
   flex-shrink: 0;
-  font-size: 1.3rem;
+  font-size: .95rem;
   color: var(--orange-light);
   transition: transform .25s ease;
 }
@@ -1150,7 +1178,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 /* ---------- Guarantee ---------- */
 .guarantee-block { display: flex; flex-direction: column; align-items: center; }
-.guarantee-block .section-lead { align-self: stretch; margin-left: 0; margin-right: 0; max-width: none; }
+/* Antes esticava a largura toda mas ficava com o texto alinhado à esquerda,
+   descentralizado em relação ao título e ao selo acima/abaixo. */
+.guarantee-block .section-lead { max-width: 46ch; margin-left: auto; margin-right: auto; text-align: center; }
 .guarantee-badge {
   width: 96px;
   height: 96px;
@@ -1973,21 +2003,25 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     top: 2.125rem;
     bottom: -2.725rem;
   }
-  /* Card da educadora: foto ao lado do texto fica espremida demais numa tela
-     estreita. Aqui ela sobe pro topo, em tela cheia, e o texto vem embaixo. */
-  .authority-card { flex-direction: column; }
-  .authority-photo { flex-basis: auto; min-height: 200px; }
-  /* Empilhado, o corte que separa foto de texto é embaixo da foto, não
-     mais na lateral direita (que não existe mais nesse layout). */
-  .authority-photo::after {
-    background:
-      linear-gradient(155deg, rgba(70, 130, 180, .3), transparent 48%),
-      linear-gradient(180deg, transparent 74%, rgba(11, 23, 40, .7) 100%);
-  }
-  .authority-body { padding: 1.5rem 1.4rem; }
-  .authority-name { font-size: 1.35rem; }
+  /* Card da educadora: mesmo lado a lado do desktop (foto à esquerda,
+     texto à direita) — só mais compacto, pra caber numa tela estreita
+     sem espremer as 3 credenciais. */
+  .authority-photo { flex-basis: 34%; }
+  .authority-body { padding: 1rem .9rem; gap: .75rem; }
+  .authority-name { font-size: 1.05rem; }
+  .authority-rule { margin: .4rem 0 .35rem; }
+  .authority-role { font-size: .66rem; }
+  .credential-item { gap: .55rem; padding: .55rem 0; font-size: .78rem; line-height: 1.3; }
+  .credential-icon { width: 1.5rem; height: 1.5rem; }
+  .credential-figure { font-size: 1.1em; }
   .modulos-bonus { margin-top: 2rem; padding-top: 1.6rem; }
   .bonus-grid { grid-template-columns: 1fr; }
+  /* Garantia mais compacta pra caber numa tela só de celular. */
+  .section-tone--guarantee.section { padding: 48px 0; }
+  .section-tone--guarantee .section-title { font-size: 1.6rem; }
+  .section-tone--guarantee .guarantee-badge { width: 76px; height: 76px; font-size: .85rem; margin-bottom: 1.1rem; }
+  .section-tone--guarantee .section-lead { font-size: .92rem; margin-top: .5rem; }
+  .section-tone--guarantee .refund-link { margin-top: .6rem; }
   /* Antes/Depois lado a lado mesmo no celular: card mais compacto pra caber. */
   .compare-grid { gap: .6rem; margin-top: 1.8rem; }
   .compare-col { padding: 1rem .85rem; }
