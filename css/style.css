@@ -577,6 +577,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* .text-orange sozinho perdia pra especificidade de ".hero-lead-list strong"
    e nunca pintava de laranja. */
 .hero-lead-list strong.text-orange { color: var(--orange-light); }
+/* Os dois ganchos de maior peso pro negócio (vender consistente, autoridade)
+   se destacam dos outros dois (viralizar, trabalhar de qualquer lugar) por
+   tamanho e um traço fino que reforça o negrito além do que o peso 700 (sem
+   a fonte 800/900 carregada) já dá sozinho. */
+.hero-lead-list strong.hero-lead-strong {
+  font-size: 1.3em;
+  letter-spacing: -.01em;
+  -webkit-text-stroke: .3px currentColor;
+}
 .hero-actions { margin-top: 1.6rem; }
 .hero-microcopy {
   margin-top: .8rem;
