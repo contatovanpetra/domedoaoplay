@@ -1364,12 +1364,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .final-cta-copy {
   max-width: 440px;
 }
+.final-symbol {
+  width: 72px;
+  height: 72px;
+  margin: 0 0 1.25rem;
+  filter: drop-shadow(0 6px 18px rgba(214, 119, 19, .35));
+}
 .final-cta-copy .section-title,
 .final-cta-copy .section-lead { margin-left: 0; margin-right: 0; }
 @media (max-width: 899.98px) {
   .final-cta-grid { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
   .final-tunnel { max-width: 200px; }
   .final-cta-copy { max-width: 440px; margin-left: auto; margin-right: auto; }
+  .final-symbol { margin-left: auto; margin-right: auto; }
 }
 
 /* ---------- Footer ---------- */
