@@ -204,6 +204,9 @@ ul { padding: 0; margin: 0; list-style: none; }
   transition: transform .5s ease, opacity .4s ease;
 }
 .site-header.is-on { transform: translateY(0); opacity: 1; }
+/* Páginas estáticas (política, termos, suporte): não têm abertura em cena
+   pra "descer" o menu via JS, então o cabeçalho já nasce visível. */
+.site-header--static { transform: none; opacity: 1; transition: none; }
 @media (prefers-reduced-motion: reduce) {
   .site-header { transform: none; opacity: 1; transition: none; }
 }
@@ -1348,35 +1351,59 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   height: 260px;
 }
 .final-cta .container { position: relative; z-index: 1; }
-/* O texto fica ao lado do túnel, não sozinho sobre o brilho: o mesmo arco da
-   abertura reaparece aqui, parado, fechando a história em vez de deixar o
-   CTA solto num fundo vazio. Sem card ao redor do botão: "CTA pequeno,
-   espaço grande" — o bloco de texto+botão fica mais estreito que o
-   .container, cercado de espaço vazio sobre a .page-bg fixa. */
+/* Sem card ao redor do botão: "CTA pequeno, espaço grande" — o bloco de
+   texto+botão fica mais estreito que o .container, cercado de espaço vazio
+   sobre a .page-bg fixa. */
 .final-cta-grid {
   display: grid;
-  grid-template-columns: .8fr 1.1fr;
-  align-items: center;
+  place-items: center;
   gap: 2.5rem;
-  text-align: left;
+  text-align: center;
 }
-.final-tunnel { width: 100%; height: auto; max-width: 320px; justify-self: center; }
 .final-cta-copy {
   max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .final-symbol {
   width: 72px;
   height: 72px;
-  margin: 0 0 1.25rem;
+  margin: 0 auto 1.25rem;
   filter: drop-shadow(0 6px 18px rgba(214, 119, 19, .35));
 }
 .final-cta-copy .section-title,
-.final-cta-copy .section-lead { margin-left: 0; margin-right: 0; }
-@media (max-width: 899.98px) {
-  .final-cta-grid { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
-  .final-tunnel { max-width: 200px; }
-  .final-cta-copy { max-width: 440px; margin-left: auto; margin-right: auto; }
-  .final-symbol { margin-left: auto; margin-right: auto; }
+.final-cta-copy .section-lead { margin-left: auto; margin-right: auto; }
+
+/* ---------- Páginas legais (política, termos, suporte) ---------- */
+.legal-hero { padding: 56px 0 0; }
+.legal-back { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: 1.5rem; font-size: .9rem; }
+.legal-updated { color: var(--text-muted); font-size: .88rem; margin-top: -.6rem; }
+.legal-content h2 {
+  font-size: 1.35rem;
+  margin-top: 2.4rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--border);
+}
+.legal-content h2:first-of-type { margin-top: 1.8rem; padding-top: 0; border-top: none; }
+.legal-content h3 { font-size: 1.05rem; margin-top: 1.4rem; }
+.legal-content p, .legal-content li { line-height: 1.75; }
+.legal-content ul, .legal-content ol { margin: 0 0 1em; padding-left: 1.35rem; }
+.legal-content ul { list-style: disc; }
+.legal-content ol { list-style: decimal; }
+.legal-content li { margin-bottom: .45em; }
+.legal-content strong { color: var(--text); font-weight: 700; }
+/* Trechos que ainda precisam do dado real do negócio (CNPJ, e-mail, etc.)
+   antes de publicar — mesmo padrão do [data-confirmar] usado no resto do
+   site, só que sempre visível aqui (não depende do modo-revisao) porque é
+   informação legal, não um ajuste de copy. */
+.legal-todo {
+  color: var(--orange-light);
+  background: rgba(215, 119, 19, .12);
+  border: 1px dashed rgba(215, 119, 19, .5);
+  border-radius: 6px;
+  padding: .05em .4em;
+  font-weight: 600;
+  font-style: normal;
 }
 
 /* ---------- Footer ---------- */
