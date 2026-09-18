@@ -34,6 +34,11 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
 
+<!-- Preload da foto do hero (maior peso da primeira dobra, LCP): começa a
+     baixar antes do parser chegar no <picture>, sem esperar CSS/fontes. -->
+<link rel="preload" as="image" href="assets/img/vivi-hero-mobile.webp" media="(max-width: 699px), (orientation: portrait)">
+<link rel="preload" as="image" href="assets/img/vivi-hero-desktop.webp" media="(min-width: 700px) and (orientation: landscape)">
+
 <link rel="stylesheet" href="css/style.css">
 <noscript><style>#hero-title,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("cinema-on")</script>
@@ -159,9 +164,9 @@
       <div class="hero-photo-bg">
         <picture>
           <source media="(min-width: 700px) and (orientation: landscape)" srcset="assets/img/vivi-hero-desktop.webp" type="image/webp">
-          <source media="(min-width: 700px) and (orientation: landscape)" srcset="assets/img/vivi-hero-desktop.png">
+          <source media="(min-width: 700px) and (orientation: landscape)" srcset="assets/img/vivi-hero-desktop.jpg">
           <source srcset="assets/img/vivi-hero-mobile.webp" type="image/webp">
-          <img src="assets/img/vivi-hero-mobile.png" alt="Vitória Caroline, criadora do curso Do Medo ao Play, atravessando um portal de luz" width="941" height="1672" loading="eager" fetchpriority="high">
+          <img src="assets/img/vivi-hero-mobile.jpg" alt="Vitória Caroline, criadora do curso Do Medo ao Play, atravessando um portal de luz" width="941" height="1672" loading="eager" fetchpriority="high">
         </picture>
       </div>
       <div class="hero-scrim" aria-hidden="true"></div>
@@ -248,7 +253,7 @@
         <div class="split-visual">
           <div class="authority-card" data-confirmar="nome que assina o curso: Vivi ou Vitória Caroline">
             <div class="authority-photo">
-              <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline" loading="lazy">
+              <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline" width="760" height="949" loading="lazy" decoding="async">
             </div>
             <div class="authority-body">
               <span class="authority-name-text">
@@ -670,7 +675,7 @@
 <footer class="site-footer">
   <div class="container footer-inner">
     <a href="#topo" class="logo logo-footer" aria-label="Do Medo ao Play, voltar ao início">
-      <img class="logo-mark" src="assets/img/logo.svg" alt="Do Medo ao Play" width="102" height="40" loading="lazy">
+      <img class="logo-mark" src="assets/img/logo.svg" alt="Do Medo ao Play" width="102" height="40" loading="lazy" decoding="async">
     </a>
     <div class="footer-meta">
       <!-- TODO: o Hotmart exige/recomenda estes links na página de vendas — trocar "#" pelas páginas reais antes de publicar -->
