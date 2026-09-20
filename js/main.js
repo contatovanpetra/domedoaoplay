@@ -252,8 +252,8 @@ function wireAccordions() {
         items.forEach((other) => {
           const otherTrigger = other.querySelector(".accordion-trigger");
           const otherPanel = other.querySelector(".accordion-panel");
-          // Módulos ainda sem aulas definidas (.module-static) não têm painel
-          // nem botão de verdade — só um rótulo. Nada a fechar neles.
+          // Guarda pra qualquer item que venha sem painel ou sem botão de
+          // verdade (módulo ainda sem aulas, por exemplo): nada a fechar nele.
           if (!otherTrigger || !otherPanel) return;
           other.classList.remove("open");
           otherTrigger.setAttribute("aria-expanded", "false");

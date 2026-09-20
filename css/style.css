@@ -1005,14 +1005,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Encerra a trilha no Módulo 6: não há próximo selo pra ligar. */
 #accordion-modulos .accordion-item:last-child::before { display: none; }
-/* Módulo 6 (sem trigger real, ver .module-static): selo neutro tracejado e
-   opacidade reduzida no item inteiro — comunica "ainda não é clicável" só
-   por traço/opacidade, sem tirar a trilha que chega até ele. */
-#accordion-modulos .accordion-item.module-static { opacity: .75; }
-#accordion-modulos .accordion-item.module-static .accordion-tag {
-  border-style: dashed;
-  background: transparent;
-}
 .accordion-trigger {
   width: 100%;
   display: flex;
@@ -1080,13 +1072,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   white-space: nowrap;
 }
 .module-count::before { content: "· "; }
-/* O Módulo 6 não abre nada (ver .module-static): a linha não pode ter cursor
-   de mão, senão parece um acordeão quebrado em vez de um módulo em construção. */
-.module-static .accordion-trigger { cursor: default; }
-/* Lembrete das aulas que ainda faltam: parágrafo vazio que só serve na revisão.
-   Fora dela, some, em vez de deixar um vão embaixo da lista de módulos. */
-.modulos-pendente { display: none; }
-.modo-revisao .modulos-pendente { display: block; margin: 1.1rem 0 0; }
 .accordion-icon {
   display: flex;
   flex-shrink: 0;
