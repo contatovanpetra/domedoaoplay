@@ -1080,6 +1080,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   white-space: nowrap;
 }
 .module-count::before { content: "· "; }
+/* O Módulo 6 não abre nada (ver .module-static): a linha não pode ter cursor
+   de mão, senão parece um acordeão quebrado em vez de um módulo em construção. */
+.module-static .accordion-trigger { cursor: default; }
+/* Lembrete das aulas que ainda faltam: parágrafo vazio que só serve na revisão.
+   Fora dela, some, em vez de deixar um vão embaixo da lista de módulos. */
+.modulos-pendente { display: none; }
+.modo-revisao .modulos-pendente { display: block; margin: 1.1rem 0 0; }
 .accordion-icon {
   display: flex;
   flex-shrink: 0;
