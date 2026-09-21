@@ -911,6 +911,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Nome das colunas em branco nos dois lados: quem carrega a cor agora é a
    pergunta. */
 .statement-col h3 { color: var(--white); }
+.statement-antes .statement-q { color: var(--silver); }
+.statement-depois .statement-q { color: var(--white); }
 .statement-col ul { display: grid; gap: clamp(1.6rem, 4vw, 2.2rem); }
 /* Mesmo jogo de tamanhos da seção de bateria do Watch: a situação vem grande
    (é o "50 horas" deles) e a consequência vem pequena, logo embaixo. */
@@ -920,7 +922,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-weight: 700;
   font-size: clamp(1.5rem, 3.6vw, 2.1rem);
   line-height: 1.15;
-  color: var(--orange);
+  /* Branco de novo: sobre o painel escuro o laranja tem 5,5:1 de contraste e o
+     branco 17,5:1 — em texto grande isso não lê como destaque, lê como
+     apagado. A diferença entre os dois lados passa a ser de brilho: o lado
+     que a pessoa quer chegar é o mais claro. */
+  color: var(--white);
   margin-bottom: .45rem;
 }
 .statement-a {
