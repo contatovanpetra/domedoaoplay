@@ -176,9 +176,6 @@ function wireScrollEffects() {
 
     const p = clamp((y - heroTop) / track);
 
-    // A cena 3D fica parada e só se mexe quando a pessoa rola: a câmera gira e
-    // os ícones sobem na mesma proporção em que ela avança pelo herói.
-    if (cena3d) cena3d.style.setProperty("--h3-p", p.toFixed(4));
 
     // O texto de venda só começa a sair depois que a pessoa teve tempo de ler.
     const approach = range(p, 0, 0.85);
@@ -187,7 +184,8 @@ function wireScrollEffects() {
 
     // Zoom fundo o bastante pros arcos saírem do quadro: é isso que dá a sensação
     // de atravessar o túnel. Sem rotação, que fazia o arco parecer um quadrado girando.
-    stage.style.setProperty("--portal-scale", (1 + approach * 1.35).toFixed(3));
+    // Zoom leve (até 1,3x): mais que isso a cena sai do quadro e a animação nem aparece.
+    stage.style.setProperty("--portal-scale", (1 + approach * 0.3).toFixed(3));
     stage.style.setProperty("--portal-y", (approach * -22).toFixed(1) + "px");
     stage.style.setProperty("--copy-opacity", (1 - exit).toFixed(3));
     stage.style.setProperty("--copy-y", (exit * -70).toFixed(1) + "px");
@@ -197,6 +195,18 @@ function wireScrollEffects() {
     // Depois que o texto some, ele não pode mais receber clique nem foco.
     stage.classList.toggle("copy-inert", exit > 0.9);
   }
+
+  // A animação da cena (câmera balançando, ícones flutuando, brilho pulsando)
+  // roda enquanto a pessoa rola e congela quando ela para: a classe entra a
+  // cada evento de rolagem e sai 180ms depois do último.
+  let paradaCena = 0;
+  window.addEventListener("scroll", () => {
+    if (cena3d) {
+      cena3d.classList.add("is-rolando");
+      clearTimeout(paradaCena);
+      paradaCena = setTimeout(() => cena3d.classList.remove("is-rolando"), 180);
+    }
+  }, { passive: true });
 
   window.addEventListener("scroll", () => {
     if (!ticking) {
