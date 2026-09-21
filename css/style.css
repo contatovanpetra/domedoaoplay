@@ -688,8 +688,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .band-credentials {
   bottom: 0;
   display: grid;
-  grid-template-columns: 1fr;
-  gap: .5rem 1.4rem;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem 1.1rem;
   padding: 2.6rem 1.6rem 1.4rem;
   background: linear-gradient(0deg, rgba(11, 23, 40, .8) 0%, rgba(11, 23, 40, .5) 55%, rgba(11, 23, 40, 0) 100%);
 }
@@ -699,9 +699,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .band-credentials .credential-item + .credential-item { border-top: 0; }
 .band-credentials .credential-icon { margin-top: .05rem; }
 
-@media (min-width: 700px) {
-  .band-credentials { grid-template-columns: 1fr 1fr; }
-}
 
 @media (min-width: 900px) {
   .band-section {
@@ -725,6 +722,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-media { min-height: 112vw; }
   .band-name { padding: 1.1rem 1.2rem 2.2rem; }
   .band-credentials { padding: 2.2rem 1.2rem 1.2rem; }
+  /* Duas colunas numa tela estreita: o texto e o ícone encolhem pra caber
+     sem quebrar cada credencial em cinco linhas. */
+  .band-credentials .credential-item { font-size: .72rem; line-height: 1.35; gap: .45rem; }
+  .band-credentials .credential-icon { width: 1.4rem; height: 1.4rem; }
 }
 
 .authority-name-text { display: flex; flex-direction: column; }
