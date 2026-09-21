@@ -56,8 +56,10 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.6;
+  /* 16px é o tamanho que o navegador já dá de graça — e é por isso que passa
+     a sensação de página sem design. Páginas de produto leem em 18-21px. */
+  font-size: 18px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -271,10 +273,13 @@ html { scroll-padding-top: var(--header-h, 85px); }
 }
 .section-title.center { margin-left: auto; margin-right: auto; }
 
+/* Degrau entre o título e o corpo: sem ele o texto cai de 44px direto pra
+   18px e a seção fica com cara de duas peças soltas. */
 .section-lead {
   color: var(--text-muted);
-  font-size: clamp(1rem, 2.2vw, 1.15rem);
-  max-width: 640px;
+  font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+  line-height: 1.45;
+  max-width: 720px;
 }
 .section-lead.center { margin-left: auto; margin-right: auto; }
 
@@ -399,7 +404,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 
 /* ---------- Sections generic ---------- */
-.section { padding: 96px 0; position: relative; }
+.section { padding: 128px 0; position: relative; }
 
 /* "Fumaça" de transição entre o fim do herói e a primeira seção comum: o
    herói termina com cor sólida (.cinema-stage::after) e o resto da página
@@ -699,8 +704,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    credencial da outra passa a ser o espaço. */
 /* Credenciais são prova: no computador elas ganham corpo de texto de leitura,
    não de legenda. No celular sobem só um pouco, senão não cabem em duas colunas. */
-.band-credentials .credential-item { padding: .45rem 0; align-items: flex-start; font-size: 1.12rem; line-height: 1.4; gap: 1rem; }
-.band-credentials .credential-icon { width: 2.4rem; height: 2.4rem; }
+.band-credentials .credential-item { padding: .5rem 0; align-items: flex-start; font-size: 1.3rem; line-height: 1.35; gap: 1rem; }
+.band-credentials .credential-icon { width: 2.7rem; height: 2.7rem; }
 .band-credentials .credential-item + .credential-item { border-top: 0; }
 .band-credentials .credential-icon { margin-top: .05rem; }
 
@@ -743,8 +748,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-credentials { padding: 2.2rem 1.2rem 1.2rem; }
   /* Duas colunas numa tela estreita: o texto e o ícone encolhem pra caber
      sem quebrar cada credencial em cinco linhas. */
-  .band-credentials .credential-item { font-size: .78rem; line-height: 1.35; gap: .5rem; }
-  .band-credentials .credential-icon { width: 1.55rem; height: 1.55rem; }
+  .band-credentials .credential-item { font-size: .92rem; line-height: 1.3; gap: .55rem; }
+  .band-credentials .credential-icon { width: 1.75rem; height: 1.75rem; }
 }
 
 .authority-name-text { display: flex; flex-direction: column; }
@@ -858,6 +863,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-weight: 700;
   font-size: clamp(1.7rem, 4.4vw, 2.9rem);
   line-height: 1.08;
+  letter-spacing: -.035em;
   margin: 0;
   color: var(--white);
   text-align: left;
@@ -919,7 +925,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .statement-a {
   display: block;
-  font-size: .92rem;
+  font-size: 1rem;
   line-height: 1.45;
   color: var(--text-muted);
 }
@@ -1222,8 +1228,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .accordion-item.open .accordion-panel { grid-template-rows: 1fr; padding-bottom: 1.3rem; }
 .accordion-panel ul { display: grid; gap: .55rem; }
-.accordion-panel li { font-size: .95rem; color: var(--text-muted); }
-.accordion-panel p { font-size: .95rem; margin: 0; }
+.accordion-panel li { font-size: 1.02rem; color: var(--text-muted); }
+.accordion-panel p { font-size: 1.02rem; margin: 0; }
 /* Miniatura decorativa acima do acordeão: ecoa a trilha de #metodo,
    reforçando que os 7 módulos são progressão, não uma lista solta. */
 .modulos-trail {
@@ -1267,7 +1273,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .qualify-card ul { grid-template-columns: 1fr 1fr; gap: .9rem 2.4rem; }
 }
 .qualify-card ul { display: grid; gap: .8rem; }
-.qualify-card li { font-size: .95rem; line-height: 1.45; color: var(--text); }
+.qualify-card li { font-size: 1.05rem; line-height: 1.5; color: var(--text); }
 
 /* ---------- Offer ---------- */
 .offer-section { padding-top: 40px; }
