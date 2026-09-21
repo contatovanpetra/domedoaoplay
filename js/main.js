@@ -77,8 +77,8 @@ function wireReviewMode() {
 
 const clamp = (v) => Math.min(1, Math.max(0, v));
 
-// Tudo que depende da rolagem num lugar só: o herói "cinema" (o portal se aproxima,
-// o texto de venda sai e entra a frase da travessia) e a barra de progresso.
+// Tudo que depende da rolagem num lugar só: o herói "cinema" (o texto fica parado
+// e a cena se aproxima e se move conforme a pessoa desce) e a barra de progresso.
 // As medidas da página são lidas só quando algo muda de tamanho, nunca a cada
 // quadro da rolagem: ler medidas logo depois de mexer em estilo trava o celular.
 // A cena do herói foi montada num palco de 941x1672. Aqui ela é escalada pra
@@ -97,7 +97,9 @@ function ajustaCena3D() {
     // inteira encostada na direita; cobrir ali daria um close no rosto. No
     // celular ela sempre cobre a tela, mesmo quando a caixa do herói é mais
     // larga que 9:16 (era isso que empurrava a cena pro canto e cortava).
-    const deitada = w >= 700 && w > h;
+    // Pela tela, não pela caixa: em tela em pé a caixa começa embaixo do texto
+    // e fica mais larga que alta, mas a cena continua cobrindo a largura.
+    const deitada = window.matchMedia("(min-width: 700px) and (orientation: landscape)").matches;
     palco.classList.toggle("is-lado", deitada);
     const escala = deitada ? h / 1672 : Math.max(w / 941, h / 1672);
     palco.style.setProperty("--hero3d-s", escala.toFixed(4));
@@ -119,7 +121,7 @@ function wireScrollEffects() {
 
   // Mapeia um trecho da rolagem (de "from" até "to") para 0 a 1.
   const range = (p, from, to) => clamp((p - from) / (to - from));
-  const CINEMA_PROPS = ["--portal-scale", "--portal-y", "--copy-opacity", "--copy-y", "--cross-opacity", "--cross-y"];
+  const CINEMA_PROPS = ["--portal-scale", "--portal-y"];
 
   let heroTop = 0;
   let heroBottom = 0;
@@ -128,16 +130,17 @@ function wireScrollEffects() {
   let ticking = false;
 
   function measure() {
-    ajustaCena3D();
     if (header) {
       // Altura real do menu (muda com a logo, a fonte e o zoom de telas grandes).
       root.style.setProperty("--header-h", header.getBoundingClientRect().height + "px");
     }
     if (stage && inner && copy) {
-      // Tablet em pé usa a foto vertical alinhada pelo fim do texto do herói (ver CSS).
+      // Em tela em pé a partir de 700px a cena começa no fim do texto (ver CSS).
       // offsetTop/offsetHeight ignoram o translateY da animação.
       stage.style.setProperty("--hero-text-bottom", inner.offsetTop + copy.offsetTop + copy.offsetHeight + "px");
     }
+    // Depois do fim do texto: a caixa da cena depende dele.
+    ajustaCena3D();
     if (hero && stage) {
       heroTop = hero.getBoundingClientRect().top + window.scrollY;
       heroBottom = heroTop + hero.offsetHeight;
@@ -164,7 +167,8 @@ function wireScrollEffects() {
       // Sem pista de rolagem (tela baixa, celular deitado): volta ao estado inicial.
       // Senão, quem gira o celular no meio da animação fica com o texto apagado.
       CINEMA_PROPS.forEach((prop) => stage.style.removeProperty(prop));
-      stage.classList.remove("copy-inert", "is-live");
+      if (cena3d) cena3d.style.removeProperty("--cena-p");
+      stage.classList.remove("is-live");
       return;
     }
 
@@ -175,25 +179,17 @@ function wireScrollEffects() {
     if (!onScreen) return;
 
     const p = clamp((y - heroTop) / track);
-
-
-    // O texto de venda só começa a sair depois que a pessoa teve tempo de ler.
+    // A cena 3D anda junto com a rolagem (ver --cena-p no CSS). O texto não
+    // muda: a seção fica parada e só a foto se move.
+    if (cena3d) cena3d.style.setProperty("--cena-p", p.toFixed(3));
     const approach = range(p, 0, 0.85);
-    const exit = range(p, 0.18, 0.56);
-    const cross = range(p, 0.58, 0.86);
 
     // Zoom fundo o bastante pros arcos saírem do quadro: é isso que dá a sensação
     // de atravessar o túnel. Sem rotação, que fazia o arco parecer um quadrado girando.
-    // Zoom leve (até 1,3x): mais que isso a cena sai do quadro e a animação nem aparece.
-    stage.style.setProperty("--portal-scale", (1 + approach * 0.3).toFixed(3));
+    // Zoom leve (até 1,2x): o movimento agora vem da própria cena (ícones subindo,
+    // pessoa à frente); zoom maior empurrava os ícones pra fora da tela no celular.
+    stage.style.setProperty("--portal-scale", (1 + approach * 0.2).toFixed(3));
     stage.style.setProperty("--portal-y", (approach * -22).toFixed(1) + "px");
-    stage.style.setProperty("--copy-opacity", (1 - exit).toFixed(3));
-    stage.style.setProperty("--copy-y", (exit * -70).toFixed(1) + "px");
-    stage.style.setProperty("--cross-opacity", cross.toFixed(3));
-    stage.style.setProperty("--cross-y", (26 * (1 - cross)).toFixed(1) + "px");
-
-    // Depois que o texto some, ele não pode mais receber clique nem foco.
-    stage.classList.toggle("copy-inert", exit > 0.9);
   }
 
   // A animação da cena (câmera balançando, ícones flutuando, brilho pulsando)
@@ -514,7 +510,6 @@ function wireIntroStage() {
 
   // Cena 2
   const scene2 = document.getElementById("intro-scene2");
-  const burstBg = document.getElementById("burst-bg");
   const burstPre = document.getElementById("burst-pre");
   const burstFrame = document.getElementById("burst-frame");
   const burstStage = document.getElementById("burst-stage");
@@ -528,40 +523,86 @@ function wireIntroStage() {
     .map((id) => document.getElementById(id))
     .filter(Boolean);
 
+  // ---- O TÚNEL ----
+  // Vídeo de 12s dos arcos até a porta de luz laranja. Ele não "toca": cada
+  // ponto da rolagem presa corresponde a um quadro (como nos sites da Apple),
+  // então rolar pra cima volta o túnel. Tela em pé usa o vídeo vertical.
+  const video = document.getElementById("tunnel-video");
+  const veil = document.getElementById("tunnel-veil");
+  const faixas = document.getElementById("tunnel-faixas");
+  const VIDEOS = {
+    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.jpg" },
+    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.jpg" },
+  };
+  const modoDaTela = () => (window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador");
+
   if (!hasGSAP || prefersReducedMotion) {
+    // Sem animação: fica a imagem do começo do túnel, sem baixar o vídeo.
+    if (video) video.poster = VIDEOS[modoDaTela()].poster;
     [line1, line2, glMain, ...thoughts].forEach((el) => { if (el) el.style.opacity = 1; });
     return;
   }
 
-  // ---- O TÚNEL ----
-  // A pessoa começa no fundo do túnel (quase preto) e vai atravessando até a
-  // saída, que é laranja. A cor e o tamanho dos anéis (com a forma do símbolo
-  // da marca) acompanham o quanto já foi percorrido.
-  const rings = [...document.querySelectorAll(".t-ring")];
-  const ringBase = [.16, .3, .5, .78, 1.15, 1.65];
-  const CORE = ["#0A1826", "#12354F", "#2A6A97", "#B25E12", "#D77713"];
-  const MID = ["#050D16", "#081C2C", "#0E3450", "#5C3310", "#A85A12"];
-  const EDGE = ["#01040A", "#020810", "#04121F", "#0A1724", "#14202E"];
-  const RING = ["#16304A", "#2E6A94", "#6FA9CC", "#E08A2A", "#FFC06A"];
+  let modoVideo = "";
+  let alvoVideo = 0;       // fração do vídeo que a rolagem pede (0 a 1)
+  let tempoVideo = null;   // instante atual, suavizado
+  let rafVideo = 0;
+  let fimDoTunel = 1;      // fração da rolagem em que o vídeo chega ao fim
+  let preparado = false;
 
-  function paintTunnel(p) {
-    stage.style.setProperty("--t-core", gsap.utils.interpolate(CORE, p));
-    stage.style.setProperty("--t-mid", gsap.utils.interpolate(MID, p));
-    stage.style.setProperty("--t-edge", gsap.utils.interpolate(EDGE, p));
-    const ringColor = gsap.utils.interpolate(RING, p);
-    rings.forEach((ring, i) => {
-      // Cada anel avança na direção de quem olha; quando fica grande demais,
-      // já passou por você e some.
-      const scale = ringBase[i] * (1 + p * 2.1);
-      const fade = gsap.utils.clamp(0, 1, (1.9 - scale) / .7);
-      const rise = gsap.utils.clamp(0, 1, scale / .3);
-      gsap.set(ring, {
-        scale,
-        svgOrigin: "180 198",
-        opacity: Math.min(fade, rise) * (.2 + p * .5),
-        stroke: ringColor,
-      });
-    });
+  function escolheVideo() {
+    if (!video) return;
+    const modo = modoDaTela();
+    if (modo === modoVideo) return;
+    modoVideo = modo;
+    video.poster = VIDEOS[modo].poster;
+    video.src = VIDEOS[modo].src;
+    video.load();
+    tempoVideo = null;
+    preparado = false;
+  }
+  function mostraTunel(p) {
+    alvoVideo = gsap.utils.clamp(0, 1, p / fimDoTunel);
+    pedeQuadro();
+  }
+  function pedeQuadro() {
+    if (!rafVideo) rafVideo = requestAnimationFrame(avancaTunel);
+  }
+  function avancaTunel() {
+    rafVideo = 0;
+    // Sem metadados ainda: o loadedmetadata chama de novo.
+    if (!video || video.readyState < 1 || !isFinite(video.duration)) return;
+    const alvo = Math.min(video.duration - 0.04, alvoVideo * video.duration);
+    if (tempoVideo === null) tempoVideo = alvo;
+    const prox = tempoVideo + (alvo - tempoVideo) * 0.35;
+    tempoVideo = Math.abs(alvo - prox) < 0.004 ? alvo : prox;
+    // Um pulo por vez: pedir outro antes do anterior terminar deixa o quadro
+    // congelado (o navegador cancela e nunca chega a desenhar).
+    if (!video.seeking && Math.abs(video.currentTime - tempoVideo) > 0.001) {
+      video.currentTime = tempoVideo;
+    }
+    if (tempoVideo !== alvo || video.seeking) pedeQuadro();
+  }
+  // iPhone: o Safari só desenha o quadro pedido depois que o vídeo tocou uma
+  // vez. Toca mudo e pausa na hora (vídeo sem som pode tocar sozinho); se o
+  // aparelho bloquear (modo de economia), tenta de novo no primeiro toque.
+  function preparaVideo() {
+    if (preparado || !video || !video.src) return;
+    preparado = true;
+    const tocando = video.play();
+    if (tocando && tocando.then) {
+      tocando.then(() => { video.pause(); tempoVideo = null; pedeQuadro(); }).catch(() => { preparado = false; });
+    } else {
+      video.pause();
+    }
+  }
+  if (video) {
+    video.addEventListener("loadedmetadata", pedeQuadro);
+    video.addEventListener("loadeddata", () => { preparaVideo(); pedeQuadro(); });
+    video.addEventListener("seeked", pedeQuadro);
+    ["touchend", "click", "keydown"].forEach((ev) => window.addEventListener(ev, preparaVideo, { passive: true }));
+    escolheVideo();
+    window.addEventListener("resize", escolheVideo);
   }
 
   // O glitch é um solavanco, não um estado: dispara ao passar pelo ponto,
@@ -610,7 +651,8 @@ function wireIntroStage() {
 
   // O palco tem tamanho em px pra poder ser animado até a janela inteira.
   function stageBaseSize() {
-    const w = Math.min(200, window.innerWidth * .42);
+    // Também pela altura: no celular deitado o celular desenhado ocupava a tela toda.
+    const w = Math.min(200, window.innerWidth * .42, window.innerHeight * .5 / PHONE_RATIO);
     return { w, h: w * PHONE_RATIO };
   }
   function sizeStage() {
@@ -637,7 +679,7 @@ function wireIntroStage() {
     gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
   });
   gsap.set(burstStage, { rotationY: -26, rotationX: 9, transformPerspective: 1000, transformOrigin: "50% 50%" });
-  paintTunnel(0);
+  mostraTunel(0);
 
   // Quanto a rolagem "presa" dura, no total. O GSAP, por padrão, reserva
   // sozinho o espaço de rolagem de uma seção presa somando a altura de
@@ -671,7 +713,7 @@ function wireIntroStage() {
       // elemento colapsado e embaralhava o início/fim da rolagem presa — a
       // página parecia "voltar" sozinha pro meio da abertura.
       onUpdate: (self) => {
-        paintTunnel(self.progress);
+        mostraTunel(self.progress);
         fitMini();
       },
       // Depois que o clarão termina, a réplica dentro do celular (cabeçalho +
@@ -766,6 +808,9 @@ function wireIntroStage() {
     // CENA 2 — a cena 1 sai e a câmera se desenha
     .to(inner, { opacity: 0, y: -24, duration: .5 })
     .fromTo(scene2, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, "<")
+    // o véu sai e o túnel aparece de verdade; ficam só as faixas do texto
+    .to(veil, { opacity: 0, duration: .5 }, "<")
+    .to(faixas, { opacity: .7, duration: .5 }, "<")
     .fromTo(burstPre, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5 })
     // A moldura da câmera começava a desenhar só depois do texto "E se, em vez
     // de travar..." terminar de aparecer — rolando pra baixo isso nem se nota
@@ -781,8 +826,8 @@ function wireIntroStage() {
     .to(burstScreen, { opacity: 1, duration: .6, ease: "power2.out" }, "-=.2")
     .to(bfReticle, { opacity: 1, duration: .4, ease: "back.out(2)" }, "-=.3")
     .to(burstStage, { rotationY: -5, rotationX: 2, duration: .8, ease: "power2.out" }, "-=.2")
-    // a saída do túnel se abre e a pergunta se completa
-    .to(burstBg, { clipPath: "circle(150% at 50% 50%)", duration: 1, ease: "power2.inOut" }, "-=.3")
+    // a pergunta se completa: as faixas firmam antes dela chegar
+    .to(faixas, { opacity: 1, duration: 1, ease: "power2.inOut" }, "-=.3")
     .to(burstTitleSpans, { opacity: 1, y: 0, duration: .4, stagger: .13, ease: "back.out(1.7)" }, "-=.55")
     .to({}, { duration: .8 })
     // ATRAVESSA — o texto sai, a câmera se endireita e a tela do celular cresce
@@ -790,7 +835,9 @@ function wireIntroStage() {
     // quando chega no tamanho da janela ela JÁ É aquela tela: o clarão só
     // disfarça a emenda e a pessoa segue rolando na página.
     .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .4 })
+    .to(faixas, { opacity: 0, duration: .4 }, "<")
     .to(burstStage, { rotationY: 0, rotationX: 0, duration: .5, ease: "power2.inOut" }, "<")
+    .addLabel("atravessa")
     .to(burstStage, {
       width: () => window.innerWidth,
       height: () => window.innerHeight,
@@ -804,6 +851,11 @@ function wireIntroStage() {
     .to(burstFrame, { opacity: 0, duration: .5 }, "<+=.2")
     .to(flash, { opacity: 1, duration: .45, ease: "power2.in" }, "<+=.45")
     .to(flash, { opacity: 0, duration: .8, ease: "power2.out" });
+
+  // O túnel chega na porta de luz (fim do vídeo) quando a tela do celular
+  // termina de crescer: a luz laranja do vídeo emenda no clarão.
+  fimDoTunel = gsap.utils.clamp(.5, 1, (tl.labels.atravessa + 1.2) / tl.duration());
+  mostraTunel(tl.scrollTrigger ? tl.scrollTrigger.progress : 0);
 }
 
 // O menu não existe durante a abertura: ele desce quando a página de vendas
@@ -831,10 +883,12 @@ function wireHeaderReveal() {
 // com a abertura, que também é reversível.
 function playHeroIntro() {
   const title = document.getElementById("hero-title");
+  const kicker = document.getElementById("hero-kicker");
+  const headline = document.getElementById("hero-headline");
   const lead = document.getElementById("hero-lead");
   const actions = document.getElementById("hero-actions-el");
   const cue = document.getElementById("hero-scrollcue");
-  const items = [title, lead, actions, cue].filter(Boolean);
+  const items = [title, kicker, headline, lead, actions, cue].filter(Boolean);
   if (!items.length) return;
 
   if (!hasGSAP || prefersReducedMotion) {

@@ -67,6 +67,12 @@ body {
    o que em alguns navegadores de celular quebra o position: sticky. */
 @supports (overflow-x: clip) {
   body { overflow-x: clip; }
+  /* O corte do body é repassado pra janela e vira "hidden" da página, que ainda
+     rola pro lado por código ou foco: os blocos girados da animação de entrada
+     passavam da borda e a página andava de lado em telas de 960 a 1366px. No
+     <main>, clip corta de verdade e não cria contêiner de rolagem, então o
+     sticky do herói e da foto da Vitória continuam funcionando. */
+  main { overflow-x: clip; }
 }
 
 img { max-width: 100%; display: block; }
@@ -454,12 +460,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    movimento no celular, ou sem JavaScript) a pessoa rolaria quase uma tela
    inteira sem nada mudar. A classe entra por um script no <head>, antes da
    primeira pintura, então não há salto de layout. */
-/* Era 195vh: sobrava tela vazia depois do "Atravesse o medo. Apareça." até a
-   próxima seção começar (a pista de rolagem seguia mesmo com a mensagem já
-   toda visível). Encurtada — a proporção de cada fase (ver update() em
-   main.js, tudo calculado como fração de hero.height - stage.height)
-   continua a mesma, só o final da pista chega mais cedo. */
-.cinema-on .hero { height: 178vh; }
+/* Uma seção só: o texto fica parado e a cena fica presa na tela por mais de
+   uma rolagem (como a foto da Vitória), andando conforme a pessoa desce. A
+   pista é o que sobra da altura depois do palco (ver update() em main.js). */
+.cinema-on .hero { height: 260vh; }
 .cinema-stage {
   position: sticky;
   top: var(--header-h, 71px);
@@ -483,68 +487,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 2;
   pointer-events: none;
 }
-.hero-copy {
-  opacity: var(--copy-opacity, 1);
-  transform: translateY(var(--copy-y, 0px));
-}
 /* will-change só enquanto o herói está na tela (classe ligada pelo JS). */
-.cinema-stage.is-live .hero-copy,
-.cinema-stage.is-live .crossing-message { will-change: opacity, transform; pointer-events: auto; }
-.crossing-cta { margin-top: .3rem; }
-.crossing-message p.crossing-preview {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: .88rem;
-  line-height: 1.4;
-  color: var(--text-muted);
-  max-width: 26ch;
-  margin: -.3rem 0 0;
-  letter-spacing: normal;
-}
 .cinema-stage.is-live .hero-photo-bg img { will-change: transform; }
-/* A frase que aparece quando você "atravessa" o portal. */
-.crossing-message {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .9rem;
-  padding: 0 24px;
-  text-align: center;
-  pointer-events: none;
-  pointer-events: none;
-  opacity: var(--cross-opacity, 0);
-  transform: translateY(var(--cross-y, 26px));
-}
-.crossing-message::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(70% 45% at 50% var(--cross-focus, 50%), rgba(11, 23, 40, .94), rgba(11, 23, 40, .72) 55%, transparent 85%),
-    linear-gradient(180deg, rgba(11, 23, 40, .55), transparent 60%);
-  z-index: -1;
-}
-.cinema-stage.copy-inert .hero-copy { pointer-events: none; visibility: hidden; }
-.crossing-kicker {
+/* "Quem aparece, cresce" e "Atravesse o medo. Apareça." abrem o bloco do
+   herói, em cima do texto de venda e do botão. */
+.hero-kicker {
+  margin: 0 0 .7rem;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: .7rem;
+  font-size: .74rem;
   letter-spacing: .22em;
   color: var(--blue-light);
 }
-.crossing-message p {
+.hero-headline {
+  margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(1.9rem, 5vw, 3.4rem);
-  line-height: 1.08;
+  font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+  line-height: 1.06;
   letter-spacing: -.03em;
   color: var(--white);
-  margin: 0;
-  max-width: 16ch;
+  max-width: 14ch;
 }
 .hero-bg {
   position: absolute;
@@ -643,7 +606,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   transform-origin: 470px 900px;
   /* A animação do HTML original, congelada; ela anda enquanto a pessoa rola
      (classe .is-rolando, ligada pelo JS a cada evento de rolagem). */
-  animation: hero3d-cam 12s ease-in-out infinite paused;
+  animation: hero3d-cam 4.2s ease-in-out infinite paused;
 }
 .hero3d-bg {
   position: absolute;
@@ -663,18 +626,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   border-radius: 280px 280px 0 0;
   background: radial-gradient(ellipse at 50% 85%, rgba(255, 190, 90, .55), rgba(255, 190, 90, 0) 65%);
   transform: translateZ(-140px) scale(1.09);
-  animation: hero3d-glow 5s ease-in-out infinite paused;
+  animation: hero3d-glow 1.8s ease-in-out infinite paused;
 }
 .hero3d-ico { position: absolute; display: block; }
 .hero3d-ico img { display: block; width: 100%; height: 100%; }
 .hero3d-ico-kuai { left: 46px; top: 654px; width: 138px; height: 148px; transform-origin: 424px 182px; transform: translateZ(140px) scale(.9125); }
-.hero3d-ico-kuai img { animation: hero3d-fl1 5.5s ease-in-out infinite paused; }
+.hero3d-ico-kuai img { animation: hero3d-fl1 2.2s ease-in-out infinite paused; }
 .hero3d-ico-tiktok { left: 172px; top: 604px; width: 138px; height: 164px; transform-origin: 298px 232px; transform: translateZ(200px) scale(.875); }
-.hero3d-ico-tiktok img { animation: hero3d-fl2 6.5s ease-in-out infinite paused; }
+.hero3d-ico-tiktok img { animation: hero3d-fl2 2.6s ease-in-out infinite paused; }
 .hero3d-ico-insta { left: 108px; top: 786px; width: 126px; height: 136px; transform-origin: 362px 50px; transform: translateZ(100px) scale(.9375); }
-.hero3d-ico-insta img { animation: hero3d-fl3 6s ease-in-out infinite paused; }
+.hero3d-ico-insta img { animation: hero3d-fl3 2.4s ease-in-out infinite paused; }
 .hero3d-ico-yt { left: 217px; top: 756px; width: 129px; height: 148px; transform-origin: 253px 80px; transform: translateZ(170px) scale(.89375); }
-.hero3d-ico-yt img { animation: hero3d-fl1 7s ease-in-out infinite reverse paused; }
+.hero3d-ico-yt img { animation: hero3d-fl1 2.8s ease-in-out infinite reverse paused; }
 .hero3d-person {
   position: absolute;
   left: 0;
@@ -684,29 +647,43 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   transform: translateZ(0);
 }
 
+/* Movimento guiado pela rolagem: --cena-p vai de 0 a 1 enquanto o herói está
+   preso na tela (update() em main.js). Os ícones sobem da mão dela pro espaço
+   livre entre a mão e o rosto (sem sair da tela no celular), a luz do arco
+   acende e a pessoa dá um passo à frente.
+   Só translate/scale: fica na GPU, sem repintar a cena. */
+.hero3d-ico-kuai { translate: calc(var(--cena-p, 0) * 120px) calc(var(--cena-p, 0) * -200px); }
+.hero3d-ico-tiktok { translate: calc(var(--cena-p, 0) * 170px) calc(var(--cena-p, 0) * -250px); }
+.hero3d-ico-insta { translate: calc(var(--cena-p, 0) * 60px) calc(var(--cena-p, 0) * -120px); }
+.hero3d-ico-yt { translate: calc(var(--cena-p, 0) * 160px) calc(var(--cena-p, 0) * -190px); }
+.hero3d-glow { scale: calc(1 + var(--cena-p, 0) * .32); }
+.hero3d-person { translate: 0 calc(var(--cena-p, 0) * -36px) calc(var(--cena-p, 0) * 130px); }
+
 .hero3d-stage.is-rolando .hero3d-cam,
 .hero3d-stage.is-rolando .hero3d-ico img,
 .hero3d-stage.is-rolando .hero3d-glow { animation-play-state: running; }
+/* Movimento amplo e rápido: a cena só anda enquanto a pessoa rola, então cada
+   rolagem de 1 a 2 segundos precisa mostrar um movimento de verdade. */
 @keyframes hero3d-cam {
-  0% { transform: rotateY(-4deg) rotateX(1.5deg); }
-  50% { transform: rotateY(4deg) rotateX(-1.5deg); }
-  100% { transform: rotateY(-4deg) rotateX(1.5deg); }
+  0% { transform: rotateY(-9deg) rotateX(3deg); }
+  50% { transform: rotateY(9deg) rotateX(-3deg); }
+  100% { transform: rotateY(-9deg) rotateX(3deg); }
 }
 @keyframes hero3d-fl1 {
-  0%, 100% { transform: translateY(0) rotateZ(-3deg); }
-  50% { transform: translateY(-16px) rotateZ(3deg); }
+  0%, 100% { transform: translate(0, 0) rotateZ(-8deg); }
+  50% { transform: translate(8px, -36px) rotateZ(8deg); }
 }
 @keyframes hero3d-fl2 {
-  0%, 100% { transform: translateY(-10px) rotateZ(3deg); }
-  50% { transform: translateY(12px) rotateZ(-3deg); }
+  0%, 100% { transform: translate(-6px, -22px) rotateZ(8deg); }
+  50% { transform: translate(6px, 26px) rotateZ(-8deg); }
 }
 @keyframes hero3d-fl3 {
-  0%, 100% { transform: translateY(6px) rotateZ(2deg); }
-  50% { transform: translateY(-14px) rotateZ(-4deg); }
+  0%, 100% { transform: translate(0, 14px) rotateZ(6deg); }
+  50% { transform: translate(-8px, -30px) rotateZ(-9deg); }
 }
 @keyframes hero3d-glow {
-  0%, 100% { opacity: .55; }
-  50% { opacity: .9; }
+  0%, 100% { opacity: .4; }
+  50% { opacity: 1; }
 }
 /* Quem pede menos movimento vê a mesma cena parada. */
 @media (prefers-reduced-motion: reduce) {
@@ -1018,18 +995,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin-top: clamp(2.2rem, 5vw, 3.2rem);
 }
 /* ---------- Tabela "sem gravar x gravando" ----------
-   A pergunta fica no meio, uma vez só, grande; a consequência de cada lado
-   fica pequena, espelhada em direção à pergunta. No celular a pergunta sobe
-   pra linha de cima e as duas respostas ficam lado a lado embaixo dela. */
-.versus { display: grid; }
+   A pergunta vem primeiro, sozinha na linha, e as duas respostas ficam lado a
+   lado embaixo dela, separadas por um fio. Ordem natural de leitura:
+   pergunta -> sem gravar -> gravando. (Com a pergunta no meio, o olho lia a
+   resposta do "sem gravar" antes de saber qual era a pergunta.) */
+.versus { display: grid; max-width: 900px; margin-inline: auto; }
 .versus-head,
 .versus-linha {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(1rem, 3vw, 2.4rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: clamp(1.2rem, 5vw, 3.6rem);
 }
 .versus-head { padding-bottom: 1.2rem; }
+.versus-head .versus-meio { display: none; }
 .versus-lado {
   display: flex;
   flex-direction: column;
@@ -1037,51 +1015,49 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: .5rem;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
   color: var(--white);
 }
 .versus-lado .statement-col-icon { margin: 0; background: var(--white); }
 .versus-sem.versus-lado { --ico: var(--ico-x); }
 .versus-com.versus-lado { --ico: var(--ico-play); }
 .versus-linha {
-  padding: clamp(1.2rem, 3vw, 1.8rem) 0;
+  grid-template-areas: "q q" "sem com";
+  row-gap: clamp(.7rem, 2vw, 1rem);
+  padding: clamp(1.3rem, 3.4vw, 2rem) 0;
   border-top: 1px solid var(--border);
 }
 .versus-q {
+  grid-area: q;
   margin: 0;
   text-align: center;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(1.35rem, 3.2vw, 2rem);
+  font-size: clamp(1.3rem, 3.2vw, 2rem);
   line-height: 1.15;
   letter-spacing: -.02em;
   color: var(--white);
 }
+.versus-linha .versus-sem { grid-area: sem; }
+.versus-linha .versus-com { grid-area: com; }
 .versus-sem:not(.versus-lado),
 .versus-com:not(.versus-lado) {
   margin: 0;
-  font-size: .98rem;
+  text-align: center;
+  font-size: clamp(.84rem, 1.8vw, 1.02rem);
   line-height: 1.45;
   color: var(--text-muted);
 }
-/* Espelhado: as duas respostas "apontam" pra pergunta do meio. */
-.versus-sem:not(.versus-lado) { text-align: right; }
-.versus-com:not(.versus-lado) { text-align: left; color: var(--text); }
-
-@media (max-width: 699.98px) {
-  .versus-head { grid-template-columns: 1fr 1fr; }
-  .versus-head .versus-meio { display: none; }
-  .versus-linha {
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: "q q" "sem com";
-    row-gap: .7rem;
-    column-gap: 1.1rem;
-  }
-  .versus-linha .versus-q { grid-area: q; }
-  .versus-linha .versus-sem { grid-area: sem; text-align: center; }
-  .versus-linha .versus-com { grid-area: com; text-align: center; }
-  .versus-sem:not(.versus-lado), .versus-com:not(.versus-lado) { font-size: .84rem; }
-  .versus-lado { font-size: 1rem; }
+/* Fio fino entre as duas respostas, como entre as duas colunas do topo. */
+.versus-com:not(.versus-lado) { position: relative; }
+.versus-com:not(.versus-lado)::before {
+  content: "";
+  position: absolute;
+  top: .1em;
+  bottom: .1em;
+  left: calc(clamp(1.2rem, 5vw, 3.6rem) / -2);
+  width: 1px;
+  background: var(--border);
 }
 
 .statement-link {
@@ -1370,9 +1346,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 #accordion-modulos .accordion-item::before {
   content: "";
   position: absolute;
-  left: 2.525rem;
-  top: 2.325rem;
-  bottom: -3.225rem;
+  left: 2.65rem;
+  top: 2.45rem;
+  bottom: -3.35rem;
   width: 1px;
   background: var(--border);
   z-index: -1;
@@ -1413,13 +1389,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: rgba(70, 130, 180, .18);
   color: var(--blue-light);
-  font-size: .58rem;
+  font-size: .54rem;
   line-height: 1.05;
   font-weight: 700;
   text-align: center;
@@ -1522,7 +1498,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .qualify-card li { font-size: 1.05rem; line-height: 1.5; color: var(--text); }
 
 /* ---------- Quadradinhos de benefícios ----------
-   Grade de 3 x 2 (2 colunas no celular): ícone, título curto e uma linha.
+   Quatro quadradinhos (2 x 2 no celular), transparentes: título e uma linha.
    Card quadrado, como os outros da página, e flutua no mouse. */
 .beneficios {
   display: grid;
@@ -1530,42 +1506,40 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: clamp(.8rem, 2vw, 1.2rem);
   margin: 2.6rem 0 4.4rem;
 }
+/* Transparente, sem traço laranja e sem ícone: só o fio fino do card, o
+   título e a linha de apoio. */
 .beneficio {
-  padding: clamp(1.2rem, 2.4vw, 1.8rem);
-  background: rgba(255, 255, 255, .03);
+  container-type: inline-size;
+  padding: clamp(1.2rem, 2vw, 1.5rem);
+  background: transparent;
   border: 1px solid var(--border);
-  border-top: 2px solid var(--orange);
 }
-.beneficio-icone {
-  display: grid;
-  place-items: center;
-  width: 2.8rem;
-  height: 2.8rem;
-  margin-bottom: 1.1rem;
-  border-radius: 50%;
-  color: var(--orange);
-  background: rgba(215, 119, 19, .12);
+/* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
+   que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
+.beneficio h3 {
+  margin: 0 0 .5rem;
+  font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+  font-size: clamp(.85rem, 10.5cqi, 1.45rem);
+  line-height: 1.15;
+  color: var(--white);
 }
-.beneficio-icone svg { width: 1.5rem; height: 1.5rem; }
-.beneficio h3 { margin: 0 0 .4rem; font-size: clamp(1.1rem, 1.8vw, 1.35rem); color: var(--white); }
-.beneficio p { margin: 0; font-size: .98rem; line-height: 1.45; color: var(--text-muted); }
-/* O diferencial é o quadradinho que mais importa: ganha a cor da marca. */
-.beneficio-destaque { background: linear-gradient(160deg, rgba(215, 119, 19, .16), rgba(215, 119, 19, .04)); border-color: rgba(215, 119, 19, .4); }
+.beneficio p { margin: 0; font-size: .9rem; line-height: 1.45; color: var(--text-muted); }
 @media (min-width: 700px) and (max-width: 999.98px) { .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 370px) {
-  .beneficio { padding-inline: .6rem; }
+  /* Abaixo de ~362px nem o tamanho mínimo do título comporta a palavra
+     mais longa inteira: aí ela pode hifenizar em vez de vazar. */
+  .beneficio h3 { hyphens: auto; overflow-wrap: anywhere; }
   /* Celular estreito (360px): um tiquinho menor pra palavra longa não passar do meio da foto. */
   .band-credentials .credential-item { font-size: .94rem; }
   .band-credentials .credential-icon { width: 1.6rem; height: 1.6rem; }
 }
-/* Só em tela de 320px: aí a palavra longa pode hifenizar em vez de vazar. */
-@media (max-width: 340px) { .beneficio h3 { hyphens: auto; overflow-wrap: anywhere; } .band-credentials .credential-item { font-size: .84rem; } }
+/* Só em tela de 320px: credencial um pouco menor pra caber na metade da foto. */
+@media (max-width: 340px) { .band-credentials .credential-item { font-size: .84rem; } }
 @media (max-width: 699.98px) {
-  .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 3rem; }
-  /* Sem quebrar palavra no meio ("Acompanhame-nto"): menos respiro lateral e o título cabe inteiro. */
-  .beneficio { padding: 1rem .85rem 1.1rem; }
-  .beneficio h3 { font-size: clamp(.8rem, 3.7vw, .95rem); }
-  .beneficio p { font-size: .88rem; }
+  .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin-bottom: 3rem; }
+  /* Card sem fundo pede menos respiro lateral: sobra largura pro título crescer. */
+  .beneficio { padding: 1rem .65rem 1.1rem; }
+  .beneficio p { font-size: .8rem; }
 }
 
 /* "7 módulos, 32 aulas" logo embaixo de "A grade do curso". */
@@ -1910,25 +1884,44 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   text-align: center;
   padding: 2rem clamp(1.25rem, 6vw, 2.5rem) 5.5rem;
   overflow: hidden;
-  /* Começa no fundo do túnel: quase preto. As três cores viajam até o laranja
-     da saída conforme a pessoa avança (paintTunnel, em main.js). */
-  --t-core: #0A1826;
-  --t-mid: #050D16;
-  --t-edge: #01040A;
-  background: radial-gradient(circle at 50% 48%, var(--t-core) 0%, var(--t-mid) 38%, var(--t-edge) 100%);
+  /* Fundo do começo do túnel, até o pôster do vídeo aparecer. */
+  background: #050D16;
 }
 .hero-intro-inner { position: absolute; z-index: 2; display: flex; flex-direction: column; align-items: center; }
 
-/* Os anéis do túnel ficam atrás de tudo. */
+/* O vídeo do túnel fica atrás de tudo e cobre a tela como uma foto. */
 .tunnel {
   position: absolute;
   inset: 0;
   z-index: 0;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
   pointer-events: none;
 }
-.t-ring { opacity: 0; }
+.tunnel-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  background: #050D16;
+}
+/* Véu da cena 1: o túnel fica escuro por igual enquanto as frases, o VOCÊ
+   TRAVA e os pensamentos estão na tela. O centro é o mais escuro porque é ali
+   que a porta de luz brilha, bem atrás do texto. Some quando a cena 2 entra. */
+.tunnel-veil {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 55% at 50% 52%, rgba(3, 9, 18, .8) 0%, rgba(3, 9, 18, .7) 100%);
+}
+/* Faixas da cena 2: escuro só em cima e embaixo, onde ficam "E se, em vez de
+   travar…" e "você desse o play?". O meio, com a porta de luz, fica limpo. */
+.tunnel-faixas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(180deg, rgba(3, 9, 18, .82) 0%, rgba(3, 9, 18, .35) 24%, rgba(3, 9, 18, 0) 40%, rgba(3, 9, 18, 0) 52%, rgba(3, 9, 18, .45) 66%, rgba(3, 9, 18, .9) 100%);
+}
 
 .hi-line1 {
   margin: 0;
@@ -2052,11 +2045,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Entrada coreografada do hero (GSAP, ver main.js) ----------
    Escondidos por padrão; a timeline de entrada revela em sequência.
    Sem JS (raro), o <noscript> abaixo garante que tudo continue visível. */
-#hero-title, #hero-lead, #hero-actions-el, #hero-scrollcue {
+#hero-title, #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue {
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  #hero-title, #hero-lead, #hero-actions-el, #hero-scrollcue { opacity: 1; }
+  #hero-title, #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue { opacity: 1; }
 }
 
 /* ---------- CTA principal em formato de play ---------- */
@@ -2164,15 +2157,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   visibility: hidden;
 }
 .intro-scene2.is-on { opacity: 1; visibility: visible; }
-.burst-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  /* A saída do túnel: luz laranja se abrindo. */
-  background: radial-gradient(circle at 50% 50%, var(--orange-light) 0%, var(--orange) 26%, #3A1F05 62%, transparent 100%);
-  clip-path: circle(0% at 50% 50%);
-  opacity: .9;
-}
 .burst-pre {
   position: absolute;
   top: 16%;
@@ -2184,7 +2168,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-family: var(--font-body);
   font-size: clamp(.82rem, 3.6vw, .98rem);
   letter-spacing: .03em;
-  color: var(--text-muted);
+  color: var(--text);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 2px 16px rgba(0, 0, 0, .55);
   opacity: 0;
 }
 /* O palco da câmera: um retângulo com posição e tamanho próprios (definidos
@@ -2239,7 +2224,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* A réplica é uma imagem parada da página: nada nela pisca, gira ou convida a
    rolar, senão vira uma segunda página viva dentro da primeira. */
 .burst-mini .scroll-cue,
-.burst-mini .crossing-message,
 .burst-mini .btn-play-ring { display: none; }
 .burst-mini * { animation: none !important; transition: none !important; }
 
@@ -2279,11 +2263,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   line-height: 1.05;
   font-size: clamp(1.7rem, 7vw, 3rem);
   color: var(--text);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, .45), 0 4px 26px rgba(0, 0, 0, .6);
 }
 .burst-title span { display: inline-block; opacity: 0; }
 .burst-title .text-orange { font-size: 1.35em; }
 @media (prefers-reduced-motion: reduce) {
-  .burst-bg { clip-path: circle(150% at 50% 50%); }
   .burst-pre, .burst-title span, #bf-corners, #bf-reticle, #bf-rec { opacity: 1 !important; }
   .burst-frame.is-settled { animation: none; }
 }
@@ -2501,23 +2485,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .header-inner { padding-top: 10px; padding-bottom: 10px; gap: .75rem; }
   .logo-mark { height: 34px; }
   :root { --header-h: 65px; --portal-origin: 52% 58%; }
-  .cinema-on .hero { height: 162vh; height: 162svh; }
+  .cinema-on .hero { height: 240vh; height: 240svh; }
   .cinema-stage {
     padding: 28px 0 40px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
   }
-  /* No celular a frase sobe pra área escura, longe do rosto e do arco aceso. */
-  .crossing-message {
-    justify-content: flex-start;
-    padding-top: 16vh;
-    padding-top: 16svh;
-    --cross-focus: 26%;
-  }
+  .hero-kicker { font-size: .66rem; margin-bottom: .5rem; }
+  .hero-headline { font-size: clamp(1.6rem, 7.6vw, 2rem); max-width: none; }
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
-  .hero-photo-bg { inset: 160px 0 0 0; }
+  .hero-photo-bg { inset: 200px 0 0 0; }
   .hero-photo-bg img { object-position: center 50%; }
   .hero-scrim {
     background:
@@ -2568,20 +2547,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     justify-content: flex-start;
     align-items: stretch;
   }
-  .crossing-message {
-    justify-content: flex-start;
-    padding-top: 14vh;
-    padding-top: 14svh;
-    --cross-focus: 24%;
-  }
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
   .hero-copy { max-width: 600px; margin-left: auto; margin-right: auto; }
   .hero h1 { font-size: 3rem; line-height: 1.06; }
   .hero-lead { margin-left: auto; margin-right: auto; }
-  /* Na foto vertical (941px de largura) os ícones começam na linha 620. Essa linha
-     fica 28px abaixo do fim do texto (--hero-text-bottom, medido pelo JS). */
-  .hero-photo-bg img { object-position: 50% calc(var(--hero-text-bottom, 420px) + 28px - 620 / 941 * 100vw); }
+  /* A cena começa logo abaixo do texto (--hero-text-bottom, medido pelo JS). Em
+     tela em pé ela cobre a largura toda e, atrás do texto, o botão caía em cima
+     do rosto. A borda de cima se desfaz no fundo, sem linha de corte. */
+  .hero-photo-bg {
+    top: var(--hero-text-bottom, 420px);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 90px);
+    mask-image: linear-gradient(180deg, transparent 0, #000 90px);
+  }
   .hero-scrim {
     background:
       linear-gradient(180deg, rgba(11, 23, 40, .85) 0, rgba(11, 23, 40, .55) 260px, transparent 420px),
@@ -2595,6 +2573,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 @media (min-width: 700px) and (orientation: portrait) and (min-aspect-ratio: 17/20) {
   .cinema-stage { padding-top: 28px; }
   .hero h1 { font-size: 2.4rem; }
+  .hero-headline { font-size: 2.3rem; }
   .hero-lead { font-size: .95rem; line-height: 1.45; margin-bottom: .6em; }
   .hero-actions { margin-top: 1rem; }
   .hero-microcopy { margin-top: .4rem; }
@@ -2617,10 +2596,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Trilha de #modulos: acompanha o novo padding do trigger e o novo gap
      (.6rem) do .accordion nesse breakpoint (ver regras acima). */
   #accordion-modulos .accordion-item::before {
-    left: 2.225rem;
-    top: 2.125rem;
-    bottom: -2.725rem;
+    left: 2.35rem;
+    top: 2.25rem;
+    bottom: -2.85rem;
   }
+  /* Título longo ("Conteúdo e estrutura") empurrava o "· 4 aulas" pra linha
+     de baixo, embaixo do selo. Agora o selo fica à esquerda e o título com a
+     contagem de aulas logo abaixo dele, igual em todos os módulos. */
+  #accordion-modulos .accordion-trigger > span:first-child {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: .75rem;
+    row-gap: .15rem;
+  }
+  #accordion-modulos .accordion-tag { grid-row: span 2; }
+  #accordion-modulos .accordion-title-text { align-self: end; line-height: 1.2; }
+  #accordion-modulos .module-count { align-self: start; }
+  #accordion-modulos .module-count::before { content: none; }
   .credential-item { gap: .55rem; padding: .55rem 0; font-size: .78rem; line-height: 1.3; }
   .credential-icon { width: 1.5rem; height: 1.5rem; }
   .credential-figure { font-size: 1.1em; }
@@ -2652,10 +2644,24 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     top: 0;
     height: auto;
     min-height: calc(100vh - var(--header-h, 71px));
-    padding-top: 28px;
+    /* Aqui o palco não gruda embaixo do menu: o respiro de cima é que tira o
+       texto de trás dele. */
+    padding-top: calc(var(--header-h, 71px) + 18px);
     padding-bottom: 36px;
   }
-  .crossing-message { display: none; }
+  .hero-headline { font-size: 2rem; }
+  .hero-kicker { margin-bottom: .4rem; }
+  .hero-lead-list { margin-top: .8rem; font-size: .88rem; line-height: 1.45; }
+  .hero-actions { margin-top: .9rem; }
+  /* Abertura: pouca altura pra frase, VOCÊ TRAVA e quatro balões. Os balões
+     ficam dois por linha e o resto encolhe um pouco. */
+  .intro-stage { padding-top: .8rem; padding-bottom: 2.6rem; }
+  .hi-line1 { font-size: 1.2rem; }
+  .hi-line2 { margin-top: .45rem; }
+  .hi-travar { margin-top: .3rem; font-size: 2.5rem; }
+  .hi-thoughts { width: min(720px, 92vw); display: grid; grid-template-columns: 1fr 1fr; gap: .75rem 1rem; margin-top: .9rem; }
+  .hi-thoughts span { padding: .5rem .9rem; font-size: .72rem; }
+  .hi-cue { bottom: .6rem; }
 }
 /* Celular deitado: o título comprido encostava nos ícones das redes. */
 @media (max-height: 480px) and (min-width: 700px) {
@@ -2669,20 +2675,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 @media (min-width: 2400px) {
   :root { --header-h: 102px; }
   .header-inner, .hero-inner, main > .section, .site-footer { zoom: 1.2; }
-  .crossing-message p { font-size: 4.1rem; }
-  .crossing-kicker { font-size: .84rem; }
 }
 @media (min-width: 3000px) {
   :root { --header-h: 123px; }
   .header-inner, .hero-inner, main > .section, .site-footer { zoom: 1.45; }
-  .crossing-message p { font-size: 4.9rem; }
-  .crossing-kicker { font-size: 1rem; }
 }
 @media (min-width: 3600px) {
   :root { --header-h: 140px; }
   .header-inner, .hero-inner, main > .section, .site-footer { zoom: 1.65; }
-  .crossing-message p { font-size: 5.6rem; }
-  .crossing-kicker { font-size: 1.15rem; }
 }
 
 /* ---------- Modo revisão: itens a confirmar ----------
