@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireAccordions();
   wireScrollReveal();
   wireNiveis();
+  wireDepoimentos();
   wireCountUp();
   wireScrollEffects();
   wireScrollCue();
@@ -387,6 +388,92 @@ function wireNiveis() {
   if ("ResizeObserver" in window) new ResizeObserver(mede).observe(document.body);
   mede();
 }
+// Depoimentos em carrossel: o vídeo do meio é sempre o maior e os outros dois
+// aparecem menores dos lados. Arrastar pro lado (dedo ou mouse), tocar num dos
+// lados ou usar as setas do teclado traz outro pro meio. Com três vídeos a
+// fila dá a volta, então sempre tem um de cada lado.
+function wireDepoimentos() {
+  const palco = document.querySelector(".depo-palco");
+  if (!palco) return;
+  const cards = [...palco.querySelectorAll(".depo-card")];
+  const n = cards.length;
+  if (n < 2) return;
+  let ativo = Math.floor(n / 2);
+  let arrasto = 0;        // quanto o dedo já levou, em "cards"
+  let toque = null;
+  let arrastando = false;
+  const passo = () => (cards[0].offsetWidth || 1) * .72;
+
+  function posicao(i) {
+    let d = i - ativo;
+    if (d > n / 2) d -= n;
+    if (d < -n / 2) d += n;
+    return d - arrasto;
+  }
+  function desenha(anima) {
+    const s = passo();
+    cards.forEach((card, i) => {
+      const p = posicao(i);
+      const a = Math.min(1, Math.abs(p));
+      card.style.transition = anima ? "" : "none";
+      card.style.transform = "translate3d(" + (p * s).toFixed(1) + "px, 0, 0) scale(" + (1 - .2 * a).toFixed(3) + ")";
+      card.style.opacity = (1 - .3 * a).toFixed(3);
+      card.style.zIndex = String(10 - Math.round(Math.abs(p) * 3));
+      card.classList.toggle("is-ativo", Math.abs(p) < .5);
+    });
+  }
+  function vai(novo) {
+    ativo = (novo + n) % n;
+    arrasto = 0;
+    desenha(true);
+  }
+
+  palco.addEventListener("pointerdown", (e) => {
+    toque = { x: e.clientX, y: e.clientY, id: e.pointerId };
+    arrastando = false;
+  });
+  palco.addEventListener("pointermove", (e) => {
+    if (!toque || e.pointerId !== toque.id) return;
+    const dx = e.clientX - toque.x;
+    const dy = e.clientY - toque.y;
+    // Só vira arrasto de lado quando o gesto é mais pro lado que pra baixo:
+    // rolar a página por cima dos vídeos continua funcionando.
+    if (!arrastando && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
+      arrastando = true;
+      palco.classList.add("is-arrastando");
+      try { palco.setPointerCapture(e.pointerId); } catch { /* segue sem captura */ }
+    }
+    if (arrastando) {
+      arrasto = gsap.utils.clamp(-1.2, 1.2, -dx / passo());
+      desenha(false);
+    }
+  });
+  const solta = (e) => {
+    if (!toque || (e && e.pointerId !== toque.id)) return;
+    if (arrastando) {
+      palco.classList.remove("is-arrastando");
+      if (arrasto > .2) vai(ativo + 1);
+      else if (arrasto < -.2) vai(ativo - 1);
+      else vai(ativo);
+    } else if (e && e.type === "pointerup") {
+      // Toque num vídeo do lado: ele vem pro meio.
+      const card = e.target.closest && e.target.closest(".depo-card");
+      const i = cards.indexOf(card);
+      if (i >= 0 && i !== ativo) vai(i);
+    }
+    toque = null;
+    arrastando = false;
+  };
+  palco.addEventListener("pointerup", solta);
+  palco.addEventListener("pointercancel", solta);
+  palco.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight") { e.preventDefault(); vai(ativo + 1); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); vai(ativo - 1); }
+  });
+  window.addEventListener("resize", () => desenha(false), { passive: true });
+  desenha(false);
+}
+
 function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
@@ -604,39 +691,39 @@ function wireIntroStage() {
   gsap.set(burstPre, { opacity: 0, y: 10 });
   gsap.set(burstTitleSpans, { opacity: 0, y: 12 });
 
-  // ---- A ANIMAÇÃO (em segundos de verdade, uns 10 no total) ----
+  // ---- A ANIMAÇÃO (em segundos de verdade, uns 7 no total) ----
   tl = gsap.timeline({ paused: true, onUpdate: fitMini });
   tl
     // O túnel surge do escuro.
-    .to(veil, { opacity: 0, duration: 1.4, ease: "power1.out" }, 0)
-    .to(faixas, { opacity: .7, duration: .8 }, .3)
+    .to(veil, { opacity: 0, duration: .9, ease: "power1.out" }, 0)
+    .to(faixas, { opacity: .7, duration: .6 }, .2)
     // "E se, em vez de travar…" e a câmera se desenhando.
-    .to(burstPre, { opacity: 1, y: 0, duration: .7, ease: "power2.out" }, .8)
-    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .9, ease: "power2.inOut" }, 1.1)
-    .to(bfPaths.slice(2), { strokeDashoffset: 0, duration: .8, ease: "power2.inOut" }, 1.7)
-    .to(bfRec, { opacity: 1, duration: .4 }, 2.35)
-    .to(bfCorners, { opacity: 1, duration: .4 }, 2.5)
+    .to(burstPre, { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, .45)
+    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .7, ease: "power2.inOut" }, .6)
+    .to(bfPaths.slice(2), { strokeDashoffset: 0, duration: .6, ease: "power2.inOut" }, 1.05)
+    .to(bfRec, { opacity: 1, duration: .3 }, 1.5)
+    .to(bfCorners, { opacity: 1, duration: .3 }, 1.6)
     // A câmera "enxerga": a página acende dentro da tela.
-    .to(burstScreen, { opacity: 1, duration: .9, ease: "power2.out" }, 2.6)
-    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1.4, ease: "power2.out" }, 2.8)
-    .to(bfReticle, { opacity: 1, duration: .5, ease: "back.out(2)" }, 3)
+    .to(burstScreen, { opacity: 1, duration: .7, ease: "power2.out" }, 1.65)
+    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1.1, ease: "power2.out" }, 1.8)
+    .to(bfReticle, { opacity: 1, duration: .4, ease: "back.out(2)" }, 2)
     // A pergunta se completa: as faixas firmam antes dela chegar.
-    .to(faixas, { opacity: 1, duration: 1.2, ease: "power2.inOut" }, 3.4)
-    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .5, stagger: .2, ease: "back.out(1.7)" }, 3.9)
+    .to(faixas, { opacity: 1, duration: .9, ease: "power2.inOut" }, 2.2)
+    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .45, stagger: .15, ease: "back.out(1.7)" }, 2.5)
     // Tempo de ler a pergunta inteira; depois o texto sai e a câmera se endireita.
-    .addLabel("atravessa", 7)
-    .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .5 }, "atravessa")
-    .to(faixas, { opacity: 0, duration: .5 }, "atravessa")
-    .to(burstStage, { rotationY: 0, rotationX: 0, duration: .7, ease: "power2.inOut" }, "atravessa")
+    .addLabel("atravessa", 4.6)
+    .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .4 }, "atravessa")
+    .to(faixas, { opacity: 0, duration: .4 }, "atravessa")
+    .to(burstStage, { rotationY: 0, rotationX: 0, duration: .6, ease: "power2.inOut" }, "atravessa")
     // ATRAVESSA: a tela da câmera cresce até ocupar a janela. Como ela é uma
     // réplica da página, quando chega no tamanho da janela ela JÁ É a página.
-    .addLabel("cresce", "atravessa+=.5")
-    .to(burstStage, { width: () => window.innerWidth, height: () => window.innerHeight, duration: 1.8, ease: "power2.in" }, "cresce")
-    .to(burstScreen, { left: "0%", top: "0%", width: "100%", height: "100%", borderRadius: 0, duration: 1.8, ease: "power2.in" }, "cresce")
-    .to(burstFrame, { opacity: 0, duration: .6 }, "cresce+=.2")
-    .to(flash, { opacity: 1, duration: .5, ease: "power2.in" }, "cresce+=1.35")
+    .addLabel("cresce", "atravessa+=.4")
+    .to(burstStage, { width: () => window.innerWidth, height: () => window.innerHeight, duration: 1.5, ease: "power2.in" }, "cresce")
+    .to(burstScreen, { left: "0%", top: "0%", width: "100%", height: "100%", borderRadius: 0, duration: 1.5, ease: "power2.in" }, "cresce")
+    .to(burstFrame, { opacity: 0, duration: .5 }, "cresce+=.2")
+    .to(flash, { opacity: 1, duration: .45, ease: "power2.in" }, "cresce+=1.05")
     .call(libera)
-    .to(flash, { opacity: 0, duration: .9, ease: "power2.out" });
+    .to(flash, { opacity: 0, duration: .8, ease: "power2.out" });
 
   // ---- O TÚNEL ----
   // Vídeo de 12s dos arcos até a porta de luz laranja, tocando sozinho. O
@@ -647,7 +734,10 @@ function wireIntroStage() {
     computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.jpg" },
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
-  const porta = tl.labels.cresce + 1.8;
+  const porta = tl.labels.cresce + 1.5;
+  // Os 3 primeiros segundos do vídeo são os mesmos arcos azuis passando
+  // devagar: a abertura começa depois deles.
+  const CORTE = 3;
   let comecou = false;
   let semVideo = false;
   let esperaVideo = 0;
@@ -655,19 +745,21 @@ function wireIntroStage() {
   // O túnel começa devagar e vai acelerando até a porta de luz. O ritmo final
   // é o que faz ele chegar lá quando a tela da câmera termina de crescer (a luz
   // do vídeo emenda no clarão).
-  const RITMO_INICIAL = .5;
+  const RITMO_INICIAL = 1;
   let ritmoFinal = 2;
   let ritmo = null;
   function ajustaRitmo() {
     video.defaultPlaybackRate = RITMO_INICIAL;
     video.playbackRate = RITMO_INICIAL;
     // Com power1.in (t²), o ritmo médio é inicial + (final - inicial) / 3.
-    if (isFinite(video.duration) && video.duration > 0) {
-      ritmoFinal = gsap.utils.clamp(1, 4, RITMO_INICIAL + 3 * (video.duration / porta - RITMO_INICIAL));
+    if (isFinite(video.duration) && video.duration > CORTE) {
+      ritmoFinal = gsap.utils.clamp(1, 4, RITMO_INICIAL + 3 * ((video.duration - CORTE) / porta - RITMO_INICIAL));
+      // Navegador que ignora o "#t=" do endereço: pula o começo aqui.
+      if (video.currentTime < CORTE - .1) video.currentTime = CORTE;
     }
   }
   // Onde o vídeo deve estar em cada instante da animação (a soma do ritmo).
-  const tempoDoVideo = (t) => RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t * t / (3 * porta * porta);
+  const tempoDoVideo = (t) => CORTE + RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t * t / (3 * porta * porta);
   function aceleraTunel() {
     const r = { v: RITMO_INICIAL };
     video.playbackRate = RITMO_INICIAL;
@@ -732,7 +824,7 @@ function wireIntroStage() {
   video.poster = VIDEOS[modo].poster;
   video.addEventListener("loadedmetadata", ajustaRitmo);
   video.addEventListener("playing", comeca, { once: true });
-  video.src = VIDEOS[modo].src;
+  video.src = VIDEOS[modo].src + "#t=" + CORTE;
   const tocando = video.play();
   // Vídeo bloqueado (modo de economia do iPhone): começa na hora, com a imagem.
   if (tocando && tocando.catch) tocando.catch(comeca);

@@ -206,18 +206,9 @@ ul { padding: 0; margin: 0; list-style: none; }
   visibility: hidden;
   transition: transform .5s ease, opacity .4s ease, visibility 0s linear .5s;
 }
-/* Sem faixa sólida, o texto do menu precisa de um véu pra continuar legível
-   sobre a foto: um degradê curto que escurece o topo e some logo abaixo. */
-/* Transparente e leve: só o contraste mínimo pra logo e o botão não se
-   misturarem com o texto que passa por baixo. Termina esfumado, sem faixa. */
-.site-header::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 -16px 0;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(11, 23, 40, .9) 0%, rgba(11, 23, 40, .7) 58%, rgba(11, 23, 40, 0) 100%);
-}
+/* Menu sem cor nenhuma atrás. A logo leva só uma sombra suave nas letras, pra
+   continuar legível quando passa sobre uma parte clara da página. */
+.site-header .logo-mark { filter: drop-shadow(0 1px 6px rgba(3, 10, 29, .6)); }
 .site-header.is-on { transform: translateY(0); opacity: 1; visibility: visible; transition: transform .5s ease, opacity .4s ease, visibility 0s; }
 @media (prefers-reduced-motion: reduce) {
   .site-header { transform: none; opacity: 1; visibility: visible; transition: none; }
@@ -1245,20 +1236,39 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 
 /* ---------- Depoimentos ----------
-   Cabem numa tela só, sem rolar dentro da seção e sem fila de lado: os três
-   vídeos verticais lado a lado, do tamanho que a altura da tela permite. Por
-   enquanto são espaços reservados, marcados no modo revisão. */
-#depoimentos { padding-block: clamp(2.6rem, 7vh, 4.5rem); }
-.depo-grid {
-  --depo-h: min(46vh, 470px);
-  --depo-h: min(46svh, 470px);
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(.55rem, 2.2vw, 1.6rem);
-  max-width: calc(var(--depo-h) * 27 / 16 + 3.2rem);
-  margin: clamp(1.4rem, 3vw, 2.2rem) auto 0;
+   Cabem numa tela só. Por enquanto os vídeos são espaços reservados,
+   marcados no modo revisão. */
+#depoimentos { padding-block: clamp(2rem, 6vh, 4rem); overflow: hidden; }
+/* O vídeo do meio é sempre o maior; os outros dois aparecem menores dos lados
+   e vêm pro meio arrastando (ver wireDepoimentos em main.js). A altura segue a
+   tela, pra seção inteira caber de uma vez, sem rolar dentro dela. */
+.depo-palco {
+  --depo-h: min(54vh, calc(100vh - 21rem), 560px);
+  --depo-h: min(54svh, calc(100svh - 21rem), 560px);
+  /* No celular estreito o do meio não passa de 62% da largura: sobra lugar pros dois dos lados aparecerem. */
+  --depo-w: min(calc(var(--depo-h) * 9 / 16), 62vw);
+  position: relative;
+  height: calc(var(--depo-w) * 16 / 9 + 6rem);
+  margin: clamp(1.1rem, 3vw, 2rem) auto 0;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.depo-card { margin: 0; min-width: 0; }
+.depo-palco.is-arrastando { cursor: grabbing; }
+.depo-palco:focus-visible { outline: 2px solid var(--orange); outline-offset: 6px; }
+.depo-card {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--depo-w);
+  margin: 0 0 0 calc(var(--depo-w) / -2);
+  transform-origin: 50% 40%;
+  transition: transform .6s cubic-bezier(.25, .1, .25, 1), opacity .6s cubic-bezier(.25, .1, .25, 1);
+}
+/* A legenda aparece só no vídeo do meio. */
+.depo-card figcaption { opacity: 0; transition: opacity .4s ease; }
+.depo-card.is-ativo figcaption { opacity: 1; }
 .depo-video {
   position: relative;
   display: grid;
@@ -1289,9 +1299,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--text-muted);
 }
 .depo-card figcaption { display: flex; flex-direction: column; gap: .1rem; margin-top: .7rem; }
-.depo-card figcaption strong { font-family: var(--font-head); font-size: clamp(.84rem, 2.6vw, 1.05rem); color: var(--white); }
-.depo-card figcaption span { font-size: clamp(.7rem, 2.1vw, .9rem); color: var(--text-muted); }
-.depo-card figcaption .depo-resultado { margin: .3rem 0 0; font-size: clamp(.72rem, 2.1vw, .9rem); line-height: 1.4; color: var(--text); }
+.depo-card figcaption strong { font-family: var(--font-head); font-size: 1rem; color: var(--white); }
+.depo-card figcaption span { font-size: .85rem; color: var(--text-muted); }
+.depo-card figcaption .depo-resultado { margin: .3rem 0 0; font-size: .86rem; line-height: 1.4; color: var(--text); }
 
 
 /* ---------- Offer ---------- */
