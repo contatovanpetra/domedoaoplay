@@ -30,6 +30,9 @@
   --font-head: 'Quicksand', sans-serif;
   --font-body: 'Nunito Sans', sans-serif;
 
+  /* Canto redondo é linguagem de CTA e de bônus. Card (comparação, qualificação,
+     módulo, pergunta, oferta, quem ensina) é quadrado: o contraste entre a caixa
+     reta e o botão arredondado é o que faz o botão saltar. */
   --radius-lg: 28px;
   --radius-md: 18px;
   --radius-sm: 12px;
@@ -194,14 +197,24 @@ ul { padding: 0; margin: 0; list-style: none; }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(11, 23, 40, .96);
-  /* Sem linha clara embaixo do menu: a separação vem de uma sombra escura. */
-  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, .7);
+  /* Barra transparente: o menu flutua sobre a página, sem faixa sólida. */
+  background: transparent;
+  box-shadow: none;
   /* Durante a abertura o menu não existe; ele desce quando a página de vendas
      começa (ver wireHeaderReveal em main.js). */
   transform: translateY(-100%);
   opacity: 0;
   transition: transform .5s ease, opacity .4s ease;
+}
+/* Sem faixa sólida, o texto do menu precisa de um véu pra continuar legível
+   sobre a foto: um degradê curto que escurece o topo e some logo abaixo. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(11, 23, 40, .82) 0%, rgba(11, 23, 40, .5) 58%, rgba(11, 23, 40, 0) 100%);
 }
 .site-header.is-on { transform: translateY(0); opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
@@ -658,7 +671,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   display: flex;
   background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 0;
   margin: 0;
   overflow: hidden;
@@ -804,7 +817,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    marcador de lista), não da caixa. */
 .compare-col {
   background: rgba(255, 255, 255, .02);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 2.2rem 2rem;
   border: 1px solid var(--border);
   border-top-width: 3px;
@@ -952,7 +965,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    no de FAQ. */
 .accordion-item {
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.02);
 }
@@ -1131,7 +1144,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    pra não repetir o peso visual do "vidro" de #vivi/#oferta. */
 .qualify-card {
   background: rgba(255, 255, 255, .02);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 2rem;
   border: 1px solid var(--border);
   border-top-width: 3px;
@@ -1152,7 +1165,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .offer-card {
   background: linear-gradient(165deg, rgba(70, 130, 180, 0.2), rgba(27, 48, 70, 0.85) 70%);
   border: 1px solid rgba(144, 190, 217, 0.28);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: clamp(2rem, 5vw, 3.5rem);
   box-shadow: var(--shadow-lg), 0 30px 60px -30px rgba(70, 130, 180, 0.45);
 }
@@ -1566,8 +1579,31 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   box-shadow: var(--shadow-md);
   transition: transform .2s ease, box-shadow .2s ease;
 }
-.btn-play:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+/* Brilho que atravessa o botão quando o mouse entra: a luz passa uma vez,
+   como o reflexo que corre nos botões da Apple, e para. */
+.btn-play { position: relative; overflow: hidden; isolation: isolate; }
+.btn-play::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, .28), rgba(255, 255, 255, 0));
+  transform: translateX(0);
+}
+.btn-play:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.btn-play:hover::after { animation: btn-play-brilho .75s ease-out; }
 .btn-play:active { transform: translateY(0); }
+@keyframes btn-play-brilho {
+  from { transform: translateX(0); }
+  to { transform: translateX(360%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-play:hover::after { animation: none; }
+}
 
 .btn-play-disc {
   position: relative;
@@ -1903,6 +1939,52 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Escada revela em cascata, usando o índice --i que cada item já carrega. */
 .ladder-step.reveal { transition-delay: calc(var(--i, 0) * 90ms); }
 .compare-depois.reveal { transition-delay: 160ms; }
+
+/* =========================================================
+   Cards que flutuam no mouse
+   Referência: cards da Apple Store — o card sobe alguns pixels, a sombra
+   abre embaixo e a borda acende. Nada gira nem cresce: o que dá a sensação
+   de flutuar é a sombra separando o card do fundo, não o tamanho.
+   ========================================================= */
+@media (hover: hover) and (pointer: fine) {
+  .compare-col, .qualify-card, .bonus-card, .offer-card, .authority-card, .ladder-step, .accordion-item {
+    transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .45s cubic-bezier(.2, .7, .2, 1), box-shadow .45s ease, border-color .45s ease;
+  }
+  /* :is(...):hover empata em especificidade com o estado final do reveal
+     (.compare-col.reveal.is-visible) e ganha por vir depois no arquivo. */
+  :is(.compare-col, .qualify-card, .bonus-card, .offer-card, .authority-card, .ladder-step):hover {
+    transform: translateY(-7px);
+    box-shadow: var(--shadow-lg);
+    /* Só as três bordas neutras acendem: o traço colorido de cima é o que
+       separa "É pra você" de "Não é", e não pode sumir no hover. */
+    border-bottom-color: rgba(144, 190, 217, .34);
+    border-left-color: rgba(144, 190, 217, .34);
+    border-right-color: rgba(144, 190, 217, .34);
+  }
+  /* Módulos e perguntas: a linha da trilha liga um item no outro, então o
+     movimento aqui é menor, senão a trilha parece quebrar. */
+  .accordion-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .accordion-item.open:hover { transform: none; }
+}
+
+/* Entrada item a item dentro dos cards de comparação e de qualificação:
+   a lista não aparece de uma vez, cada linha entra logo depois da anterior
+   (é a cadência que a Apple usa pra guiar a leitura de cima pra baixo). */
+@media (prefers-reduced-motion: no-preference) {
+  :is(.compare-col, .qualify-card).reveal li {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .2, 1);
+  }
+  :is(.compare-col, .qualify-card).reveal.is-visible li { opacity: 1; transform: none; }
+  :is(.compare-col, .qualify-card).reveal.is-visible li:nth-child(1) { transition-delay: .14s; }
+  :is(.compare-col, .qualify-card).reveal.is-visible li:nth-child(2) { transition-delay: .21s; }
+  :is(.compare-col, .qualify-card).reveal.is-visible li:nth-child(3) { transition-delay: .28s; }
+  :is(.compare-col, .qualify-card).reveal.is-visible li:nth-child(4) { transition-delay: .35s; }
+  :is(.compare-col, .qualify-card).reveal.is-visible li:nth-child(5) { transition-delay: .42s; }
+  :is(.compare-col, .qualify-card).reveal.is-visible li:nth-child(6) { transition-delay: .49s; }
+  :is(.compare-col, .qualify-card).reveal.is-visible li:nth-child(n+7) { transition-delay: .56s; }
+}
 
 /* =========================================================
    Responsive
