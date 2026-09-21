@@ -80,26 +80,34 @@ const clamp = (v) => Math.min(1, Math.max(0, v));
 // As medidas da página são lidas só quando algo muda de tamanho, nunca a cada
 // quadro da rolagem: ler medidas logo depois de mexer em estilo trava o celular.
 // A cena do herói foi montada num palco de 941x1672. Aqui ela é escalada pra
-// cobrir a tela inteira (o mesmo que object-fit: cover faz numa imagem), o que
+// cobrir a caixa dela (o mesmo que object-fit: cover faz numa imagem), o que
 // o CSS sozinho não consegue: precisa comparar largura e altura.
+// Vale pra cena de verdade e pra réplica que a abertura monta dentro do
+// celular. Por isso a medida é a do layout (offsetWidth/Height), que ignora o
+// transform que encolhe a réplica — as duas ficam enquadradas igual.
 function ajustaCena3D() {
-  const palco = document.getElementById("hero3d");
-  if (!palco) return;
-  const caixa = palco.parentElement.getBoundingClientRect();
-  if (!caixa.width || !caixa.height) return;
-  // Tela mais larga que a proporção da cena (9:16): cobrir daria um close no
-  // rosto, então a cena aparece inteira encostada na direita. Em tela estreita
-  // ela cobre a tela como a foto fazia.
-  const deitada = caixa.width / caixa.height > 941 / 1672;
-  palco.classList.toggle("is-lado", deitada);
-  const escala = deitada ? caixa.height / 1672 : Math.max(caixa.width / 941, caixa.height / 1672);
-  palco.style.setProperty("--hero3d-s", escala.toFixed(4));
+  document.querySelectorAll(".hero3d-stage").forEach((palco) => {
+    const caixa = palco.parentElement;
+    const w = caixa.offsetWidth;
+    const h = caixa.offsetHeight;
+    if (!w || !h) return;
+    // Só em tela deitada de verdade (computador, tablet deitado) a cena aparece
+    // inteira encostada na direita; cobrir ali daria um close no rosto. No
+    // celular ela sempre cobre a tela, mesmo quando a caixa do herói é mais
+    // larga que 9:16 (era isso que empurrava a cena pro canto e cortava).
+    const deitada = w >= 700 && w > h;
+    palco.classList.toggle("is-lado", deitada);
+    const escala = deitada ? h / 1672 : Math.max(w / 941, h / 1672);
+    palco.style.setProperty("--hero3d-s", escala.toFixed(4));
+  });
 }
 function wireScrollEffects() {
   const root = document.documentElement;
   const header = document.querySelector(".site-header");
   const hero = REAL_HERO;
   const stage = document.querySelector(".cinema-stage");
+  // Só a cena de verdade acompanha a rolagem (a réplica da abertura fica parada).
+  const cena3d = hero ? hero.querySelector(".hero3d-stage") : null;
   const inner = document.querySelector(".hero-inner");
   const copy = document.querySelector(".hero-copy");
   const bar = document.querySelector(".read-progress");
@@ -165,6 +173,10 @@ function wireScrollEffects() {
     if (!onScreen) return;
 
     const p = clamp((y - heroTop) / track);
+
+    // A cena 3D fica parada e só se mexe quando a pessoa rola: a câmera gira e
+    // os ícones sobem na mesma proporção em que ela avança pelo herói.
+    if (cena3d) cena3d.style.setProperty("--h3-p", p.toFixed(4));
 
     // O texto de venda só começa a sair depois que a pessoa teve tempo de ler.
     const approach = range(p, 0, 0.85);
@@ -484,6 +496,7 @@ function wireIntroStage() {
     });
 
     burstScreen.appendChild(mini);
+    ajustaCena3D();
   }
 
   // O palco tem tamanho em px pra poder ser animado até a janela inteira.
@@ -503,7 +516,7 @@ function wireIntroStage() {
     if (!mini || !burstScreen) return;
     const r = burstScreen.getBoundingClientRect();
     const k = Math.min(r.width / window.innerWidth, r.height / window.innerHeight);
-    gsap.set(mini, { scale: k });
+    gsap.set(mini, { scale: k, xPercent: -50, yPercent: -50 });
   }
 
   buildMiniScreen();
@@ -696,8 +709,11 @@ function wireHeaderReveal() {
   ScrollTrigger.create({
     trigger: hero,
     start: "top 75%",
-    onEnter: () => header.classList.add("is-on"),
-    onLeaveBack: () => header.classList.remove("is-on"),
+    // Quando o menu de verdade desce, o menu da réplica (dentro do celular da
+    // abertura) some: os dois ficavam visíveis juntos na passagem e a logo
+    // aparecia dobrada.
+    onEnter: () => { header.classList.add("is-on"); document.documentElement.classList.add("menu-real"); },
+    onLeaveBack: () => { header.classList.remove("is-on"); document.documentElement.classList.remove("menu-real"); },
   });
 }
 

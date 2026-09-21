@@ -641,7 +641,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   inset: 0;
   transform-style: preserve-3d;
   transform-origin: 470px 900px;
-  animation: hero3d-cam 12s ease-in-out infinite;
+  /* Parada por padrão; o JS passa o progresso da rolagem em --h3-p (0 a 1) e
+     a câmera gira de um lado pro outro conforme a pessoa desce. */
+  transform: rotateY(calc(-4deg + 8deg * var(--h3-p, 0))) rotateX(calc(1.5deg - 3deg * var(--h3-p, 0)));
 }
 .hero3d-bg {
   position: absolute;
@@ -661,18 +663,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   border-radius: 280px 280px 0 0;
   background: radial-gradient(ellipse at 50% 85%, rgba(255, 190, 90, .55), rgba(255, 190, 90, 0) 65%);
   transform: translateZ(-140px) scale(1.09);
-  animation: hero3d-glow 5s ease-in-out infinite;
+  opacity: calc(.55 + .35 * var(--h3-p, 0));
 }
 .hero3d-ico { position: absolute; display: block; }
 .hero3d-ico img { display: block; width: 100%; height: 100%; }
 .hero3d-ico-kuai { left: 46px; top: 654px; width: 138px; height: 148px; transform-origin: 424px 182px; transform: translateZ(140px) scale(.9125); }
-.hero3d-ico-kuai img { animation: hero3d-fl1 5.5s ease-in-out infinite; }
+.hero3d-ico-kuai img { transform: translateY(calc(-34px * var(--h3-p, 0))) rotateZ(calc(-3deg + 6deg * var(--h3-p, 0))); }
 .hero3d-ico-tiktok { left: 172px; top: 604px; width: 138px; height: 164px; transform-origin: 298px 232px; transform: translateZ(200px) scale(.875); }
-.hero3d-ico-tiktok img { animation: hero3d-fl2 6.5s ease-in-out infinite; }
+.hero3d-ico-tiktok img { transform: translateY(calc(-52px * var(--h3-p, 0))) rotateZ(calc(3deg - 6deg * var(--h3-p, 0))); }
 .hero3d-ico-insta { left: 108px; top: 786px; width: 126px; height: 136px; transform-origin: 362px 50px; transform: translateZ(100px) scale(.9375); }
-.hero3d-ico-insta img { animation: hero3d-fl3 6s ease-in-out infinite; }
+.hero3d-ico-insta img { transform: translateY(calc(-22px * var(--h3-p, 0))) rotateZ(calc(2deg - 6deg * var(--h3-p, 0))); }
 .hero3d-ico-yt { left: 217px; top: 756px; width: 129px; height: 148px; transform-origin: 253px 80px; transform: translateZ(170px) scale(.89375); }
-.hero3d-ico-yt img { animation: hero3d-fl1 7s ease-in-out infinite reverse; }
+.hero3d-ico-yt img { transform: translateY(calc(-42px * var(--h3-p, 0))) rotateZ(calc(-2deg + 5deg * var(--h3-p, 0))); }
 .hero3d-person {
   position: absolute;
   left: 0;
@@ -682,30 +684,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   transform: translateZ(0);
 }
 
-@keyframes hero3d-cam {
-  0% { transform: rotateY(-4deg) rotateX(1.5deg); }
-  50% { transform: rotateY(4deg) rotateX(-1.5deg); }
-  100% { transform: rotateY(-4deg) rotateX(1.5deg); }
-}
-@keyframes hero3d-fl1 {
-  0%, 100% { transform: translateY(0) rotateZ(-3deg); }
-  50% { transform: translateY(-16px) rotateZ(3deg); }
-}
-@keyframes hero3d-fl2 {
-  0%, 100% { transform: translateY(-10px) rotateZ(3deg); }
-  50% { transform: translateY(12px) rotateZ(-3deg); }
-}
-@keyframes hero3d-fl3 {
-  0%, 100% { transform: translateY(6px) rotateZ(2deg); }
-  50% { transform: translateY(-14px) rotateZ(-4deg); }
-}
-@keyframes hero3d-glow {
-  0%, 100% { opacity: .55; }
-  50% { opacity: .9; }
-}
 /* Quem pede menos movimento vê a mesma cena parada. */
 @media (prefers-reduced-motion: reduce) {
-  .hero3d-cam, .hero3d-ico img, .hero3d-glow { animation: none; }
+  .hero3d-cam, .hero3d-ico img { transform: none; }
 }
 .hero-scrim {
   display: block;
@@ -796,7 +777,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      rápido que duas colunas curtas e não briga com o rosto. */
   grid-template-columns: 1fr;
   gap: .65rem;
-  max-width: 30rem;
+  /* Bloco estreito encostado na esquerda: as linhas quebram cedo e o texto
+     não atravessa a foto até a direita. */
+  max-width: min(24rem, 72%);
   padding: 2.6rem 1.6rem 1.4rem;
   background: linear-gradient(0deg, rgba(11, 23, 40, .8) 0%, rgba(11, 23, 40, .5) 55%, rgba(11, 23, 40, 0) 100%);
 }
@@ -804,7 +787,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    credencial da outra passa a ser o espaço. */
 /* Credenciais são prova: no computador elas ganham corpo de texto de leitura,
    não de legenda. No celular sobem só um pouco, senão não cabem em duas colunas. */
-.band-credentials .credential-item { padding: .35rem 0; align-items: center; font-size: 1.4rem; line-height: 1.3; gap: 1rem; }
+.band-credentials .credential-item { padding: .35rem 0; align-items: center; font-size: 1.55rem; line-height: 1.25; gap: 1rem; }
 .band-credentials .credential-icon { width: 2.7rem; height: 2.7rem; }
 .band-credentials .credential-item + .credential-item { border-top: 0; }
 .band-credentials .credential-icon { margin-top: .05rem; }
@@ -848,7 +831,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-credentials { padding: 2.2rem 1.2rem 1.2rem; }
   /* Duas colunas numa tela estreita: o texto e o ícone encolhem pra caber
      sem quebrar cada credencial em cinco linhas. */
-  .band-credentials .credential-item { font-size: 1rem; line-height: 1.3; gap: .6rem; }
+  .band-credentials .credential-item { font-size: 1.08rem; line-height: 1.28; gap: .6rem; }
   .band-credentials .credential-icon { width: 1.75rem; height: 1.75rem; }
 }
 
@@ -1946,9 +1929,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* A réplica da página dentro da tela: tem exatamente o tamanho da janela e é
    reduzida pra caber. Quando a tela cresce até a janela inteira, ela chega em
    escala 1 — é isso que faz uma tela emendar na outra. */
+/* Centralizada de propósito (e não pela grade da tela do celular): numa grade,
+   a trilha cresce até o tamanho da réplica e ela ficava presa no canto de cima
+   à esquerda — no zoom, a página aparecia deslocada e cortada à direita. O
+   recuo de -50% vem do GSAP (xPercent/yPercent) junto com a escala. */
 .burst-mini {
-  position: relative;
-  flex: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   transform-origin: 50% 50%;
   pointer-events: none;
   background: var(--bg);
@@ -1958,6 +1946,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    de 195vh (que só existe pra animação do original) e sem sticky. */
 .burst-mini .site-header { position: relative; transform: none; opacity: 1; }
 .burst-mini .hero { height: auto; min-height: auto; }
+/* Um menu só na tela: quando o de verdade desce, o da réplica sai. */
+.menu-real .burst-mini .site-header { visibility: hidden; }
 .burst-mini .cinema-stage { position: relative; top: 0; }
 /* A réplica é uma imagem parada da página: nada nela pisca, gira ou convida a
    rolar, senão vira uma segunda página viva dentro da primeira. */
