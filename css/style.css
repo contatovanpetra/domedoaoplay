@@ -864,7 +864,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Segunda linha embaixo da primeira: o título não quebra sozinho em telas
    estreitas e o ícone continua ao lado do bloco inteiro. */
-.statement-title span { display: block; }
+.statement-title span { display: block; font-size: .66em; margin-top: .1em; }
 .statement-sub {
   max-width: 640px;
   margin: 0 auto clamp(2rem, 5vw, 3rem);
@@ -872,10 +872,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: 1rem;
   color: var(--text-muted);
 }
+/* Duas colunas em qualquer largura: a comparação só existe se os dois lados
+   estiverem lado a lado. No celular o que encolhe é o tipo, não a estrutura. */
 .statement-cols {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.4rem;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(.9rem, 3.5vw, 3rem);
+}
+.statement-depois {
+  border-left: 1px solid var(--border);
+  padding-left: clamp(.9rem, 3.5vw, 3rem);
 }
 .statement-col { text-align: center; }
 .statement-col-icon {
@@ -935,11 +941,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .statement-link::after { content: " \203A"; }
 .statement-link:hover { text-decoration: underline; }
 
-@media (min-width: 600px) {
-  .statement-cols { grid-template-columns: 1fr 1fr; gap: clamp(1.4rem, 4vw, 3rem); }
-  /* Fio entre as colunas, como na seção de bateria do Watch. */
-  .statement-depois { border-left: 1px solid var(--border); padding-left: clamp(1.4rem, 4vw, 3rem); }
-}
 
 /* ---------- Card com foto (pra quem é e pra quem não é) ----------
    A foto é o card, com o rótulo escrito dentro dela, e a lista fica solta
@@ -979,10 +980,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   border-radius: 50%;
   -webkit-mask: var(--ico) center / 52% no-repeat;
   mask: var(--ico) center / 52% no-repeat;
-}
-@media (max-width: 599.98px) {
-  /* Empilhado, o fio fica entre um bloco e outro. */
-  .statement-depois { border-top: 1px solid var(--border); padding-top: 2rem; }
 }
 
 @media (max-width: 699.98px) {
@@ -2261,10 +2258,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .section-tone--guarantee .section-lead { font-size: .92rem; margin-top: .5rem; }
   .section-tone--guarantee .refund-link { margin-top: .6rem; }
   /* Antes/Depois lado a lado mesmo no celular: card mais compacto pra caber. */
-  .statement-panel { padding: 1.6rem 1.1rem 1.4rem; }
-  .statement-head { gap: .7rem; }
-  .statement-col h3 { font-size: 1.1rem; margin-bottom: 1.1rem; }
-  .statement-col ul { gap: 1.1rem; }
+  .statement-panel { padding: 1.5rem .9rem 1.3rem; }
+  .statement-head { gap: .6rem; }
+  /* Menor no celular pra a primeira linha do título caber inteira ao lado do ícone. */
+  .statement-title { font-size: 1.22rem; }
+  .statement-sub { font-size: .9rem; margin-bottom: 1.6rem; }
+  .statement-col h3 { font-size: .95rem; margin-bottom: 1rem; }
+  .statement-col ul { gap: 1.2rem; }
+  /* Em duas colunas numa tela estreita, a pergunta continua sendo a maior
+     coisa do bloco, mas cabe: o que muda é a escala, não a hierarquia. */
+  .statement-q { font-size: 1.02rem; line-height: 1.2; margin-bottom: .3rem; }
+  .statement-a { font-size: .76rem; line-height: 1.35; }
+  .statement-col-icon { width: 1.4rem; height: 1.4rem; }
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
      celular só ganha nós e texto um pouco menores pra caber melhor. */
   .ladder-node { width: 38px; height: 38px; }
