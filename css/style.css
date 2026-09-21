@@ -1450,6 +1450,88 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .qualify-card ul { display: grid; gap: .8rem; }
 .qualify-card li { font-size: 1.05rem; line-height: 1.5; color: var(--text); }
 
+/* ---------- Depoimentos ----------
+   Três vídeos verticais lado a lado (no celular, uma fila que arrasta pro
+   lado). Por enquanto são espaços reservados, marcados no modo revisão. */
+.depo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.8rem);
+  margin-top: 2.6rem;
+}
+.depo-card { margin: 0; }
+.depo-video {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 9 / 16;
+  background: linear-gradient(160deg, #13253C, #0B1728 70%);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--orange);
+}
+.depo-play {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 245, 245, .5);
+  color: var(--white);
+}
+.depo-play svg { width: 1.6rem; height: 1.6rem; margin-left: 3px; }
+.depo-vazio {
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: .8rem;
+  color: var(--text-muted);
+}
+.depo-card figcaption { display: flex; flex-direction: column; gap: .15rem; margin-top: .9rem; }
+.depo-card figcaption strong { font-family: var(--font-head); font-size: 1.05rem; color: var(--white); }
+.depo-card figcaption span { font-size: .9rem; color: var(--text-muted); }
+@media (max-width: 699.98px) {
+  .depo-grid {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin-inline: -24px;
+    padding: 0 24px .6rem;
+    scrollbar-width: none;
+  }
+  .depo-grid::-webkit-scrollbar { display: none; }
+  .depo-card { flex: 0 0 68vw; scroll-snap-align: center; }
+}
+
+/* ---------- WhatsApp no fim das perguntas ---------- */
+.faq-whats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem 1.6rem;
+  margin-top: 2.2rem;
+  text-align: center;
+}
+.faq-whats-texto { margin: 0; font-size: 1.02rem; color: var(--text-muted); }
+.faq-whats-texto strong { color: var(--white); }
+.btn-whats {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .75em 1.4em .6em;
+  border-radius: 28px 28px 9px 9px;
+  background: #1FA855;
+  color: var(--white);
+  font-weight: 600;
+  font-size: .98rem;
+  transition: transform .2s ease, background-color .2s ease;
+}
+.btn-whats svg { width: 1.25rem; height: 1.25rem; }
+.btn-whats:hover { transform: translateY(-2px); background: #1B9A4E; }
+
 /* ---------- Offer ---------- */
 .offer-section { padding-top: 40px; }
 /* Segurança é território do azul (manual): o card da oferta é azul-aço;

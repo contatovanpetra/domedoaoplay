@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   REAL_HERO = document.querySelector(".hero");
   REAL_HEADER = document.querySelector(".site-header");
   wireCheckoutLinks();
+  wireWhatsLinks();
   wireAccordions();
   wireScrollReveal();
   wireNiveis();
@@ -242,6 +243,22 @@ function checkoutHref() {
   } catch (e) {
     return HOTMART_CHECKOUT_URL;
   }
+}
+
+// WhatsApp de atendimento (dúvidas antes de comprar). Só números, com DDI e
+// DDD, ex.: "5511999999999". Vazio = o botão não leva a lugar nenhum ainda.
+const WHATSAPP_NUMERO = "";
+const WHATSAPP_MENSAGEM = "Oi! Tenho uma dúvida sobre o curso Do Medo ao Play.";
+
+function wireWhatsLinks() {
+  const links = document.querySelectorAll("[data-whatsapp-link]");
+  if (!links.length) return;
+  if (!WHATSAPP_NUMERO) {
+    console.warn("Do Medo ao Play: falta o número do WhatsApp (WHATSAPP_NUMERO em js/main.js).");
+    return;
+  }
+  const href = "https://wa.me/" + WHATSAPP_NUMERO + "?text=" + encodeURIComponent(WHATSAPP_MENSAGEM);
+  links.forEach((a) => { a.setAttribute("href", href); a.setAttribute("target", "_blank"); });
 }
 
 function wireCheckoutLinks() {
