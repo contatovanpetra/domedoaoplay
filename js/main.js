@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireCheckoutLinks();
   wireAccordions();
   wireScrollReveal();
+  wireNiveis();
   wireCountUp();
   wireScrollEffects();
   wireScrollCue();
@@ -297,14 +298,66 @@ function wireAccordions() {
   });
 }
 
+// Carrossel dos níveis: a rolagem é nativa (dedo, trackpad, teclado). Aqui
+// entram as setas, o arrastar com o mouse e a barra de progresso.
+function wireNiveis() {
+  const trilho = document.querySelector(".niveis-trilho");
+  if (!trilho) return;
+  const ant = document.querySelector(".niveis-ant");
+  const prox = document.querySelector(".niveis-prox");
+  const barra = document.querySelector(".niveis-progresso");
+  const passo = () => {
+    const card = trilho.querySelector(".nivel-card");
+    return card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(trilho).columnGap || 0) : 300;
+  };
+  const atualiza = () => {
+    const max = trilho.scrollWidth - trilho.clientWidth;
+    const p = max > 0 ? trilho.scrollLeft / max : 0;
+    if (ant) ant.disabled = trilho.scrollLeft < 4;
+    if (prox) prox.disabled = trilho.scrollLeft > max - 4;
+    if (barra) barra.style.setProperty("--niveis-p", (0.14 + p * 0.86).toFixed(3));
+  };
+  if (ant) ant.addEventListener("click", () => trilho.scrollBy({ left: -passo(), behavior: "smooth" }));
+  if (prox) prox.addEventListener("click", () => trilho.scrollBy({ left: passo(), behavior: "smooth" }));
+  trilho.addEventListener("scroll", () => requestAnimationFrame(atualiza), { passive: true });
+  window.addEventListener("resize", atualiza, { passive: true });
+
+  // Arrastar com o mouse (no toque a rolagem nativa já resolve).
+  let inicioX = 0;
+  let inicioScroll = 0;
+  let arrastando = false;
+  trilho.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    arrastando = true;
+    inicioX = e.clientX;
+    inicioScroll = trilho.scrollLeft;
+    trilho.classList.add("is-arrastando");
+    trilho.setPointerCapture(e.pointerId);
+  });
+  trilho.addEventListener("pointermove", (e) => {
+    if (!arrastando) return;
+    trilho.scrollLeft = inicioScroll - (e.clientX - inicioX);
+  });
+  const solta = () => {
+    if (!arrastando) return;
+    arrastando = false;
+    trilho.classList.remove("is-arrastando");
+    // Volta o encaixe: o card mais próximo se centraliza sozinho.
+    const alvo = Math.round(trilho.scrollLeft / passo()) * passo();
+    trilho.scrollTo({ left: alvo, behavior: "smooth" });
+  };
+  trilho.addEventListener("pointerup", solta);
+  trilho.addEventListener("pointercancel", solta);
+  atualiza();
+}
 function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
   const targets = [...document.querySelectorAll(
-    ".section .container > *, .band-text > *, .band-media, .ladder-step, .accordion-item, .compare-col"
+    ".section .container > *, .band-text > *, .band-media, .accordion-item"
   )].filter((el) => !el.matches(
-    ".compare-grid, .ladder, .accordion"
+    ".accordion"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 

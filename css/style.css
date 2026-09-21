@@ -82,7 +82,7 @@ h1, h2, h3, h4 {
 /* Degrau tipográfico entre "título de seção" (h2, 700, branco puro) e "título
    de card" (h3, 600, --text ligeiramente mais macio) — h1/h2/h4 continuam
    como acima, só h3 (títulos dentro de .statement-col/.qualify-card/
-   .ladder-step/.bonus-card) recebe o peso e a cor mais suaves. */
+   .nivel-card/.bonus-card) recebe o peso e a cor mais suaves. */
 h3 {
   font-weight: 600;
   color: var(--text);
@@ -1107,83 +1107,141 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 
-/* ---------- Ladder (método) ---------- */
-/* Escada de exposição: uma trilha vertical conectada, não uma grade de cards.
-   Cada degrau é um nó (o ícone mostra a audiência crescendo: bolinha sozinha
-   dentro de um anel tracejado no Nível 1, até o anel se abrir e virar um
-   sinal de transmissão no Nível 7) ligado por uma linha azul→laranja. Isso
-   substitui os cards de "Nível 1/2/3..." (padrão batido, usado em qualquer
-   curso) por algo que se parece mais com o percurso real da pessoa. */
-.ladder {
+/* ---------- Carrossel dos 7 níveis ----------
+   Cards verticais lado a lado, com encaixe na rolagem horizontal. O card das
+   pontas aparece pela metade (é o convite pra arrastar), e a cor do acento
+   esquenta do azul (nível 1, só você) ao laranja (nível 7, público). */
+.niveis { position: relative; margin-top: 2.6rem; }
+.niveis-trilho {
+  --card: min(76vw, 300px);
+  display: flex;
+  gap: clamp(.9rem, 2vw, 1.4rem);
+  margin: 0;
+  padding: .6rem max(24px, calc((100vw - var(--card)) / 2)) 1.2rem;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  cursor: grab;
+}
+.niveis-trilho::-webkit-scrollbar { display: none; }
+.niveis-trilho.is-arrastando { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; }
+.niveis-trilho:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+.nivel-card:nth-child(1) { --cor: var(--blue); }
+.nivel-card:nth-child(2) { --cor: color-mix(in srgb, var(--blue), var(--orange) 18%); }
+.nivel-card:nth-child(3) { --cor: color-mix(in srgb, var(--blue), var(--orange) 36%); }
+.nivel-card:nth-child(4) { --cor: color-mix(in srgb, var(--blue), var(--orange) 54%); }
+.nivel-card:nth-child(5) { --cor: color-mix(in srgb, var(--blue), var(--orange) 72%); }
+.nivel-card:nth-child(6) { --cor: color-mix(in srgb, var(--blue), var(--orange) 88%); }
+.nivel-card:nth-child(7) { --cor: var(--orange); }
+.nivel-card {
   position: relative;
+  flex: 0 0 var(--card);
+  scroll-snap-align: center;
   display: flex;
   flex-direction: column;
-  gap: 1.7rem;
-  margin-top: 2.6rem;
-  max-width: 620px;
-  margin-left: auto;
-  margin-right: auto;
+  min-height: calc(var(--card) * 1.28);
+  padding: 1.6rem 1.5rem 1.7rem;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--cor), transparent 78%), transparent 70%),
+    #0E1D31;
+  border: 1px solid color-mix(in srgb, var(--cor), transparent 62%);
+  border-top: 3px solid var(--cor);
+  user-select: none;
 }
-.ladder::before {
-  content: "";
+/* Número grande ao fundo, como o pôster de cada curso na referência. */
+.nivel-num {
   position: absolute;
-  left: 21px;
-  top: 6px;
-  bottom: 6px;
-  width: 2px;
-  background: linear-gradient(180deg, var(--blue), color-mix(in srgb, var(--blue), var(--orange) 30%) 30%, color-mix(in srgb, var(--blue), var(--orange) 65%) 65%, var(--orange));
-  opacity: .45;
-}
-.ladder-step {
-  --step-color: var(--blue);
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 1.1rem;
-}
-/* Progressão de cor azul → laranja: reforça a metáfora do portal (atravessar o escuro até a luz).
-   Sempre misturada a partir dos dois tokens de marca (--blue/--orange), nunca um hex novo. */
-.ladder-step:nth-child(1) { --step-color: var(--blue); }
-.ladder-step:nth-child(2) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 20%); }
-.ladder-step:nth-child(3) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 40%); }
-.ladder-step:nth-child(4) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 60%); }
-.ladder-step:nth-child(5) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 80%); }
-.ladder-step:nth-child(6) { --step-color: color-mix(in srgb, var(--blue), var(--orange) 90%); }
-.ladder-step-final, .ladder-step:nth-child(7) { --step-color: var(--orange); }
-.ladder-node {
-  flex: none;
-  position: relative;
-  z-index: 1;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--step-color);
-  box-shadow: 0 0 0 6px var(--bg);
-}
-.ladder-node svg { width: 22px; height: 22px; }
-.ladder-step-final .ladder-node {
-  background: var(--step-color);
-  border-color: var(--step-color);
-  color: var(--black);
-}
-.ladder-body { flex: 1; padding-top: .3rem; min-width: 0; }
-.ladder-level {
-  display: block;
+  right: -.05em;
+  bottom: -.22em;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: .72rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--step-color);
-  margin-bottom: .3rem;
+  font-size: calc(var(--card) * .62);
+  line-height: 1;
+  color: color-mix(in srgb, var(--cor), transparent 84%);
+  pointer-events: none;
 }
-.ladder-step h3 { font-size: 1.02rem; margin: 0 0 .3rem; }
-.ladder-step p { font-size: .88rem; line-height: 1.42; margin: 0; color: var(--silver); }
+.nivel-icone {
+  display: grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  margin-bottom: auto;
+  border-radius: 50%;
+  color: var(--cor);
+  background: color-mix(in srgb, var(--cor), transparent 86%);
+  border: 1px solid color-mix(in srgb, var(--cor), transparent 55%);
+}
+.nivel-icone svg { width: 2.3rem; height: 2.3rem; }
+.nivel-rotulo {
+  position: relative;
+  margin-top: 2.2rem;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cor);
+}
+.nivel-card h3 {
+  position: relative;
+  margin: .35rem 0 .6rem;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  color: var(--white);
+}
+.nivel-card p { position: relative; margin: 0; font-size: .98rem; line-height: 1.45; color: var(--text-muted); }
+
+.niveis-seta {
+  position: absolute;
+  top: 42%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(11, 23, 40, .86);
+  color: var(--white);
+  cursor: pointer;
+  transition: opacity .25s ease, background-color .25s ease;
+}
+.niveis-seta svg { width: 1.3rem; height: 1.3rem; }
+.niveis-seta:hover:not(:disabled) { background: var(--orange-button); border-color: transparent; }
+.niveis-seta:disabled { opacity: .25; cursor: default; }
+.niveis-ant { left: max(12px, calc((100vw - var(--container-w)) / 2)); }
+.niveis-prox { right: max(12px, calc((100vw - var(--container-w)) / 2)); }
+/* Barra fininha que enche conforme a pessoa avança nos níveis. */
+.niveis-progresso {
+  width: min(240px, 50vw);
+  height: 3px;
+  margin: .6rem auto 0;
+  background: var(--border);
+  overflow: hidden;
+}
+.niveis-progresso span {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--orange));
+  transform-origin: 0 50%;
+  transform: scaleX(var(--niveis-p, .14));
+}
+/* No computador a fila começa alinhada à margem da página (e não com o primeiro
+   card no meio da tela): cabem uns quatro cards e o quinto aparece pela metade. */
+@media (min-width: 900px) {
+  .niveis-trilho {
+    --card: 280px;
+    padding-inline: max(24px, calc((100vw - var(--container-w)) / 2 + 24px));
+    scroll-padding-inline: max(24px, calc((100vw - var(--container-w)) / 2 + 24px));
+  }
+  .nivel-card { scroll-snap-align: start; }
+}
+/* No celular o dedo faz o papel das setas. */
+@media (hover: none) { .niveis-seta { display: none; } }
 /* ---------- Accordion (módulos + FAQ) ---------- */
 .accordion { margin-top: 2.5rem; display: grid; gap: .9rem; }
 /* Tier estrutural por padrão (mesma superfície plana do painel de declaração /
@@ -2167,14 +2225,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   transform-origin: right center;
 }
 .versus-linha.reveal.is-visible { transform: translateY(0) rotateY(0deg); }
-/* A escada é uma linha do tempo fina, não um card: só sobe com fade, sem giro 3D. */
-.ladder-step.reveal { transform: translateY(16px); }
-.ladder-step.reveal.is-visible { opacity: 1; transform: translateY(0); }
-
-/* Escada revela em cascata, usando o índice --i que cada item já carrega. */
-.ladder-step.reveal { transition-delay: calc(var(--i, 0) * 90ms); }
-
-
 /* =========================================================
    Cards que flutuam no mouse
    O card sobe 14px, cresce 2% e a sombra abre embaixo dele: a combinação
@@ -2182,12 +2232,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    sem subir nem crescer, passa despercebido.
    ========================================================= */
 @media (hover: hover) and (pointer: fine) {
-  .shot, .qualify-card, .bonus-card, .offer-card, .ladder-step, .accordion-item {
+  .shot, .qualify-card, .bonus-card, .offer-card, .nivel-card, .accordion-item {
     transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .4s cubic-bezier(.16, .84, .3, 1.06), box-shadow .4s ease, border-color .4s ease, background-color .4s ease;
   }
   /* :is(...):hover empata em especificidade com o estado final do reveal
      (.versus-linha.reveal.is-visible) e ganha por vir depois no arquivo. */
-  :is(.shot, .qualify-card, .bonus-card, .offer-card, .ladder-step):hover {
+  :is(.shot, .bonus-card, .offer-card, .nivel-card):hover {
     transform: translateY(-14px) scale(1.02);
     box-shadow: 0 16px 34px -10px rgba(0, 0, 0, .6), 0 44px 80px -28px rgba(0, 0, 0, .8);
     /* A superfície clareia um tanto: card que vem pra frente pega mais luz. */
@@ -2235,12 +2285,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    uma linha central e os degraus alternam de lado, em vez de ficar tudo
    colado à esquerda como no celular. */
 @media (min-width: 700px) {
-  .ladder { max-width: 740px; gap: 2.3rem; }
-  .ladder::before { left: 50%; margin-left: -1px; }
-  .ladder-step { display: grid; grid-template-columns: 1fr 56px 1fr; align-items: flex-start; gap: 0 1.6rem; }
-  .ladder-node { grid-column: 2; justify-self: center; }
-  .ladder-body { grid-column: 1; text-align: right; padding-top: .2rem; }
-  .ladder-step:nth-child(even) .ladder-body { grid-column: 3; text-align: left; }
 }
 
 /* Celular: foto em tela cheia atrás, texto sobreposto embaixo, sem precisar rolar.
@@ -2391,12 +2435,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .statement-col-icon { width: 1.4rem; height: 1.4rem; }
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
      celular só ganha nós e texto um pouco menores pra caber melhor. */
-  .ladder-node { width: 38px; height: 38px; }
-  .ladder-node svg { width: 19px; height: 19px; }
-  .ladder-level { font-size: .66rem; }
-  .ladder-step h3 { font-size: .92rem; margin-bottom: .2rem; }
-  .ladder-step p { font-size: .8rem; line-height: 1.35; }
-  .hide-mobile { display: none; }
+.hide-mobile { display: none; }
 }
 
 /* Tela baixa (celular deitado, janela muito baixa): o texto do herói não cabia
@@ -2471,14 +2510,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   white-space: normal;
 }
 /* Em blocos alinhados à esquerda, a etiqueta também fica à esquerda. */
-.modo-revisao :is(.ladder-step, .bonus-card, .band-name, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
+.modo-revisao :is(.nivel-card, .bonus-card, .band-name, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
   margin-left: 0;
 }
 .modo-revisao .offer-trust span[data-confirmar]::after { margin-top: .4rem; flex-basis: 100%; }
 .modo-revisao .credential-item[data-confirmar]::after { flex-basis: 100%; margin-left: 0; }
 /* No carrossel (celular) e na trilha em grade (tablet/computador), a etiqueta
    ocupa a linha inteira em vez de espremer numa coluna/flex-item. */
-.modo-revisao .ladder-step[data-confirmar]::after { flex-basis: 100%; grid-column: 1 / -1; }
+.modo-revisao .nivel-card[data-confirmar]::after { flex-basis: 100%; grid-column: 1 / -1; }
 .modo-revisao .footer-legal[data-confirmar]::after { flex-basis: 100%; margin-top: .2rem; text-align: center; }
 .modo-revisao .hero h1[data-confirmar]::after { margin-top: .5rem; }
 @media (min-width: 700px) and (orientation: landscape) {
