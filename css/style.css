@@ -120,20 +120,6 @@ ul { padding: 0; margin: 0; list-style: none; }
 }
 .skip-link:focus { left: 0; }
 
-/* Título real da seção, presente pra SEO/leitor de tela, sem ocupar espaço
-   visual — os cards já dizem a mesma coisa de um jeito mais direto. */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 :focus-visible {
   outline: 2px solid var(--orange-light);
   outline-offset: 3px;
@@ -222,15 +208,15 @@ ul { padding: 0; margin: 0; list-style: none; }
 }
 /* Sem faixa sólida, o texto do menu precisa de um véu pra continuar legível
    sobre a foto: um degradê curto que escurece o topo e some logo abaixo. */
-/* Sem faixa sólida, mas firme o bastante pro texto que passa por baixo não se
-   misturar com a logo e o botão; termina esfumado um pouco abaixo do menu. */
+/* Transparente e leve: só o contraste mínimo pra logo e o botão não se
+   misturarem com o texto que passa por baixo. Termina esfumado, sem faixa. */
 .site-header::before {
   content: "";
   position: absolute;
   inset: 0 0 -16px 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(11, 23, 40, .96) 0%, rgba(11, 23, 40, .9) 60%, rgba(11, 23, 40, 0) 100%);
+  background: linear-gradient(180deg, rgba(11, 23, 40, .9) 0%, rgba(11, 23, 40, .7) 58%, rgba(11, 23, 40, 0) 100%);
 }
 .site-header.is-on { transform: translateY(0); opacity: 1; visibility: visible; transition: transform .5s ease, opacity .4s ease, visibility 0s; }
 @media (prefers-reduced-motion: reduce) {
@@ -328,33 +314,6 @@ html { scroll-padding-top: var(--header-h, 85px); }
   stroke-linejoin: round;
 }
 
-/* Link dentro de texto corrido (ex.: FAQ): precisa parecer link. */
-.inline-link {
-  color: var(--orange-light);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-}
-.inline-link:hover { color: var(--white); }
-
-/* O briefing pede reembolso visível e fácil de achar, não escondido no rodapé. */
-/* Área de toque de 44px; o sublinhado fica colado no texto via text-decoration. */
-.refund-link {
-  display: inline-flex;
-  align-items: center;
-  gap: .35em;
-  min-height: 44px;
-  margin-top: .8rem;
-  padding: 0 .3rem;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: .92rem;
-  color: var(--orange-light);
-  text-decoration: underline;
-  text-decoration-color: rgba(248, 161, 50, .4);
-  text-underline-offset: 5px;
-}
-.refund-link:hover { text-decoration-color: var(--orange-light); }
 
 /* Barra de progresso de leitura. */
 /* Só uma barra de rolagem na página: a colorida da direita. A nativa some,
@@ -425,7 +384,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    só tem o brilho fraco do .page-bg fixo — sem nada aqui, a costura entre
    os dois aparece como um corte duro de tela. Este glow solto (mesmo azul
    do .hero-bg/.page-bg, nada de cor nova) preenche só o topo da seção. */
-#antes-depois::before {
+#reconhecimento::before {
   content: "";
   position: absolute;
   left: 0;
@@ -530,19 +489,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 4;
 }
 .hero-lead { font-size: 1.08rem; max-width: 520px; }
-/* Segunda tentativa (4 cards com ícone — tag, wifi, pin, estrela) e terceira
-   tentativa (lista com um traço curto por linha) foram as duas rejeitadas:
-   "um pictograma por frase" e depois "texto solto, texto solto" (4 linhas
-   empilhadas sem nada que as amarre, cada uma flutuando sozinha). Pesquisa
-   em referências premium (Stripe, Vercel, Linear, Apple) mostra que nenhuma
-   usa lista com marcador aqui: a Stripe funde as frases num único parágrafo
-   corrido, com 1-2 trechos em negrito/cor pra criar hierarquia dentro do
-   texto; a Vercel empilha linhas sem marcador nenhum, só espaçamento; a
-   Linear e a Apple reduzem a uma frase de apoio só. Aqui as 4 frases viram
-   um parágrafo só (mesma técnica da Stripe): correm juntas como texto
-   contínuo, sem marcador, e o destaque de cada ideia vem da tipografia
-   (negrito, e alternando com a cor de destaque que já existe no site via
-   .text-orange) — não de um símbolo por linha. */
+/* Texto de apoio do herói: dois parágrafos corridos, sem marcador. */
 .hero-lead-list {
   display: block;
   margin: 1.2rem 0 0;
@@ -551,13 +498,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   line-height: 1.65;
   color: var(--text-muted);
 }
-.hero-lead-list strong {
-  color: var(--text);
+.hero-lead-list p { margin: 0; }
+.hero-lead-list p + p { margin-top: .75em; }
+/* "DO MEDO AO PLAY" logo acima do "QUEM APARECE, CRESCE": a marca em laranja e
+   a frase em azul, as duas pequenas e espaçadas. */
+.hero-marca {
+  margin: 0 0 .45rem;
+  font-family: var(--font-head);
   font-weight: 700;
+  font-size: .74rem;
+  letter-spacing: .22em;
+  color: var(--orange);
 }
-/* .text-orange sozinho perdia pra especificidade de ".hero-lead-list strong"
-   e nunca pintava de laranja. */
-.hero-lead-list strong.text-orange { color: var(--orange-light); }
+/* "7 módulos · 32 aulas · X horas de formação" embaixo do botão. */
+.hero-numeros { margin: .9rem 0 0; font-size: clamp(.74rem, 1.2vw, .84rem); letter-spacing: .02em; color: var(--text-muted); }
 .hero-actions { margin-top: 1.6rem; }
 .hero-microcopy {
   margin-top: .8rem;
@@ -916,7 +870,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .credential-item-edu .credential-icon { --ico-cred: var(--ico-cred-edu); }
 .credential-item-camera .credential-icon { --ico-cred: var(--ico-cred-camera); }
 .credential-item-voice .credential-icon { --ico-cred: var(--ico-cred-mic); }
-.credential-item-steps .credential-icon { --ico-cred: var(--ico-cred-steps); }
 /* O número vira o destaque da frase (maior, peso 700, branco): as 2-3
    credenciais que importam saltam na leitura em diagonal, sem precisar
    virar caixinha de estatística separada do texto. */
@@ -973,70 +926,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--white);
   text-align: left;
 }
-/* Segunda linha embaixo da primeira: o título não quebra sozinho em telas
-   estreitas e o ícone continua ao lado do bloco inteiro. */
-.statement-title span { display: block; font-size: .66em; margin-top: .1em; }
-.statement-sub {
-  max-width: 560px;
-  margin: 0 auto clamp(2rem, 5vw, 3rem);
+/* Texto corrido das seções de declaração (reconhecimento, escada, aplicação):
+   coluna de leitura no meio da página, texto alinhado à esquerda. */
+.texto-corrido { max-width: 720px; margin: clamp(1.6rem, 3vw, 2.2rem) auto 0; }
+.texto-corrido p { margin: 0; font-size: clamp(.84rem, 1.8vw, 1.02rem); line-height: 1.6; color: var(--text-muted); }
+.texto-corrido p + p { margin-top: 1.1em; }
+/* O fecho do raciocínio ganha a cor do texto principal. */
+.texto-corrido .texto-forte { color: var(--text); }
+/* Ressalva da aplicação: um fio laranja ao lado, como citação. */
+.texto-corrido .texto-destaque { padding-left: 1.1rem; border-left: 2px solid var(--orange); color: var(--text); }
+
+/* Fecho da escada: a frase grande e o botão, centralizados embaixo do carrossel. */
+.metodo-fecho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+  margin-top: clamp(2.4rem, 5vw, 3.4rem);
   text-align: center;
-  font-size: .88rem;
-  color: var(--text-muted);
 }
-.statement-col-icon {
-  display: block;
-  width: 1.8rem;
-  height: 1.8rem;
-  margin: 0 auto .7rem;
-  -webkit-mask: var(--ico) center / contain no-repeat;
-  mask: var(--ico) center / contain no-repeat;
-}
-/* Fecho da seção: o botão embaixo das duas colunas, com o link discreto logo
-   abaixo pra quem ainda quer entender o caminho antes de decidir. */
-.statement-cta {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  margin-top: clamp(2.2rem, 5vw, 3.2rem);
-}
-/* ---------- Tabela "sem gravar x gravando" ----------
-   A pergunta vem primeiro, sozinha na linha, e as duas respostas ficam lado a
-   lado embaixo dela, separadas por um fio. Ordem natural de leitura:
-   pergunta -> sem gravar -> gravando. (Com a pergunta no meio, o olho lia a
-   resposta do "sem gravar" antes de saber qual era a pergunta.) */
-.versus { display: grid; max-width: 900px; margin-inline: auto; }
-.versus-head,
-.versus-linha {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  column-gap: clamp(1.2rem, 5vw, 3.6rem);
-}
-.versus-head { padding-bottom: 1.2rem; }
-.versus-head .versus-meio { display: none; }
-.versus-lado {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .5rem;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(1rem, 2.2vw, 1.2rem);
-  color: var(--white);
-}
-.versus-lado .statement-col-icon { margin: 0; background: var(--white); }
-.versus-sem.versus-lado { --ico: var(--ico-x); }
-.versus-com.versus-lado { --ico: var(--ico-play); }
-.versus-linha {
-  grid-template-areas: "q q" "sem com";
-  row-gap: clamp(.7rem, 2vw, 1rem);
-  padding: clamp(1.3rem, 3.4vw, 2rem) 0;
-  border-top: 1px solid var(--border);
-}
-.versus-q {
-  grid-area: q;
+.metodo-frase {
   margin: 0;
-  text-align: center;
   font-family: var(--font-head);
   font-weight: 700;
   font-size: clamp(1.3rem, 3.2vw, 2rem);
@@ -1044,85 +954,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   letter-spacing: -.02em;
   color: var(--white);
 }
-.versus-linha .versus-sem { grid-area: sem; }
-.versus-linha .versus-com { grid-area: com; }
-.versus-sem:not(.versus-lado),
-.versus-com:not(.versus-lado) {
-  margin: 0;
-  text-align: center;
-  font-size: clamp(.84rem, 1.8vw, 1.02rem);
-  line-height: 1.45;
-  color: var(--text-muted);
-}
-/* Fio fino entre as duas respostas, como entre as duas colunas do topo. */
-.versus-com:not(.versus-lado) { position: relative; }
-.versus-com:not(.versus-lado)::before {
-  content: "";
-  position: absolute;
-  top: .1em;
-  bottom: .1em;
-  left: calc(clamp(1.2rem, 5vw, 3.6rem) / -2);
-  width: 1px;
-  background: var(--border);
-}
-
-.statement-link {
-  display: block;
-  /* Área de toque de 44px sem mudar o tamanho do texto. */
-  padding: .75rem 0;
-  text-align: center;
-  color: var(--orange-light);
-  font-weight: 600;
-  font-size: .95rem;
-}
-.statement-link::after { content: " \203A"; }
-.statement-link:hover { text-decoration: underline; }
 
 
-/* ---------- Card com foto (pra quem é e pra quem não é) ----------
-   A foto é o card, com o rótulo escrito dentro dela, e a lista fica solta
-   embaixo. */
-.shot {
-  position: relative;
-  margin: 0 0 1.5rem;
-  aspect-ratio: 21 / 9;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-top-width: 3px;
-  background: rgba(255, 255, 255, .02);
-}
-.shot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 32%; display: block; }
-.shot h3 {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: .65rem;
-  padding: 3rem 1.5rem 1.1rem;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: 1.5rem;
-  color: var(--white);
-  background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .72) 45%, rgba(11, 23, 40, .92) 100%);
-}
-.shot h3::before {
-  content: "";
-  flex-shrink: 0;
-  width: 1.7rem;
-  height: 1.7rem;
-  border-radius: 50%;
-  -webkit-mask: var(--ico) center / 52% no-repeat;
-  mask: var(--ico) center / 52% no-repeat;
-}
-
-@media (max-width: 699.98px) {
-  .shot { aspect-ratio: 4 / 3; }
-  .shot h3 { font-size: 1.2rem; padding: 2.4rem 1.1rem .9rem; }
-}
 
 
 
@@ -1477,38 +1310,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .modulos-trail-line { stroke: var(--border); stroke-width: 1.5; }
 .modulos-trail-dot { fill: var(--blue-mid); }
 
-/* ---------- Qualify ---------- */
-/* Um card embaixo do outro, cada um na largura toda: a foto de cada lado
-   ganha corpo e os dois viram cenas em sequência. */
-.qualify-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3.2rem;
-  margin-top: 2.5rem;
-}
-/* Fundo e borda neutros nos dois: o card "É pra você" tinha um azul
-   chapado que não combinava com o resto da página (nem nada mais lembra
-   esse tom), e sobrar espaço vazio embaixo do card mais curto (era
-   esticado pra igualar a altura do outro) reforçava o "não terminei o
-   design". Cada card fica do tamanho do próprio conteúdo agora. */
-/* Tier estrutural, mesmo tratamento hairline do painel de declaração: sem sombra,
-   pra não repetir o peso visual do "vidro" de #vivi/#oferta. */
-.qualify-card { background: none; border: 0; padding: 0; }
-/* Mesmo acento de 1 cor sólida no topo usado em .statement-antes/
-   .statement-depois: "é pra você" puxa pro laranja (avançar), "não é pra
-   você" fica no neutro cinza-prata — sem introduzir matiz nova. */
-.qualify-yes .shot { border-top-color: var(--orange); }
-.qualify-no .shot { border-top-color: var(--silver); }
-.qualify-yes { --ico: var(--ico-check); }
-.qualify-yes .shot h3::before { background: var(--orange-light); }
-.qualify-no { --ico: var(--ico-x); }
-.qualify-no .shot h3::before { background: var(--silver); }
-/* A lista acompanha a largura do card: duas colunas embaixo da foto. */
-@media (min-width: 700px) {
-  .qualify-card ul { grid-template-columns: 1fr 1fr; gap: .9rem 2.4rem; }
-}
-.qualify-card ul { display: grid; gap: .8rem; }
-.qualify-card li { font-size: 1.05rem; line-height: 1.5; color: var(--text); }
 
 /* ---------- Quadradinhos de benefícios ----------
    Quatro quadradinhos (2 x 2 no celular), transparentes: título e uma linha.
@@ -1555,67 +1356,41 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .beneficio p { font-size: .8rem; }
 }
 
-/* "7 módulos, 32 aulas" logo embaixo de "A grade do curso". */
-.modulos-numeros {
-  margin: -.2rem auto .8rem;
-  text-align: center;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(1.2rem, 2.8vw, 1.6rem);
-  color: var(--orange);
-}
 
-/* ---------- Bônus em linhas alternadas ----------
-   Texto de um lado e imagem do outro, trocando de lado a cada linha. A
-   moldura da imagem é arredondada: canto redondo é a linguagem dos bônus. */
-.bonus-linhas { display: grid; gap: clamp(2.6rem, 6vw, 4.2rem); }
-.bonus-linhas-rotulo {
-  margin: 0 0 -1rem;
-  text-align: center;
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--orange);
-}
-.bonus-linha {
+/* ---------- Bônus: dois cartões em destaque ----------
+   Canto redondo é a linguagem dos bônus. Borda e brilho laranja discretos pra
+   se destacarem dos quadradinhos da formação logo acima. A área de cima recebe
+   a imagem de cada bônus (por enquanto, o ícone). */
+.bonus-cards {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(1.6rem, 5vw, 4rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.2rem, 3vw, 2rem);
+  margin-top: clamp(2rem, 4vw, 3rem);
 }
-.bonus-linha-b .bonus-linha-texto { order: 2; }
-.bonus-linha h3 { margin: 0 0 1rem; font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.12; color: var(--white); }
-.bonus-linha ul { display: grid; gap: .7rem; }
-.bonus-linha-p { margin: 0; font-size: 1.08rem; line-height: 1.55; color: var(--text-muted); }
-.bonus-linha li { position: relative; padding-left: 1.4rem; font-size: 1.05rem; line-height: 1.45; color: var(--text-muted); }
-.bonus-linha li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .6em;
-  width: .55rem;
-  height: .55rem;
-  border-radius: 50%;
-  background: var(--orange);
+.bonus-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(170deg, rgba(215, 119, 19, .13), rgba(27, 48, 70, .72) 42%, rgba(11, 23, 40, .92));
+  border: 1px solid rgba(215, 119, 19, .4);
+  box-shadow: var(--shadow-md), 0 26px 60px -32px rgba(215, 119, 19, .5);
 }
-.bonus-linha-visual {
+.bonus-card-visual {
   display: grid;
   place-items: center;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius-lg);
-  background: radial-gradient(90% 90% at 50% 40%, rgba(70, 130, 180, .22), rgba(11, 23, 40, 0) 70%), #0E1D31;
-  border: 1px solid var(--border);
+  aspect-ratio: 16 / 9;
+  background: radial-gradient(90% 90% at 50% 40%, rgba(70, 130, 180, .24), rgba(11, 23, 40, 0) 70%), #0E1D31;
+  border-bottom: 1px solid var(--border);
 }
-.bonus-linha-icone { width: 38%; max-width: 9rem; color: var(--blue-light); opacity: .85; }
-.bonus-linha-icone svg { width: 100%; height: auto; display: block; }
-/* No celular também lado a lado: texto e imagem dividem a largura, e a
-   ordem alterna igual ao computador. */
-@media (max-width: 699.98px) {
-  .bonus-linha { gap: 1rem; }
-  .bonus-linha h3 { font-size: 1.12rem; margin-bottom: .5rem; }
-  .bonus-linha-p { font-size: .86rem; line-height: 1.45; }
-  .bonus-linha-visual { border-radius: var(--radius-md); aspect-ratio: 4 / 5; }
+.bonus-card-icone { width: 26%; max-width: 7rem; color: var(--blue-light); opacity: .85; }
+.bonus-card-icone svg { display: block; width: 100%; height: auto; }
+.bonus-card-texto { padding: clamp(1.4rem, 3vw, 2.2rem); }
+.bonus-card h3 { margin: 0 0 .8rem; font-size: clamp(1.12rem, 2.4vw, 1.7rem); line-height: 1.15; color: var(--white); }
+.bonus-card p { margin: 0; font-size: clamp(.86rem, 1.2vw, 1.08rem); line-height: 1.6; color: var(--text-muted); }
+.bonus-card p + p { margin-top: .8em; }
+@media (max-width: 799.98px) {
+  .bonus-cards { grid-template-columns: 1fr; }
 }
 
 /* ---------- Depoimentos ----------
@@ -1659,6 +1434,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .depo-card figcaption { display: flex; flex-direction: column; gap: .15rem; margin-top: .9rem; }
 .depo-card figcaption strong { font-family: var(--font-head); font-size: 1.05rem; color: var(--white); }
 .depo-card figcaption span { font-size: .9rem; color: var(--text-muted); }
+.depo-card figcaption .depo-resultado { margin: .35rem 0 0; font-size: .9rem; line-height: 1.45; color: var(--text); }
 @media (max-width: 699.98px) {
   .depo-grid {
     display: flex;
@@ -1673,32 +1449,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .depo-card { flex: 0 0 68vw; scroll-snap-align: center; }
 }
 
-/* ---------- WhatsApp no fim das perguntas ---------- */
-.faq-whats {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem 1.6rem;
-  margin-top: 2.2rem;
-  text-align: center;
-}
-.faq-whats-texto { margin: 0; font-size: 1.02rem; color: var(--text-muted); }
-.faq-whats-texto strong { color: var(--white); }
-.btn-whats {
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-  padding: .75em 1.4em .6em;
-  border-radius: 28px 28px 9px 9px;
-  background: #1FA855;
-  color: var(--white);
-  font-weight: 600;
-  font-size: .98rem;
-  transition: transform .2s ease, background-color .2s ease;
-}
-.btn-whats svg { width: 1.25rem; height: 1.25rem; }
-.btn-whats:hover { transform: translateY(-2px); background: #1B9A4E; }
 
 /* ---------- Offer ---------- */
 .offer-section { padding-top: 40px; }
@@ -1726,56 +1476,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--orange-light);
 }
 .price-note { font-size: .85rem; color: var(--text-muted); }
-/* Antes a lista inteira (o que inclui + certificado + garantia) era 6 linhas
-   soltas do mesmo peso — nada dizia "isso é o pacote" antes de começar a ler.
-   Um rótulo pequeno acima organiza a leitura, e certificado/garantia (que já
-   são reforçados alhures na página) viram um rodapé de confiança separado,
-   não mais dois itens perdidos no meio da lista. */
-.offer-includes-label {
-  text-align: center;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: .72rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--blue-light);
-  margin: 0 0 .9rem;
-}
-.offer-includes {
-  display: grid;
-  gap: .75rem;
-  max-width: 440px;
-  margin: 0 auto;
-}
-.offer-includes li {
-  position: relative;
-  padding-left: 1.15rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--text-muted);
-}
-.offer-includes li strong { color: var(--white); }
-.offer-includes li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .72em;
-  width: .6rem;
-  height: 2px;
-  background: var(--orange-light);
-}
-.offer-trust {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: .5rem 1.6rem;
-  max-width: 440px;
-  margin: 1.5rem auto 0;
-  padding-top: 1.2rem;
-  border-top: 1px solid var(--border);
-  font-size: .85rem;
-  color: var(--text-muted);
-}
+/* O que está incluso numa linha só, com pontos no meio, embaixo do preço. */
+.offer-lead { max-width: 560px; margin: 1rem auto 0; text-align: center; font-size: clamp(1rem, 1.7vw, 1.1rem); line-height: 1.6; color: var(--text-muted); }
+.offer-inclui { max-width: 520px; margin: 0 auto 1.6rem; text-align: center; font-size: .92rem; line-height: 1.6; color: var(--text); }
 
 /* ---------- Guarantee ---------- */
 .guarantee-block { display: flex; flex-direction: column; align-items: center; }
@@ -1830,14 +1533,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .final-tunnel { width: 100%; height: auto; max-width: 320px; justify-self: center; }
 .final-cta-copy {
-  max-width: 440px;
+  max-width: 520px;
 }
+.final-cta-copy .section-lead { font-size: clamp(1rem, 1.7vw, 1.15rem); line-height: 1.6; }
+.final-cta-copy .section-lead + .section-lead { margin-top: .9em; }
+/* "Atravesse o medo. Apareça." fecha a página com a frase do herói. */
+.final-frase {
+  margin: 1.4rem 0 1.6rem;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+  line-height: 1.2;
+  color: var(--white);
+}
+.final-cta-copy .hero-microcopy { margin-top: .9rem; }
 .final-cta-copy .section-title,
 .final-cta-copy .section-lead { margin-left: 0; margin-right: 0; }
 @media (max-width: 899.98px) {
   .final-cta-grid { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
   .final-tunnel { max-width: 200px; }
-  .final-cta-copy { max-width: 440px; margin-left: auto; margin-right: auto; }
+  .final-cta-copy { max-width: 520px; margin-left: auto; margin-right: auto; }
 }
 
 /* ---------- Footer ---------- */
@@ -1854,8 +1569,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .footer-meta { display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; }
 .footer-legal { display: flex; flex-wrap: wrap; justify-content: flex-end; column-gap: 1rem; font-size: .78rem; }
-.footer-legal a { display: inline-block; padding: .8rem .2rem; }
-.footer-legal a { display: inline-block; white-space: nowrap; color: var(--text-muted); opacity: .75; padding: .25rem .3rem; }
+/* Área de toque de 44px sem aumentar a letra. */
+.footer-legal { align-items: center; }
+.footer-legal a { display: inline-block; white-space: nowrap; color: var(--text-muted); opacity: .75; padding: .8rem .3rem; }
+.footer-sep { color: var(--text-muted); opacity: .45; }
+.footer-assinatura { margin: 0; font-family: var(--font-head); font-weight: 600; font-size: .92rem; color: var(--text); }
 .footer-legal a:hover { color: var(--white); opacity: 1; }
 .footer-copy { text-align: right; font-size: .82rem; color: var(--text-muted); margin: 0; }
 @media (max-width: 699.98px) {
@@ -1865,35 +1583,48 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .footer-copy { text-align: center; }
 }
 
-/* ---------- Sequência de abertura (roda uma vez, antes da página) ---------- */
-/* ---------- ABERTURA: seção presa na rolagem ----------
-   Ela faz parte da página, então dá pra subir e rever a animação inteira:
-   a rolagem é que move as cenas (ver wireIntroStage em main.js). */
-/* Depois que a abertura termina (rolou pra além da travessia), a réplica
-   do cabeçalho/hero que cresceu dentro do celular fica escondida — sem
-   isso ela ficava sobreposta à página de verdade e duplicava o hero. */
-.intro-stage.intro-done { visibility: hidden; }
-.intro-stage {
-  position: relative;
-  /* Abaixo do cabeçalho (100) e da trilha de leitura (200): a abertura é uma
-     seção da página como outra qualquer, com o menu e a barra por cima. */
-  z-index: 1;
-  /* O menu continua ocupando espaço no layout mesmo escondido durante a
-     abertura. Sem isto, sobrava uma faixa vazia no alto da primeira tela. */
-  margin-top: calc(-1 * var(--header-h, 71px));
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2rem clamp(1.25rem, 6vw, 2.5rem) 5.5rem;
+/* ---------- ABERTURA ----------
+   Camada por cima da página que toca sozinha quando ela abre, sem precisar
+   rolar (ver wireIntroStage em main.js). Só existe com a classe "abertura-on",
+   ligada no <head>: sem JavaScript ou com menos movimento, a página abre direto. */
+.intro-stage { display: none; }
+.abertura-on .intro-stage {
+  position: fixed;
+  inset: 0;
+  /* Por cima do menu (100) e da trilha de leitura (200), abaixo do clarão (300). */
+  z-index: 250;
+  display: block;
   overflow: hidden;
   /* Fundo do começo do túnel, até o pôster do vídeo aparecer. */
   background: #050D16;
 }
-.hero-intro-inner { position: absolute; z-index: 2; display: flex; flex-direction: column; align-items: center; }
+/* A página por baixo não rola enquanto a abertura toca: a tela da câmera
+   mostra o alto da página, e é ali que ela vira a página de verdade. */
+html.abertura-on { overflow: hidden; }
+/* Pular a abertura: discreto, no canto de baixo. */
+.intro-pular {
+  position: absolute;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 44px;
+  padding: .5rem 1rem;
+  border: 1px solid rgba(245, 245, 245, .2);
+  border-radius: 999px;
+  background: rgba(5, 13, 22, .55);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: .78rem;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: color .2s ease, border-color .2s ease;
+}
+.intro-pular:hover,
+.intro-pular:focus-visible { color: var(--white); border-color: rgba(245, 245, 245, .5); }
+.intro-pular svg { width: .85rem; height: .85rem; fill: currentColor; }
 
 /* O vídeo do túnel fica atrás de tudo e cobre a tela como uma foto. */
 .tunnel {
@@ -1912,15 +1643,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   object-position: 50% 50%;
   background: #050D16;
 }
-/* Véu da cena 1: o túnel fica escuro por igual enquanto as frases, o VOCÊ
-   TRAVA e os pensamentos estão na tela. O centro é o mais escuro porque é ali
-   que a porta de luz brilha, bem atrás do texto. Some quando a cena 2 entra. */
+/* Véu: a abertura começa no escuro e o túnel vai surgindo por trás dele. */
 .tunnel-veil {
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse 60% 55% at 50% 52%, rgba(3, 9, 18, .8) 0%, rgba(3, 9, 18, .7) 100%);
 }
-/* Faixas da cena 2: escuro só em cima e embaixo, onde ficam "E se, em vez de
+/* Faixas da virada: escuro só em cima e embaixo, onde ficam "E se, em vez de
    travar…" e "você desse o play?". O meio, com a porta de luz, fica limpo. */
 .tunnel-faixas {
   position: absolute;
@@ -1929,133 +1658,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background: linear-gradient(180deg, rgba(3, 9, 18, .82) 0%, rgba(3, 9, 18, .35) 24%, rgba(3, 9, 18, 0) 40%, rgba(3, 9, 18, 0) 52%, rgba(3, 9, 18, .45) 66%, rgba(3, 9, 18, .9) 100%);
 }
 
-.hi-line1 {
-  margin: 0;
-  font-family: var(--font-head);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .01em;
-  line-height: 1.15;
-  font-size: clamp(1.4rem, 6.5vw, 2.1rem);
-  color: var(--text);
-  opacity: 0;
-}
-.hi-line2 {
-  margin: 1.1rem 0 0;
-  font-family: var(--font-body);
-  font-size: clamp(.82rem, 3.6vw, .98rem);
-  letter-spacing: .03em;
-  color: var(--text-muted);
-  opacity: 0;
-}
-.hi-travar {
-  position: relative;
-  margin: .75rem 0 0;
-  font-family: var(--font-head);
-  font-weight: 700;
-  text-transform: uppercase;
-  line-height: .98;
-  letter-spacing: -.01em;
-  font-size: clamp(2.8rem, 14vw, 4.6rem);
-  color: var(--orange-light);
-}
-.hi-travar .gl-main { opacity: 0; }
-
-.hi-thoughts {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1.15rem;
-  width: min(360px, 88vw);
-  margin: 1.85rem auto 0;
-}
-.hi-thoughts span {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: .7rem 1.1rem;
-  border: 1px solid var(--border);
-  border-radius: 26px;
-  background: var(--bg-panel);
-  font-family: var(--font-body);
-  font-size: .78rem;
-  line-height: 1.35;
-  letter-spacing: .01em;
-  color: var(--text-muted);
-  opacity: 0;
-}
-.hi-thoughts strong { color: var(--white); font-weight: 600; }
-
-/* A trilha de bolhas embaixo de cada balão é o que faz ele ler como
-   pensamento (não fala): duas bolinhas encolhendo, alternando de lado
-   pra acompanhar de onde cada balão entra (par vem da esquerda, ímpar
-   da direita — ver o x() em wireIntroStage, main.js). */
-.hi-thoughts span::before,
-.hi-thoughts span::after {
-  content: "";
-  position: absolute;
-  border-radius: 50%;
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-}
-.hi-thoughts span::before { width: .5rem; height: .5rem; bottom: -.5rem; }
-.hi-thoughts span::after { width: .28rem; height: .28rem; bottom: -.85rem; }
-.hi-thoughts span:nth-child(odd)::before { left: 1.6rem; }
-.hi-thoughts span:nth-child(odd)::after { left: .95rem; }
-.hi-thoughts span:nth-child(even)::before { right: 1.6rem; }
-.hi-thoughts span:nth-child(even)::after { right: .95rem; }
-
-.hi-cue {
-  position: absolute;
-  z-index: 3;
-  left: 50%;
-  bottom: clamp(1.4rem, 6vh, 2.6rem);
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: .45rem;
-  opacity: 0;
-  transition: opacity .5s ease;
-}
-.hi-cue.is-on { opacity: 1; }
-.hi-cue-line {
-  width: 1px;
-  height: 34px;
-  background: linear-gradient(var(--blue-light), transparent);
-  animation: cue-drop 1.6s ease-in-out infinite;
-}
-@keyframes cue-drop {
-  0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
-  40% { transform: scaleY(1); opacity: 1; }
-  100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
-}
-.hi-cue small {
-  font-family: var(--font-body);
-  font-size: .72rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* Sem animação: a abertura vira uma tela estática, com tudo já visível. */
-  .intro-stage { height: auto; min-height: 100vh; padding-bottom: 3rem; }
-  .hero-intro-inner { position: relative; }
-  .intro-scene2 { display: none; }
-  .hi-thoughts span, .hi-line1, .hi-line2, .hi-travar .gl-main { opacity: 1 !important; }
-  .hi-cue { display: none; }
-}
-
 /* ---------- Entrada coreografada do hero (GSAP, ver main.js) ----------
    Escondidos por padrão; a timeline de entrada revela em sequência.
    Sem JS (raro), o <noscript> abaixo garante que tudo continue visível. */
-#hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue {
+#hero-marca, #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue {
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue { opacity: 1; }
+  #hero-marca, #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue { opacity: 1; }
 }
 
 /* ---------- CTA principal em formato de play ---------- */
@@ -2224,8 +1834,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    de 195vh (que só existe pra animação do original) e sem sticky. */
 .burst-mini .site-header { position: relative; transform: none; opacity: 1; visibility: visible; }
 .burst-mini .hero { height: auto; min-height: auto; }
-/* Um menu só na tela: quando o de verdade desce, o da réplica sai. */
-.menu-real .burst-mini .site-header { visibility: hidden; }
 .burst-mini .cinema-stage { position: relative; top: 0; }
 /* A réplica é uma imagem parada da página: nada nela pisca, gira ou convida a
    rolar, senão vira uma segunda página viva dentro da primeira. */
@@ -2273,9 +1881,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .burst-title span { display: inline-block; opacity: 0; }
 .burst-title .text-orange { font-size: 1.35em; }
-@media (prefers-reduced-motion: reduce) {
-  .burst-pre, .burst-title span, #bf-corners, #bf-reticle, #bf-rec { opacity: 1 !important; }
-}
 
 /* ---------- Indicador de rolagem (hero) ---------- */
 .scroll-cue {
@@ -2341,39 +1946,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   #grain { display: none; }
 }
 
-/* ---------- Palavra com glitch (Trava / liga, no título do hero) ---------- */
-.glitch-word { position: relative; display: inline-block; }
-.glitch-word .glitch-layer {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  mix-blend-mode: screen;
-  pointer-events: none;
-}
-.glitch-word .gl-1 { color: var(--blue-light); }
-.glitch-word .gl-2 { color: var(--white); }
-.glitch-word.glitching .gl-1 { animation: glitch-layer-1 .55s steps(1) 1 both; }
-.glitch-word.glitching .gl-2 { animation: glitch-layer-2 .55s steps(1) 1 both .04s; }
-@keyframes glitch-layer-1 {
-  0% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 0 0); }
-  10% { opacity: .8; transform: translate(-6px, 2px); clip-path: inset(10% 0 55% 0); }
-  25% { transform: translate(5px, -2px); clip-path: inset(50% 0 8% 0); }
-  40% { transform: translate(-4px, 1px); clip-path: inset(25% 0 32% 0); }
-  60% { transform: translate(3px, 0); clip-path: inset(0 0 0 0); }
-  100% { opacity: 0; transform: translate(0, 0); }
-}
-@keyframes glitch-layer-2 {
-  0% { opacity: 0; transform: translate(0, 0); clip-path: inset(0 0 0 0); }
-  12% { opacity: .75; transform: translate(6px, -1px); clip-path: inset(18% 0 46% 0); }
-  28% { transform: translate(-5px, 2px); clip-path: inset(48% 0 12% 0); }
-  45% { transform: translate(4px, 0); clip-path: inset(0 0 0 0); }
-  65% { transform: translate(-2px, 0); }
-  100% { opacity: 0; transform: translate(0, 0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .glitch-word.glitching .gl-1, .glitch-word.glitching .gl-2 { animation: none !important; opacity: 0 !important; }
-}
-
 /* ---------- Cards com tilt 3D no mouse (data-tilt, ligado em main.js) ---------- */
 [data-tilt] {
   transition: transform .25s ease;
@@ -2410,17 +1982,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .section-title.reveal { transform: translateY(18px) scale(.94) rotateX(-10deg); }
 .section-title.reveal.is-visible { transform: translateY(0) scale(1) rotateX(0deg); }
 
-/* Cards em grade "viram" de lado ao entrar — pares e ímpares alternam a direção,
-   pra não parecer tudo saindo do mesmo canto. */
-.versus-linha.reveal {
-  transform: translateY(20px) rotateY(-22deg);
-  transform-origin: left center;
-}
-.versus-linha.reveal:nth-child(even) {
-  transform: translateY(20px) rotateY(22deg);
-  transform-origin: right center;
-}
-.versus-linha.reveal.is-visible { transform: translateY(0) rotateY(0deg); }
 /* =========================================================
    Cards que flutuam no mouse
    O card sobe 14px, cresce 2% e a sombra abre embaixo dele: a combinação
@@ -2428,52 +1989,31 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    sem subir nem crescer, passa despercebido.
    ========================================================= */
 @media (hover: hover) and (pointer: fine) {
-  .shot, .qualify-card, .beneficio, .offer-card, .nivel-card, .accordion-item {
+  .bonus-card, .beneficio, .offer-card, .nivel-card, .accordion-item {
     transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .4s cubic-bezier(.16, .84, .3, 1.06), box-shadow .4s ease, border-color .4s ease, background-color .4s ease;
   }
   /* :is(...):hover empata em especificidade com o estado final do reveal
-     (.versus-linha.reveal.is-visible) e ganha por vir depois no arquivo. */
-  :is(.shot, .beneficio, .offer-card, .nivel-card):hover {
+     (.reveal.is-visible) e ganha por vir depois no arquivo. */
+  :is(.bonus-card, .beneficio, .offer-card, .nivel-card):hover {
     transform: translateY(-14px) scale(1.02);
     box-shadow: 0 16px 34px -10px rgba(0, 0, 0, .6), 0 44px 80px -28px rgba(0, 0, 0, .8);
     /* A superfície clareia um tanto: card que vem pra frente pega mais luz. */
     background-color: rgba(255, 255, 255, .045);
-    /* Só as três bordas neutras acendem: o traço colorido de cima é o que
-       separa "É pra você" de "Não é", e não pode sumir no hover. */
-    border-bottom-color: rgba(144, 190, 217, .34);
-    border-left-color: rgba(144, 190, 217, .34);
-    border-right-color: rgba(144, 190, 217, .34);
+    border-color: rgba(144, 190, 217, .34);
   }
   /* Módulos e perguntas: a linha da trilha liga um item no outro, então o
      movimento aqui é menor, senão a trilha parece quebrar. */
   .accordion-item:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .65); }
   .accordion-item.open:hover { transform: none; }
+  /* Bônus: a borda continua laranja quando o cartão sobe. */
+  .bonus-card:hover { border-color: rgba(215, 119, 19, .62); }
 }
 
-/* Entrada item a item dentro dos cards de comparação e de qualificação:
-   a lista não aparece de uma vez, cada linha entra logo depois da anterior
-   (é a cadência que a Apple usa pra guiar a leitura de cima pra baixo). */
-@media (prefers-reduced-motion: no-preference) {
-  :is(.qualify-card).reveal li {
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .2, 1);
-  }
-  :is(.qualify-card).reveal.is-visible li { opacity: 1; transform: none; }
-  :is(.qualify-card).reveal.is-visible li:nth-child(1) { transition-delay: .14s; }
-  :is(.qualify-card).reveal.is-visible li:nth-child(2) { transition-delay: .21s; }
-  :is(.qualify-card).reveal.is-visible li:nth-child(3) { transition-delay: .28s; }
-  :is(.qualify-card).reveal.is-visible li:nth-child(4) { transition-delay: .35s; }
-  :is(.qualify-card).reveal.is-visible li:nth-child(5) { transition-delay: .42s; }
-  :is(.qualify-card).reveal.is-visible li:nth-child(6) { transition-delay: .49s; }
-  :is(.qualify-card).reveal.is-visible li:nth-child(n+7) { transition-delay: .56s; }
-}
 
 /* =========================================================
    Responsive
    ========================================================= */
 @media (max-width: 960px) {
-  .qualify-grid { grid-template-columns: 1fr; }
 }
 
 /* Escada de exposição em telas largas: com espaço de sobra, a trilha vira
@@ -2500,12 +2040,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .hero-headline { font-size: clamp(1.6rem, 7.6vw, 2rem); max-width: none; }
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
-  .hero-photo-bg { inset: 200px 0 0 0; }
-  .hero-scrim {
-    background:
-      linear-gradient(180deg, rgba(11, 23, 40, .97) 0%, rgba(11, 23, 40, .88) 28%, rgba(11, 23, 40, .4) 46%, transparent 62%),
-      linear-gradient(180deg, transparent 84%, var(--bg) 100%);
+  /* A cena começa logo abaixo do texto (--hero-text-bottom, medido pelo JS):
+     com o texto de dois parágrafos, a cena atrás dele deixava o botão em cima
+     do rosto. A borda de cima se desfaz no fundo. */
+  .hero-photo-bg {
+    top: var(--hero-text-bottom, 420px);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 70px);
+    mask-image: linear-gradient(180deg, transparent 0, #000 70px);
   }
+  .hero-scrim { background: linear-gradient(180deg, transparent 84%, var(--bg) 100%); }
   .hero-lead { margin-left: auto; margin-right: auto; font-size: .85rem; line-height: 1.4; margin-bottom: .3rem; }
   .eyebrow { font-size: .7rem; margin-bottom: .55rem; }
   .hero-actions { margin-top: 1rem; }
@@ -2618,14 +2161,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .section-tone--guarantee .section-title { font-size: 1.6rem; }
   .section-tone--guarantee .guarantee-badge { width: 76px; height: 76px; font-size: .85rem; margin-bottom: 1.1rem; }
   .section-tone--guarantee .section-lead { font-size: .92rem; margin-top: .5rem; }
-  .section-tone--guarantee .refund-link { margin-top: .6rem; }
-  /* Antes/Depois lado a lado mesmo no celular: card mais compacto pra caber. */
+  /* Painel de declaração mais compacto no celular. */
   .statement-panel { padding: 1.5rem .9rem 1.3rem; }
   .statement-head { gap: .6rem; }
   /* Menor no celular pra a primeira linha do título caber inteira ao lado do ícone. */
   .statement-title { font-size: 1.32rem; }
-  .statement-sub { font-size: .78rem; margin-bottom: 1.6rem; }
-.statement-col-icon { width: 1.4rem; height: 1.4rem; }
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
      celular só ganha nós e texto um pouco menores pra caber melhor. */
 }
@@ -2642,26 +2182,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     min-height: calc(100vh - var(--header-h, 71px));
     /* Aqui o palco não gruda embaixo do menu: o respiro de cima é que tira o
        texto de trás dele. */
-    padding-top: calc(var(--header-h, 71px) + 18px);
+    padding-top: calc(var(--header-h, 71px) + 6px);
     padding-bottom: 36px;
   }
   .hero-headline { font-size: 2rem; }
   .hero-kicker { margin-bottom: .4rem; }
   .hero-lead-list { margin-top: .8rem; font-size: .88rem; line-height: 1.45; }
   .hero-actions { margin-top: .9rem; }
-  /* Abertura: pouca altura pra frase, VOCÊ TRAVA e quatro balões. Os balões
-     ficam dois por linha e o resto encolhe um pouco. */
-  .intro-stage { padding-top: .8rem; padding-bottom: 2.6rem; }
-  .hi-line1 { font-size: 1.2rem; }
-  .hi-line2 { margin-top: .45rem; }
-  .hi-travar { margin-top: .3rem; font-size: 2.5rem; }
-  .hi-thoughts { width: min(720px, 92vw); display: grid; grid-template-columns: 1fr 1fr; gap: .75rem 1rem; margin-top: .9rem; }
-  .hi-thoughts span { padding: .5rem .9rem; font-size: .72rem; }
-  .hi-cue { bottom: .6rem; }
 }
 /* Celular deitado: o título comprido encostava nos ícones das redes. */
 @media (max-height: 480px) and (min-width: 700px) {
-  .hero-copy { max-width: min(420px, 54vw); }
+  .hero-copy { max-width: min(560px, 60vw); }
 }
 
 /* Telas muito largas (2K e 4K sem escala do sistema, ultrawide): em vez de uma
@@ -2709,10 +2240,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   white-space: normal;
 }
 /* Em blocos alinhados à esquerda, a etiqueta também fica à esquerda. */
-.modo-revisao :is(.nivel-card, .beneficio, .bonus-linha, .band-name, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
+.modo-revisao :is(.nivel-card, .beneficio, .bonus-card, .band-name, .accordion-panel ul, .accordion-panel p)[data-confirmar]::after {
   margin-left: 0;
 }
-.modo-revisao .offer-trust span[data-confirmar]::after { margin-top: .4rem; flex-basis: 100%; }
 .modo-revisao .credential-item[data-confirmar]::after { flex-basis: 100%; margin-left: 0; }
 /* No carrossel (celular) e na trilha em grade (tablet/computador), a etiqueta
    ocupa a linha inteira em vez de espremer numa coluna/flex-item. */

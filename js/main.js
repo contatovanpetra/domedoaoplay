@@ -6,9 +6,9 @@
 //    Todos os botões marcados com [data-checkout-link] vão usar essa URL.
 const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI";
 
-// 2) GSAP + ScrollTrigger (carregados via CDN no index.html) movem a abertura
-//    em três cenas. Sem eles (falha de rede, bloqueio de script), a abertura
-//    é pulada e a página abre direto: nada fica preso.
+// 2) GSAP + ScrollTrigger (em js/vendor) tocam a abertura. Sem eles (falha de
+//    rede, bloqueio de script), a abertura é pulada e a página abre direto:
+//    nada fica preso.
 const hasGSAP = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
 if (hasGSAP) {
   gsap.registerPlugin(ScrollTrigger);
@@ -20,9 +20,8 @@ if (hasGSAP) {
 }
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-// A abertura cria uma réplica da página dentro do celular, e essa réplica fica
-// ANTES do original no documento. Por isso as referências reais são guardadas
-// logo no começo: sem isso, querySelector(".hero") passa a achar a miniatura.
+// A abertura monta uma réplica do menu e do herói dentro da câmera. As
+// referências reais são guardadas logo no começo, antes da réplica existir.
 let REAL_HERO = null;
 let REAL_HEADER = null;
 
@@ -30,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
   REAL_HERO = document.querySelector(".hero");
   REAL_HEADER = document.querySelector(".site-header");
   wireCheckoutLinks();
-  wireWhatsLinks();
   wireLinksVazios();
   wireAncoras();
   wireAccordions();
@@ -118,7 +116,6 @@ function wireScrollEffects() {
   const inner = document.querySelector(".hero-inner");
   const copy = document.querySelector(".hero-copy");
   const bar = document.querySelector(".read-progress");
-  const introStage = document.getElementById("intro-stage");
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
 
@@ -138,7 +135,7 @@ function wireScrollEffects() {
       root.style.setProperty("--header-h", header.getBoundingClientRect().height + "px");
     }
     if (stage && inner && copy) {
-      // Em tela em pé a partir de 700px a cena começa no fim do texto (ver CSS).
+      // Em tela em pé (celular e tablet) a cena começa no fim do texto (ver CSS).
       // offsetTop/offsetHeight ignoram o translateY da animação.
       stage.style.setProperty("--hero-text-bottom", inner.offsetTop + copy.offsetTop + copy.offsetHeight + "px");
     }
@@ -157,12 +154,8 @@ function wireScrollEffects() {
     ticking = false;
     const y = window.scrollY;
 
-    // Enquanto a abertura ainda está presa, a rolagem "de verdade" só serve pra
-    // avançar o túnel/pensamentos (ver autoAdvance em wireIntroStage) e não
-    // corresponde a progresso de leitura nenhum — sem esta checagem, a trilha
-    // enchia sozinha (uma linha laranja subindo na borda direita) durante a
-    // abertura inteira, em qualquer tamanho de tela.
-    const introActive = introStage && !introStage.classList.contains("intro-done");
+    // A trilha de leitura fica parada enquanto a abertura toca.
+    const introActive = root.classList.contains("abertura-on");
     if (bar) bar.style.setProperty("--read", introActive || maxScroll <= 0 ? "0" : clamp(y / maxScroll).toFixed(4));
     if (!cinema) return;
 
@@ -232,8 +225,8 @@ function wireScrollEffects() {
     if (header) ro.observe(header);
   }
 
-  // A abertura é uma seção presa: quando o ScrollTrigger recalcula as medidas
-  // dela, a posição do hero muda junto e precisa ser lida de novo.
+  // Quando o ScrollTrigger remede a página (giro do celular, janela nova), a
+  // posição do herói muda junto e precisa ser lida de novo.
   if (hasGSAP) ScrollTrigger.addEventListener("refresh", queueMeasure);
 
   measure();
@@ -254,34 +247,12 @@ function checkoutHref() {
   }
 }
 
-// WhatsApp de atendimento (dúvidas antes de comprar). Só números, com DDI e
-// DDD, ex.: "5511999999999". Vazio = o botão não leva a lugar nenhum ainda.
-const WHATSAPP_NUMERO = "";
-const WHATSAPP_MENSAGEM = "Oi! Tenho uma dúvida sobre o curso Do Medo ao Play.";
-
-function wireWhatsLinks() {
-  const links = document.querySelectorAll("[data-whatsapp-link]");
-  if (!links.length) return;
-  if (!WHATSAPP_NUMERO) {
-    console.warn("Do Medo ao Play: falta o número do WhatsApp (WHATSAPP_NUMERO em js/main.js).");
-    // Sem número, o bloco some: um botão que não leva a lugar nenhum (ou que
-    // joga a pessoa de volta pro começo da página) é pior que não ter botão.
-    links.forEach((a) => { (a.closest(".faq-whats") || a).hidden = true; });
-    return;
-  }
-  const href = "https://wa.me/" + WHATSAPP_NUMERO + "?text=" + encodeURIComponent(WHATSAPP_MENSAGEM);
-  links.forEach((a) => { a.setAttribute("href", href); a.setAttribute("target", "_blank"); });
-}
-
-// Links ainda sem destino (href="#"): os do rodapé somem até as páginas
-// existirem (é só trocar o "#" pelo endereço no index.html que eles voltam), e
-// nenhum "#" leva a pessoa pro topo, que é a abertura recomeçando do zero.
+// Links ainda sem destino (href="#", como os do rodapé enquanto as páginas de
+// política, termos e suporte não existem): o clique não leva a pessoa pro
+// topo, que é a abertura recomeçando do zero.
 function wireLinksVazios() {
-  const legal = document.querySelector(".footer-legal");
-  if (legal) {
-    legal.querySelectorAll("a").forEach((a) => { if (a.getAttribute("href") === "#") a.hidden = true; });
-    if (![...legal.querySelectorAll("a")].some((a) => !a.hidden)) legal.hidden = true;
-  }
+  const vazios = [...document.querySelectorAll('.footer-legal a[href="#"]')].map((a) => a.textContent.trim());
+  if (vazios.length) console.warn("Do Medo ao Play: links do rodapé ainda sem endereço: " + vazios.join(", ") + " (index.html).");
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest('a[href="#"]');
     if (a) e.preventDefault();
@@ -529,31 +500,27 @@ function wireCountUp() {
 
 
 // =========================================================
-// ABERTURA EM TRÊS CENAS
-// Cena 1: "você tem o que dizer" → "mas quando a câmera liga…" → VOCÊ TRAVA,
-//         e os pensamentos de quem trava, um a cada deslizada da pessoa.
-// Cena 2: "e se, em vez de travar…" — a câmera se desenha em 3D, se acomoda,
-//         o fundo se abre e aparece "você entrasse em cena?".
-// Cena 3: a página de verdade, que faz a própria entrada (playHeroIntro).
-// Dá pra pular a qualquer momento pelo botão no canto.
+// ABERTURA (toca sozinha quando a página abre)
+// O túnel avança sozinho, "E se, em vez de travar…" aparece, a câmera se
+// desenha e a tela dela mostra a primeira seção da página. No fim a tela
+// cresce até a janela inteira e VIRA a página: o clarão disfarça a emenda e
+// o menu e o herói fazem a entrada deles. Ninguém precisa rolar; rolar,
+// tocar, clicar ou apertar uma tecla adianta direto pra travessia.
 // =========================================================
 
-// A abertura é presa na rolagem: cada trecho rolado move as cenas pra frente,
-// e rolar pra cima desfaz tudo na ordem inversa. Por isso dá pra voltar lá em
-// cima e rever a animação inteira quantas vezes quiser.
+// O menu e o herói esperam a abertura acabar (ou saber que ela nem vai rodar).
+let aberturaAcabou = false;
+function quandoAberturaAcabar(fn) {
+  if (aberturaAcabou) fn();
+  else document.addEventListener("abertura:fim", fn, { once: true });
+}
+
 function wireIntroStage() {
+  const root = document.documentElement;
   const stage = document.getElementById("intro-stage");
-  if (!stage) return;
-
-  const inner = document.getElementById("hero-intro-inner");
-  const line1 = document.getElementById("hi-line1");
-  const line2 = document.getElementById("hi-line2");
-  const travar = document.getElementById("hi-travar");
-  const glMain = travar ? travar.querySelector(".gl-main") : null;
-  const thoughts = [...document.querySelectorAll("#hi-thoughts span")];
-  const cue = document.getElementById("hi-cue");
-
-  // Cena 2
+  const video = document.getElementById("tunnel-video");
+  const veil = document.getElementById("tunnel-veil");
+  const faixas = document.getElementById("tunnel-faixas");
   const scene2 = document.getElementById("intro-scene2");
   const burstPre = document.getElementById("burst-pre");
   const burstFrame = document.getElementById("burst-frame");
@@ -568,142 +535,83 @@ function wireIntroStage() {
     .map((id) => document.getElementById(id))
     .filter(Boolean);
 
-  // ---- O TÚNEL ----
-  // Vídeo de 12s dos arcos até a porta de luz laranja. Ele não "toca": cada
-  // ponto da rolagem presa corresponde a um quadro (como nos sites da Apple),
-  // então rolar pra cima volta o túnel. Tela em pé usa o vídeo vertical.
-  const video = document.getElementById("tunnel-video");
-  const veil = document.getElementById("tunnel-veil");
-  const faixas = document.getElementById("tunnel-faixas");
-  const VIDEOS = {
-    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.jpg" },
-    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.jpg" },
-  };
-  const modoDaTela = () => (window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador");
+  let tl = null;
+  // Enquanto a abertura toca, rolar/tocar/teclar não mexe na página: adianta a abertura.
+  const TECLAS_DE_ROLAR = [" ", "PageDown", "PageUp", "ArrowDown", "ArrowUp", "Home", "End", "Tab"];
+  const bloqueia = (e) => { e.preventDefault(); adianta(); };
+  const tecla = (e) => { if (TECLAS_DE_ROLAR.includes(e.key)) e.preventDefault(); adianta(); };
 
-  if (!hasGSAP || prefersReducedMotion) {
-    // Sem animação: fica a imagem do começo do túnel, sem baixar o vídeo.
-    if (video) video.poster = VIDEOS[modoDaTela()].poster;
-    [line1, line2, glMain, ...thoughts].forEach((el) => { if (el) el.style.opacity = 1; });
+  // Libera a página: a camada sai do documento, a rolagem volta e o menu e o
+  // herói fazem a entrada deles. "forcado" é a trava de segurança (abertura
+  // travada ou aba escondida): aí a animação para onde estiver.
+  function libera(forcado) {
+    if (aberturaAcabou) return;
+    aberturaAcabou = true;
+    window.removeEventListener("wheel", bloqueia);
+    window.removeEventListener("touchmove", bloqueia);
+    window.removeEventListener("keydown", tecla);
+    if (forcado === true && tl) {
+      tl.kill();
+      if (flash) gsap.set(flash, { opacity: 0 });
+    }
+    root.classList.remove("abertura-on");
+    if (stage) stage.remove();
+    document.dispatchEvent(new Event("abertura:fim"));
+  }
+  window.liberaAbertura = () => libera(true);
+
+  // Sem abertura: menos movimento, sem GSAP, endereço com âncora (a classe nem
+  // entra, ver o <head>), página que já abriu rolada ou aba aberta escondida.
+  if (!stage || !video || !burstStage || !root.classList.contains("abertura-on") ||
+      !hasGSAP || prefersReducedMotion || window.scrollY > 0 || document.hidden) {
+    libera();
     return;
   }
+  window.aberturaAssumida = true;
 
-  let modoVideo = "";
-  let alvoVideo = 0;       // fração do vídeo que a rolagem pede (0 a 1)
-  let tempoVideo = null;   // instante atual, suavizado
-  let rafVideo = 0;
-  let fimDoTunel = 1;      // fração da rolagem em que o vídeo chega ao fim
-  let preparado = false;
-
-  function escolheVideo() {
-    if (!video) return;
-    const modo = modoDaTela();
-    if (modo === modoVideo) return;
-    modoVideo = modo;
-    video.poster = VIDEOS[modo].poster;
-    video.src = VIDEOS[modo].src;
-    video.load();
-    tempoVideo = null;
-    preparado = false;
-  }
-  function mostraTunel(p) {
-    alvoVideo = gsap.utils.clamp(0, 1, p / fimDoTunel);
-    pedeQuadro();
-  }
-  function pedeQuadro() {
-    if (!rafVideo) rafVideo = requestAnimationFrame(avancaTunel);
-  }
-  function avancaTunel() {
-    rafVideo = 0;
-    // Sem metadados ainda: o loadedmetadata chama de novo.
-    if (!video || video.readyState < 1 || !isFinite(video.duration)) return;
-    const alvo = Math.min(video.duration - 0.04, alvoVideo * video.duration);
-    if (tempoVideo === null) tempoVideo = alvo;
-    const prox = tempoVideo + (alvo - tempoVideo) * 0.35;
-    tempoVideo = Math.abs(alvo - prox) < 0.004 ? alvo : prox;
-    // Um pulo por vez: pedir outro antes do anterior terminar deixa o quadro
-    // congelado (o navegador cancela e nunca chega a desenhar).
-    if (!video.seeking && Math.abs(video.currentTime - tempoVideo) > 0.001) {
-      video.currentTime = tempoVideo;
-    }
-    if (tempoVideo !== alvo || video.seeking) pedeQuadro();
-  }
-  // iPhone: o Safari só desenha o quadro pedido depois que o vídeo tocou uma
-  // vez. Toca mudo e pausa na hora (vídeo sem som pode tocar sozinho); se o
-  // aparelho bloquear (modo de economia), tenta de novo no primeiro toque.
-  function preparaVideo() {
-    if (preparado || !video || !video.src) return;
-    preparado = true;
-    const tocando = video.play();
-    if (tocando && tocando.then) {
-      tocando.then(() => { video.pause(); tempoVideo = null; pedeQuadro(); }).catch(() => { preparado = false; });
-    } else {
-      video.pause();
-    }
-  }
-  if (video) {
-    video.addEventListener("loadedmetadata", pedeQuadro);
-    video.addEventListener("loadeddata", () => { preparaVideo(); pedeQuadro(); });
-    video.addEventListener("seeked", pedeQuadro);
-    ["touchend", "click", "keydown"].forEach((ev) => window.addEventListener(ev, preparaVideo, { passive: true }));
-    escolheVideo();
-    window.addEventListener("resize", escolheVideo);
-  }
-
-  // O glitch é um solavanco, não um estado: dispara ao passar pelo ponto,
-  // indo ou voltando.
-  let introBeatsDone = false;
-  let glitchTimer = null;
-  function fireGlitch() {
-    if (!travar) return;
-    travar.classList.remove("glitching");
-    void travar.offsetWidth; // reinicia a animação
-    travar.classList.add("glitching");
-    if (glitchTimer) window.clearTimeout(glitchTimer);
-    glitchTimer = window.setTimeout(() => travar.classList.remove("glitching"), 700);
-  }
-
-  // ---- A RÉPLICA DA PÁGINA DENTRO DO CELULAR ----
-  // Em vez de uma foto, a tela mostra uma cópia viva do menu + da página de
-  // vendas, do tamanho exato da janela e reduzida pra caber. Na travessia ela
-  // cresce até escala 1, então a tela do celular VIRA a página, sem corte.
+  // ---- A RÉPLICA DA PÁGINA DENTRO DA CÂMERA ----
+  // Em vez de uma foto, a tela mostra uma cópia viva do menu + herói, do
+  // tamanho exato da janela e reduzida pra caber. Na travessia ela cresce até
+  // escala 1, então a tela da câmera VIRA a página, sem corte.
   const PHONE_RATIO = 440 / 280;          // proporção do quadro desenhado
   let mini = null;
 
   function buildMiniScreen() {
-    if (!burstScreen) return;
-    const header = REAL_HEADER;
-    const heroSection = REAL_HERO;
-    if (!heroSection) return;
-
+    if (!burstScreen || !REAL_HERO) return;
     mini = document.createElement("div");
     mini.className = "burst-mini";
-
-    [header, heroSection].forEach((node) => {
+    [REAL_HEADER, REAL_HERO].forEach((node) => {
       if (!node) return;
       const copy = node.cloneNode(true);
       // Sem ids repetidos: a cópia não pode responder ao CSS/JS do original
-      // (é por causa dos ids que o hero de verdade começa invisível).
+      // (é por causa dos ids que o herói de verdade começa invisível).
       copy.removeAttribute("id");
       copy.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
       copy.querySelectorAll("a, button").forEach((el) => el.setAttribute("tabindex", "-1"));
       mini.appendChild(copy);
     });
-
     burstScreen.appendChild(mini);
     ajustaCena3D();
   }
 
   // O palco tem tamanho em px pra poder ser animado até a janela inteira.
   function stageBaseSize() {
-    // Também pela altura: no celular deitado o celular desenhado ocupava a tela toda.
+    // Também pela altura: no celular deitado a câmera desenhada ocupava a tela toda.
     const w = Math.min(200, window.innerWidth * .42, window.innerHeight * .5 / PHONE_RATIO);
     return { w, h: w * PHONE_RATIO };
   }
   function sizeStage() {
+    if (tl && tl.time() >= tl.labels.cresce) return;
     const { w, h } = stageBaseSize();
     gsap.set(burstStage, { width: w, height: h });
-    if (mini) gsap.set(mini, { width: window.innerWidth, height: window.innerHeight });
+    if (mini) {
+      gsap.set(mini, { width: window.innerWidth, height: window.innerHeight });
+      // As medidas que o JS põe no herói de verdade (onde a cena começa etc.)
+      // valem pra réplica também.
+      const real = REAL_HERO.querySelector(".cinema-stage");
+      const copia = mini.querySelector(".cinema-stage");
+      if (real && copia) copia.setAttribute("style", real.getAttribute("style") || "");
+    }
     fitMini();
   }
   // A réplica sempre cabe inteira dentro da tela atual. Quando a tela é do
@@ -724,199 +632,119 @@ function wireIntroStage() {
     gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
   });
   gsap.set(burstStage, { rotationY: -26, rotationX: 9, transformPerspective: 1000, transformOrigin: "50% 50%" });
-  mostraTunel(0);
+  gsap.set(scene2, { autoAlpha: 1 });
+  gsap.set(burstPre, { opacity: 0, y: 10 });
+  gsap.set(burstTitleSpans, { opacity: 0, y: 12 });
 
-  // Quanto a rolagem "presa" dura, no total. O GSAP, por padrão, reserva
-  // sozinho o espaço de rolagem de uma seção presa somando a altura de
-  // repouso dela (a tela cheia, ~100dvh) A MAIS por cima dessa distância —
-  // isso deixava uma tela inteira em branco entre o fim da abertura (a
-  // réplica já tinha sumido) e o hero de verdade aparecer (que só começava
-  // bem mais embaixo). Mesmo com pinSpacing desligado, o GSAP ainda reserva
-  // sozinho a altura "de repouso" (~100dvh); este spacer manual cobre só o
-  // que falta além dela, pra o total bater com o fim da rolagem presa.
-  const SCRUB_DISTANCE = 5200;
-  const spacer = document.createElement("div");
-  spacer.setAttribute("aria-hidden", "true");
-  stage.insertAdjacentElement("afterend", spacer);
-  // A altura da abertura é sempre a da tela (100dvh). Pela janela, e não pelo
-  // elemento: o GSAP deixa no elemento o tamanho da última medição, e depois
-  // de girar o celular sobrava (ou faltava) um vão antes do herói.
-  const syncSpacer = () => {
-    spacer.style.height = Math.max(0, SCRUB_DISTANCE - window.innerHeight) + "px";
+  // ---- A ANIMAÇÃO (em segundos de verdade, uns 10 no total) ----
+  tl = gsap.timeline({ paused: true, onUpdate: fitMini });
+  tl
+    // O túnel surge do escuro.
+    .to(veil, { opacity: 0, duration: 1.4, ease: "power1.out" }, 0)
+    .to(faixas, { opacity: .7, duration: .8 }, .3)
+    // "E se, em vez de travar…" e a câmera se desenhando.
+    .to(burstPre, { opacity: 1, y: 0, duration: .7, ease: "power2.out" }, .8)
+    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .9, ease: "power2.inOut" }, 1.1)
+    .to(bfPaths.slice(2), { strokeDashoffset: 0, duration: .8, ease: "power2.inOut" }, 1.7)
+    .to(bfRec, { opacity: 1, duration: .4 }, 2.35)
+    .to(bfCorners, { opacity: 1, duration: .4 }, 2.5)
+    // A câmera "enxerga": a página acende dentro da tela.
+    .to(burstScreen, { opacity: 1, duration: .9, ease: "power2.out" }, 2.6)
+    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1.4, ease: "power2.out" }, 2.8)
+    .to(bfReticle, { opacity: 1, duration: .5, ease: "back.out(2)" }, 3)
+    // A pergunta se completa: as faixas firmam antes dela chegar.
+    .to(faixas, { opacity: 1, duration: 1.2, ease: "power2.inOut" }, 3.4)
+    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .5, stagger: .2, ease: "back.out(1.7)" }, 3.9)
+    // Tempo de ler a pergunta inteira; depois o texto sai e a câmera se endireita.
+    .addLabel("atravessa", 7)
+    .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .5 }, "atravessa")
+    .to(faixas, { opacity: 0, duration: .5 }, "atravessa")
+    .to(burstStage, { rotationY: 0, rotationX: 0, duration: .7, ease: "power2.inOut" }, "atravessa")
+    // ATRAVESSA: a tela da câmera cresce até ocupar a janela. Como ela é uma
+    // réplica da página, quando chega no tamanho da janela ela JÁ É a página.
+    .addLabel("cresce", "atravessa+=.5")
+    .to(burstStage, { width: () => window.innerWidth, height: () => window.innerHeight, duration: 1.8, ease: "power2.in" }, "cresce")
+    .to(burstScreen, { left: "0%", top: "0%", width: "100%", height: "100%", borderRadius: 0, duration: 1.8, ease: "power2.in" }, "cresce")
+    .to(burstFrame, { opacity: 0, duration: .6 }, "cresce+=.2")
+    .to(flash, { opacity: 1, duration: .5, ease: "power2.in" }, "cresce+=1.35")
+    .call(libera)
+    .to(flash, { opacity: 0, duration: .9, ease: "power2.out" });
+
+  // ---- O TÚNEL ----
+  // Vídeo de 12s dos arcos até a porta de luz laranja, tocando sozinho. O
+  // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
+  // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
+  const VIDEOS = {
+    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.jpg" },
+    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.jpg" },
   };
-  syncSpacer();
-  window.addEventListener("resize", syncSpacer);
-  window.addEventListener("orientationchange", syncSpacer);
-  ScrollTrigger.addEventListener("refreshInit", syncSpacer);
-  const tl = gsap.timeline({
-    scrollTrigger: {
-      trigger: stage,
-      start: "top top",
-      end: "+=" + SCRUB_DISTANCE,
-      scrub: .7,
-      pin: true,
-      pinSpacing: false,
-      anticipatePin: 1,
-      // Sem invalidateOnRefresh: com a seção escondida (display:none) depois
-      // de pronta, um refresh perdido nesse meio tempo tentava remedir um
-      // elemento colapsado e embaralhava o início/fim da rolagem presa — a
-      // página parecia "voltar" sozinha pro meio da abertura.
-      onUpdate: (self) => {
-        mostraTunel(self.progress);
-        fitMini();
-      },
-      // Depois que o clarão termina, a réplica dentro do celular (cabeçalho +
-      // hero clonados) já cresceu até o tamanho da janela e não some sozinha:
-      // sem isto, ela ficava por cima da página de verdade e duplicava o
-      // cabeçalho do hero. Ao voltar rolando pra cima, ela reaparece — a
-      // abertura continua reversível como antes. Precisa ser na hora (sem
-      // atraso): com pinSpacing desligado, se ela ficasse position:relative
-      // por um instante antes do display:none, empurraria o hero pra baixo
-      // e desfaria o ajuste do espaçador manual.
-      onLeave: () => stage.classList.add("intro-done"),
-      onEnterBack: () => stage.classList.remove("intro-done"),
-    },
-  });
+  const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
+  const porta = tl.labels.cresce + 1.8;
+  let comecou = false;
+  let semVideo = false;
+  let esperaVideo = 0;
 
-  // A cena 2 (túnel, câmera, estouro) roda sozinha depois de um único gesto
-  // de rolagem: em vez de exigir rolagem manual do início ao fim, a gente
-  // move a própria rolagem da página até o fim da seção presa assim que a
-  // pessoa desliza uma vez. O scrub e o pin continuam existindo do mesmo
-  // jeito (é só a rolagem que passa a ser automática a partir daí) — por
-  // isso rolar de novo no meio ainda cancela e devolve o controle pra
-  // pessoa, e a abertura continua reversível.
-  function autoAdvance() {
-    const trig = tl.scrollTrigger;
-    if (!trig) return;
-    const state = { y: window.scrollY };
-    let cancelled = false;
-    const cancel = () => { cancelled = true; };
-    // Um deslize de verdade (dedo ou trackpad) dispara uma sequência de
-    // wheel/touchmove ao longo de uns 300-600ms, não um evento só. Se a
-    // gente já ligasse o cancelamento aqui, o rabo do MESMO gesto que
-    // acabou de ligar a cena 2 automática cancelava ela de novo em
-    // milissegundos, era por isso que "funcionava uma hora, na outra não":
-    // dependia do gesto ser curto (mouse) ou longo (touch/trackpad). Por
-    // isso a gente espera o gesto atual esfriar antes de escutar um novo.
-    setTimeout(() => {
-      window.addEventListener("wheel", cancel, { passive: true, once: true });
-      window.addEventListener("touchmove", cancel, { passive: true, once: true });
-      window.addEventListener("keydown", cancel, { once: true });
-    }, 500);
-    gsap.to(state, {
-      y: trig.end,
-      duration: 7,
-      ease: "power1.inOut",
-      // behavior:"instant" é essencial aqui: o <html> usa scroll-behavior:smooth
-      // pros links âncora, e sem isso CADA chamada (várias por segundo) disparava
-      // sua própria animação suave, todas brigando entre si — a rolagem ficava
-      // instável e às vezes "voltava" sozinha no meio do caminho.
-      onUpdate: () => { if (!cancelled) window.scrollTo({ top: state.y, left: 0, behavior: "instant" }); },
-    });
+  function ajustaRitmo() {
+    if (!isFinite(video.duration) || video.duration <= 0) return;
+    const ritmo = gsap.utils.clamp(.75, 2, video.duration / porta);
+    video.defaultPlaybackRate = ritmo;
+    video.playbackRate = ritmo;
+  }
+  function comeca() {
+    if (comecou) return;
+    comecou = true;
+    clearTimeout(esperaVideo);
+    if (video.paused || video.readyState < 2) {
+      // O vídeo não veio a tempo (rede lenta, modo de economia do celular):
+      // fica a imagem do começo do túnel, que se aproxima devagar.
+      semVideo = true;
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      gsap.fromTo(video, { scale: 1 }, { scale: 1.3, duration: porta, ease: "power1.in" });
+    }
+    tl.play();
+    // Trava de segurança: a página nunca fica presa atrás da abertura.
+    setTimeout(() => libera(true), (tl.duration() + 4) * 1000);
   }
 
-  // CENA 1 — toda a primeira cena roda sozinha assim que a página abre: a
-  // frase, a virada, o VOCÊ TRAVA e os pensamentos aparecem em sequência, um
-  // atrás do outro, sem depender de rolagem. Só depois de tudo aparecer é que
-  // a cena 2 começa a rolar sozinha.
-  const cena1 = gsap.timeline({ delay: .35 })
-    .fromTo(line1, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .7, ease: "power3.out" })
-    .fromTo(line2, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .9, ease: "power1.out" }, "+=.5")
-    .call(fireGlitch, null, "+=.45")
-    .fromTo(glMain, { opacity: 0 }, { opacity: 1, duration: .1 }, "<")
-    .fromTo(inner, { x: 0 }, { x: () => gsap.utils.random(-7, 7), duration: .05, repeat: 7, yoyo: true, ease: "none" }, "<")
-    .set(inner, { x: 0 })
-    .fromTo(thoughts,
-      { opacity: 0, x: (i) => (i % 2 === 0 ? -26 : 26), y: 6 },
-      { opacity: 1, x: 0, y: 0, duration: .5, stagger: .55 },
-      "+=.3")
-    .call(() => {
-      introBeatsDone = true;
-      if (cue) cue.classList.add("is-on");
-      // Um só gesto liga a cena 2 no automático — depois disso a pessoa não
-      // precisa mais continuar rolando até o hero aparecer. Escuta "scroll"
-      // (dispara com qualquer forma de rolar: touch, roda do mouse, trackpad,
-      // teclado) em vez de "wheel"/"touchmove" direto, porque no celular nem
-      // sempre esses dois disparam de um jeito que o navegador deixa a gente
-      // ouvir — "scroll" é o sinal que sempre chega, não importa como a
-      // pessoa rolou. "keydown" fica como atalho extra pra quem usa teclado.
-      let started = false;
-      const start = () => {
-        if (started) return;
-        started = true;
-        if (cue) cue.classList.remove("is-on");
-        window.removeEventListener("scroll", start);
-        window.removeEventListener("keydown", start);
-        autoAdvance();
-      };
-      window.addEventListener("scroll", start, { passive: true });
-      window.addEventListener("keydown", start);
-    });
+  // Adianta direto pra travessia (a tela da câmera crescendo até virar a
+  // página), bem mais rápido. Serve pro botão, pra rolagem, toque e teclado.
+  let adiantou = false;
+  function adianta() {
+    if (adiantou || aberturaAcabou) return;
+    adiantou = true;
+    const t = tl.labels.atravessa;
+    if (tl.time() < t) {
+      tl.seek(t);
+      if (!semVideo && video.readyState >= 1) {
+        try { video.currentTime = Math.min(video.duration || 0, t * video.playbackRate); } catch { /* segue sem acertar o vídeo */ }
+      }
+    }
+    tl.timeScale(2.2);
+    if (!semVideo) video.playbackRate = Math.min(16, video.playbackRate * 2.2);
+    if (!comecou) {
+      comecou = true;
+      clearTimeout(esperaVideo);
+      setTimeout(() => libera(true), 8000);
+    }
+    tl.play();
+  }
 
-  // Quem rolava antes das frases terminarem pulava o gancho inteiro e caía
-  // direto no "E se, em vez de travar...". O primeiro gesto acelera a cena 1
-  // (as frases aparecem de uma vez) e o começo da rolagem segura a cena 1 na
-  // tela antes da cena 2 (o respiro no começo do tl, logo abaixo).
-  const acelera = () => {
-    window.removeEventListener("scroll", acelera);
-    if (!introBeatsDone) cena1.timeScale(5);
-  };
-  window.addEventListener("scroll", acelera, { passive: true });
+  window.addEventListener("wheel", bloqueia, { passive: false });
+  window.addEventListener("touchmove", bloqueia, { passive: false });
+  window.addEventListener("keydown", tecla);
+  stage.addEventListener("click", adianta);
 
-  tl
-    // Respiro: a cena 1 continua na tela no começo da rolagem.
-    .to({}, { duration: .9 })
-    // CENA 2 — a cena 1 sai e a câmera se desenha
-    .to(inner, { opacity: 0, y: -24, duration: .5 })
-    .fromTo(scene2, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, "<")
-    // o véu sai e o túnel aparece de verdade; ficam só as faixas do texto
-    .to(veil, { opacity: 0, duration: .5 }, "<")
-    .to(faixas, { opacity: .7, duration: .5 }, "<")
-    .fromTo(burstPre, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .5 })
-    // A moldura da câmera começava a desenhar só depois do texto "E se, em vez
-    // de travar..." terminar de aparecer — rolando pra baixo isso nem se nota
-    // (é rápido e o auto-avanço não para no meio), mas rolando de volta pra
-    // cima manualmente, dava pra parar bem nesse intervalo e a tela ficava só
-    // com o texto solto num fundo escuro, sem nada mais (parecia tela vazia/
-    // azul). Desenhando junto com o texto, sempre tem algo na tela.
-    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .6, ease: "power2.inOut" }, "<")
-    .to(bfPaths.slice(2), { strokeDashoffset: 0, duration: .55, ease: "power2.inOut" }, "-=.2")
-    .to(bfRec, { opacity: 1, duration: .3 }, "-=.1")
-    .to(bfCorners, { opacity: 1, duration: .3 }, "-=.15")
-    // a câmera "enxerga": a foto acende dentro da tela
-    .to(burstScreen, { opacity: 1, duration: .6, ease: "power2.out" }, "-=.2")
-    .to(bfReticle, { opacity: 1, duration: .4, ease: "back.out(2)" }, "-=.3")
-    .to(burstStage, { rotationY: -5, rotationX: 2, duration: .8, ease: "power2.out" }, "-=.2")
-    // a pergunta se completa: as faixas firmam antes dela chegar
-    .to(faixas, { opacity: 1, duration: 1, ease: "power2.inOut" }, "-=.3")
-    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .4, stagger: .13, ease: "back.out(1.7)" }, "-=.55")
-    .to({}, { duration: .8 })
-    // ATRAVESSA — o texto sai, a câmera se endireita e a tela do celular cresce
-    // até ocupar a janela inteira. Como ela é uma réplica da página de vendas,
-    // quando chega no tamanho da janela ela JÁ É aquela tela: o clarão só
-    // disfarça a emenda e a pessoa segue rolando na página.
-    .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .4 })
-    .to(faixas, { opacity: 0, duration: .4 }, "<")
-    .to(burstStage, { rotationY: 0, rotationX: 0, duration: .5, ease: "power2.inOut" }, "<")
-    .addLabel("atravessa")
-    .to(burstStage, {
-      width: () => window.innerWidth,
-      height: () => window.innerHeight,
-      duration: 1.2,
-      ease: "power2.in",
-    })
-    .to(burstScreen, {
-      left: "0%", top: "0%", width: "100%", height: "100%", borderRadius: 0,
-      duration: 1.2, ease: "power2.in",
-    }, "<")
-    .to(burstFrame, { opacity: 0, duration: .5 }, "<+=.2")
-    .to(flash, { opacity: 1, duration: .45, ease: "power2.in" }, "<+=.45")
-    .to(flash, { opacity: 0, duration: .8, ease: "power2.out" });
-
-  // O túnel chega na porta de luz (fim do vídeo) quando a tela do celular
-  // termina de crescer: a luz laranja do vídeo emenda no clarão.
-  fimDoTunel = gsap.utils.clamp(.5, 1, (tl.labels.atravessa + 1.2) / tl.duration());
-  mostraTunel(tl.scrollTrigger ? tl.scrollTrigger.progress : 0);
+  video.poster = VIDEOS[modo].poster;
+  video.addEventListener("loadedmetadata", ajustaRitmo);
+  video.addEventListener("playing", comeca, { once: true });
+  video.src = VIDEOS[modo].src;
+  const tocando = video.play();
+  // Vídeo bloqueado (modo de economia do iPhone): começa na hora, com a imagem.
+  if (tocando && tocando.catch) tocando.catch(comeca);
+  // Rede lenta: não espera mais que isso pra começar.
+  esperaVideo = setTimeout(comeca, 2500);
 }
 
 // Girar o celular (ou mudar a largura da janela) muda a altura das seções que
@@ -950,7 +778,7 @@ function wireManterLugar() {
     const meio = window.innerHeight / 2;
     const el = document.elementFromPoint(window.innerWidth / 2, meio);
     const secao = el && el.closest("main > section, .site-footer");
-    if (!secao || secao.classList.contains("intro-stage")) { lugar = null; return; }
+    if (!secao) { lugar = null; return; }
     const r = secao.getBoundingClientRect();
     lugar = { secao, fracao: r.height ? (meio - r.top) / r.height : 0 };
   };
@@ -965,36 +793,22 @@ function wireManterLugar() {
   });
 }
 
-// O menu não existe durante a abertura: ele desce quando a página de vendas
-// entra em cena, e sobe de volta se a pessoa voltar pra abertura.
+// O menu não existe durante a abertura: ele desce junto com a página de vendas.
 function wireHeaderReveal() {
   const header = document.querySelector(".site-header");
-  const hero = REAL_HERO;
-  if (!header || !hero) return;
-
-  if (!hasGSAP || prefersReducedMotion) { header.classList.add("is-on"); return; }
-
-  ScrollTrigger.create({
-    trigger: hero,
-    start: "top 75%",
-    // Quando o menu de verdade desce, o menu da réplica (dentro do celular da
-    // abertura) some: os dois ficavam visíveis juntos na passagem e a logo
-    // aparecia dobrada.
-    onEnter: () => { header.classList.add("is-on"); document.documentElement.classList.add("menu-real"); },
-    onLeaveBack: () => { header.classList.remove("is-on"); document.documentElement.classList.remove("menu-real"); },
-  });
+  if (header) quandoAberturaAcabar(() => header.classList.add("is-on"));
 }
 
-// Cena 3: a página. Categoria, título, texto de apoio e botão entram em
-// sequência quando o hero chega na tela — e desfazem ao subir, pra combinar
-// com a abertura, que também é reversível.
+// A página: categoria, título, texto de apoio e botão entram em sequência
+// assim que a abertura termina (ou logo ao abrir, quando não tem abertura).
 function playHeroIntro() {
+  const marca = document.getElementById("hero-marca");
   const kicker = document.getElementById("hero-kicker");
   const headline = document.getElementById("hero-headline");
   const lead = document.getElementById("hero-lead");
   const actions = document.getElementById("hero-actions-el");
   const cue = document.getElementById("hero-scrollcue");
-  const items = [kicker, headline, lead, actions, cue].filter(Boolean);
+  const items = [marca, kicker, headline, lead, actions, cue].filter(Boolean);
   if (!items.length) return;
 
   if (!hasGSAP || prefersReducedMotion) {
@@ -1006,17 +820,7 @@ function playHeroIntro() {
     { opacity: 0, y: 16 },
     { opacity: 1, y: 0, duration: .7, stagger: .16, ease: "power3.out", paused: true }
   );
-
-  // Um pequeno atraso antes de tocar ou desfazer: sem isso, um solavanco da
-  // rolagem por inércia bem em cima da linha "top 65%" (comum no celular)
-  // disparava entra-sai-entra rapidinho, e o hero parecia aparecer duas vezes.
-  let heroIntroTimer = null;
-  ScrollTrigger.create({
-    trigger: REAL_HERO,
-    start: "top 65%",
-    onEnter: () => { clearTimeout(heroIntroTimer); heroIntroTimer = setTimeout(() => tween.play(), 120); },
-    onLeaveBack: () => { clearTimeout(heroIntroTimer); heroIntroTimer = setTimeout(() => tween.reverse(), 120); },
-  });
+  quandoAberturaAcabar(() => tween.play());
 }
 
 // Indicador de "role para continuar" no hero: some assim que a pessoa começa
