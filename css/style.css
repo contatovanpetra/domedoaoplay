@@ -82,7 +82,7 @@ h1, h2, h3, h4 {
 /* Degrau tipográfico entre "título de seção" (h2, 700, branco puro) e "título
    de card" (h3, 600, --text ligeiramente mais macio) — h1/h2/h4 continuam
    como acima, só h3 (títulos dentro de .statement-col/.qualify-card/
-   .nivel-card/.bonus-card) recebe o peso e a cor mais suaves. */
+   .nivel-card/.beneficio) recebe o peso e a cor mais suaves. */
 h3 {
   font-weight: 600;
   color: var(--text);
@@ -1450,6 +1450,108 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .qualify-card ul { display: grid; gap: .8rem; }
 .qualify-card li { font-size: 1.05rem; line-height: 1.5; color: var(--text); }
 
+/* ---------- Quadradinhos de benefícios ----------
+   Grade de 3 x 2 (2 colunas no celular): ícone, título curto e uma linha.
+   Card quadrado, como os outros da página, e flutua no mouse. */
+#modulos .container.narrow { max-width: var(--container-w); }
+#modulos .section-title, #modulos .section-lead { max-width: 780px; }
+.beneficios {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(.8rem, 2vw, 1.2rem);
+  margin: 2.6rem 0 4rem;
+}
+.beneficio {
+  padding: clamp(1.2rem, 2.4vw, 1.8rem);
+  background: rgba(255, 255, 255, .03);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--orange);
+}
+.beneficio-icone {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin-bottom: 1.1rem;
+  border-radius: 50%;
+  color: var(--orange);
+  background: rgba(215, 119, 19, .12);
+}
+.beneficio-icone svg { width: 1.5rem; height: 1.5rem; }
+.beneficio h3 { margin: 0 0 .4rem; font-size: clamp(1.1rem, 1.8vw, 1.35rem); color: var(--white); }
+.beneficio p { margin: 0; font-size: .98rem; line-height: 1.45; color: var(--text-muted); }
+@media (max-width: 699.98px) {
+  .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 3rem; }
+  .beneficio h3 { font-size: 1rem; overflow-wrap: anywhere; }
+  .beneficio p { font-size: .88rem; }
+}
+
+/* Título da grade de módulos, agora que o título da seção é o geral. */
+.modulos-subtitulo {
+  margin: 0 auto 1.2rem;
+  max-width: 780px;
+  text-align: center;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  color: var(--white);
+}
+#accordion-modulos, .modulos-trail { max-width: 780px; margin-inline: auto; }
+
+/* ---------- Bônus em linhas alternadas ----------
+   Texto de um lado e imagem do outro, trocando de lado a cada linha. A
+   moldura da imagem é arredondada: canto redondo é a linguagem dos bônus. */
+.bonus-linhas { margin-top: 4.2rem; display: grid; gap: clamp(2.4rem, 5vw, 3.6rem); }
+.bonus-linhas-rotulo {
+  margin: 0 0 -1rem;
+  text-align: center;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.bonus-linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.6rem, 5vw, 4rem);
+}
+.bonus-linha-b .bonus-linha-texto { order: 2; }
+.bonus-linha-rotulo {
+  margin: 0 0 .5rem;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+.bonus-linha h3 { margin: 0 0 1rem; font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.12; color: var(--white); }
+.bonus-linha ul { display: grid; gap: .7rem; }
+.bonus-linha li { position: relative; padding-left: 1.4rem; font-size: 1.05rem; line-height: 1.45; color: var(--text-muted); }
+.bonus-linha li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .6em;
+  width: .55rem;
+  height: .55rem;
+  border-radius: 50%;
+  background: var(--orange);
+}
+.bonus-linha-visual {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  background: radial-gradient(90% 90% at 50% 40%, rgba(70, 130, 180, .22), rgba(11, 23, 40, 0) 70%), #0E1D31;
+  border: 1px solid var(--border);
+}
+.bonus-linha-icone { width: 38%; max-width: 9rem; color: var(--blue-light); opacity: .85; }
+.bonus-linha-icone svg { width: 100%; height: auto; display: block; }
+@media (max-width: 699.98px) {
+  .bonus-linha { grid-template-columns: 1fr; }
+  .bonus-linha-b .bonus-linha-texto { order: 0; }
+}
+
 /* ---------- Depoimentos ----------
    Três vídeos verticais lado a lado (no celular, uma fila que arrasta pro
    lado). Por enquanto são espaços reservados, marcados no modo revisão. */
@@ -1636,76 +1738,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    usar uma cor diferente da marca (azul e laranja), não do fundo da seção.
    Fica dentro da seção de módulos, não numa seção à parte: é tudo o mesmo
    pacote que a pessoa recebe ao entrar. */
-.modulos-bonus {
-  margin-top: 2.6rem;
-  padding-top: 2.2rem;
-  border-top: 1px solid var(--border);
-}
-.modulos-bonus-label {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: .78rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--orange-light);
-  margin: 0 0 1.3rem;
-}
-.bonus-eyebrow-icon { width: 16px; height: 16px; color: var(--orange-light); flex-shrink: 0; }
-.bonus-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: .8rem;
-  margin-top: 1.6rem;
-  text-align: left;
-}
-/* Bônus precisa se destacar dos módulos ao lado (que são tier estrutural,
-   sem cor própria) — fundo ganha um tingimento real da cor do próprio
-   bônus, não só a borda de cima. */
-.bonus-card {
-  background: linear-gradient(165deg, color-mix(in srgb, var(--bonus-accent, var(--blue-light)) 20%, var(--bg-panel)), var(--bg-panel) 70%);
-  border: 1px solid color-mix(in srgb, var(--bonus-accent, var(--blue-light)) 35%, var(--border));
-  border-top: 3px solid var(--bonus-accent, var(--blue-light));
-  border-radius: var(--radius-md);
-  padding: 1.1rem 1rem;
-  box-shadow: var(--shadow-sm);
-}
-/* Cada bônus puxa uma cor diferente da marca, pra não ficar tudo igual. */
-.bonus-card:nth-child(1) { --bonus-accent: var(--blue-light); }
-.bonus-card:nth-child(2) { --bonus-accent: var(--orange-light); }
-.bonus-card h3 { font-size: .95rem; margin: .7rem 0 .5rem; line-height: 1.25; }
-.bonus-card ul { display: grid; gap: .4rem; margin: 0; padding: 0; list-style: none; }
-.bonus-card li {
-  position: relative;
-  padding-left: 1rem;
-  font-size: .78rem;
-  line-height: 1.35;
-  color: var(--text-muted);
-}
-.bonus-card li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .45em;
-  width: .4rem;
-  height: .4rem;
-  border-radius: 50%;
-  background: var(--bonus-accent, var(--blue-light));
-}
-.bonus-card-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  background: rgba(144, 190, 217, 0.22);
-  color: var(--bonus-accent, var(--blue-light));
-}
-.bonus-card:nth-child(2) .bonus-card-icon { background: rgba(215, 119, 19, 0.22); }
-.bonus-card-icon svg { width: 20px; height: 20px; }
 
 /* ---------- Final CTA ---------- */
 .final-cta { position: relative; text-align: center; padding: 110px 0; overflow: hidden; }
@@ -2320,12 +2352,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    sem subir nem crescer, passa despercebido.
    ========================================================= */
 @media (hover: hover) and (pointer: fine) {
-  .shot, .qualify-card, .bonus-card, .offer-card, .nivel-card, .accordion-item {
+  .shot, .qualify-card, .beneficio, .offer-card, .nivel-card, .accordion-item {
     transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .4s cubic-bezier(.16, .84, .3, 1.06), box-shadow .4s ease, border-color .4s ease, background-color .4s ease;
   }
   /* :is(...):hover empata em especificidade com o estado final do reveal
      (.versus-linha.reveal.is-visible) e ganha por vir depois no arquivo. */
-  :is(.shot, .bonus-card, .offer-card, .nivel-card):hover {
+  :is(.shot, .beneficio, .offer-card, .nivel-card):hover {
     transform: translateY(-14px) scale(1.02);
     box-shadow: 0 16px 34px -10px rgba(0, 0, 0, .6), 0 44px 80px -28px rgba(0, 0, 0, .8);
     /* A superfície clareia um tanto: card que vem pra frente pega mais luz. */
@@ -2505,9 +2537,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .credential-item { gap: .55rem; padding: .55rem 0; font-size: .78rem; line-height: 1.3; }
   .credential-icon { width: 1.5rem; height: 1.5rem; }
   .credential-figure { font-size: 1.1em; }
-  .modulos-bonus { margin-top: 2rem; padding-top: 1.6rem; }
-  .bonus-grid { grid-template-columns: 1fr; }
-  /* Garantia mais compacta pra caber numa tela só de celular. */
+/* Garantia mais compacta pra caber numa tela só de celular. */
   .section-tone--guarantee.section { padding: 48px 0; }
   .section-tone--guarantee .section-title { font-size: 1.6rem; }
   .section-tone--guarantee .guarantee-badge { width: 76px; height: 76px; font-size: .85rem; margin-bottom: 1.1rem; }
@@ -2597,7 +2627,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   white-space: normal;
 }
 /* Em blocos alinhados à esquerda, a etiqueta também fica à esquerda. */
-.modo-revisao :is(.nivel-card, .bonus-card, .band-name, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
+.modo-revisao :is(.nivel-card, .beneficio, .bonus-linha, .band-name, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
   margin-left: 0;
 }
 .modo-revisao .offer-trust span[data-confirmar]::after { margin-top: .4rem; flex-basis: 100%; }
