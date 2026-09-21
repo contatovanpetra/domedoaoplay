@@ -856,8 +856,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .statement-title {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(1.5rem, 4vw, 2.6rem);
-  line-height: 1.1;
+  font-size: clamp(1.7rem, 4.4vw, 2.9rem);
+  line-height: 1.08;
   margin: 0;
   color: var(--white);
   text-align: left;
@@ -866,10 +866,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    estreitas e o ícone continua ao lado do bloco inteiro. */
 .statement-title span { display: block; font-size: .66em; margin-top: .1em; }
 .statement-sub {
-  max-width: 640px;
+  max-width: 560px;
   margin: 0 auto clamp(2rem, 5vw, 3rem);
   text-align: center;
-  font-size: 1rem;
+  font-size: .88rem;
   color: var(--text-muted);
 }
 /* Duas colunas em qualquer largura: a comparação só existe se os dois lados
@@ -902,8 +902,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: 1.3rem;
   margin: 0 0 1.6rem;
 }
-.statement-antes h3 { color: var(--silver); }
-.statement-depois h3 { color: var(--orange-light); }
+/* Nome das colunas em branco nos dois lados: quem carrega a cor agora é a
+   pergunta. */
+.statement-col h3 { color: var(--white); }
 .statement-col ul { display: grid; gap: clamp(1.6rem, 4vw, 2.2rem); }
 /* Mesmo jogo de tamanhos da seção de bateria do Watch: a situação vem grande
    (é o "50 horas" deles) e a consequência vem pequena, logo embaixo. */
@@ -913,7 +914,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-weight: 700;
   font-size: clamp(1.5rem, 3.6vw, 2.1rem);
   line-height: 1.15;
-  color: var(--white);
+  color: var(--orange);
   margin-bottom: .45rem;
 }
 .statement-a {
@@ -2261,8 +2262,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .statement-panel { padding: 1.5rem .9rem 1.3rem; }
   .statement-head { gap: .6rem; }
   /* Menor no celular pra a primeira linha do título caber inteira ao lado do ícone. */
-  .statement-title { font-size: 1.22rem; }
-  .statement-sub { font-size: .9rem; margin-bottom: 1.6rem; }
+  .statement-title { font-size: 1.32rem; }
+  .statement-sub { font-size: .78rem; margin-bottom: 1.6rem; }
   .statement-col h3 { font-size: .95rem; margin-bottom: 1rem; }
   .statement-col ul { gap: 1.2rem; }
   /* Em duas colunas numa tela estreita, a pergunta continua sendo a maior
