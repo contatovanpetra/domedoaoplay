@@ -961,18 +961,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: .88rem;
   color: var(--text-muted);
 }
-/* Duas colunas em qualquer largura: a comparação só existe se os dois lados
-   estiverem lado a lado. No celular o que encolhe é o tipo, não a estrutura. */
-.statement-cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(.9rem, 3.5vw, 3rem);
-}
-.statement-depois {
-  border-left: 1px solid var(--border);
-  padding-left: clamp(.9rem, 3.5vw, 3rem);
-}
-.statement-col { text-align: center; }
 .statement-col-icon {
   display: block;
   width: 1.8rem;
@@ -985,39 +973,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .statement-antes .statement-col-icon { background: var(--white); }
 .statement-depois { --ico: var(--ico-play); }
 .statement-depois .statement-col-icon { background: var(--white); }
-.statement-col h3 {
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: 1.3rem;
-  margin: 0 0 1.6rem;
-}
-/* Nome das colunas em branco nos dois lados: quem carrega a cor agora é a
-   pergunta. */
-.statement-col h3 { color: var(--white); }
-/* Os dois lados na mesma cor: quem diferencia é o ícone (x e play) e o nome
-   da coluna, não a cor do texto. */
-.statement-col ul { display: grid; gap: clamp(1.6rem, 4vw, 2.2rem); }
-/* Mesmo jogo de tamanhos da seção de bateria do Watch: a situação vem grande
-   (é o "50 horas" deles) e a consequência vem pequena, logo embaixo. */
-.statement-q {
-  display: block;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(1.5rem, 3.6vw, 2.1rem);
-  line-height: 1.15;
-  /* Branco de novo: sobre o painel escuro o laranja tem 5,5:1 de contraste e o
-     branco 17,5:1 — em texto grande isso não lê como destaque, lê como
-     apagado. A diferença entre os dois lados passa a ser de brilho: o lado
-     que a pessoa quer chegar é o mais claro. */
-  color: var(--white);
-  margin-bottom: .45rem;
-}
-.statement-a {
-  display: block;
-  font-size: 1rem;
-  line-height: 1.45;
-  color: var(--text-muted);
-}
 /* Fecho da seção: o botão embaixo das duas colunas, com o link discreto logo
    abaixo pra quem ainda quer entender o caminho antes de decidir. */
 .statement-cta {
@@ -1027,6 +982,73 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: 1rem;
   margin-top: clamp(2.2rem, 5vw, 3.2rem);
 }
+/* ---------- Tabela "sem gravar x gravando" ----------
+   A pergunta fica no meio, uma vez só, grande; a consequência de cada lado
+   fica pequena, espelhada em direção à pergunta. No celular a pergunta sobe
+   pra linha de cima e as duas respostas ficam lado a lado embaixo dela. */
+.versus { display: grid; }
+.versus-head,
+.versus-linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2.4rem);
+}
+.versus-head { padding-bottom: 1.2rem; }
+.versus-lado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--white);
+}
+.versus-lado .statement-col-icon { margin: 0; background: var(--white); }
+.versus-sem.versus-lado { --ico: var(--ico-x); }
+.versus-com.versus-lado { --ico: var(--ico-play); }
+.versus-linha {
+  padding: clamp(1.2rem, 3vw, 1.8rem) 0;
+  border-top: 1px solid var(--border);
+}
+.versus-q {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  color: var(--white);
+}
+.versus-sem:not(.versus-lado),
+.versus-com:not(.versus-lado) {
+  margin: 0;
+  font-size: .98rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+/* Espelhado: as duas respostas "apontam" pra pergunta do meio. */
+.versus-sem:not(.versus-lado) { text-align: right; }
+.versus-com:not(.versus-lado) { text-align: left; color: var(--text); }
+
+@media (max-width: 699.98px) {
+  .versus-head { grid-template-columns: 1fr 1fr; }
+  .versus-head .versus-meio { display: none; }
+  .versus-linha {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "q q" "sem com";
+    row-gap: .7rem;
+    column-gap: 1.1rem;
+  }
+  .versus-linha .versus-q { grid-area: q; }
+  .versus-linha .versus-sem { grid-area: sem; text-align: center; }
+  .versus-linha .versus-com { grid-area: com; text-align: center; }
+  .versus-sem:not(.versus-lado), .versus-com:not(.versus-lado) { font-size: .84rem; }
+  .versus-lado { font-size: 1rem; }
+}
+
 .statement-link {
   display: block;
   text-align: center;
@@ -2136,22 +2158,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 /* Cards em grade "viram" de lado ao entrar — pares e ímpares alternam a direção,
    pra não parecer tudo saindo do mesmo canto. */
-.statement-col.reveal {
+.versus-linha.reveal {
   transform: translateY(20px) rotateY(-22deg);
   transform-origin: left center;
 }
-.statement-col.reveal:nth-child(even) {
+.versus-linha.reveal:nth-child(even) {
   transform: translateY(20px) rotateY(22deg);
   transform-origin: right center;
 }
-.statement-col.reveal.is-visible { transform: translateY(0) rotateY(0deg); }
+.versus-linha.reveal.is-visible { transform: translateY(0) rotateY(0deg); }
 /* A escada é uma linha do tempo fina, não um card: só sobe com fade, sem giro 3D. */
 .ladder-step.reveal { transform: translateY(16px); }
 .ladder-step.reveal.is-visible { opacity: 1; transform: translateY(0); }
 
 /* Escada revela em cascata, usando o índice --i que cada item já carrega. */
 .ladder-step.reveal { transition-delay: calc(var(--i, 0) * 90ms); }
-.statement-depois.reveal { transition-delay: 160ms; }
+
 
 /* =========================================================
    Cards que flutuam no mouse
@@ -2164,7 +2186,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .4s cubic-bezier(.16, .84, .3, 1.06), box-shadow .4s ease, border-color .4s ease, background-color .4s ease;
   }
   /* :is(...):hover empata em especificidade com o estado final do reveal
-     (.statement-col.reveal.is-visible) e ganha por vir depois no arquivo. */
+     (.versus-linha.reveal.is-visible) e ganha por vir depois no arquivo. */
   :is(.shot, .qualify-card, .bonus-card, .offer-card, .ladder-step):hover {
     transform: translateY(-14px) scale(1.02);
     box-shadow: 0 16px 34px -10px rgba(0, 0, 0, .6), 0 44px 80px -28px rgba(0, 0, 0, .8);
@@ -2186,19 +2208,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    a lista não aparece de uma vez, cada linha entra logo depois da anterior
    (é a cadência que a Apple usa pra guiar a leitura de cima pra baixo). */
 @media (prefers-reduced-motion: no-preference) {
-  :is(.statement-col, .qualify-card).reveal li {
+  :is(.qualify-card).reveal li {
     opacity: 0;
     transform: translateY(10px);
     transition: opacity .5s ease, transform .5s cubic-bezier(.2, .7, .2, 1);
   }
-  :is(.statement-col, .qualify-card).reveal.is-visible li { opacity: 1; transform: none; }
-  :is(.statement-col, .qualify-card).reveal.is-visible li:nth-child(1) { transition-delay: .14s; }
-  :is(.statement-col, .qualify-card).reveal.is-visible li:nth-child(2) { transition-delay: .21s; }
-  :is(.statement-col, .qualify-card).reveal.is-visible li:nth-child(3) { transition-delay: .28s; }
-  :is(.statement-col, .qualify-card).reveal.is-visible li:nth-child(4) { transition-delay: .35s; }
-  :is(.statement-col, .qualify-card).reveal.is-visible li:nth-child(5) { transition-delay: .42s; }
-  :is(.statement-col, .qualify-card).reveal.is-visible li:nth-child(6) { transition-delay: .49s; }
-  :is(.statement-col, .qualify-card).reveal.is-visible li:nth-child(n+7) { transition-delay: .56s; }
+  :is(.qualify-card).reveal.is-visible li { opacity: 1; transform: none; }
+  :is(.qualify-card).reveal.is-visible li:nth-child(1) { transition-delay: .14s; }
+  :is(.qualify-card).reveal.is-visible li:nth-child(2) { transition-delay: .21s; }
+  :is(.qualify-card).reveal.is-visible li:nth-child(3) { transition-delay: .28s; }
+  :is(.qualify-card).reveal.is-visible li:nth-child(4) { transition-delay: .35s; }
+  :is(.qualify-card).reveal.is-visible li:nth-child(5) { transition-delay: .42s; }
+  :is(.qualify-card).reveal.is-visible li:nth-child(6) { transition-delay: .49s; }
+  :is(.qualify-card).reveal.is-visible li:nth-child(n+7) { transition-delay: .56s; }
 }
 
 /* =========================================================
@@ -2366,13 +2388,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Menor no celular pra a primeira linha do título caber inteira ao lado do ícone. */
   .statement-title { font-size: 1.32rem; }
   .statement-sub { font-size: .78rem; margin-bottom: 1.6rem; }
-  .statement-col h3 { font-size: .95rem; margin-bottom: 1rem; }
-  .statement-col ul { gap: 1.2rem; }
-  /* Em duas colunas numa tela estreita, a pergunta continua sendo a maior
-     coisa do bloco, mas cabe: o que muda é a escala, não a hierarquia. */
-  .statement-q { font-size: 1.02rem; line-height: 1.2; margin-bottom: .3rem; }
-  .statement-a { font-size: .76rem; line-height: 1.35; }
-  .statement-col-icon { width: 1.4rem; height: 1.4rem; }
+.statement-col-icon { width: 1.4rem; height: 1.4rem; }
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
      celular só ganha nós e texto um pouco menores pra caber melhor. */
   .ladder-node { width: 38px; height: 38px; }

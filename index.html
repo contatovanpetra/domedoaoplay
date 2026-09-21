@@ -232,51 +232,35 @@
           <h2 id="antes-depois-title" class="statement-title">De travado a natural,<span>nível por nível</span></h2>
         </div>
         <p class="statement-sub">O que muda no seu negócio quando você começa a gravar.</p>
-        <div class="statement-cols">
-        <div class="statement-col statement-antes">
-          <span class="statement-col-icon" aria-hidden="true"></span>
-          <h3>Sem gravar</h3>
-          <ul>
-            <li>
-              <span class="statement-q">Vende pela internet?</span>
-              <span class="statement-a">Sem vídeo, o produto não convence e a venda vai pra quem mostra</span>
-            </li>
-            <li>
-              <span class="statement-q">Divulga o próprio trabalho?</span>
-              <span class="statement-a">Sem aparecer, o cliente escolhe quem ele já viu</span>
-            </li>
-            <li>
-              <span class="statement-q">Quer crescer como criadora?</span>
-              <span class="statement-a">Trava no mesmo número de seguidores, sem sair do zero</span>
-            </li>
-            <li>
-              <span class="statement-q">Quer ser afiliada?</span>
-              <span class="statement-a">Sem vídeo não sai comissão, e a liberdade financeira fica só no plano</span>
-            </li>
-          </ul>
-        </div>
-        <div class="statement-col statement-depois">
-          <span class="statement-col-icon" aria-hidden="true"></span>
-          <h3>Gravando</h3>
-          <ul>
-            <li>
-              <span class="statement-q">Vende pela internet</span>
-              <span class="statement-a">Mostrando o produto de verdade, não só descrevendo</span>
-            </li>
-            <li>
-              <span class="statement-q">Divulga o próprio trabalho</span>
-              <span class="statement-a">Vira a primeira opção de quem já viu ela em vídeo</span>
-            </li>
-            <li>
-              <span class="statement-q">Cresce como criadora</span>
-              <span class="statement-a">Sai do zero e constrói audiência de verdade</span>
-            </li>
-            <li>
-              <span class="statement-q">Fatura como afiliada</span>
-              <span class="statement-a">Ganha a liberdade financeira que queria</span>
-            </li>
-          </ul>
-        </div>
+        <!-- Uma pergunta por linha, no meio, e a resposta de cada lado: a pergunta
+             vale pros dois e aparece uma vez só (antes ela se repetia nas duas
+             colunas). -->
+        <div class="versus" role="table" aria-label="O que muda sem gravar e gravando">
+          <div class="versus-head" role="row">
+            <span class="versus-lado versus-sem" role="columnheader"><span class="statement-col-icon" aria-hidden="true"></span>Sem gravar</span>
+            <span class="versus-meio" role="columnheader"><span class="sr-only">Situação</span></span>
+            <span class="versus-lado versus-com" role="columnheader"><span class="statement-col-icon" aria-hidden="true"></span>Gravando</span>
+          </div>
+          <div class="versus-linha" role="row">
+            <p class="versus-sem" role="cell">Sem vídeo, o produto não convence e a venda vai pra quem mostra</p>
+            <h3 class="versus-q" role="rowheader">Vende pela internet?</h3>
+            <p class="versus-com" role="cell">Mostrando o produto de verdade, não só descrevendo</p>
+          </div>
+          <div class="versus-linha" role="row">
+            <p class="versus-sem" role="cell">Sem aparecer, o cliente escolhe quem ele já viu</p>
+            <h3 class="versus-q" role="rowheader">Divulga o próprio trabalho?</h3>
+            <p class="versus-com" role="cell">Vira a primeira opção de quem já viu ela em vídeo</p>
+          </div>
+          <div class="versus-linha" role="row">
+            <p class="versus-sem" role="cell">Trava no mesmo número de seguidores, sem sair do zero</p>
+            <h3 class="versus-q" role="rowheader">Quer crescer como criadora?</h3>
+            <p class="versus-com" role="cell">Sai do zero e constrói audiência de verdade</p>
+          </div>
+          <div class="versus-linha" role="row">
+            <p class="versus-sem" role="cell">Sem vídeo não sai comissão, e a liberdade financeira fica só no plano</p>
+            <h3 class="versus-q" role="rowheader">Quer ser afiliada?</h3>
+            <p class="versus-com" role="cell">Fatura como afiliada e ganha a liberdade financeira que queria</p>
+          </div>
         </div>
         <div class="statement-cta">
           <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero aparecer</a>
