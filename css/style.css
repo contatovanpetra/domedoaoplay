@@ -835,6 +835,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    o card e a legenda vive fora). */
 .compare-col { background: none; border: 0; padding: 0; }
 .compare-shot {
+  position: relative;
   margin: 0 0 1.5rem;
   /* Faixa baixa e larga: a foto vira uma cena, não um painel que empurra o
      texto pra fora da tela. */
@@ -845,6 +846,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background: rgba(255, 255, 255, .02);
 }
 .compare-shot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
+/* "Sem gravar" e "Gravando" ficam escritos dentro da própria foto, no pé,
+   com um degradê curto atrás pra leitura — o rótulo pertence à cena. */
+.compare-shot h3 {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 3rem 1.5rem 1.1rem;
+  font-size: 1.5rem;
+  color: var(--white);
+  background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .72) 45%, rgba(11, 23, 40, .92) 100%);
+}
+@media (max-width: 699.98px) {
+  .compare-shot h3 { font-size: 1.2rem; padding: 2.4rem 1.1rem .9rem; }
+}
 /* A coluna inteira herda a cor do próprio ícone do título como acento de
    borda (mesma técnica de friso da faixa de autoridade, mas 1 cor sólida por
    coluna em vez do gradiente duplo) — reforça em 3 pontos por coluna
