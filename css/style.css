@@ -46,10 +46,14 @@
 }
 
 * { box-sizing: border-box; }
+/* O que o JS esconde (WhatsApp sem número, links sem página) some de verdade,
+   mesmo quando a classe do elemento define display. */
+[hidden] { display: none !important; }
 
-html {
-  scroll-behavior: smooth;
-}
+/* Sem scroll-behavior: smooth no html: o ScrollTrigger leva a página ao topo por
+   um instante pra remedir (girar o celular, mudar a janela) e, com a rolagem
+   suave, media no meio do caminho: a abertura sumia e a pessoa mudava de lugar.
+   Os links internos rolam suave pelo JS (wireAncoras, em main.js). */
 
 body {
   margin: 0;
@@ -143,7 +147,6 @@ ul { padding: 0; margin: 0; list-style: none; }
 }
 .container.narrow { max-width: 780px; }
 .center { text-align: center; }
-.hide-mobile { display: inline; }
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -212,21 +215,26 @@ ul { padding: 0; margin: 0; list-style: none; }
      começa (ver wireHeaderReveal em main.js). */
   transform: translateY(-100%);
   opacity: 0;
-  transition: transform .5s ease, opacity .4s ease;
+  /* Escondido de verdade (fora do Tab) enquanto a abertura roda; o atraso
+     deixa a subida terminar antes de sumir. */
+  visibility: hidden;
+  transition: transform .5s ease, opacity .4s ease, visibility 0s linear .5s;
 }
 /* Sem faixa sólida, o texto do menu precisa de um véu pra continuar legível
    sobre a foto: um degradê curto que escurece o topo e some logo abaixo. */
+/* Sem faixa sólida, mas firme o bastante pro texto que passa por baixo não se
+   misturar com a logo e o botão; termina esfumado um pouco abaixo do menu. */
 .site-header::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: 0 0 -16px 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(11, 23, 40, .82) 0%, rgba(11, 23, 40, .5) 58%, rgba(11, 23, 40, 0) 100%);
+  background: linear-gradient(180deg, rgba(11, 23, 40, .96) 0%, rgba(11, 23, 40, .9) 60%, rgba(11, 23, 40, 0) 100%);
 }
-.site-header.is-on { transform: translateY(0); opacity: 1; }
+.site-header.is-on { transform: translateY(0); opacity: 1; visibility: visible; transition: transform .5s ease, opacity .4s ease, visibility 0s; }
 @media (prefers-reduced-motion: reduce) {
-  .site-header { transform: none; opacity: 1; transition: none; }
+  .site-header { transform: none; opacity: 1; visibility: visible; transition: none; }
 }
 .header-inner {
   display: flex;
@@ -521,7 +529,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   position: relative;
   z-index: 4;
 }
-.hero h1 { font-size: clamp(2.4rem, 4.6vw, 3.6rem); line-height: 1.05; letter-spacing: -.045em; margin-bottom: .5em; }
 .hero-lead { font-size: 1.08rem; max-width: 520px; }
 /* Segunda tentativa (4 cards com ícone — tag, wifi, pin, estrela) e terceira
    tentativa (lista com um traço curto por linha) foram as duas rejeitadas:
@@ -718,20 +725,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   50% { opacity: 1; }
 }
 
-/* ---------- Split (causa) ---------- */
-/* Card e texto quase equilibrados (1fr/1.05fr, card levemente maior): com
-   1.2fr/.8fr o card de autoridade ficava mais espremido no desktop (2
-   colunas) do que no tablet (empilhado, coluna cheia) — o texto interno das
-   credenciais quebrava em 3-4 linhas picotadas, o oposto de "hierarquia
-   clara". Card e texto ficam parecidos em peso visual, sem card minúsculo
-   boiando num vazio nem texto genérico competindo por espaço com ele. */
-.split { display: grid; grid-template-columns: 1fr 1.05fr; gap: 3rem; align-items: center; }
-.split-visual { display: grid; gap: 1.2rem; }
-/* Com três parágrafos seguidos, o negrito sozinho (mesma cor do resto) some
-   numa leitura corrida. Aqui ele ganha a cor mais clara da paleta pra quem
-   só passa o olho ainda pegar o benefício de cada frase. */
-.split-text p strong { color: var(--white); }
-
 /* ---------- Autoridade: a foto no lugar do card ----------
    O texto segue na coluna da página, como nas outras seções. No lugar do
    antigo card entra a foto da Vitória sem moldura nenhuma, sangrando até a
@@ -830,6 +823,24 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     min-height: 520px;
   }
 }
+/* Janela baixa no layout de computador (notebook com barra de favoritos,
+   janela não maximizada, celular deitado): a foto fica curta e as quatro
+   credenciais subiam por cima do nome e do cargo. Elas encolhem com a tela. */
+@media (min-width: 900px) and (max-height: 760px) {
+  .band-credentials { gap: .35rem; padding-top: 1.6rem; }
+  .band-credentials .credential-item { font-size: 1.2rem; padding: .2rem 0; gap: .65rem; }
+  .band-credentials .credential-icon { width: 2.2rem; height: 2.2rem; }
+}
+@media (min-width: 900px) and (max-height: 600px) {
+  /* A foto presa cabe na tela: com a altura mínima de 520px, o pé dela (onde
+     ficam as credenciais) ficava abaixo da borda enquanto a foto estava parada. */
+  .band-media-inner { min-height: 0; }
+  .band-name { padding-bottom: 1.4rem; }
+  .band-name .authority-name { font-size: 2.1rem; }
+  .band-credentials { padding-top: 1rem; }
+  .band-credentials .credential-item { font-size: 1rem; }
+  .band-credentials .credential-icon { width: 1.8rem; height: 1.8rem; }
+}
 
 @media (max-width: 899.98px) {
   .band-section { padding-block: 0 0; row-gap: 1.6rem; }
@@ -847,7 +858,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-name .authority-role { font-size: .8rem; }
 }
 
-.authority-name-text { display: flex; flex-direction: column; }
 /* Nome em destaque de verdade (maior que qualquer texto do card) e o
    cargo tratado como selo de autoridade — maiúsculas pequenas e
    espaçadas, como um eyebrow — em vez dos dois num mesmo tamanho de
@@ -981,10 +991,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   -webkit-mask: var(--ico) center / contain no-repeat;
   mask: var(--ico) center / contain no-repeat;
 }
-.statement-antes { --ico: var(--ico-x); }
-.statement-antes .statement-col-icon { background: var(--white); }
-.statement-depois { --ico: var(--ico-play); }
-.statement-depois .statement-col-icon { background: var(--white); }
 /* Fecho da seção: o botão embaixo das duas colunas, com o link discreto logo
    abaixo pra quem ainda quer entender o caminho antes de decidir. */
 .statement-cta {
@@ -1062,6 +1068,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 .statement-link {
   display: block;
+  /* Área de toque de 44px sem mudar o tamanho do texto. */
+  padding: .75rem 0;
   text-align: center;
   color: var(--orange-light);
   font-weight: 600;
@@ -1192,7 +1200,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .nivel-rotulo {
   position: relative;
   margin-top: clamp(1rem, 5vw, 2.2rem);
-  font-size: clamp(.58rem, 2vw, .78rem);
+  font-size: clamp(.66rem, 2.2vw, .78rem);
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
@@ -1205,7 +1213,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   line-height: 1.15;
   color: var(--white);
 }
-.nivel-card p { position: relative; margin: 0; font-size: clamp(.72rem, 2.6vw, .98rem); line-height: 1.4; color: var(--text-muted); }
+.nivel-card p { position: relative; margin: 0; font-size: clamp(.78rem, 2.9vw, .98rem); line-height: 1.4; color: var(--text-muted); }
 
 /* Barra de controle embaixo da fila: contador, progresso e setas. */
 .niveis-controles {
@@ -1225,6 +1233,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
   min-width: 4.2em;
+  /* "01-03 / 07" numa linha só, mesmo com as setas ao lado. */
+  white-space: nowrap;
 }
 .niveis-contador b { color: var(--white); font-weight: 700; }
 /* Setas: bolinha de tamanho normal, só em quem tem mouse. */
@@ -1346,9 +1356,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 #accordion-modulos .accordion-item::before {
   content: "";
   position: absolute;
-  left: 2.65rem;
-  top: 2.45rem;
-  bottom: -3.35rem;
+  left: 2.85rem;
+  top: 2.65rem;
+  bottom: -3.55rem;
   width: 1px;
   background: var(--border);
   z-index: -1;
@@ -1389,13 +1399,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.9rem;
+  height: 2.9rem;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: rgba(70, 130, 180, .18);
   color: var(--blue-light);
-  font-size: .54rem;
+  font-size: .65rem;
   line-height: 1.05;
   /* Espaço largo entre "Módulo" e o número: força sempre a quebra em duas
      linhas (com número estreito, "Módulo 1" cabia numa linha e vazava). */
@@ -1575,14 +1585,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: clamp(1.6rem, 5vw, 4rem);
 }
 .bonus-linha-b .bonus-linha-texto { order: 2; }
-.bonus-linha-rotulo {
-  margin: 0 0 .5rem;
-  font-size: .8rem;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--orange);
-}
 .bonus-linha h3 { margin: 0 0 1rem; font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.12; color: var(--white); }
 .bonus-linha ul { display: grid; gap: .7rem; }
 .bonus-linha-p { margin: 0; font-size: 1.08rem; line-height: 1.55; color: var(--text-muted); }
@@ -1852,6 +1854,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .footer-meta { display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; }
 .footer-legal { display: flex; flex-wrap: wrap; justify-content: flex-end; column-gap: 1rem; font-size: .78rem; }
+.footer-legal a { display: inline-block; padding: .8rem .2rem; }
 .footer-legal a { display: inline-block; white-space: nowrap; color: var(--text-muted); opacity: .75; padding: .25rem .3rem; }
 .footer-legal a:hover { color: var(--white); opacity: 1; }
 .footer-copy { text-align: right; font-size: .82rem; color: var(--text-muted); margin: 0; }
@@ -1869,7 +1872,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Depois que a abertura termina (rolou pra além da travessia), a réplica
    do cabeçalho/hero que cresceu dentro do celular fica escondida — sem
    isso ela ficava sobreposta à página de verdade e duplicava o hero. */
-.intro-stage.intro-done { display: none; }
+.intro-stage.intro-done { visibility: hidden; }
 .intro-stage {
   position: relative;
   /* Abaixo do cabeçalho (100) e da trilha de leitura (200): a abertura é uma
@@ -2030,7 +2033,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .hi-cue small {
   font-family: var(--font-body);
-  font-size: .62rem;
+  font-size: .72rem;
   letter-spacing: .3em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -2048,11 +2051,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Entrada coreografada do hero (GSAP, ver main.js) ----------
    Escondidos por padrão; a timeline de entrada revela em sequência.
    Sem JS (raro), o <noscript> abaixo garante que tudo continue visível. */
-#hero-title, #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue {
+#hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue {
   opacity: 0;
 }
 @media (prefers-reduced-motion: reduce) {
-  #hero-title, #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue { opacity: 1; }
+  #hero-kicker, #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue { opacity: 1; }
 }
 
 /* ---------- CTA principal em formato de play ---------- */
@@ -2219,7 +2222,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Dentro da réplica, o hero ocupa exatamente uma tela: sem a pista de rolagem
    de 195vh (que só existe pra animação do original) e sem sticky. */
-.burst-mini .site-header { position: relative; transform: none; opacity: 1; }
+.burst-mini .site-header { position: relative; transform: none; opacity: 1; visibility: visible; }
 .burst-mini .hero { height: auto; min-height: auto; }
 /* Um menu só na tela: quando o de verdade desce, o da réplica sai. */
 .menu-real .burst-mini .site-header { visibility: hidden; }
@@ -2272,7 +2275,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .burst-title .text-orange { font-size: 1.35em; }
 @media (prefers-reduced-motion: reduce) {
   .burst-pre, .burst-title span, #bf-corners, #bf-reticle, #bf-rec { opacity: 1 !important; }
-  .burst-frame.is-settled { animation: none; }
 }
 
 /* ---------- Indicador de rolagem (hero) ---------- */
@@ -2471,7 +2473,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    Responsive
    ========================================================= */
 @media (max-width: 960px) {
-  .split { grid-template-columns: 1fr; }
   .qualify-grid { grid-template-columns: 1fr; }
 }
 
@@ -2500,7 +2501,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
   .hero-photo-bg { inset: 200px 0 0 0; }
-  .hero-photo-bg img { object-position: center 50%; }
   .hero-scrim {
     background:
       linear-gradient(180deg, rgba(11, 23, 40, .97) 0%, rgba(11, 23, 40, .88) 28%, rgba(11, 23, 40, .4) 46%, transparent 62%),
@@ -2508,7 +2508,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   }
   .hero-lead { margin-left: auto; margin-right: auto; font-size: .85rem; line-height: 1.4; margin-bottom: .3rem; }
   .eyebrow { font-size: .7rem; margin-bottom: .55rem; }
-  .hero h1 { font-size: 2.15rem; line-height: 1.08; margin-bottom: .42em; }
   .hero-actions { margin-top: 1rem; }
   .hero-microcopy { margin-top: .3rem; font-size: .72rem; }
   .hero .btn-large { padding: .8em 1.6em .6em; font-size: .92rem; }
@@ -2520,7 +2519,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   :root { --header-h: 85px; --portal-origin: 78% 44%; }
   .cinema-stage { align-items: center; padding: 60px 0; }
   .hero .container.hero-inner { width: 100%; }
-  .hero-photo-bg img { object-position: 68% 30%; }
   .hero-scrim {
     background:
       linear-gradient(100deg, rgba(11, 23, 40, .97) 0%, rgba(11, 23, 40, .9) 32%, rgba(11, 23, 40, .55) 54%, rgba(11, 23, 40, .1) 76%, transparent 90%),
@@ -2533,9 +2531,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    nas laterais. O enquadramento puxa pra direita pra manter o rosto inteiro e o
    texto fica mais estreito pra não encostar nos ícones. */
 @media (min-width: 700px) and (orientation: landscape) and (max-aspect-ratio: 13/10) {
-  .hero-photo-bg img { object-position: 80% 30%; }
   .hero-copy { max-width: min(560px, 40vw); }
-  .hero h1 { font-size: clamp(2rem, 3.8vw, 3.2rem); }
 }
 
 /* Tablet em pé (e janela mais alta que larga): a foto horizontal cortava o rosto
@@ -2553,7 +2549,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
   .hero-copy { max-width: 600px; margin-left: auto; margin-right: auto; }
-  .hero h1 { font-size: 3rem; line-height: 1.06; }
   .hero-lead { margin-left: auto; margin-right: auto; }
   /* A cena começa logo abaixo do texto (--hero-text-bottom, medido pelo JS). Em
      tela em pé ela cobre a largura toda e, atrás do texto, o botão caía em cima
@@ -2575,7 +2570,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    ícones e rosto. O texto fica mais compacto pra o queixo não cair no degradê. */
 @media (min-width: 700px) and (orientation: portrait) and (min-aspect-ratio: 17/20) {
   .cinema-stage { padding-top: 28px; }
-  .hero h1 { font-size: 2.4rem; }
   .hero-headline { font-size: 2.3rem; }
   .hero-lead { font-size: .95rem; line-height: 1.45; margin-bottom: .6em; }
   .hero-actions { margin-top: 1rem; }
@@ -2599,9 +2593,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Trilha de #modulos: acompanha o novo padding do trigger e o novo gap
      (.6rem) do .accordion nesse breakpoint (ver regras acima). */
   #accordion-modulos .accordion-item::before {
-    left: 2.35rem;
-    top: 2.25rem;
-    bottom: -2.85rem;
+    left: 2.55rem;
+    top: 2.45rem;
+    bottom: -3.05rem;
   }
   /* Título longo ("Conteúdo e estrutura") empurrava o "· 4 aulas" pra linha
      de baixo, embaixo do selo. Agora o selo fica à esquerda e o título com a
@@ -2634,7 +2628,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .statement-col-icon { width: 1.4rem; height: 1.4rem; }
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
      celular só ganha nós e texto um pouco menores pra caber melhor. */
-.hide-mobile { display: none; }
 }
 
 /* Tela baixa (celular deitado, janela muito baixa): o texto do herói não cabia
@@ -2669,7 +2662,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Celular deitado: o título comprido encostava nos ícones das redes. */
 @media (max-height: 480px) and (min-width: 700px) {
   .hero-copy { max-width: min(420px, 54vw); }
-  .hero h1 { font-size: 2.1rem; }
 }
 
 /* Telas muito largas (2K e 4K sem escala do sistema, ultrawide): em vez de uma
@@ -2749,7 +2741,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   .portal-glow, .eyebrow::before { animation: none; }
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .btn:hover { transform: none; }

@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
   REAL_HEADER = document.querySelector(".site-header");
   wireCheckoutLinks();
   wireWhatsLinks();
+  wireLinksVazios();
+  wireAncoras();
   wireAccordions();
   wireScrollReveal();
   wireNiveis();
@@ -38,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireScrollEffects();
   wireScrollCue();
   wireIntroStage();
+  wireManterLugar();
   wireHeaderReveal();
   playHeroIntro();
   wireTilt();
@@ -246,7 +249,7 @@ function checkoutHref() {
       if (!url.searchParams.has(key)) url.searchParams.set(key, value);
     });
     return url.toString();
-  } catch (e) {
+  } catch {
     return HOTMART_CHECKOUT_URL;
   }
 }
@@ -261,10 +264,44 @@ function wireWhatsLinks() {
   if (!links.length) return;
   if (!WHATSAPP_NUMERO) {
     console.warn("Do Medo ao Play: falta o número do WhatsApp (WHATSAPP_NUMERO em js/main.js).");
+    // Sem número, o bloco some: um botão que não leva a lugar nenhum (ou que
+    // joga a pessoa de volta pro começo da página) é pior que não ter botão.
+    links.forEach((a) => { (a.closest(".faq-whats") || a).hidden = true; });
     return;
   }
   const href = "https://wa.me/" + WHATSAPP_NUMERO + "?text=" + encodeURIComponent(WHATSAPP_MENSAGEM);
   links.forEach((a) => { a.setAttribute("href", href); a.setAttribute("target", "_blank"); });
+}
+
+// Links ainda sem destino (href="#"): os do rodapé somem até as páginas
+// existirem (é só trocar o "#" pelo endereço no index.html que eles voltam), e
+// nenhum "#" leva a pessoa pro topo, que é a abertura recomeçando do zero.
+function wireLinksVazios() {
+  const legal = document.querySelector(".footer-legal");
+  if (legal) {
+    legal.querySelectorAll("a").forEach((a) => { if (a.getAttribute("href") === "#") a.hidden = true; });
+    if (![...legal.querySelectorAll("a")].some((a) => !a.hidden)) legal.hidden = true;
+  }
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href="#"]');
+    if (a) e.preventDefault();
+  });
+}
+
+// Links pra dentro da página ("Ver como a escada...", a logo) rolam suave pelo
+// JS: a rolagem suave no CSS do html atrapalhava o ScrollTrigger (ver o
+// comentário no style.css). O "Pular para o conteúdo" continua pulando direto.
+function wireAncoras() {
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]:not(.skip-link)');
+    if (!a) return;
+    const id = a.getAttribute("href").slice(1);
+    const alvo = id && document.getElementById(id);
+    if (!alvo) return;
+    e.preventDefault();
+    alvo.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+    history.pushState(null, "", "#" + id);
+  });
 }
 
 function wireCheckoutLinks() {
@@ -331,7 +368,8 @@ function wireNiveis() {
   const barra = document.querySelector(".niveis-progresso");
   const caixa = trilho.closest(".niveis");
   const contador = document.querySelector(".niveis-contador b");
-  const total = trilho.querySelectorAll(".nivel-card").length;
+  const cards = [...trilho.querySelectorAll(".nivel-card")];
+  const total = cards.length;
   const passo = () => {
     const card = trilho.querySelector(".nivel-card");
     return card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(trilho).columnGap || 0) : 300;
@@ -342,9 +380,17 @@ function wireNiveis() {
     if (ant) ant.disabled = trilho.scrollLeft < 4;
     if (prox) prox.disabled = trilho.scrollLeft > max - 4;
     if (barra) barra.style.setProperty("--niveis-p", (0.14 + p * 0.86).toFixed(3));
-    // Contador: o nível mais à esquerda na tela (chega a 07 no fim da fila).
-    const atual = max > 0 && trilho.scrollLeft > max - 4 ? total : Math.min(total, Math.round(trilho.scrollLeft / passo()) + 1);
-    if (contador) contador.textContent = String(atual).padStart(2, "0");
+    // Contador: os níveis que aparecem na tela, quase inteiros (ex.: 01-03). Com vários
+    // cartões visíveis, um número só fazia o contador pular de 04 pra 07 no
+    // fim da fila.
+    if (contador) {
+      const vista = trilho.getBoundingClientRect();
+      const inteiros = cards.map((c, i) => { const r = c.getBoundingClientRect(); const aparece = Math.min(r.right, vista.right) - Math.max(r.left, vista.left); return aparece >= r.width * 0.9 ? i + 1 : 0; }).filter(Boolean);
+      const primeiro = inteiros.length ? inteiros[0] : Math.min(total, Math.round(trilho.scrollLeft / passo()) + 1);
+      const ultimo = inteiros.length ? inteiros[inteiros.length - 1] : primeiro;
+      const dois = (n) => String(n).padStart(2, "0");
+      contador.textContent = primeiro === ultimo ? dois(primeiro) : dois(primeiro) + "-" + dois(ultimo);
+    }
     if (caixa) caixa.classList.toggle("no-fim", trilho.scrollLeft > max - 4);
   };
   if (ant) ant.addEventListener("click", () => trilho.scrollBy({ left: -passo(), behavior: "smooth" }));
@@ -506,7 +552,6 @@ function wireIntroStage() {
   const glMain = travar ? travar.querySelector(".gl-main") : null;
   const thoughts = [...document.querySelectorAll("#hi-thoughts span")];
   const cue = document.getElementById("hi-cue");
-  const hero = REAL_HERO;
 
   // Cena 2
   const scene2 = document.getElementById("intro-scene2");
@@ -693,12 +738,16 @@ function wireIntroStage() {
   const spacer = document.createElement("div");
   spacer.setAttribute("aria-hidden", "true");
   stage.insertAdjacentElement("afterend", spacer);
+  // A altura da abertura é sempre a da tela (100dvh). Pela janela, e não pelo
+  // elemento: o GSAP deixa no elemento o tamanho da última medição, e depois
+  // de girar o celular sobrava (ou faltava) um vão antes do herói.
   const syncSpacer = () => {
-    spacer.style.height = Math.max(0, SCRUB_DISTANCE - stage.offsetHeight) + "px";
+    spacer.style.height = Math.max(0, SCRUB_DISTANCE - window.innerHeight) + "px";
   };
   syncSpacer();
   window.addEventListener("resize", syncSpacer);
   window.addEventListener("orientationchange", syncSpacer);
+  ScrollTrigger.addEventListener("refreshInit", syncSpacer);
   const tl = gsap.timeline({
     scrollTrigger: {
       trigger: stage,
@@ -749,7 +798,7 @@ function wireIntroStage() {
     // milissegundos, era por isso que "funcionava uma hora, na outra não":
     // dependia do gesto ser curto (mouse) ou longo (touch/trackpad). Por
     // isso a gente espera o gesto atual esfriar antes de escutar um novo.
-    let armTimer = setTimeout(() => {
+    setTimeout(() => {
       window.addEventListener("wheel", cancel, { passive: true, once: true });
       window.addEventListener("touchmove", cancel, { passive: true, once: true });
       window.addEventListener("keydown", cancel, { once: true });
@@ -770,7 +819,7 @@ function wireIntroStage() {
   // frase, a virada, o VOCÊ TRAVA e os pensamentos aparecem em sequência, um
   // atrás do outro, sem depender de rolagem. Só depois de tudo aparecer é que
   // a cena 2 começa a rolar sozinha.
-  gsap.timeline({ delay: .35 })
+  const cena1 = gsap.timeline({ delay: .35 })
     .fromTo(line1, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .7, ease: "power3.out" })
     .fromTo(line2, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .9, ease: "power1.out" }, "+=.5")
     .call(fireGlitch, null, "+=.45")
@@ -804,7 +853,19 @@ function wireIntroStage() {
       window.addEventListener("keydown", start);
     });
 
+  // Quem rolava antes das frases terminarem pulava o gancho inteiro e caía
+  // direto no "E se, em vez de travar...". O primeiro gesto acelera a cena 1
+  // (as frases aparecem de uma vez) e o começo da rolagem segura a cena 1 na
+  // tela antes da cena 2 (o respiro no começo do tl, logo abaixo).
+  const acelera = () => {
+    window.removeEventListener("scroll", acelera);
+    if (!introBeatsDone) cena1.timeScale(5);
+  };
+  window.addEventListener("scroll", acelera, { passive: true });
+
   tl
+    // Respiro: a cena 1 continua na tela no começo da rolagem.
+    .to({}, { duration: .9 })
     // CENA 2 — a cena 1 sai e a câmera se desenha
     .to(inner, { opacity: 0, y: -24, duration: .5 })
     .fromTo(scene2, { autoAlpha: 0 }, { autoAlpha: 1, duration: .3 }, "<")
@@ -858,6 +919,52 @@ function wireIntroStage() {
   mostraTunel(tl.scrollTrigger ? tl.scrollTrigger.progress : 0);
 }
 
+// Girar o celular (ou mudar a largura da janela) muda a altura das seções que
+// seguem o tamanho da tela (a abertura, o herói): a rolagem ficava no mesmo
+// número e a pessoa ia parar em outra seção. Guarda onde ela estava lendo (a
+// seção no meio da tela e quanto dela já tinha passado) e volta pra lá depois
+// que o ScrollTrigger remede a página.
+function wireManterLugar() {
+  if (!hasGSAP) return;
+  let lugar = null;
+  let espera = 0;
+  // Toda mudança de largura (girar o celular, mudar a janela) remede a página.
+  // O ScrollTrigger nem sempre remedia sozinho na volta pro modo em pé e a
+  // abertura ficava com o tamanho da tela deitada. A barra de endereço do
+  // celular (só a altura muda) não conta.
+  let largura = window.innerWidth;
+  let remede = 0;
+  // Enquanto a página se reorganiza depois do giro, o lugar guardado não é
+  // regravado: a rolagem desse meio tempo é do ajuste, não da pessoa.
+  let congelado = false;
+  let solta = 0;
+  window.addEventListener("resize", () => {
+    if (window.innerWidth === largura) return;
+    largura = window.innerWidth;
+    congelado = true;
+    clearTimeout(remede);
+    remede = setTimeout(() => ScrollTrigger.refresh(), 250);
+  });
+  const guarda = () => {
+    if (congelado) return;
+    const meio = window.innerHeight / 2;
+    const el = document.elementFromPoint(window.innerWidth / 2, meio);
+    const secao = el && el.closest("main > section, .site-footer");
+    if (!secao || secao.classList.contains("intro-stage")) { lugar = null; return; }
+    const r = secao.getBoundingClientRect();
+    lugar = { secao, fracao: r.height ? (meio - r.top) / r.height : 0 };
+  };
+  window.addEventListener("scroll", () => { clearTimeout(espera); espera = setTimeout(guarda, 200); }, { passive: true });
+  ScrollTrigger.addEventListener("refresh", () => {
+    clearTimeout(solta);
+    solta = setTimeout(() => { congelado = false; }, 800);
+    if (!lugar || !lugar.secao.isConnected) return;
+    const r = lugar.secao.getBoundingClientRect();
+    const alvo = Math.round(window.scrollY + r.top + lugar.fracao * r.height - window.innerHeight / 2);
+    if (Math.abs(alvo - window.scrollY) > 2) window.scrollTo({ top: alvo, left: 0, behavior: "instant" });
+  });
+}
+
 // O menu não existe durante a abertura: ele desce quando a página de vendas
 // entra em cena, e sobe de volta se a pessoa voltar pra abertura.
 function wireHeaderReveal() {
@@ -882,13 +989,12 @@ function wireHeaderReveal() {
 // sequência quando o hero chega na tela — e desfazem ao subir, pra combinar
 // com a abertura, que também é reversível.
 function playHeroIntro() {
-  const title = document.getElementById("hero-title");
   const kicker = document.getElementById("hero-kicker");
   const headline = document.getElementById("hero-headline");
   const lead = document.getElementById("hero-lead");
   const actions = document.getElementById("hero-actions-el");
   const cue = document.getElementById("hero-scrollcue");
-  const items = [title, kicker, headline, lead, actions, cue].filter(Boolean);
+  const items = [kicker, headline, lead, actions, cue].filter(Boolean);
   if (!items.length) return;
 
   if (!hasGSAP || prefersReducedMotion) {
