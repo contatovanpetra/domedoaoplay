@@ -332,9 +332,7 @@
            mouse vêm do JS (wireNiveis). -->
     </div>
     <div class="niveis">
-      <button class="niveis-seta niveis-ant" type="button" aria-label="Nível anterior" disabled>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      <span class="niveis-luz" aria-hidden="true"></span>
       <ol class="niveis-trilho" tabindex="0" aria-label="Os 7 níveis da escada de exposição">
           <li class="nivel-card" style="--i:0">
             <span class="nivel-num" aria-hidden="true">1</span>
@@ -386,10 +384,18 @@
             <p>Grava o vídeo final, o seu "depois", e compartilha geral, valendo pra qualquer rede. Essa é a sua versão que aparece.</p>
           </li>
       </ol>
-      <button class="niveis-seta niveis-prox" type="button" aria-label="Próximo nível">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="niveis-progresso" aria-hidden="true"><span></span></div>
+      <!-- Barra de controle: contador (quanto falta pro fim), progresso e, no
+           computador, as setas. -->
+      <div class="niveis-controles">
+        <span class="niveis-contador" aria-hidden="true"><b>01</b> / 07</span>
+        <div class="niveis-progresso" aria-hidden="true"><span></span></div>
+        <button class="niveis-seta niveis-ant" type="button" aria-label="Nível anterior" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="niveis-seta niveis-prox" type="button" aria-label="Próximo nível">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
     </div>
   </section>
 
@@ -429,12 +435,8 @@
         <p class="bonus-linhas-rotulo">+ 2 bônus exclusivos</p>
         <div class="bonus-linha bonus-linha-a" data-confirmar="limite de uso, de mensagens ou de prazo do assistente: escrever aqui antes da compra e testar antes do lançamento">
           <div class="bonus-linha-texto">
-            <p class="bonus-linha-rotulo">Bônus 1</p>
             <h3>Assistente de IA pra gravar melhor</h3>
-            <ul>
-              <li>Analisa uma foto do seu setup e ajusta áudio, luz e altura</li>
-              <li>Ajuda a escolher o assunto e revisa sua fala</li>
-            </ul>
+            <p class="bonus-linha-p">Um assistente que analisa uma foto do seu setup e ajusta áudio, luz e altura, ajuda você a escolher o assunto e revisa a sua fala antes de gravar.</p>
           </div>
           <div class="bonus-linha-visual" data-confirmar="imagem provisória: print do assistente em uso">
             <span class="bonus-linha-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="7" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/><path d="M12 7V4M9 4h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
@@ -442,12 +444,8 @@
         </div>
         <div class="bonus-linha bonus-linha-b" data-confirmar="curadoria dos equipamentos das três faixas ainda em produção">
           <div class="bonus-linha-texto">
-            <p class="bonus-linha-rotulo">Bônus 2</p>
             <h3>Ebook de equipamento e referência</h3>
-            <ul>
-              <li>Guia em 3 faixas: iniciante, intermediário e avançado</li>
-              <li>Indicação de material extra pra quem quiser ir além</li>
-            </ul>
+            <p class="bonus-linha-p">Um guia de equipamento em três faixas, iniciante, intermediário e avançado, com indicação de material extra pra quem quiser ir além.</p>
           </div>
           <div class="bonus-linha-visual" data-confirmar="imagem provisória: capa do ebook">
             <span class="bonus-linha-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h9l3 3v14H6V3.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M15 3.5v3h3M9 12h6M9 15h6M9 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>

@@ -333,6 +333,9 @@ function wireNiveis() {
   const ant = document.querySelector(".niveis-ant");
   const prox = document.querySelector(".niveis-prox");
   const barra = document.querySelector(".niveis-progresso");
+  const caixa = trilho.closest(".niveis");
+  const contador = document.querySelector(".niveis-contador b");
+  const total = trilho.querySelectorAll(".nivel-card").length;
   const passo = () => {
     const card = trilho.querySelector(".nivel-card");
     return card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(trilho).columnGap || 0) : 300;
@@ -343,6 +346,10 @@ function wireNiveis() {
     if (ant) ant.disabled = trilho.scrollLeft < 4;
     if (prox) prox.disabled = trilho.scrollLeft > max - 4;
     if (barra) barra.style.setProperty("--niveis-p", (0.14 + p * 0.86).toFixed(3));
+    // Contador: o nível mais à esquerda na tela (chega a 07 no fim da fila).
+    const atual = max > 0 && trilho.scrollLeft > max - 4 ? total : Math.min(total, Math.round(trilho.scrollLeft / passo()) + 1);
+    if (contador) contador.textContent = String(atual).padStart(2, "0");
+    if (caixa) caixa.classList.toggle("no-fim", trilho.scrollLeft > max - 4);
   };
   if (ant) ant.addEventListener("click", () => trilho.scrollBy({ left: -passo(), behavior: "smooth" }));
   if (prox) prox.addEventListener("click", () => trilho.scrollBy({ left: passo(), behavior: "smooth" }));
@@ -376,6 +383,28 @@ function wireNiveis() {
   trilho.addEventListener("pointerup", solta);
   trilho.addEventListener("pointercancel", solta);
   atualiza();
+
+  // Primeira mexida da pessoa: a luz para de pulsar (o convite já foi aceito).
+  const marcaArrastou = () => caixa && caixa.classList.add("ja-arrastou");
+  trilho.addEventListener("pointerdown", marcaArrastou, { once: true });
+  trilho.addEventListener("touchstart", marcaArrastou, { once: true, passive: true });
+
+  // Empurrãozinho no celular: na primeira vez que a fila aparece, ela desliza
+  // um pouco pro lado e volta sozinha — mostra que dá pra arrastar sem
+  // precisar escrever isso.
+  const toque = window.matchMedia("(pointer: coarse)").matches;
+  if (toque && !prefersReducedMotion && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entradas) => {
+      if (!entradas.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      if (caixa && caixa.classList.contains("ja-arrastou")) return;
+      setTimeout(() => {
+        trilho.scrollTo({ left: passo() * 0.55, behavior: "smooth" });
+        setTimeout(() => trilho.scrollTo({ left: 0, behavior: "smooth" }), 700);
+      }, 450);
+    }, { threshold: 0.6 });
+    io.observe(trilho);
+  }
 }
 function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.

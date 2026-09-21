@@ -809,15 +809,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      fica todo na metade esquerda. */
   max-width: 52%;
   padding: 2.6rem 1.6rem 1.4rem;
-  background: linear-gradient(0deg, rgba(11, 23, 40, .8) 0%, rgba(11, 23, 40, .5) 55%, rgba(11, 23, 40, 0) 100%);
 }
 /* Em duas colunas o friso entre linhas não faz sentido: o que separa uma
    credencial da outra passa a ser o espaço. */
 /* Credenciais são prova: no computador elas ganham corpo de texto de leitura,
    não de legenda. No celular sobem só um pouco, senão não cabem em duas colunas. */
-.band-credentials .credential-item { padding: .35rem 0; align-items: flex-start; font-size: 1.3rem; line-height: 1.25; gap: .8rem; }
-.band-credentials .credential-icon { width: 2.2rem; height: 2.2rem; }
+.band-credentials .credential-item { padding: .35rem 0; align-items: flex-start; font-size: 1.5rem; line-height: 1.22; gap: .8rem; }
+.band-credentials .credential-icon { width: 2.7rem; height: 2.7rem; }
 .band-credentials .credential-item + .credential-item { border-top: 0; }
+/* Sem caixa atrás: o que garante a leitura sobre a foto é a sombra do próprio texto. */
+.band-credentials .credential-item { text-shadow: 0 1px 2px rgba(0, 0, 0, .6), 0 2px 14px rgba(0, 0, 0, .55); }
 /* Nome e cargo: a assinatura da foto, maior que as credenciais. */
 .band-name .authority-name { font-size: clamp(2.4rem, 3.8vw, 3.3rem); }
 .band-name .authority-role { font-size: clamp(.8rem, 1.1vw, .95rem); letter-spacing: .07em; margin-top: .45rem; }
@@ -862,9 +863,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-credentials { padding: 2.2rem 1.2rem 1.2rem; }
   /* Duas colunas numa tela estreita: o texto e o ícone encolhem pra caber
      sem quebrar cada credencial em cinco linhas. */
-  .band-credentials .credential-item { font-size: .95rem; line-height: 1.25; gap: .45rem; }
-  .band-credentials .credential-icon { width: 1.5rem; height: 1.5rem; }
-  .band-credentials { max-width: 50%; padding-right: 0; }
+  .band-credentials .credential-item { font-size: 1.04rem; line-height: 1.22; gap: .4rem; }
+  .band-credentials .credential-icon { width: 1.8rem; height: 1.8rem; }
+  .band-credentials { max-width: 50%; padding-left: .9rem; padding-right: 0; }
   .band-name .authority-name { font-size: 2.3rem; }
   .band-name .authority-role { font-size: .8rem; }
 }
@@ -1230,31 +1231,47 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .nivel-card p { position: relative; margin: 0; font-size: clamp(.72rem, 2.6vw, .98rem); line-height: 1.4; color: var(--text-muted); }
 
+/* Barra de controle embaixo da fila: contador, progresso e setas. */
+.niveis-controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  max-width: var(--container-w);
+  margin: .9rem auto 0;
+  padding: 0 24px;
+}
+/* Contador: mostra quanto falta pra chegar no fim (efeito do objetivo à
+   vista: quanto mais perto do 07, mais a pessoa quer terminar). */
+.niveis-contador {
+  font-family: var(--font-head);
+  font-size: .95rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 4.2em;
+}
+.niveis-contador b { color: var(--white); font-weight: 700; }
+/* Setas: bolinha de tamanho normal, só em quem tem mouse. */
 .niveis-seta {
-  position: absolute;
-  top: 42%;
-  z-index: 2;
   display: grid;
   place-items: center;
-  width: 3rem;
-  height: 3rem;
+  flex: none;
+  width: 2.6rem;
+  height: 2.6rem;
   border: 1px solid var(--border);
   border-radius: 50%;
-  background: rgba(11, 23, 40, .86);
+  background: rgba(255, 255, 255, .04);
   color: var(--white);
   cursor: pointer;
-  transition: opacity .25s ease, background-color .25s ease;
+  transition: opacity .25s ease, background-color .25s ease, border-color .25s ease;
 }
-.niveis-seta svg { width: 1.3rem; height: 1.3rem; }
+.niveis-seta svg { width: 1.1rem; height: 1.1rem; }
 .niveis-seta:hover:not(:disabled) { background: var(--orange-button); border-color: transparent; }
-.niveis-seta:disabled { opacity: .25; cursor: default; }
-.niveis-ant { left: max(12px, calc((100vw - var(--container-w)) / 2)); }
-.niveis-prox { right: max(12px, calc((100vw - var(--container-w)) / 2)); }
+.niveis-seta:disabled { opacity: .3; cursor: default; }
 /* Barra fininha que enche conforme a pessoa avança nos níveis. */
 .niveis-progresso {
-  width: min(240px, 50vw);
+  flex: 0 1 240px;
   height: 3px;
-  margin: .6rem auto 0;
   background: var(--border);
   overflow: hidden;
 }
@@ -1277,7 +1294,31 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .nivel-card { scroll-snap-align: start; }
 }
 /* No celular o dedo faz o papel das setas. */
-@media (hover: none) { .niveis-seta { display: none; } }
+@media (hover: none), (pointer: coarse) { .niveis-seta { display: none; } }
+
+/* "Luz no fim da fila": um brilho laranja na borda direita, pulsando
+   devagar, como a luz no fim do túnel da marca. É a lacuna de curiosidade
+   (tem algo claro lá no fim, e ainda não dá pra ver o quê). Some quando a
+   pessoa chega no último nível e para de pulsar depois que ela arrasta. */
+.niveis-luz {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 2.6rem;
+  z-index: 1;
+  width: clamp(72px, 22vw, 200px);
+  pointer-events: none;
+  background: radial-gradient(90% 60% at 100% 50%, rgba(215, 119, 19, .5), rgba(215, 119, 19, 0) 72%);
+  animation: niveis-luz 2.6s ease-in-out infinite;
+  transition: opacity .5s ease;
+}
+.niveis.ja-arrastou .niveis-luz { animation: none; opacity: .55; }
+.niveis.no-fim .niveis-luz { opacity: 0; }
+@keyframes niveis-luz {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .niveis-luz { animation: none; opacity: .6; } }
 /* ---------- Accordion (módulos + FAQ) ---------- */
 .accordion { margin-top: 2.5rem; display: grid; gap: .9rem; }
 /* Tier estrutural por padrão (mesma superfície plana do painel de declaração /
@@ -1511,9 +1552,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O diferencial é o quadradinho que mais importa: ganha a cor da marca. */
 .beneficio-destaque { background: linear-gradient(160deg, rgba(215, 119, 19, .16), rgba(215, 119, 19, .04)); border-color: rgba(215, 119, 19, .4); }
 @media (min-width: 700px) and (max-width: 999.98px) { .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 370px) { .beneficio { padding-inline: .6rem; } }
+@media (max-width: 370px) {
+  .beneficio { padding-inline: .6rem; }
+  /* Celular estreito (360px): um tiquinho menor pra palavra longa não passar do meio da foto. */
+  .band-credentials .credential-item { font-size: .94rem; }
+  .band-credentials .credential-icon { width: 1.6rem; height: 1.6rem; }
+}
 /* Só em tela de 320px: aí a palavra longa pode hifenizar em vez de vazar. */
-@media (max-width: 340px) { .beneficio h3 { hyphens: auto; overflow-wrap: anywhere; } }
+@media (max-width: 340px) { .beneficio h3 { hyphens: auto; overflow-wrap: anywhere; } .band-credentials .credential-item { font-size: .84rem; } }
 @media (max-width: 699.98px) {
   .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 3rem; }
   /* Sem quebrar palavra no meio ("Acompanhame-nto"): menos respiro lateral e o título cabe inteiro. */
@@ -1584,9 +1630,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .bonus-linha-icone { width: 38%; max-width: 9rem; color: var(--blue-light); opacity: .85; }
 .bonus-linha-icone svg { width: 100%; height: auto; display: block; }
+/* No celular também lado a lado: texto e imagem dividem a largura, e a
+   ordem alterna igual ao computador. */
 @media (max-width: 699.98px) {
-  .bonus-linha { grid-template-columns: 1fr; }
-  .bonus-linha-b .bonus-linha-texto { order: 0; }
+  .bonus-linha { gap: 1rem; }
+  .bonus-linha h3 { font-size: 1.12rem; margin-bottom: .5rem; }
+  .bonus-linha-p { font-size: .86rem; line-height: 1.45; }
+  .bonus-linha-visual { border-radius: var(--radius-md); aspect-ratio: 4 / 5; }
 }
 
 /* ---------- Depoimentos ----------
