@@ -651,11 +651,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    O texto segue na coluna da página, como nas outras seções. No lugar do
    antigo card entra a foto da Vitória sem moldura nenhuma, sangrando até a
    borda da tela, e o nome e as credenciais ficam escritos sobre o pé dela.
-   A coluna da foto é limitada a 620px porque o arquivo tem 760px de largura:
-   passar disso é esticar a imagem e perder nitidez. */
+   A coluna da foto fica em 620px: com o arquivo de 1122px, isso dá margem
+   pra tela retina (que pede o dobro de pixels) sem esticar a imagem. */
 .band-section { position: relative; display: grid; background: var(--bg); padding: 0; }
 .band-media { position: relative; overflow: hidden; }
-.band-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 10%; display: block; }
+.band-media picture { display: block; width: 100%; height: 100%; }
+.band-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; display: block; }
 /* Véu só no pé da foto: é onde a assinatura entra. O topo fica limpo. */
 .band-media::after {
   content: "";
@@ -663,24 +664,44 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(160deg, rgba(70, 130, 180, .2), transparent 42%),
-    linear-gradient(180deg, transparent 34%, rgba(11, 23, 40, .74) 66%, rgba(11, 23, 40, .96) 100%);
+    linear-gradient(160deg, rgba(70, 130, 180, .12), transparent 40%),
+    linear-gradient(180deg, rgba(11, 23, 40, .22) 0%, transparent 26%, transparent 64%, rgba(11, 23, 40, .34) 100%);
 }
-/* A assinatura carrega o próprio fundo: assim ela fica legível em qualquer
-   ponto da foto, sem depender de onde o véu está mais fechado. */
-.band-sign {
+/* Assinatura dividida: o nome fica no alto da foto e as credenciais no pé,
+   em duas colunas. Cada bloco leva um degradê leve atrás (só o suficiente
+   pra leitura) — a foto continua aparecendo por baixo. */
+.band-name,
+.band-credentials {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
-  /* Acima do véu da foto: o ::after do .band-media pinta depois dos filhos e,
-     sem isto, lavava justamente o texto da assinatura. */
+  /* Acima do véu: o ::after do .band-media pinta depois dos filhos. */
   z-index: 1;
-  padding: 2.4rem 1.6rem 1.5rem;
-  background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .86) 18%, rgba(11, 23, 40, .96) 100%);
 }
-.band-sign .authority-name-text { margin-bottom: .9rem; }
-.band-sign .credential-item { border-top-color: rgba(192, 203, 214, .22); }
+.band-name {
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.3rem 1.6rem 2.6rem;
+  background: linear-gradient(180deg, rgba(11, 23, 40, .78) 0%, rgba(11, 23, 40, .45) 55%, rgba(11, 23, 40, 0) 100%);
+}
+.band-credentials {
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .5rem 1.4rem;
+  padding: 2.6rem 1.6rem 1.4rem;
+  background: linear-gradient(0deg, rgba(11, 23, 40, .8) 0%, rgba(11, 23, 40, .5) 55%, rgba(11, 23, 40, 0) 100%);
+}
+/* Em duas colunas o friso entre linhas não faz sentido: o que separa uma
+   credencial da outra passa a ser o espaço. */
+.band-credentials .credential-item { padding: .3rem 0; align-items: flex-start; }
+.band-credentials .credential-item + .credential-item { border-top: 0; }
+.band-credentials .credential-icon { margin-top: .05rem; }
+
+@media (min-width: 700px) {
+  .band-credentials { grid-template-columns: 1fr 1fr; }
+}
 
 @media (min-width: 900px) {
   .band-section {
@@ -702,7 +723,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-section { padding-block: 0 0; row-gap: 1.6rem; }
   .band-text { padding: 0 24px; }
   .band-media { min-height: 112vw; }
-  .band-sign { padding: 1.1rem 1.2rem 1.2rem; }
+  .band-name { padding: 1.1rem 1.2rem 2.2rem; }
+  .band-credentials { padding: 2.2rem 1.2rem 1.2rem; }
 }
 
 .authority-name-text { display: flex; flex-direction: column; }
@@ -2215,7 +2237,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   white-space: normal;
 }
 /* Em blocos alinhados à esquerda, a etiqueta também fica à esquerda. */
-.modo-revisao :is(.ladder-step, .bonus-card, .band-sign, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
+.modo-revisao :is(.ladder-step, .bonus-card, .band-name, .accordion-panel ul, .accordion-panel p, .offer-includes li, .offer-trust span)[data-confirmar]::after {
   margin-left: 0;
 }
 .modo-revisao .offer-trust span[data-confirmar]::after { margin-top: .4rem; flex-basis: 100%; }
