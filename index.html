@@ -35,8 +35,10 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
 
+<!-- A foto horizontal do herói só existe em tela deitada: pedida cedo, sem esperar o CSS. -->
+<link rel="preload" as="image" href="assets/img/vivi-hero-desktop.webp" type="image/webp" media="(min-width: 700px) and (orientation: landscape)">
 <link rel="stylesheet" href="css/style.css">
-<noscript><style>#hero-marca,#hero-kicker,#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
+<noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). Sem abertura quando o
      endereço já aponta pra uma seção (#oferta etc.). Duas travas: se o main.js
@@ -87,6 +89,9 @@
            vem do JS, em --hero3d-s) e continua obedecendo o zoom da rolagem. -->
       <div class="hero-photo-bg">
         <div class="hero3d-zoom">
+          <!-- Tela deitada: a foto horizontal é o fundo do herói inteiro (o arquivo
+               vem pelo CSS, só nessa tela). Em pé, a cena em camadas logo abaixo. -->
+          <div class="hero-foto-deitada" role="img" aria-label="Vitória Caroline, criadora do método Do Medo ao Play, olhando para os ícones das redes sociais"></div>
           <div class="hero3d-stage" id="hero3d">
             <div class="hero3d-cam">
               <img class="hero3d-bg" src="assets/img/hero3d/bg.webp" alt="" width="941" height="1672" loading="eager" fetchpriority="high" decoding="async">
@@ -111,9 +116,7 @@
       <div class="hero-scrim" aria-hidden="true"></div>
       <div class="container hero-inner">
         <div class="hero-copy">
-          <p class="hero-marca" id="hero-marca">DO MEDO AO PLAY</p>
-          <p class="hero-kicker" id="hero-kicker">QUEM APARECE, CRESCE</p>
-          <h1 class="hero-headline" id="hero-headline">Atravesse o medo. <span class="text-orange">Apareça.</span></h1>
+          <h1 class="hero-headline" id="hero-headline">Quem aparece, <span class="text-orange">cresce.</span></h1>
           <div class="hero-lead hero-lead-list" id="hero-lead">
             <p>No Do Medo ao Play, você aprende a se comunicar diante da câmera para vender, divulgar seu trabalho, criar conteúdo ou atuar como afiliado, mesmo que hoje ainda não consiga gravar do jeito que gostaria.</p>
             <p>Ao longo de 7 módulos, você aprende técnicas de comunicação e coloca cada uma em prática por meio da Escada de Exposição, avançando gradualmente até gravar com mais técnica e naturalidade.</p>
@@ -168,81 +171,70 @@
         <p>No Do Medo ao Play, teoria, técnica e prática acontecem juntas. Em cada módulo, você entende um aspecto da sua comunicação, aprende como trabalhar aquilo e aplica o conteúdo em uma nova gravação. Ao mesmo tempo, a exposição aumenta gradualmente, começando em níveis mais confortáveis e avançando conforme você desenvolve a habilidade.</p>
         <p>Assim, você não termina o curso com um monte de conteúdo para tentar colocar em prática depois. A aplicação faz parte do aprendizado, e cada nova gravação coloca em uso aquilo que você acabou de desenvolver.</p>
       </div>
-
-      <!-- Os 7 níveis num carrossel: a pessoa arrasta pro lado e vê a audiência
-           crescendo de "só você" até "público". Rolagem nativa com encaixe, então
-           funciona no dedo, no trackpad e no teclado; as setas e o arrastar com o
-           mouse vêm do JS (wireNiveis). -->
     </div>
+    <!-- Os 7 níveis passam sozinhos, de lado, enquanto a pessoa rola a página
+         pra baixo: um jeito só de navegar, sem setas nem arrastar. Cada nível
+         fica um degrau acima do anterior e a fila sobe junto, como quem sobe
+         uma escada (ver wireNiveis em main.js). -->
     <div class="niveis">
-      <span class="niveis-luz" aria-hidden="true"></span>
-      <ol class="niveis-trilho" tabindex="0" aria-label="Os 7 níveis da escada de exposição">
-          <li class="nivel-card" style="--i:0">
-            <span class="nivel-num" aria-hidden="true">1</span>
-            <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg></span>
-            <span class="nivel-rotulo">Nível 1</span>
-            <h3>Só você</h3>
-            <p>Grava e guarda só pra você. Ninguém mais vê ainda. É o seu "antes".</p>
-          </li>
-          <li class="nivel-card" style="--i:1">
-            <span class="nivel-num" aria-hidden="true">2</span>
-            <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="9" cy="12" r="2.3" fill="currentColor"/><circle cx="15" cy="12" r="2.3" fill="currentColor"/></svg></span>
-            <span class="nivel-rotulo">Nível 2</span>
-            <h3>Uma pessoa de confiança</h3>
-            <p>Grava um vídeo novo e manda pra 1 pessoa de confiança.</p>
-          </li>
-          <li class="nivel-card" style="--i:2">
-            <span class="nivel-num" aria-hidden="true">3</span>
-            <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="8.4" cy="13.6" r="2" fill="currentColor"/><circle cx="12" cy="9.5" r="2" fill="currentColor"/><circle cx="15.6" cy="13.6" r="2" fill="currentColor"/></svg></span>
-            <span class="nivel-rotulo">Nível 3</span>
-            <h3>Mais gente de confiança</h3>
-            <p>Grava um vídeo novo e manda pra 2 ou 3 pessoas de confiança.</p>
-          </li>
-          <li class="nivel-card" style="--i:3" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-            <span class="nivel-num" aria-hidden="true">4</span>
-            <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.4"/><circle cx="8.6" cy="9" r="1.8" fill="currentColor"/><circle cx="15.4" cy="9" r="1.8" fill="currentColor"/><circle cx="8.6" cy="15" r="1.8" fill="currentColor"/><circle cx="15.4" cy="15" r="1.8" fill="currentColor"/></svg></span>
-            <span class="nivel-rotulo">Nível 4</span>
-            <h3>Círculo fechado</h3>
-            <p>Grava um vídeo novo e compartilha num grupo fechado que já participa, no WhatsApp ou Telegram.</p>
-          </li>
-          <li class="nivel-card" style="--i:4" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-            <span class="nivel-num" aria-hidden="true">5</span>
-            <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8.6" r="1.6" fill="currentColor"/><circle cx="12.6" cy="7.4" r="1.6" fill="currentColor"/><circle cx="16.4" cy="9.4" r="1.6" fill="currentColor"/><circle cx="7.6" cy="14.8" r="1.6" fill="currentColor"/><circle cx="16.6" cy="14.6" r="1.6" fill="currentColor"/><circle cx="12" cy="16.6" r="1.6" fill="currentColor"/></svg></span>
-            <span class="nivel-rotulo">Nível 5</span>
-            <h3>Círculo ampliado</h3>
-            <p>Compartilha com uma lista maior que você mesma monta: close friends do Instagram ou lista de transmissão do WhatsApp.</p>
-          </li>
-          <li class="nivel-card" style="--i:5" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-            <span class="nivel-num" aria-hidden="true">6</span>
-            <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M15.5 4.2a9.3 9.3 0 1 1-7 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8.6" r="1.6" fill="currentColor"/><circle cx="12.6" cy="7.4" r="1.6" fill="currentColor"/><circle cx="16.4" cy="9.4" r="1.6" fill="currentColor"/><circle cx="7.6" cy="14.8" r="1.6" fill="currentColor"/><circle cx="16.6" cy="14.6" r="1.6" fill="currentColor"/><circle cx="12" cy="16.6" r="1.6" fill="currentColor"/></svg></span>
-            <span class="nivel-rotulo">Nível 6</span>
-            <h3>Quase público</h3>
-            <p>Story aberto ou pros seus seguidores atuais, preparando o terreno pro geral.</p>
-          </li>
-          <li class="nivel-card" style="--i:6">
-            <span class="nivel-num" aria-hidden="true">7</span>
-            <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6.3 6.3l2.1 2.1M15.6 15.6l2.1 2.1M17.7 6.3l-2.1 2.1M8.4 15.6l-2.1 2.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
-            <span class="nivel-rotulo">Nível 7</span>
-            <h3>Público: o play final</h3>
-            <p>Grava o vídeo final, o seu "depois", e compartilha geral, valendo pra qualquer rede. Essa é a sua versão que aparece.</p>
-          </li>
-      </ol>
-      <!-- Barra de controle: contador (quanto falta pro fim), progresso e, no
-           computador, as setas. -->
-      <div class="niveis-controles">
-        <span class="niveis-contador" aria-hidden="true"><b>01</b> / 07</span>
+      <div class="niveis-palco">
+        <ol class="niveis-trilho" aria-label="Os 7 níveis da escada de exposição">
+            <li class="nivel-card" style="--i:0">
+              <span class="nivel-num" aria-hidden="true">1</span>
+              <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="12" cy="12" r="2.6" fill="currentColor"/></svg></span>
+              <span class="nivel-rotulo">Nível 1</span>
+              <h3>Só você</h3>
+              <p>Grava e guarda só pra você. Ninguém mais vê ainda. É o seu "antes".</p>
+            </li>
+            <li class="nivel-card" style="--i:1">
+              <span class="nivel-num" aria-hidden="true">2</span>
+              <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="9" cy="12" r="2.3" fill="currentColor"/><circle cx="15" cy="12" r="2.3" fill="currentColor"/></svg></span>
+              <span class="nivel-rotulo">Nível 2</span>
+              <h3>Uma pessoa de confiança</h3>
+              <p>Grava um vídeo novo e manda pra 1 pessoa de confiança.</p>
+            </li>
+            <li class="nivel-card" style="--i:2">
+              <span class="nivel-num" aria-hidden="true">3</span>
+              <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2.4 3"/><circle cx="8.4" cy="13.6" r="2" fill="currentColor"/><circle cx="12" cy="9.5" r="2" fill="currentColor"/><circle cx="15.6" cy="13.6" r="2" fill="currentColor"/></svg></span>
+              <span class="nivel-rotulo">Nível 3</span>
+              <h3>Mais gente de confiança</h3>
+              <p>Grava um vídeo novo e manda pra 2 ou 3 pessoas de confiança.</p>
+            </li>
+            <li class="nivel-card" style="--i:3" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
+              <span class="nivel-num" aria-hidden="true">4</span>
+              <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.4"/><circle cx="8.6" cy="9" r="1.8" fill="currentColor"/><circle cx="15.4" cy="9" r="1.8" fill="currentColor"/><circle cx="8.6" cy="15" r="1.8" fill="currentColor"/><circle cx="15.4" cy="15" r="1.8" fill="currentColor"/></svg></span>
+              <span class="nivel-rotulo">Nível 4</span>
+              <h3>Círculo fechado</h3>
+              <p>Grava um vídeo novo e compartilha num grupo fechado que já participa, no WhatsApp ou Telegram.</p>
+            </li>
+            <li class="nivel-card" style="--i:4" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
+              <span class="nivel-num" aria-hidden="true">5</span>
+              <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9.3" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="8.6" r="1.6" fill="currentColor"/><circle cx="12.6" cy="7.4" r="1.6" fill="currentColor"/><circle cx="16.4" cy="9.4" r="1.6" fill="currentColor"/><circle cx="7.6" cy="14.8" r="1.6" fill="currentColor"/><circle cx="16.6" cy="14.6" r="1.6" fill="currentColor"/><circle cx="12" cy="16.6" r="1.6" fill="currentColor"/></svg></span>
+              <span class="nivel-rotulo">Nível 5</span>
+              <h3>Círculo ampliado</h3>
+              <p>Compartilha com uma lista maior que você mesma monta: close friends do Instagram ou lista de transmissão do WhatsApp.</p>
+            </li>
+            <li class="nivel-card" style="--i:5" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
+              <span class="nivel-num" aria-hidden="true">6</span>
+              <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M15.5 4.2a9.3 9.3 0 1 1-7 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8.6" r="1.6" fill="currentColor"/><circle cx="12.6" cy="7.4" r="1.6" fill="currentColor"/><circle cx="16.4" cy="9.4" r="1.6" fill="currentColor"/><circle cx="7.6" cy="14.8" r="1.6" fill="currentColor"/><circle cx="16.6" cy="14.6" r="1.6" fill="currentColor"/><circle cx="12" cy="16.6" r="1.6" fill="currentColor"/></svg></span>
+              <span class="nivel-rotulo">Nível 6</span>
+              <h3>Quase público</h3>
+              <p>Story aberto ou pros seus seguidores atuais, preparando o terreno pro geral.</p>
+            </li>
+            <li class="nivel-card" style="--i:6">
+              <span class="nivel-num" aria-hidden="true">7</span>
+              <span class="nivel-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3M6.3 6.3l2.1 2.1M15.6 15.6l2.1 2.1M17.7 6.3l-2.1 2.1M8.4 15.6l-2.1 2.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+              <span class="nivel-rotulo">Nível 7</span>
+              <h3>Público: o play final</h3>
+              <p>Grava o vídeo final, o seu "depois", e compartilha geral, valendo pra qualquer rede. Essa é a sua versão que aparece.</p>
+            </li>
+        </ol>
         <div class="niveis-progresso" aria-hidden="true"><span></span></div>
-        <button class="niveis-seta niveis-ant" type="button" aria-label="Nível anterior" disabled>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button class="niveis-seta niveis-prox" type="button" aria-label="Próximo nível">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
       </div>
     </div>
     <div class="container metodo-fecho">
       <p class="metodo-frase">Um nível de cada vez. <span class="text-orange">Até dar o play.</span></p>
-      <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
+      <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena<svg class="btn-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </section>
 
@@ -304,26 +296,23 @@
   <!-- ===== AUTORIDADE ===== -->
   <!-- O texto fica na coluna da página e a foto da Vitória ao lado (presa
        enquanto o texto passa), com o nome no alto e os números no pé. -->
-  <section class="section band-section" id="vivi" aria-labelledby="autoridade-title">
-    <div class="band-text">
-      <p class="eyebrow">VITÓRIA CAROLINE</p>
-      <h2 id="autoridade-title" class="section-title">Educadora há 13 anos. Criadora de conteúdo há 8.</h2>
-      <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional. Ao longo desse caminho, criou materiais didáticos autorais, formou turmas e acompanhou alunos desenvolverem habilidades a ponto de alcançarem níveis de execução muito além de onde começaram e transformarem o aprendizado em novas oportunidades.</p>
-      <p>Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas. Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
-      <p>Sua experiência como educadora sustenta a lógica do método: habilidade não se constrói só entendendo a teoria. Ela se desenvolve quando conhecimento, técnica, prática e exposição avançam juntos.</p>
+  <section class="section vivi-apple" id="vivi" aria-labelledby="autoridade-title">
+    <!-- A foto fica grande e parada na tela enquanto o card, com todas as
+         informações da educadora, sobe por cima dela (como nas páginas da Apple). -->
+    <div class="vivi-foto">
+      <picture>
+        <source srcset="assets/img/vitoria-caroline-palestra.webp" type="image/webp">
+        <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy">
+      </picture>
     </div>
-
-    <div class="band-media">
-      <div class="band-media-inner">
-        <picture>
-          <source srcset="assets/img/vitoria-caroline-palestra.webp" type="image/webp">
-          <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy">
-        </picture>
-        <span class="band-name">
-          <strong class="authority-name">Vitória Caroline</strong>
-          <span class="authority-role">criadora do método Do Medo ao Play</span>
-        </span>
-        <ul class="credential-list band-credentials">
+    <div class="container vivi-trilho">
+      <article class="vivi-card">
+        <p class="eyebrow">VITÓRIA CAROLINE</p>
+        <h2 id="autoridade-title" class="section-title">Educadora há 13 anos. Criadora de conteúdo há 8.</h2>
+        <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional. Ao longo desse caminho, criou materiais didáticos autorais, formou turmas e acompanhou alunos desenvolverem habilidades a ponto de alcançarem níveis de execução muito além de onde começaram e transformarem o aprendizado em novas oportunidades.</p>
+        <p>Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas. Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
+        <p>Sua experiência como educadora sustenta a lógica do método: habilidade não se constrói só entendendo a teoria. Ela se desenvolve quando conhecimento, técnica, prática e exposição avançam juntos.</p>
+        <ul class="credential-list vivi-credenciais">
           <li class="credential-item credential-item-edu">
           <span class="credential-icon" aria-hidden="true"></span>
           <span class="credential-text"><span class="credential-figure big-fact-num" data-count="13">13</span> anos como educadora</span>
@@ -337,7 +326,7 @@
           <span class="credential-text"><span class="credential-figure big-fact-num" data-count="4">4</span> anos de especialização em comunicação e oratória</span>
           </li>
         </ul>
-      </div>
+      </article>
     </div>
   </section>
 
@@ -506,24 +495,26 @@
     <div class="container">
       <h2 id="bonus-title" class="section-title center">E ainda leva <span class="text-orange">+ 2 bônus.</span></h2>
       <p class="section-lead center">Ferramentas criadas para facilitar a prática também fora das aulas.</p>
-      <div class="bonus-cards">
-        <article class="bonus-card" data-confirmar="limite de uso, de mensagens ou de prazo do assistente: escrever aqui antes da compra e testar antes do lançamento">
-          <div class="bonus-card-visual" data-confirmar="imagem provisória: print do assistente em uso">
-            <span class="bonus-card-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="7" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/><path d="M12 7V4M9 4h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
-          </div>
-          <div class="bonus-card-texto">
+      <!-- Um bônus por linha: texto de um lado e foto do outro, alternando
+           (no segundo a foto vem à esquerda). Igual no celular e no computador. -->
+      <div class="bonus-lista">
+        <article class="bonus-item" data-confirmar="limite de uso, de mensagens ou de prazo do assistente: escrever aqui antes da compra e testar antes do lançamento">
+          <div class="bonus-item-texto">
             <h3>Assistente de IA para gravar melhor</h3>
             <p>Um assistente pensado para ajudar antes da gravação. Você pode enviar uma foto do seu setup para receber orientações sobre áudio, iluminação e altura da câmera, além de usar a ferramenta para escolher assuntos e revisar a estrutura da sua fala antes de gravar.</p>
           </div>
-        </article>
-        <article class="bonus-card" data-confirmar="curadoria dos equipamentos das três faixas ainda em produção">
-          <div class="bonus-card-visual" data-confirmar="imagem provisória: capa do ebook">
-            <span class="bonus-card-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h9l3 3v14H6V3.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M15 3.5v3h3M9 12h6M9 15h6M9 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <div class="bonus-item-foto" data-confirmar="imagem provisória: print do assistente em uso">
+            <span class="bonus-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="7" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/><path d="M12 7V4M9 4h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
           </div>
-          <div class="bonus-card-texto">
+        </article>
+        <article class="bonus-item bonus-item--invertido" data-confirmar="curadoria dos equipamentos das três faixas ainda em produção">
+          <div class="bonus-item-texto">
             <h3>Ebook de equipamentos e referências</h3>
             <p>Um guia organizado em três faixas (iniciante, intermediária e avançada) para entender quais equipamentos fazem sentido em cada momento, sem partir da ideia de que é necessário montar um estúdio para começar.</p>
             <p>O material também reúne referências extras para quem quiser aprofundar alguns dos temas apresentados no curso.</p>
+          </div>
+          <div class="bonus-item-foto" data-confirmar="imagem provisória: capa do ebook">
+            <span class="bonus-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 3.5h9l3 3v14H6V3.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M15 3.5v3h3M9 12h6M9 15h6M9 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
           </div>
         </article>
       </div>
@@ -545,7 +536,7 @@
 
         <p class="offer-inclui">7 módulos · 32 aulas · X horas de formação · acompanhamento · 2 bônus · certificado</p>
 
-        <a href="#" data-checkout-link class="btn btn-primary btn-large btn-block">Quero entrar em cena</a>
+        <a href="#" data-checkout-link class="btn btn-primary btn-large btn-block">Quero entrar em cena<svg class="btn-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <p class="hero-microcopy center" data-confirmar="link de checkout da Hotmart (os botões ainda levam a um link provisório)">Compra 100% online processada pela Hotmart.</p>
       </div>
     </div>
@@ -668,7 +659,7 @@
         <p class="section-lead">Talvez hoje exista uma distância entre a forma como você se comunica normalmente e aquilo que consegue mostrar quando a câmera liga. O Do Medo ao Play foi criado para trabalhar justamente esse espaço, usando técnica, prática e uma progressão que começa no nível em que você está agora.</p>
         <p class="section-lead">A primeira gravação não precisa parecer com a última. É para isso que existe a Escada de Exposição.</p>
         <p class="final-frase">Atravesse o medo. <span class="text-orange">Apareça.</span></p>
-        <a href="#" data-checkout-link id="final-cta-btn" class="btn btn-primary btn-large">Quero entrar em cena</a>
+        <a href="#" data-checkout-link id="final-cta-btn" class="btn btn-primary btn-large">Quero entrar em cena<svg class="btn-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <p class="hero-microcopy">R$ 197 · compra única · sem mensalidade</p>
       </div>
     </div>
@@ -685,7 +676,6 @@
       <img class="logo-mark" src="assets/img/logo.svg" alt="Do Medo ao Play" width="102" height="40" loading="lazy">
     </a>
     <div class="footer-meta">
-      <p class="footer-assinatura">Do Medo ao Play · por Vitória Caroline</p>
       <nav class="footer-legal" aria-label="Informações legais" data-confirmar="páginas de Política de Privacidade, Termos de Uso e Suporte (os links ainda não levam a lugar nenhum)">
         <a href="#">Política de Privacidade</a>
         <span class="footer-sep" aria-hidden="true">·</span>
@@ -704,7 +694,7 @@
      mostra a primeira seção da página. No fim essa tela cresce até a janela
      inteira e vira a própria página (ver wireIntroStage em main.js). Fica no
      fim do documento pra réplica da página nunca vir antes do original.
-     Rolar, tocar, clicar ou apertar uma tecla adianta direto pra travessia. -->
+     Rolar, tocar ou apertar uma tecla adianta direto pra travessia: nada pra decidir. -->
 <div class="intro-stage" id="intro-stage">
   <div class="tunnel" aria-hidden="true">
     <!-- Fonte e pôster entram pelo JS: cada tela baixa só o vídeo dela. -->
@@ -755,11 +745,6 @@
       <span>você</span> <span>desse</span> <span>o</span> <span class="text-orange">play?</span>
     </p>
   </div>
-
-  <button type="button" class="intro-pular" id="intro-pular">
-    Pular abertura
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5v13l9-6.5z"/><path d="M16 5.5h2.5v13H16z"/></svg>
-  </button>
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>

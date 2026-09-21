@@ -41,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
   wireManterLugar();
   wireHeaderReveal();
   playHeroIntro();
-  wireTilt();
   wireConfettiCTA();
   wireReviewMode();
   if (hasGSAP) ScrollTrigger.refresh();
@@ -88,22 +87,40 @@ const clamp = (v) => Math.min(1, Math.max(0, v));
 // Vale pra cena de verdade e pra réplica que a abertura monta dentro do
 // celular. Por isso a medida é a do layout (offsetWidth/Height), que ignora o
 // transform que encolhe a réplica — as duas ficam enquadradas igual.
+// Onde começam os ícones na cena montada (y em px no palco de 941x1672): em
+// tela em pé a cena desce até eles ficarem logo abaixo do texto do herói.
+const CENA_ICONES_TOPO = 604;
+// Altura do rosto na cena (entre a testa e o queixo): o zoom da rolagem gira
+// em torno dele, pra ele não fugir da tela.
+const CENA_ROSTO = 880;
 function ajustaCena3D() {
   document.querySelectorAll(".hero3d-stage").forEach((palco) => {
     const caixa = palco.parentElement;
     const w = caixa.offsetWidth;
     const h = caixa.offsetHeight;
     if (!w || !h) return;
-    // Só em tela deitada de verdade (computador, tablet deitado) a cena aparece
-    // inteira encostada na direita; cobrir ali daria um close no rosto. No
-    // celular ela sempre cobre a tela, mesmo quando a caixa do herói é mais
-    // larga que 9:16 (era isso que empurrava a cena pro canto e cortava).
-    // Pela tela, não pela caixa: em tela em pé a caixa começa embaixo do texto
-    // e fica mais larga que alta, mas a cena continua cobrindo a largura.
+    // Tela deitada (computador, tablet deitado) usa a foto horizontal inteira
+    // (ver CSS); a cena em camadas é a da tela em pé.
     const deitada = window.matchMedia("(min-width: 700px) and (orientation: landscape)").matches;
     palco.classList.toggle("is-lado", deitada);
     const escala = deitada ? h / 1672 : Math.max(w / 941, h / 1672);
     palco.style.setProperty("--hero3d-s", escala.toFixed(4));
+    // Em pé a cena cobre o herói inteiro, atrás do texto. Com o texto comprido,
+    // ela desce até os ícones ficarem logo abaixo do botão; o alto da tela
+    // continua o céu escuro da própria foto (degradê no CSS).
+    const cinema = palco.closest(".cinema-stage");
+    const fimTexto = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-text-bottom")) : NaN;
+    const topo = h / 2 - 836 * escala;
+    let desce = 0;
+    if (!deitada && isFinite(fimTexto)) {
+      desce = Math.min(h * .4, Math.max(0, fimTexto + 12 - (topo + CENA_ICONES_TOPO * escala)));
+    }
+    caixa.style.setProperty("--cena-desce", desce.toFixed(1) + "px");
+    caixa.style.setProperty("--cena-emenda", (topo + desce).toFixed(1) + "px");
+    if (cinema) {
+      if (deitada) cinema.style.removeProperty("--portal-origin");
+      else cinema.style.setProperty("--portal-origin", "52% " + Math.round((topo + desce + CENA_ROSTO * escala) / h * 100) + "%");
+    }
   });
 }
 function wireScrollEffects() {
@@ -329,95 +346,46 @@ function wireAccordions() {
   });
 }
 
-// Carrossel dos níveis: a rolagem é nativa (dedo, trackpad, teclado). Aqui
-// entram as setas, o arrastar com o mouse e a barra de progresso.
+// A escada anda com a rolagem: enquanto a pessoa rola a página pra baixo, a
+// fila dos 7 níveis passa de lado e sobe um degrau por nível (um jeito só de
+// navegar, sem setas nem arrastar). A .niveis é a pista (a altura dela é o
+// quanto a fila anda) e o .niveis-palco fica preso na tela enquanto isso.
 function wireNiveis() {
-  const trilho = document.querySelector(".niveis-trilho");
-  if (!trilho) return;
-  const ant = document.querySelector(".niveis-ant");
-  const prox = document.querySelector(".niveis-prox");
-  const barra = document.querySelector(".niveis-progresso");
-  const caixa = trilho.closest(".niveis");
-  const contador = document.querySelector(".niveis-contador b");
-  const cards = [...trilho.querySelectorAll(".nivel-card")];
-  const total = cards.length;
-  const passo = () => {
-    const card = trilho.querySelector(".nivel-card");
-    return card ? card.getBoundingClientRect().width + parseFloat(getComputedStyle(trilho).columnGap || 0) : 300;
-  };
-  const atualiza = () => {
-    const max = trilho.scrollWidth - trilho.clientWidth;
-    const p = max > 0 ? trilho.scrollLeft / max : 0;
-    if (ant) ant.disabled = trilho.scrollLeft < 4;
-    if (prox) prox.disabled = trilho.scrollLeft > max - 4;
-    if (barra) barra.style.setProperty("--niveis-p", (0.14 + p * 0.86).toFixed(3));
-    // Contador: os níveis que aparecem na tela, quase inteiros (ex.: 01-03). Com vários
-    // cartões visíveis, um número só fazia o contador pular de 04 pra 07 no
-    // fim da fila.
-    if (contador) {
-      const vista = trilho.getBoundingClientRect();
-      const inteiros = cards.map((c, i) => { const r = c.getBoundingClientRect(); const aparece = Math.min(r.right, vista.right) - Math.max(r.left, vista.left); return aparece >= r.width * 0.9 ? i + 1 : 0; }).filter(Boolean);
-      const primeiro = inteiros.length ? inteiros[0] : Math.min(total, Math.round(trilho.scrollLeft / passo()) + 1);
-      const ultimo = inteiros.length ? inteiros[inteiros.length - 1] : primeiro;
-      const dois = (n) => String(n).padStart(2, "0");
-      contador.textContent = primeiro === ultimo ? dois(primeiro) : dois(primeiro) + "-" + dois(ultimo);
-    }
-    if (caixa) caixa.classList.toggle("no-fim", trilho.scrollLeft > max - 4);
-  };
-  if (ant) ant.addEventListener("click", () => trilho.scrollBy({ left: -passo(), behavior: "smooth" }));
-  if (prox) prox.addEventListener("click", () => trilho.scrollBy({ left: passo(), behavior: "smooth" }));
-  trilho.addEventListener("scroll", () => requestAnimationFrame(atualiza), { passive: true });
-  window.addEventListener("resize", atualiza, { passive: true });
+  const pista = document.querySelector(".niveis");
+  const palco = pista && pista.querySelector(".niveis-palco");
+  const trilho = pista && pista.querySelector(".niveis-trilho");
+  const barra = pista && pista.querySelector(".niveis-progresso span");
+  if (!pista || !palco || !trilho) return;
+  // Sem movimento (a classe entra no <head>): os níveis ficam todos à vista, em grade.
+  if (!document.documentElement.classList.contains("cinema-on")) return;
 
-  // Arrastar com o mouse (no toque a rolagem nativa já resolve).
-  let inicioX = 0;
-  let inicioScroll = 0;
-  let arrastando = false;
-  trilho.addEventListener("pointerdown", (e) => {
-    if (e.pointerType !== "mouse" || e.button !== 0) return;
-    arrastando = true;
-    inicioX = e.clientX;
-    inicioScroll = trilho.scrollLeft;
-    trilho.classList.add("is-arrastando");
-    trilho.setPointerCapture(e.pointerId);
-  });
-  trilho.addEventListener("pointermove", (e) => {
-    if (!arrastando) return;
-    trilho.scrollLeft = inicioScroll - (e.clientX - inicioX);
-  });
-  const solta = () => {
-    if (!arrastando) return;
-    arrastando = false;
-    trilho.classList.remove("is-arrastando");
-    // Volta o encaixe: o card mais próximo se centraliza sozinho.
-    const alvo = Math.round(trilho.scrollLeft / passo()) * passo();
-    trilho.scrollTo({ left: alvo, behavior: "smooth" });
-  };
-  trilho.addEventListener("pointerup", solta);
-  trilho.addEventListener("pointercancel", solta);
-  atualiza();
+  let inicio = 0;   // rolagem em que o palco gruda na tela
+  let curso = 0;    // quanto a fila anda de lado (e quanto a página rola presa)
+  let subida = 0;   // quanto a fila desce pra acompanhar os degraus
+  let ticking = false;
 
-  // Primeira mexida da pessoa: a luz para de pulsar (o convite já foi aceito).
-  const marcaArrastou = () => caixa && caixa.classList.add("ja-arrastou");
-  trilho.addEventListener("pointerdown", marcaArrastou, { once: true });
-  trilho.addEventListener("touchstart", marcaArrastou, { once: true, passive: true });
-
-  // Empurrãozinho no celular: na primeira vez que a fila aparece, ela desliza
-  // um pouco pro lado e volta sozinha — mostra que dá pra arrastar sem
-  // precisar escrever isso.
-  const toque = window.matchMedia("(pointer: coarse)").matches;
-  if (toque && !prefersReducedMotion && "IntersectionObserver" in window) {
-    const io = new IntersectionObserver((entradas) => {
-      if (!entradas.some((e) => e.isIntersecting)) return;
-      io.disconnect();
-      if (caixa && caixa.classList.contains("ja-arrastou")) return;
-      setTimeout(() => {
-        trilho.scrollTo({ left: passo() * 0.55, behavior: "smooth" });
-        setTimeout(() => trilho.scrollTo({ left: 0, behavior: "smooth" }), 700);
-      }, 450);
-    }, { threshold: 0.6 });
-    io.observe(trilho);
+  function atualiza() {
+    ticking = false;
+    const p = curso ? clamp((window.scrollY - inicio) / curso) : 0;
+    trilho.style.transform = "translate3d(" + (-p * curso).toFixed(1) + "px, " + (p * subida).toFixed(1) + "px, 0)";
+    if (barra) barra.style.transform = "scaleX(" + p.toFixed(3) + ")";
   }
+  function mede() {
+    const degrau = parseFloat(getComputedStyle(trilho).getPropertyValue("--degrau")) || 0;
+    subida = degrau * (trilho.children.length - 1);
+    curso = Math.max(0, trilho.scrollWidth - palco.clientWidth);
+    pista.style.setProperty("--niveis-curso", curso + "px");
+    inicio = pista.getBoundingClientRect().top + window.scrollY - (parseFloat(getComputedStyle(palco).top) || 0);
+    atualiza();
+  }
+  window.addEventListener("scroll", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(atualiza); }
+  }, { passive: true });
+  window.addEventListener("resize", mede, { passive: true });
+  window.addEventListener("load", mede);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(mede);
+  if ("ResizeObserver" in window) new ResizeObserver(mede).observe(document.body);
+  mede();
 }
 function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
@@ -684,11 +652,32 @@ function wireIntroStage() {
   let semVideo = false;
   let esperaVideo = 0;
 
+  // O túnel começa devagar e vai acelerando até a porta de luz. O ritmo final
+  // é o que faz ele chegar lá quando a tela da câmera termina de crescer (a luz
+  // do vídeo emenda no clarão).
+  const RITMO_INICIAL = .5;
+  let ritmoFinal = 2;
+  let ritmo = null;
   function ajustaRitmo() {
-    if (!isFinite(video.duration) || video.duration <= 0) return;
-    const ritmo = gsap.utils.clamp(.75, 2, video.duration / porta);
-    video.defaultPlaybackRate = ritmo;
-    video.playbackRate = ritmo;
+    video.defaultPlaybackRate = RITMO_INICIAL;
+    video.playbackRate = RITMO_INICIAL;
+    // Com power1.in (t²), o ritmo médio é inicial + (final - inicial) / 3.
+    if (isFinite(video.duration) && video.duration > 0) {
+      ritmoFinal = gsap.utils.clamp(1, 4, RITMO_INICIAL + 3 * (video.duration / porta - RITMO_INICIAL));
+    }
+  }
+  // Onde o vídeo deve estar em cada instante da animação (a soma do ritmo).
+  const tempoDoVideo = (t) => RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t * t / (3 * porta * porta);
+  function aceleraTunel() {
+    const r = { v: RITMO_INICIAL };
+    video.playbackRate = RITMO_INICIAL;
+    ritmo = gsap.to(r, {
+      v: ritmoFinal,
+      duration: porta,
+      ease: "power1.in",
+      // Muda o ritmo do vídeo em passos pequenos, não a cada quadro.
+      onUpdate: () => { if (Math.abs(video.playbackRate - r.v) >= .04) video.playbackRate = r.v; },
+    });
   }
   function comeca() {
     if (comecou) return;
@@ -702,6 +691,8 @@ function wireIntroStage() {
       video.removeAttribute("src");
       video.load();
       gsap.fromTo(video, { scale: 1 }, { scale: 1.3, duration: porta, ease: "power1.in" });
+    } else {
+      aceleraTunel();
     }
     tl.play();
     // Trava de segurança: a página nunca fica presa atrás da abertura.
@@ -709,20 +700,22 @@ function wireIntroStage() {
   }
 
   // Adianta direto pra travessia (a tela da câmera crescendo até virar a
-  // página), bem mais rápido. Serve pro botão, pra rolagem, toque e teclado.
+  // página), bem mais rápido: rolar, tocar ou apertar uma tecla.
   let adiantou = false;
   function adianta() {
     if (adiantou || aberturaAcabou) return;
     adiantou = true;
     const t = tl.labels.atravessa;
+    if (ritmo) ritmo.kill();
     if (tl.time() < t) {
       tl.seek(t);
       if (!semVideo && video.readyState >= 1) {
-        try { video.currentTime = Math.min(video.duration || 0, t * video.playbackRate); } catch { /* segue sem acertar o vídeo */ }
+        try { video.currentTime = Math.min(video.duration || 0, tempoDoVideo(t)); } catch { /* segue sem acertar o vídeo */ }
       }
     }
     tl.timeScale(2.2);
-    if (!semVideo) video.playbackRate = Math.min(16, video.playbackRate * 2.2);
+    // Na travessia rápida, o túnel corre até a porta junto com a tela.
+    if (!semVideo) video.playbackRate = Math.min(16, ritmoFinal * 2.2);
     if (!comecou) {
       comecou = true;
       clearTimeout(esperaVideo);
@@ -802,13 +795,11 @@ function wireHeaderReveal() {
 // A página: categoria, título, texto de apoio e botão entram em sequência
 // assim que a abertura termina (ou logo ao abrir, quando não tem abertura).
 function playHeroIntro() {
-  const marca = document.getElementById("hero-marca");
-  const kicker = document.getElementById("hero-kicker");
   const headline = document.getElementById("hero-headline");
   const lead = document.getElementById("hero-lead");
   const actions = document.getElementById("hero-actions-el");
   const cue = document.getElementById("hero-scrollcue");
-  const items = [marca, kicker, headline, lead, actions, cue].filter(Boolean);
+  const items = [headline, lead, actions, cue].filter(Boolean);
   if (!items.length) return;
 
   if (!hasGSAP || prefersReducedMotion) {
@@ -835,28 +826,6 @@ function wireScrollCue() {
     }
   };
   window.addEventListener("scroll", hide, { passive: true });
-}
-
-// Tilt 3D nos cards marcados com [data-tilt]: a inclinação segue a posição
-// do mouse/dedo dentro do card, e volta ao normal quando ele sai.
-function wireTilt() {
-  if (prefersReducedMotion) return;
-  document.querySelectorAll("[data-tilt]").forEach((card) => {
-    function handleMove(clientX, clientY) {
-      const rect = card.getBoundingClientRect();
-      const px = (clientX - rect.left) / rect.width;
-      const py = (clientY - rect.top) / rect.height;
-      card.style.transform = `perspective(700px) rotateX(${(py - .5) * -10}deg) rotateY(${(px - .5) * 10}deg)`;
-    }
-    const reset = () => { card.style.transform = "perspective(700px) rotateX(0deg) rotateY(0deg)"; };
-    card.addEventListener("pointermove", (e) => handleMove(e.clientX, e.clientY));
-    card.addEventListener("pointerleave", reset);
-    card.addEventListener("touchmove", (e) => {
-      const t = e.touches[0];
-      if (t) handleMove(t.clientX, t.clientY);
-    }, { passive: true });
-    card.addEventListener("touchend", reset);
-  });
 }
 
 // Confete em canvas: um estouro de partículas a partir de um ponto, usado no
