@@ -737,7 +737,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-section { padding-block: 0 0; row-gap: 1.6rem; }
   .band-text { padding: 0 24px; }
   /* Foto quase do tamanho da tela, como nas faixas de produto da Apple no celular. */
-  .band-media-inner { min-height: min(92svh, 180vw); }
+  .band-media-inner { min-height: 100svh; }
   .band-name { padding: 1.1rem 1.2rem 2.2rem; }
   .band-credentials { padding: 2.2rem 1.2rem 1.2rem; }
   /* Duas colunas numa tela estreita: o texto e o ícone encolhem pra caber
@@ -817,11 +817,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 
 /* ---------- Antes / Depois ---------- */
+/* Um card embaixo do outro, cada um na largura inteira: a foto ganha corpo
+   e o "antes" e o "depois" viram duas cenas em sequência, em vez de duas
+   colunas estreitas que a pessoa lê em ziguezague. */
 .compare-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.6rem;
-  align-items: stretch;
+  grid-template-columns: 1fr;
+  gap: 3.2rem;
   margin-top: 2.5rem;
 }
 /* Tier estrutural (ver escada de contraste no topo do arquivo): superfície
@@ -834,13 +836,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .compare-col { background: none; border: 0; padding: 0; }
 .compare-shot {
   margin: 0 0 1.5rem;
-  aspect-ratio: 4 / 5;
+  /* Faixa baixa e larga: a foto vira uma cena, não um painel que empurra o
+     texto pra fora da tela. */
+  aspect-ratio: 21 / 9;
   overflow: hidden;
   border: 1px solid var(--border);
   border-top-width: 3px;
   background: rgba(255, 255, 255, .02);
 }
-.compare-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.compare-shot img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; display: block; }
 /* A coluna inteira herda a cor do próprio ícone do título como acento de
    borda (mesma técnica de friso da faixa de autoridade, mas 1 cor sólida por
    coluna em vez do gradiente duplo) — reforça em 3 pontos por coluna
@@ -876,6 +880,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .compare-depois h3 { --ico: var(--ico-play); }
 .compare-depois h3::before { background: var(--orange-light); }
 .compare-col ul { display: grid; gap: .8rem; }
+/* A lista acompanha a largura do card: duas colunas de texto embaixo da foto. */
+@media (min-width: 700px) {
+  .compare-col ul { grid-template-columns: 1fr 1fr; gap: .9rem 2.4rem; }
+}
+/* Em tela estreita a foto volta a ser vertical: panorâmica vira uma tira fina. */
+@media (max-width: 699.98px) {
+  .compare-shot { aspect-ratio: 4 / 3; }
+  .compare-grid { gap: 2.4rem; }
+}
 .compare-col li {
   position: relative;
   padding-left: 1.15rem;
