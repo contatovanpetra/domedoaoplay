@@ -273,7 +273,7 @@ function wireScrollReveal() {
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
   const targets = [...document.querySelectorAll(
-    ".section .container > *, .ladder-step, .accordion-item, .compare-col"
+    ".section .container > *, .band-text > *, .band-media, .ladder-step, .accordion-item, .compare-col"
   )].filter((el) => !el.matches(
     ".compare-grid, .ladder, .accordion"
   ));

@@ -647,79 +647,62 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    só passa o olho ainda pegar o benefício de cada frase. */
 .split-text p strong { color: var(--white); }
 
-/* ---------- Autoridade: faixa de tela infinita ----------
-   A foto da Vitória não é mais a metade de um card: ela é o fundo da
-   seção, sangrando de ponta a ponta, com o texto por cima (referência:
-   as faixas de produto da Apple, texto centralizado sobre a imagem).
-   A imagem tem 760px de largura, então ela é ancorada à direita no
-   tamanho real e o degradê estende a faixa até a borda esquerda: assim
-   a faixa é inteira sem esticar (e perder nitidez) a foto. */
-.band-section {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background: var(--bg);
-}
-.band-media { position: absolute; inset: 0; z-index: -1; }
-.band-media img {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: min(760px, 100%);
-  object-fit: cover;
-  object-position: 50% 12%;
-}
-/* Véu: escurece o lado do texto e costura a foto ao fundo da página. */
+/* ---------- Autoridade: a foto no lugar do card ----------
+   O texto segue na coluna da página, como nas outras seções. No lugar do
+   antigo card entra a foto da Vitória sem moldura nenhuma, sangrando até a
+   borda da tela, e o nome e as credenciais ficam escritos sobre o pé dela.
+   A coluna da foto é limitada a 620px porque o arquivo tem 760px de largura:
+   passar disso é esticar a imagem e perder nitidez. */
+.band-section { position: relative; display: grid; background: var(--bg); padding: 0; }
+.band-media { position: relative; overflow: hidden; }
+.band-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 10%; display: block; }
+/* Véu só no pé da foto: é onde a assinatura entra. O topo fica limpo. */
 .band-media::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(90deg, var(--bg) 6%, rgba(11, 23, 40, .9) 38%, rgba(11, 23, 40, .55) 68%, rgba(11, 23, 40, .18) 100%),
-    linear-gradient(180deg, rgba(11, 23, 40, .75), rgba(11, 23, 40, .12) 30%, rgba(11, 23, 40, .12) 70%, rgba(11, 23, 40, .8));
+    linear-gradient(160deg, rgba(70, 130, 180, .2), transparent 42%),
+    linear-gradient(180deg, transparent 34%, rgba(11, 23, 40, .74) 66%, rgba(11, 23, 40, .96) 100%);
 }
-.band-copy { position: relative; text-align: center; }
-.band-copy > p:not(.eyebrow) {
-  max-width: 660px;
-  margin-inline: auto;
-  color: var(--text);
-}
-.band-copy .section-title { margin-bottom: 1.2rem; }
-/* Assinatura: nome, cargo e credenciais num painel só, pra continuar
-   legível mesmo na parte mais clara da foto. */
+/* A assinatura carrega o próprio fundo: assim ela fica legível em qualquer
+   ponto da foto, sem depender de onde o véu está mais fechado. */
 .band-sign {
-  max-width: 760px;
-  margin: 2.4rem auto 0;
-  padding: 1.6rem 1.8rem;
-  text-align: left;
-  background: rgba(11, 23, 40, .72);
-  border: 1px solid var(--border);
-  border-top: 3px solid transparent;
-  border-image: linear-gradient(90deg, var(--blue-light), var(--orange-light)) 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Acima do véu da foto: o ::after do .band-media pinta depois dos filhos e,
+     sem isto, lavava justamente o texto da assinatura. */
+  z-index: 1;
+  padding: 2.4rem 1.6rem 1.5rem;
+  background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .86) 18%, rgba(11, 23, 40, .96) 100%);
 }
-.band-sign .authority-name-text { align-items: flex-start; margin-bottom: 1.1rem; }
-.band-sign .credential-list { text-align: left; }
+.band-sign .authority-name-text { margin-bottom: .9rem; }
+.band-sign .credential-item { border-top-color: rgba(192, 203, 214, .22); }
 
 @media (min-width: 900px) {
-  .band-section { padding-block: clamp(4rem, 9vh, 6.5rem); min-height: min(720px, 88vh); display: grid; align-items: center; }
-  /* A Vitória está à direita da foto: o texto centraliza no espaço que sobra,
-     pra não passar por cima do rosto dela. */
-  .band-copy { padding-right: min(24vw, 320px); }
-  .band-sign { margin-left: 0; margin-right: 0; }
-  .band-sign { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 1.6rem 2rem; align-items: center; max-width: 900px; }
-  .band-sign .authority-name-text { margin-bottom: 0; }
+  .band-section {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 620px);
+    align-items: stretch;
+  }
+  .band-text {
+    /* Mesma margem esquerda do container do resto da página. */
+    --margem-pagina: max(24px, calc((100vw - var(--container-w)) / 2 + 24px));
+    align-self: center;
+    padding: clamp(3rem, 6vh, 4.5rem) clamp(2rem, 4vw, 3.5rem) clamp(3rem, 6vh, 4.5rem) var(--margem-pagina);
+    /* Trava a medida de leitura em telas largas. */
+    max-width: calc(var(--margem-pagina) + 680px + 3.5rem);
+  }
+  .band-media { min-height: 580px; }
 }
 
 @media (max-width: 899.98px) {
-  /* Celular: a foto cobre a faixa inteira (nessa largura ela não estica). */
-  .band-media img { width: 100%; }
-  .band-media::after {
-    background:
-      linear-gradient(180deg, rgba(11, 23, 40, .9) 0%, rgba(11, 23, 40, .88) 38%, rgba(11, 23, 40, .93) 70%, rgba(11, 23, 40, .98) 100%);
-  }
-  .band-sign { padding: 1.2rem 1.1rem; }
+  .band-section { padding-block: 0 0; row-gap: 1.6rem; }
+  .band-text { padding: 0 24px; }
+  .band-media { min-height: 112vw; }
+  .band-sign { padding: 1.1rem 1.2rem 1.2rem; }
 }
 
 .authority-name-text { display: flex; flex-direction: column; }
