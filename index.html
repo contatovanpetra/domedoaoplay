@@ -156,13 +156,33 @@
   <section class="hero" aria-labelledby="hero-title">
     <div class="cinema-stage">
       <div class="hero-bg" aria-hidden="true"></div>
+      <!-- Cena do herói em camadas: o mesmo portal da foto, só que separado em
+           fundo, ícones e pessoa, cada um num plano de profundidade diferente.
+           A "câmera" gira devagar e os ícones flutuam — tudo em CSS, sem
+           biblioteca 3D. A cena inteira é escalada pra cobrir a tela (o fator
+           vem do JS, em --hero3d-s) e continua obedecendo o zoom da rolagem. -->
       <div class="hero-photo-bg">
-        <picture>
-          <source media="(min-width: 700px) and (orientation: landscape)" srcset="assets/img/vivi-hero-desktop.webp" type="image/webp">
-          <source media="(min-width: 700px) and (orientation: landscape)" srcset="assets/img/vivi-hero-desktop.png">
-          <source srcset="assets/img/vivi-hero-mobile.webp" type="image/webp">
-          <img src="assets/img/vivi-hero-mobile.png" alt="Vitória Caroline, criadora do curso Do Medo ao Play, atravessando um portal de luz" width="941" height="1672" loading="eager" fetchpriority="high">
-        </picture>
+        <div class="hero3d-zoom">
+          <div class="hero3d-stage" id="hero3d">
+            <div class="hero3d-cam">
+              <img class="hero3d-bg" src="assets/img/hero3d/bg.webp" alt="" width="941" height="1672" loading="eager" fetchpriority="high" decoding="async">
+              <span class="hero3d-glow" aria-hidden="true"></span>
+          <span class="hero3d-ico hero3d-ico-kuai">
+            <img src="assets/img/hero3d/ic_kuai.webp" alt="" width="138" height="164" loading="eager" decoding="async">
+          </span>
+          <span class="hero3d-ico hero3d-ico-tiktok">
+            <img src="assets/img/hero3d/ic_tiktok.webp" alt="" width="138" height="164" loading="eager" decoding="async">
+          </span>
+          <span class="hero3d-ico hero3d-ico-insta">
+            <img src="assets/img/hero3d/ic_insta.webp" alt="" width="138" height="164" loading="eager" decoding="async">
+          </span>
+          <span class="hero3d-ico hero3d-ico-yt">
+            <img src="assets/img/hero3d/ic_yt.webp" alt="" width="138" height="164" loading="eager" decoding="async">
+          </span>
+              <img class="hero3d-person" src="assets/img/hero3d/person.webp" alt="Vitória Caroline, criadora do curso Do Medo ao Play, olhando para os ícones das redes sociais" width="941" height="1672" loading="eager" fetchpriority="high" decoding="async">
+            </div>
+          </div>
+        </div>
       </div>
       <div class="hero-scrim" aria-hidden="true"></div>
       <div class="container hero-inner">

@@ -79,6 +79,22 @@ const clamp = (v) => Math.min(1, Math.max(0, v));
 // o texto de venda sai e entra a frase da travessia) e a barra de progresso.
 // As medidas da página são lidas só quando algo muda de tamanho, nunca a cada
 // quadro da rolagem: ler medidas logo depois de mexer em estilo trava o celular.
+// A cena do herói foi montada num palco de 941x1672. Aqui ela é escalada pra
+// cobrir a tela inteira (o mesmo que object-fit: cover faz numa imagem), o que
+// o CSS sozinho não consegue: precisa comparar largura e altura.
+function ajustaCena3D() {
+  const palco = document.getElementById("hero3d");
+  if (!palco) return;
+  const caixa = palco.parentElement.getBoundingClientRect();
+  if (!caixa.width || !caixa.height) return;
+  // Tela mais larga que a proporção da cena (9:16): cobrir daria um close no
+  // rosto, então a cena aparece inteira encostada na direita. Em tela estreita
+  // ela cobre a tela como a foto fazia.
+  const deitada = caixa.width / caixa.height > 941 / 1672;
+  palco.classList.toggle("is-lado", deitada);
+  const escala = deitada ? caixa.height / 1672 : Math.max(caixa.width / 941, caixa.height / 1672);
+  palco.style.setProperty("--hero3d-s", escala.toFixed(4));
+}
 function wireScrollEffects() {
   const root = document.documentElement;
   const header = document.querySelector(".site-header");
@@ -102,6 +118,7 @@ function wireScrollEffects() {
   let ticking = false;
 
   function measure() {
+    ajustaCena3D();
     if (header) {
       // Altura real do menu (muda com a logo, a fonte e o zoom de telas grandes).
       root.style.setProperty("--header-h", header.getBoundingClientRect().height + "px");

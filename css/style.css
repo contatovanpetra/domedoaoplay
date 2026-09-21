@@ -602,13 +602,110 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   inset: 0;
   z-index: 0;
 }
-.hero-photo-bg img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* A cena 3D ocupa o lugar que era da foto chapada. O zoom da rolagem fica
+   nesta camada (era no <img>), e a cena em si só cuida da profundidade. */
+.hero3d-zoom {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   transform: scale(var(--portal-scale, 1)) translateY(var(--portal-y, 0px));
   transform-origin: var(--portal-origin, 50% 50%);
+}
+/* Palco de tamanho fixo (o tamanho em que a cena foi montada), centralizado e
+   escalado pra cobrir a tela — o fator vem do JS porque o CSS não consegue
+   comparar largura e altura pra fazer "cover". */
+.hero3d-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 941px;
+  height: 1672px;
+  margin: -836px 0 0 -470.5px;
+  transform: scale(var(--hero3d-s, 1));
+  transform-origin: 50% 50%;
+  perspective: 1600px;
+  perspective-origin: 50% 50%;
+  background: #020617;
+}
+/* Em tela deitada a cena não dá zoom pra cobrir tudo (viraria um close no
+   rosto): ela aparece inteira, encostada na borda direita, e o texto ocupa o
+   lado esquerdo — mesma leitura da foto anterior. */
+.hero3d-stage.is-lado {
+  left: auto;
+  right: 0;
+  margin-left: 0;
+  transform-origin: 100% 50%;
+}
+.hero3d-cam {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 470px 900px;
+  animation: hero3d-cam 12s ease-in-out infinite;
+}
+.hero3d-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 941px;
+  height: 1672px;
+  transform: translateZ(-300px) scale(1.1875);
+}
+/* Luz que pulsa dentro do arco, atrás da pessoa. */
+.hero3d-glow {
+  position: absolute;
+  left: 300px;
+  top: 560px;
+  width: 560px;
+  height: 700px;
+  border-radius: 280px 280px 0 0;
+  background: radial-gradient(ellipse at 50% 85%, rgba(255, 190, 90, .55), rgba(255, 190, 90, 0) 65%);
+  transform: translateZ(-140px) scale(1.09);
+  animation: hero3d-glow 5s ease-in-out infinite;
+}
+.hero3d-ico { position: absolute; display: block; }
+.hero3d-ico img { display: block; width: 100%; height: 100%; }
+.hero3d-ico-kuai { left: 46px; top: 654px; width: 138px; height: 148px; transform-origin: 424px 182px; transform: translateZ(140px) scale(.9125); }
+.hero3d-ico-kuai img { animation: hero3d-fl1 5.5s ease-in-out infinite; }
+.hero3d-ico-tiktok { left: 172px; top: 604px; width: 138px; height: 164px; transform-origin: 298px 232px; transform: translateZ(200px) scale(.875); }
+.hero3d-ico-tiktok img { animation: hero3d-fl2 6.5s ease-in-out infinite; }
+.hero3d-ico-insta { left: 108px; top: 786px; width: 126px; height: 136px; transform-origin: 362px 50px; transform: translateZ(100px) scale(.9375); }
+.hero3d-ico-insta img { animation: hero3d-fl3 6s ease-in-out infinite; }
+.hero3d-ico-yt { left: 217px; top: 756px; width: 129px; height: 148px; transform-origin: 253px 80px; transform: translateZ(170px) scale(.89375); }
+.hero3d-ico-yt img { animation: hero3d-fl1 7s ease-in-out infinite reverse; }
+.hero3d-person {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 941px;
+  height: 1672px;
+  transform: translateZ(0);
+}
+
+@keyframes hero3d-cam {
+  0% { transform: rotateY(-4deg) rotateX(1.5deg); }
+  50% { transform: rotateY(4deg) rotateX(-1.5deg); }
+  100% { transform: rotateY(-4deg) rotateX(1.5deg); }
+}
+@keyframes hero3d-fl1 {
+  0%, 100% { transform: translateY(0) rotateZ(-3deg); }
+  50% { transform: translateY(-16px) rotateZ(3deg); }
+}
+@keyframes hero3d-fl2 {
+  0%, 100% { transform: translateY(-10px) rotateZ(3deg); }
+  50% { transform: translateY(12px) rotateZ(-3deg); }
+}
+@keyframes hero3d-fl3 {
+  0%, 100% { transform: translateY(6px) rotateZ(2deg); }
+  50% { transform: translateY(-14px) rotateZ(-4deg); }
+}
+@keyframes hero3d-glow {
+  0%, 100% { opacity: .55; }
+  50% { opacity: .9; }
+}
+/* Quem pede menos movimento vê a mesma cena parada. */
+@media (prefers-reduced-motion: reduce) {
+  .hero3d-cam, .hero3d-ico img, .hero3d-glow { animation: none; }
 }
 .hero-scrim {
   display: block;
@@ -695,8 +792,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .band-credentials {
   bottom: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .5rem 1.1rem;
+  /* Uma coluna só, encostada na esquerda da foto: lista vertical lê mais
+     rápido que duas colunas curtas e não briga com o rosto. */
+  grid-template-columns: 1fr;
+  gap: .65rem;
+  max-width: 30rem;
   padding: 2.6rem 1.6rem 1.4rem;
   background: linear-gradient(0deg, rgba(11, 23, 40, .8) 0%, rgba(11, 23, 40, .5) 55%, rgba(11, 23, 40, 0) 100%);
 }
@@ -704,7 +804,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    credencial da outra passa a ser o espaço. */
 /* Credenciais são prova: no computador elas ganham corpo de texto de leitura,
    não de legenda. No celular sobem só um pouco, senão não cabem em duas colunas. */
-.band-credentials .credential-item { padding: .5rem 0; align-items: flex-start; font-size: 1.3rem; line-height: 1.35; gap: 1rem; }
+.band-credentials .credential-item { padding: .35rem 0; align-items: center; font-size: 1.4rem; line-height: 1.3; gap: 1rem; }
 .band-credentials .credential-icon { width: 2.7rem; height: 2.7rem; }
 .band-credentials .credential-item + .credential-item { border-top: 0; }
 .band-credentials .credential-icon { margin-top: .05rem; }
@@ -748,7 +848,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .band-credentials { padding: 2.2rem 1.2rem 1.2rem; }
   /* Duas colunas numa tela estreita: o texto e o ícone encolhem pra caber
      sem quebrar cada credencial em cinco linhas. */
-  .band-credentials .credential-item { font-size: .92rem; line-height: 1.3; gap: .55rem; }
+  .band-credentials .credential-item { font-size: 1rem; line-height: 1.3; gap: .6rem; }
   .band-credentials .credential-icon { width: 1.75rem; height: 1.75rem; }
 }
 
@@ -899,9 +999,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   mask: var(--ico) center / contain no-repeat;
 }
 .statement-antes { --ico: var(--ico-x); }
-.statement-antes .statement-col-icon { background: var(--silver); }
+.statement-antes .statement-col-icon { background: var(--white); }
 .statement-depois { --ico: var(--ico-play); }
-.statement-depois .statement-col-icon { background: var(--orange-light); }
+.statement-depois .statement-col-icon { background: var(--white); }
 .statement-col h3 {
   font-family: var(--font-head);
   font-weight: 700;
@@ -911,8 +1011,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Nome das colunas em branco nos dois lados: quem carrega a cor agora é a
    pergunta. */
 .statement-col h3 { color: var(--white); }
-.statement-antes .statement-q { color: var(--silver); }
-.statement-depois .statement-q { color: var(--white); }
+/* Os dois lados na mesma cor: quem diferencia é o ícone (x e play) e o nome
+   da coluna, não a cor do texto. */
 .statement-col ul { display: grid; gap: clamp(1.6rem, 4vw, 2.2rem); }
 /* Mesmo jogo de tamanhos da seção de bateria do Watch: a situação vem grande
    (é o "50 horas" deles) e a consequência vem pequena, logo embaixo. */
