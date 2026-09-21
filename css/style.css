@@ -827,20 +827,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    plana igual à de .accordion-item, sem sombra própria — a diferenciação
    entre "antes" e "depois" vem só do conteúdo (ícone, borda superior,
    marcador de lista), não da caixa. */
-.compare-col {
-  background: rgba(255, 255, 255, .02);
-  border-radius: 0;
-  padding: 2.2rem 2rem;
+/* A coluna não é mais uma caixa: quem tem moldura é a foto, e o texto fica
+   solto embaixo dela (referência: cards de recurso da Apple, onde a imagem é
+   o card e a legenda vive fora). */
+.compare-col { background: none; border: 0; padding: 0; }
+.compare-shot {
+  margin: 0 0 1.5rem;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
   border: 1px solid var(--border);
   border-top-width: 3px;
+  background: rgba(255, 255, 255, .02);
 }
+.compare-shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* A coluna inteira herda a cor do próprio ícone do título como acento de
    borda (mesma técnica de friso da faixa de autoridade, mas 1 cor sólida por
    coluna em vez do gradiente duplo) — reforça em 3 pontos por coluna
    (ícone, borda superior, marcador de lista) a mesma dupla semântica
    cinza-prata / laranja que já existe no resto do site. */
-.compare-antes { border-top-color: var(--silver); }
-.compare-depois { border-top-color: var(--orange); }
+.compare-antes .compare-shot { border-top-color: var(--silver); }
+.compare-depois .compare-shot { border-top-color: var(--orange); }
 /* Antes era um gradiente colorido de ponta a ponta com borda saturada nos
    dois cards: bonito à primeira vista, mas é o mesmo exagero de template
    genérico que passa longe do "caro". Fundo e borda neutros, iguais nos
@@ -1960,12 +1966,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    sem subir nem crescer, passa despercebido.
    ========================================================= */
 @media (hover: hover) and (pointer: fine) {
-  .compare-col, .qualify-card, .bonus-card, .offer-card, .ladder-step, .accordion-item {
+  .compare-shot, .qualify-card, .bonus-card, .offer-card, .ladder-step, .accordion-item {
     transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .4s cubic-bezier(.16, .84, .3, 1.06), box-shadow .4s ease, border-color .4s ease, background-color .4s ease;
   }
   /* :is(...):hover empata em especificidade com o estado final do reveal
      (.compare-col.reveal.is-visible) e ganha por vir depois no arquivo. */
-  :is(.compare-col, .qualify-card, .bonus-card, .offer-card, .ladder-step):hover {
+  :is(.compare-shot, .qualify-card, .bonus-card, .offer-card, .ladder-step):hover {
     transform: translateY(-14px) scale(1.02);
     box-shadow: 0 16px 34px -10px rgba(0, 0, 0, .6), 0 44px 80px -28px rgba(0, 0, 0, .8);
     /* A superfície clareia um tanto: card que vem pra frente pega mais luz. */
