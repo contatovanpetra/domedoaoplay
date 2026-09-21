@@ -1942,19 +1942,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 /* =========================================================
    Cards que flutuam no mouse
-   Referência: cards da Apple Store — o card sobe alguns pixels, a sombra
-   abre embaixo e a borda acende. Nada gira nem cresce: o que dá a sensação
-   de flutuar é a sombra separando o card do fundo, não o tamanho.
+   O card sobe 14px, cresce 2% e a sombra abre embaixo dele: a combinação
+   dos três é o que dá a sensação de ele descolar da página. Só sombra,
+   sem subir nem crescer, passa despercebido.
    ========================================================= */
 @media (hover: hover) and (pointer: fine) {
   .compare-col, .qualify-card, .bonus-card, .offer-card, .authority-card, .ladder-step, .accordion-item {
-    transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .45s cubic-bezier(.2, .7, .2, 1), box-shadow .45s ease, border-color .45s ease;
+    transition: opacity .5s cubic-bezier(.22, .68, .3, 1), transform .4s cubic-bezier(.16, .84, .3, 1.06), box-shadow .4s ease, border-color .4s ease, background-color .4s ease;
   }
   /* :is(...):hover empata em especificidade com o estado final do reveal
      (.compare-col.reveal.is-visible) e ganha por vir depois no arquivo. */
   :is(.compare-col, .qualify-card, .bonus-card, .offer-card, .authority-card, .ladder-step):hover {
-    transform: translateY(-7px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-14px) scale(1.02);
+    box-shadow: 0 16px 34px -10px rgba(0, 0, 0, .6), 0 44px 80px -28px rgba(0, 0, 0, .8);
+    /* A superfície clareia um tanto: card que vem pra frente pega mais luz. */
+    background-color: rgba(255, 255, 255, .045);
     /* Só as três bordas neutras acendem: o traço colorido de cima é o que
        separa "É pra você" de "Não é", e não pode sumir no hover. */
     border-bottom-color: rgba(144, 190, 217, .34);
@@ -1963,7 +1965,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   }
   /* Módulos e perguntas: a linha da trilha liga um item no outro, então o
      movimento aqui é menor, senão a trilha parece quebrar. */
-  .accordion-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .accordion-item:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .65); }
   .accordion-item.open:hover { transform: none; }
 }
 
