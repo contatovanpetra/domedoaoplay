@@ -403,16 +403,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Hero ---------- */
 /* A foto é o fundo do herói inteiro: a página sobe normalmente e a foto cresce
    devagar conforme você desce. Sem biblioteca: só variáveis CSS que o JS move. */
-/* O herói vira uma pista de duas telas (--hero-altura, em pé: ver
-   ajustaCena3D em main.js): a cena (foto + ícones) fica presa numa tela só
-   (.cinema-stage sticky), parada, enquanto a animação dela (câmera, ícones,
-   brilho — tudo via --cena-p) continua acompanhando a rolagem pelas duas
-   telas. Sem zoom na foto (--portal-scale fica sempre em 1: ver update() em
-   main.js) — só a cena em volta se mexe, a foto em si não cresce mais. */
+/* O herói vira uma pista de duas telas: a foto (.cinema-stage, sticky) fica
+   presa numa tela só, parada, e continua lá embaixo, atrás da segunda tela —
+   que é onde a seção seguinte ("Você sente...") sobe por cima dela com
+   margem negativa (ver #reconhecimento). O texto/CTA do herói (.hero-primeira-tela)
+   fica só na primeira tela e rola embora normalmente na segunda. A animação
+   da cena (câmera, ícones, brilho — via --cena-p) acompanha a rolagem pelas
+   duas telas inteiras; a foto em si não faz mais zoom (--portal-scale fica
+   sempre 1: ver update() em main.js). */
 .hero {
   position: relative;
   padding: 0;
-  height: var(--hero-altura, auto);
+  min-height: 200vh;
+  min-height: 200svh;
 }
 .cinema-stage {
   position: sticky;
@@ -422,8 +425,30 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   height: 100svh;
   overflow: hidden;
   isolation: isolate;
+}
+/* Texto, CTA e seta: presos só na primeira tela (a foto atrás continua até
+   o fim das duas). */
+.hero-primeira-tela {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100svh;
+  z-index: 2;
+  isolation: isolate;
   display: flex;
   align-items: center;
+}
+/* "Você sente que não sabe falar pra câmera?" sobe e cobre a segunda tela
+   do herói: a foto da Vitória (ainda presa lá atrás) continua sendo o fundo
+   desta seção também, sem seção nem foto nova. Sem fundo próprio (herda o
+   .page-bg fixo por trás), então a foto aparece por baixo do texto normal. */
+#reconhecimento {
+  position: relative;
+  z-index: 1;
+  margin-top: -100vh;
+  margin-top: -100svh;
 }
 /* A foto dissolve no fundo da página: o pé dela fica transparente e deixa ver
    o mesmo fundo fixo (.page-bg) que continua na seção seguinte, então não sobra
@@ -1752,7 +1777,7 @@ html.abertura-on { overflow: hidden; }
 .hero-cta-foto .hero-numeros,
 .hero-cta-foto .hero-microcopy { text-shadow: 0 1px 3px rgba(3, 10, 29, .7); }
 /* A seta de "role" fica no pé da primeira tela, não no fim da foto. */
-.cinema-stage .scroll-cue { top: calc(100vh - 64px); top: calc(100svh - 64px); bottom: auto; }
+.hero-primeira-tela .scroll-cue { top: calc(100vh - 64px); top: calc(100svh - 64px); bottom: auto; }
 
 /* ---------- Indicador de rolagem (hero) ---------- */
 .scroll-cue {
@@ -1835,7 +1860,7 @@ html.abertura-on { overflow: hidden; }
   .header-inner { padding-top: 10px; padding-bottom: 10px; gap: .75rem; }
   .logo-mark { height: 34px; }
   :root { --header-h: 65px; --portal-origin: 52% 58%; }
-  .cinema-stage {
+  .hero-primeira-tela {
     padding: calc(var(--header-h, 65px) + 28px) 0 40px;
     flex-direction: column;
     justify-content: flex-start;
@@ -1859,8 +1884,8 @@ html.abertura-on { overflow: hidden; }
    horizontal preenche o herói e o texto fica sobreposto à esquerda. */
 @media (min-width: 700px) and (orientation: landscape) {
   :root { --header-h: 85px; --portal-origin: 78% 44%; }
-  /* Deitada: a foto horizontal passa de uma tela; o texto fica na primeira. */
-  .cinema-stage { height: 150vh; height: 150svh; align-items: flex-start; padding: calc(var(--header-h, 85px) + 12vh) 0 60px; }
+  /* Deitada: o texto fica alinhado ao alto da primeira tela. */
+  .hero-primeira-tela { align-items: flex-start; padding: calc(var(--header-h, 85px) + 12vh) 0 60px; }
   .hero .container.hero-inner { width: 100%; }
   /* A foto horizontal é o fundo do herói inteiro. O lado esquerdo dela já é
      escuro: o degradê só reforça a leitura, sem virar faixa. */
@@ -1877,8 +1902,6 @@ html.abertura-on { overflow: hidden; }
    texto fica mais estreito pra não encostar nos ícones. */
 @media (min-width: 700px) and (orientation: landscape) and (max-aspect-ratio: 14/10) {
   .hero-copy { max-width: min(620px, 44vw); }
-  /* Quase quadrada: com o herói alto demais a foto cortava o rosto na direita. */
-  .cinema-stage { height: 110vh; height: 110svh; }
 }
 
 /* Tablet em pé (e janela mais alta que larga): a foto horizontal cortava o rosto
@@ -1887,7 +1910,7 @@ html.abertura-on { overflow: hidden; }
    ícones começam logo abaixo do texto. */
 @media (min-width: 700px) and (orientation: portrait) {
   :root { --header-h: 85px; --portal-origin: 64% 64%; }
-  .cinema-stage {
+  .hero-primeira-tela {
     padding: calc(var(--header-h, 85px) + 52px) 0 40px;
     flex-direction: column;
     justify-content: flex-start;
@@ -1904,7 +1927,7 @@ html.abertura-on { overflow: hidden; }
 /* Em pé mas quase quadrada (janela lado a lado no monitor): pouca altura pra texto,
    ícones e rosto. O texto fica mais compacto pra o queixo não cair no degradê. */
 @media (min-width: 700px) and (orientation: portrait) and (min-aspect-ratio: 17/20) {
-  .cinema-stage { padding-top: calc(var(--header-h, 85px) + 28px); }
+  .hero-primeira-tela { padding-top: calc(var(--header-h, 85px) + 28px); }
   .hero-lead { margin-bottom: .6em; }
   .hero-actions { margin-top: 1rem; }
   .hero-microcopy { margin-top: .4rem; }
@@ -1961,22 +1984,31 @@ html.abertura-on { overflow: hidden; }
 
 /* Tela baixa (celular deitado, janela muito baixa): o texto do herói não cabia
    num palco da altura da tela e ficava cortado atrás do menu. Aqui o herói vira
-   uma seção normal, do tamanho do conteúdo, sem a pista de rolagem. */
+   uma seção normal, do tamanho do conteúdo, sem a pista de rolagem nem a foto
+   presa — e a seção seguinte não sobe mais por cima dela. */
 @media (max-height: 480px) {
+  .hero { min-height: auto; }
   .cinema-stage {
     position: relative;
     top: 0;
     height: auto;
     /* Espaço pro botão, que fica no pé da foto, abaixo do texto. */
     min-height: calc(100vh + 140px);
+  }
+  .hero-primeira-tela {
+    position: relative;
+    top: auto;
+    height: auto;
     /* Aqui o palco não gruda embaixo do menu: o respiro de cima é que tira o
        texto de trás dele. */
     padding-top: calc(var(--header-h, 71px) + 6px);
     padding-bottom: 36px;
+    margin-top: calc(-100vh - 140px);
   }
   .hero-headline { font-size: 2rem; }
   .hero-lead-list { margin-top: .5rem; font-size: .88rem; line-height: 1.4; }
   .hero-actions { margin-top: .6rem; }
+  #reconhecimento { margin-top: 0; }
 }
 /* Celular deitado: o título comprido encostava nos ícones das redes. */
 @media (max-height: 480px) and (min-width: 700px) {

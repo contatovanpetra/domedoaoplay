@@ -126,7 +126,6 @@ function ajustaCena3D() {
     // ela desce até os ícones ficarem logo abaixo do botão; o alto da tela
     // continua o céu escuro da própria foto (degradê no CSS).
     const cinema = palco.closest(".cinema-stage");
-    const heroSection = palco.closest(".hero");
     const fimTexto = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-text-bottom")) : NaN;
     const topo = tela / 2 - 836 * escala;
     let desce = 0;
@@ -136,16 +135,6 @@ function ajustaCena3D() {
     const cenaY = topo + desce;
     caixa.style.setProperty("--cena-y", cenaY.toFixed(1) + "px");
     caixa.style.setProperty("--cena-emenda", cenaY.toFixed(1) + "px");
-    if (heroSection) {
-      if (deitada) {
-        heroSection.style.removeProperty("--hero-altura");
-      } else {
-        // Pista de duas telas: a cena (.cinema-stage) fica presa numa tela só
-        // (CSS) enquanto a pessoa rola pelas duas, sem a foto se mexer — só a
-        // animação (câmera, ícones, brilho) acompanha a rolagem.
-        heroSection.style.setProperty("--hero-altura", (tela * 2) + "px");
-      }
-    }
   });
 }
 function wireScrollEffects() {
