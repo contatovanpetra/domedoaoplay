@@ -388,6 +388,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      corte" descrito acima). */
   background: linear-gradient(180deg, transparent 0%, #0E1D31 12%, #0E1D31 88%, transparent 100%);
 }
+/* Módulos + benefícios: tratados como uma faixa azul clara só, contínua —
+   o degradê de entrada fica só no topo de #modulos e o de saída só no pé
+   de #beneficios; entre as duas seções a cor fica sólida, sem apagar e
+   reacender no meio (o que pareceria uma emenda/costura ali). Azul claro
+   da marca (--blue), não o cinza-azulado neutro do resto da página. */
+#modulos.section-tone::before {
+  background: linear-gradient(180deg, transparent 0%, rgba(70, 130, 180, .16) 12%, rgba(70, 130, 180, .16) 100%);
+}
+#beneficios.section-tone::before {
+  background: linear-gradient(180deg, rgba(70, 130, 180, .16) 0%, rgba(70, 130, 180, .16) 88%, transparent 100%);
+}
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
    no meio (.20 em vez de .16) — sem nenhum card, é a pausa antes do CTA
    final ganhando uma leve elevação tonal sólida em vez de textura repetida. */
@@ -1280,16 +1291,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   right: calc(var(--beneficios-gap) * -.5);
   transform: translate(50%, -50%);
   z-index: 2;
-  width: 24px;
-  height: 24px;
+  /* Grande o bastante pra pisar nos dois cards (não só ficar solta no vão
+     estreito entre eles): é o que faz ela ler como uma conexão de verdade
+     entre um card e o outro, não um enfeite qualquer no meio do caminho. */
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--orange-light), var(--orange-button));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13M13 6l6 6-6 6'/%3E%3C/svg%3E") center / 60% no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13M13 6l6 6-6 6'/%3E%3C/svg%3E") center / 60% no-repeat;
+  /* Bolinha cheia de verdade (não um mask que só deixa a setinha, some a
+     bolinha): o degradê preenche o círculo inteiro, e a seta branca entra
+     por cima como uma segunda camada de fundo. */
+  background-color: var(--orange-button);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13M13 6l6 6-6 6'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, var(--orange-light), var(--orange-button));
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% 100%, 55%;
+  background-position: center, center;
+  box-shadow: 0 0 0 2px rgba(11, 23, 40, .9), 0 2px 10px rgba(0, 0, 0, .4);
 }
 @media (max-width: 699.98px) {
-  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { width: 20px; height: 20px; }
+  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { width: 32px; height: 32px; }
 }
 /* Fundo azul claro (tom leve, o mesmo do resto da página), sem traço
    laranja e sem ícone: só o card tingido, o título e a linha de apoio. */
