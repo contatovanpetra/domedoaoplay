@@ -78,8 +78,8 @@ function wireReviewMode() {
 
 const clamp = (v) => Math.min(1, Math.max(0, v));
 
-// Tudo que depende da rolagem num lugar só: o herói "cinema" (o texto fica parado
-// e a cena se aproxima e se move conforme a pessoa desce) e a barra de progresso.
+// Tudo que depende da rolagem num lugar só: o herói (a página sobe e a foto vai
+// ficando pra trás, crescendo) e a barra de progresso.
 // As medidas da página são lidas só quando algo muda de tamanho, nunca a cada
 // quadro da rolagem: ler medidas logo depois de mexer em estilo trava o celular.
 // A cena do herói foi montada num palco de 941x1672. Aqui ela é escalada pra
@@ -137,13 +137,8 @@ function wireScrollEffects() {
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
 
-  // Mapeia um trecho da rolagem (de "from" até "to") para 0 a 1.
-  const range = (p, from, to) => clamp((p - from) / (to - from));
-  const CINEMA_PROPS = ["--portal-scale", "--portal-y"];
-
   let heroTop = 0;
-  let heroBottom = 0;
-  let track = 0;
+  let heroAltura = 0;
   let maxScroll = 0;
   let ticking = false;
 
@@ -153,16 +148,15 @@ function wireScrollEffects() {
       root.style.setProperty("--header-h", header.getBoundingClientRect().height + "px");
     }
     if (stage && inner && copy) {
-      // Em tela em pé (celular e tablet) a cena começa no fim do texto (ver CSS).
+      // O fim do texto decide quanto a cena desce em tela em pé (ajustaCena3D).
       // offsetTop/offsetHeight ignoram o translateY da animação.
       stage.style.setProperty("--hero-text-bottom", inner.offsetTop + copy.offsetTop + copy.offsetHeight + "px");
     }
     // Depois do fim do texto: a caixa da cena depende dele.
     ajustaCena3D();
-    if (hero && stage) {
+    if (hero) {
       heroTop = hero.getBoundingClientRect().top + window.scrollY;
-      heroBottom = heroTop + hero.offsetHeight;
-      track = hero.offsetHeight - stage.offsetHeight;
+      heroAltura = hero.offsetHeight;
     }
     maxScroll = root.scrollHeight - window.innerHeight;
     update();
@@ -175,35 +169,21 @@ function wireScrollEffects() {
     // A trilha de leitura fica parada enquanto a abertura toca.
     const introActive = root.classList.contains("abertura-on");
     if (bar) bar.style.setProperty("--read", introActive || maxScroll <= 0 ? "0" : clamp(y / maxScroll).toFixed(4));
-    if (!cinema) return;
-
-    if (track <= 0) {
-      // Sem pista de rolagem (tela baixa, celular deitado): volta ao estado inicial.
-      // Senão, quem gira o celular no meio da animação fica com o texto apagado.
-      CINEMA_PROPS.forEach((prop) => stage.style.removeProperty(prop));
-      if (cena3d) cena3d.style.removeProperty("--cena-p");
-      stage.classList.remove("is-live");
-      return;
-    }
+    if (!cinema || !heroAltura) return;
 
     // Camadas de GPU da animação só existem enquanto o herói está na tela. Mantidas
     // o tempo todo, deixavam o menu sumir e mostravam um pedaço da foto repetido.
-    const onScreen = y < heroBottom && y + window.innerHeight > heroTop;
+    const onScreen = y < heroTop + heroAltura && y + window.innerHeight > heroTop;
     stage.classList.toggle("is-live", onScreen);
     if (!onScreen) return;
 
-    const p = clamp((y - heroTop) / track);
-    // A cena 3D anda junto com a rolagem (ver --cena-p no CSS). O texto não
-    // muda: a seção fica parada e só a foto se move.
+    // Nada fica preso: a página sobe normalmente e, enquanto isso, a foto sobe
+    // mais devagar (fica pra trás), cresce e os ícones se mexem. É isso que dá a
+    // sensação de ir entrando na imagem enquanto rola.
+    const p = clamp((y - heroTop) / heroAltura);
     if (cena3d) cena3d.style.setProperty("--cena-p", p.toFixed(3));
-    const approach = range(p, 0, 0.85);
-
-    // Zoom fundo o bastante pros arcos saírem do quadro: é isso que dá a sensação
-    // de atravessar o túnel. Sem rotação, que fazia o arco parecer um quadrado girando.
-    // Zoom leve (até 1,2x): o movimento agora vem da própria cena (ícones subindo,
-    // pessoa à frente); zoom maior empurrava os ícones pra fora da tela no celular.
-    stage.style.setProperty("--portal-scale", (1 + approach * 0.2).toFixed(3));
-    stage.style.setProperty("--portal-y", (approach * -22).toFixed(1) + "px");
+    stage.style.setProperty("--portal-scale", (1 + p * 0.3).toFixed(3));
+    stage.style.setProperty("--hero-parallax", (p * heroAltura * 0.45).toFixed(1) + "px");
   }
 
   // A animação da cena (câmera balançando, ícones flutuando, brilho pulsando)
