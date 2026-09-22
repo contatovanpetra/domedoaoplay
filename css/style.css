@@ -1334,8 +1334,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   padding-bottom: clamp(24px, 5vh, 56px);
 }
 .depo-palco {
-  --depo-h: min(58vh, calc(100vh - 19.5rem), 620px);
-  --depo-h: min(58svh, calc(100svh - 19.5rem), 620px);
+  --depo-h: min(62vh, calc(100vh - 18rem), 660px);
+  --depo-h: min(62svh, calc(100svh - 18rem), 660px);
   /* No celular estreito o do meio não passa de 62% da largura: sobra lugar pros dois dos lados aparecerem. */
   --depo-w: min(calc(var(--depo-h) * 9 / 16), 72vw);
   position: relative;
@@ -1347,32 +1347,33 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   -webkit-user-select: none;
 }
 .depo-palco.is-arrastando { cursor: grabbing; }
-/* Setas dos dois lados: mesmo desenho discreto do resto da página, tamanho de
-   toque de 44px e sempre por cima dos vídeos dos lados. */
+/* Setas dos dois lados: em laranja sólido (a mesma cor dos botões de ação da
+   página), pra nunca serem confundidas com o play (círculo claro, discreto,
+   "dentro" do vídeo). Uma é controle de navegação, a outra é conteúdo — as
+   duas precisam ler como coisas diferentes à primeira vista, não só na cor:
+   o play fica sempre no meio do vídeo ativo, as setas ficam fora dele. */
 .depo-seta {
   position: absolute;
   top: calc(var(--depo-w) * 8 / 9);
   z-index: 12;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   transform: translateY(-50%);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 50%;
-  background: rgba(11, 23, 40, .72);
+  background: var(--orange-button);
   color: var(--white);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
   cursor: pointer;
   transition: background .3s ease, transform .3s cubic-bezier(.25, .1, .25, 1);
 }
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .depo-seta { background: rgba(11, 23, 40, .45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-}
-.depo-seta svg { width: 22px; height: 22px; }
+.depo-seta svg { width: 18px; height: 18px; }
 .depo-seta--antes { left: clamp(2px, 2vw, 18px); }
 .depo-seta--depois { right: clamp(2px, 2vw, 18px); }
-.depo-seta:hover { background: rgba(11, 23, 40, .9); transform: translateY(-50%) scale(1.06); }
+.depo-seta:hover { background: var(--orange); transform: translateY(-50%) scale(1.06); }
 .depo-seta:active { transform: translateY(-50%) scale(.96); }
 @media (prefers-reduced-motion: reduce) {
   .depo-seta:hover, .depo-seta:active { transform: translateY(-50%); }
@@ -1406,7 +1407,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   border-radius: 50%;
   border: 1px solid rgba(245, 245, 245, .5);
   color: var(--white);
+  transition: opacity .3s ease;
 }
+/* Discreto nos vídeos dos lados: só o do meio precisa convidar ao play. Menos
+   um botão claro competindo com as setas de navegação (laranja) na mesma
+   altura da tela. */
+.depo-card:not(.is-ativo) .depo-play { opacity: .4; }
 .depo-play svg { width: 42%; height: 42%; margin-left: 3px; }
 .depo-vazio {
   position: absolute;
