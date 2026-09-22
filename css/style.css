@@ -1307,6 +1307,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .bonus-icone { width: 34%; max-width: 7rem; color: var(--orange-light); opacity: .9; }
 .bonus-icone svg { display: block; width: 100%; height: auto; }
+/* Assim que existe a foto de verdade (mockup do aparelho, já com o próprio
+   brilho e fundo transparente): sem caixa nem fundo — a imagem flutua livre
+   na seção, do jeito que já vem pronta, em vez de ficar presa num quadrado. */
+.bonus-item-foto:has(.bonus-imagem) {
+  aspect-ratio: auto;
+  overflow: visible;
+  background: none;
+  border: none;
+}
+.bonus-imagem { display: block; width: 100%; height: auto; max-width: 420px; }
 .bonus-item-texto h3 { margin: 0 0 .7rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
 .bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.6; color: var(--cor-corpo); }
 .bonus-item-texto p + p { margin-top: .8em; }
