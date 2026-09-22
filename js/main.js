@@ -447,10 +447,13 @@ function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
+  // .etapa fica de fora: o efeito de grudar e soltar (position: sticky) já é
+  // a entrada dela. Empilhar um fade por cima, com scroll rápido, deixava a
+  // foto parada num meio-termo quase transparente até a rolagem parar.
   const targets = [...document.querySelectorAll(
-    ".section .container > *, .nivel-card, .accordion-item"
+    ".section .container > *, .accordion-item"
   )].filter((el) => !el.matches(
-    ".accordion, .niveis-trilho"
+    ".accordion, .etapas"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 

@@ -262,7 +262,7 @@ html { scroll-padding-top: var(--header-h, 85px); }
    O navegador equilibra as linhas (sem mudar o texto). O título do herói e a
    frase final ficam de fora: a quebra deles é de propósito ("cresce." e
    "Apareça." sozinhos na linha de baixo). */
-.section-title, .statement-title, .nivel-card h3, .beneficio h3, .bonus-item h3, .accordion-trigger > span:first-child, .vivi-cargo { text-wrap: balance; }
+.section-title, .statement-title, .etapa-legenda h3, .beneficio h3, .bonus-item h3, .accordion-trigger > span:first-child, .vivi-cargo { text-wrap: balance; }
 
 /* ---------- Eyebrow / Section titles ---------- */
 /* Indicador "gravando", não pílula genérica: liga direto com o tema do curso (câmera). */
@@ -829,6 +829,35 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 .texto-corrido .texto-destaque { padding-left: 1.1rem; border-left: 2px solid var(--orange); color: var(--text); }
 
+/* Cards do "você se reconhece": cada sinal batendo o olho, em vez de um
+   parágrafo corrido — mesmo tratamento discreto do .beneficio (transparente,
+   só o fio fino, sem ícone). */
+.reconhecimento-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(.8rem, 2vw, 1.2rem);
+  max-width: 1040px;
+  margin: clamp(1.8rem, 4vw, 2.6rem) auto 0;
+}
+.reconhecimento-card {
+  padding: clamp(1.2rem, 2vw, 1.5rem);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.reconhecimento-card h3 {
+  margin: 0 0 .5rem;
+  font-size: var(--t-subtitulo);
+  line-height: 1.2;
+  color: var(--white);
+}
+.reconhecimento-card p { margin: 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--cor-corpo); }
+@media (max-width: 899.98px) {
+  .reconhecimento-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .reconhecimento-cards { grid-template-columns: 1fr; }
+}
+
 /* Fecho da escada: a frase grande e o botão, centralizados embaixo do carrossel. */
 .metodo-fecho {
   display: flex;
@@ -853,76 +882,85 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 /* ---------- Os 7 níveis da escada ----------
-   Um embaixo do outro, entrando conforme a pessoa rola a página pra baixo.
-   Cada nível fica um degrau mais pra direita, como uma escada, com a foto do
-   nível de um lado e o texto do outro. A cor do acento esquenta do azul
-   (nível 1, só você) ao laranja (nível 7, público). */
+   Referência: como a Apple faz seus scrollers de produto (ex.: apple.com/br/
+   apple-fitness-plus) — o cartão de cada nível (foto + legenda) fica preso na
+   tela (sticky) enquanto a pessoa rola por ele, com o rótulo e o título por
+   cima da foto. Rolando mais, o cartão solta e o do próximo nível sobe por
+   cima, tomando o lugar dele — sem nenhum JS de rolagem, só sticky com uma
+   pista de altura extra por nível (.etapa bem mais alto que o cartão, pra
+   sobrar distância de rolagem antes de soltar). A cor do acento esquenta do
+   azul (nível 1, só você) ao laranja (nível 7, público), a mesma lógica de
+   antes. */
 .niveis { margin-top: clamp(2rem, 5vw, 3.2rem); }
-.niveis-trilho {
-  display: grid;
-  gap: clamp(.9rem, 2.4vw, 1.6rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.nivel-card:nth-child(1) { --cor: var(--blue); }
-.nivel-card:nth-child(2) { --cor: color-mix(in srgb, var(--blue), var(--orange) 18%); }
-.nivel-card:nth-child(3) { --cor: color-mix(in srgb, var(--blue), var(--orange) 36%); }
-.nivel-card:nth-child(4) { --cor: color-mix(in srgb, var(--blue), var(--orange) 54%); }
-.nivel-card:nth-child(5) { --cor: color-mix(in srgb, var(--blue), var(--orange) 72%); }
-.nivel-card:nth-child(6) { --cor: color-mix(in srgb, var(--blue), var(--orange) 88%); }
-.nivel-card:nth-child(7) { --cor: var(--orange); }
-.nivel-card {
-  --largura: min(100%, 640px);
+.etapas { margin: 0; padding: 0; list-style: none; }
+.etapa {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
-  grid-template-rows: 1fr auto auto auto 1fr;
-  grid-template-areas: "foto ." "foto rotulo" "foto titulo" "foto texto" "foto .";
-  column-gap: clamp(.9rem, 3vw, 1.8rem);
-  width: var(--largura);
-  /* O degrau: cada nível um pouco mais pra direita que o anterior. */
-  margin-left: calc(var(--i, 0) * (100% - var(--largura)) / 6);
-  padding: 0 clamp(.9rem, 3vw, 1.6rem) 0 0;
-  overflow: hidden;
-  background: #0E1D31;
-  border: 1px solid var(--border);
+  /* A pista de rolagem: bem mais alta que o cartão preso, pra ele ter tempo
+     de ficar "parado" na tela antes do próximo nível cobrir ele. */
+  min-height: 145vh;
 }
-/* A foto do nível ocupa o lado esquerdo do card, de cima a baixo. */
-.nivel-foto {
-  grid-area: foto;
+.etapa:last-child { min-height: 0; }
+.etapa-pin {
+  position: sticky;
+  top: calc(var(--header-h, 85px) + 14px);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: var(--shadow-md);
+}
+/* Contêiner só da foto: a legenda ("bottom: 0" logo abaixo) precisa de um
+   pai com posição relativa do tamanho exato da imagem, senão ela gruda no
+   fundo do cartão inteiro (foto + texto pequeno) em vez de só na foto. */
+.etapa-foto-wrap { position: relative; }
+.etapa-foto {
   display: block;
   width: 100%;
-  height: 100%;
-  min-height: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 16 / 10;
+  max-height: 58vh;
   object-fit: cover;
 }
-.nivel-rotulo {
-  position: relative;
-  grid-area: rotulo;
-  margin-top: 0;
+/* Rótulo e título ficam dentro da foto, não do lado: a legenda "gruda" na
+   imagem, como nos cartões de produto da Apple. O degradê por trás garante
+   leitura em qualquer foto, clara ou escura. */
+.etapa-legenda {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: clamp(1.1rem, 3vw, 1.8rem) clamp(1.1rem, 3vw, 1.8rem) clamp(1.3rem, 3.4vw, 2rem);
+  background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .55) 45%, rgba(6, 14, 28, .92) 100%);
+}
+.etapa-rotulo {
+  display: block;
   font-size: var(--t-rotulo);
   font-weight: 600;
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--cor);
   /* Um pouco mais claro que a cor do degrau: do azul (nível 1) ao laranja
-     (nível 7), todos ficam acima de 4,5 de contraste com o fundo do card. */
-  color: color-mix(in srgb, var(--cor), #fff 14%);
+     (nível 7), todos ficam acima de 4,5 de contraste com o fundo escuro. */
+  color: color-mix(in srgb, var(--cor), #fff 24%);
 }
-.nivel-card h3 {
-  position: relative;
-  grid-area: titulo;
-  margin: .3rem 0 .45rem;
+.etapa-legenda h3 {
+  margin: .3rem 0 0;
   font-size: var(--t-subtitulo);
   line-height: 1.15;
   color: var(--white);
 }
-.nivel-card p { position: relative; grid-area: texto; margin: 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--cor-corpo); }
+/* A legenda pequena: dentro do mesmo cartão preso, logo abaixo da foto —
+   sobe e desce junto com ela, não solta por conta própria. */
+.etapa-texto {
+  margin: 0;
+  padding: 1.1rem clamp(1.1rem, 3vw, 1.8rem);
+  background: #0E1D31;
+  font-size: var(--t-corpo);
+  line-height: 1.5;
+  color: var(--cor-corpo);
+  text-align: center;
+}
+.etapa-final .etapa-pin { box-shadow: var(--shadow-lg); }
 @media (max-width: 699.98px) {
-  /* Celular: degraus menores, pra sobrar largura pro texto. */
-  .nivel-card { --largura: calc(100% - 48px); padding-right: .8rem; }
+  .etapa { min-height: 115vh; }
+  .etapa-foto { aspect-ratio: 4 / 5; max-height: 50vh; }
 }
 
 /* ---------- Accordion (módulos + FAQ) ---------- */
@@ -1955,13 +1993,10 @@ html.abertura-on { overflow: hidden; }
   white-space: normal;
 }
 /* Em blocos alinhados à esquerda, a etiqueta também fica à esquerda. */
-.modo-revisao :is(.nivel-card, .beneficio, .bonus-item, .accordion-panel ul, .accordion-panel p)[data-confirmar]::after {
+.modo-revisao :is(.etapa, .beneficio, .bonus-item, .accordion-panel ul, .accordion-panel p)[data-confirmar]::after {
   margin-left: 0;
 }
 .modo-revisao .credential-item[data-confirmar]::after { flex-basis: 100%; margin-left: 0; }
-/* No carrossel (celular) e na trilha em grade (tablet/computador), a etiqueta
-   ocupa a linha inteira em vez de espremer numa coluna/flex-item. */
-.modo-revisao .nivel-card[data-confirmar]::after { flex-basis: 100%; grid-column: 1 / -1; }
 .modo-revisao .footer-legal[data-confirmar]::after { flex-basis: 100%; margin-top: .2rem; text-align: center; }
 .modo-revisao .hero h1[data-confirmar]::after { margin-top: .5rem; }
 @media (min-width: 700px) and (orientation: landscape) {

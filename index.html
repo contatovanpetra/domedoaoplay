@@ -155,8 +155,25 @@
           <span class="botao-gravar" aria-hidden="true"><i></i></span>
           <h2 id="reconhecimento-title" class="statement-title">Você sente que não sabe falar para a câmera?</h2>
         </div>
+        <div class="reconhecimento-cards" data-confirmar="rascunho de texto pra validar com a Vitória: resume os 4 sinais que já estavam no parágrafo corrido, em versão direta pra cada card">
+          <article class="reconhecimento-card">
+            <h3>Trava quando grava</h3>
+            <p>A câmera liga e o que você diria numa conversa simplesmente some.</p>
+          </article>
+          <article class="reconhecimento-card">
+            <h3>Acha que fala mal</h3>
+            <p>Assiste ao que gravou e só vê defeito, mesmo falando bem ao vivo.</p>
+          </article>
+          <article class="reconhecimento-card">
+            <h3>Não gosta do que vê</h3>
+            <p>Revê o próprio vídeo depois e pensa que não leva jeito pra isso.</p>
+          </article>
+          <article class="reconhecimento-card">
+            <h3>Não sabe por onde começar</h3>
+            <p>Nunca teve prática de falar sozinho pra uma lente e não sabe nem o primeiro passo.</p>
+          </article>
+        </div>
         <div class="texto-corrido">
-          <p>Talvez você trave quando começa a gravar, ache que fala mal ou assista ao próprio vídeo e pense que simplesmente não leva jeito para isso. Pode ser também que esteja começando agora e nem saiba direito como se comunicar diante de uma câmera. Quando você tenta e o resultado continua ruim aos seus olhos, a frustração vem rápido e começa a parecer que falar bem em vídeo é uma facilidade que outras pessoas têm e você não.</p>
           <p class="texto-forte">Quando aparecer em vídeo faz parte do que você quer construir na internet, essa dificuldade começa a limitar aquilo que você consegue mostrar, ensinar, divulgar ou vender.</p>
         </div>
       </div>
@@ -171,51 +188,95 @@
         <p>No Do Medo ao Play, teoria, técnica e prática andam juntas. Em cada módulo você aprende uma parte da sua comunicação e já leva isso para a câmera, em uma gravação nova e um pouco mais exposta que a anterior: começa gravando só para você e termina publicando para todo mundo.</p>
       </div>
     </div>
-    <!-- Os 7 níveis, um embaixo do outro, entrando conforme a pessoa rola a
-         página pra baixo: cada nível um degrau mais pra direita, como uma escada. -->
+    <!-- Os 7 níveis: a foto de cada um fica presa na tela (position: sticky)
+         enquanto a pessoa rola, com o rótulo e o título por cima dela; a
+         legenda pequena vem logo abaixo. Ao continuar rolando, a foto solta
+         e o próximo nível sobe por cima, tomando o lugar dela. -->
     <div class="container niveis" data-confirmar="fotos da escada provisórias: telas e mensagens em inglês, refazer em português">
-    <ol class="niveis-trilho" aria-label="Os 7 níveis da escada de exposição">
-        <li class="nivel-card" style="--i:0">
-          <img class="nivel-foto" src="assets/img/escada/nivel-1.webp" alt="Celular gravando um vídeo de selfie, ainda sem enviar para ninguém" width="1122" height="1402" loading="lazy" decoding="async">
-          <span class="nivel-rotulo">Nível 1</span>
-          <h3>Só você</h3>
-          <p>Grava e guarda só para você. Ninguém mais vê ainda. É o seu "antes".</p>
+    <ol class="etapas" aria-label="Os 7 níveis da escada de exposição">
+        <li class="etapa" style="--cor: var(--blue)">
+          <div class="etapa-pin">
+            <div class="etapa-foto-wrap">
+              <img class="etapa-foto" src="assets/img/escada/nivel-1.webp" alt="Celular gravando um vídeo de selfie, ainda sem enviar para ninguém" width="1122" height="1402" loading="lazy" decoding="async">
+              <div class="etapa-legenda">
+              <span class="etapa-rotulo">Nível 1</span>
+              <h3>Só você</h3>
+            </div>
+            </div>
+            <p class="etapa-texto">Grava e guarda só para você. Ninguém mais vê ainda. É o seu "antes".</p>
+          </div>
         </li>
-        <li class="nivel-card" style="--i:1">
-          <img class="nivel-foto" src="assets/img/escada/nivel-2.webp" alt="Conversa com uma pessoa, com o vídeo recém-enviado" width="1122" height="1402" loading="lazy" decoding="async">
-          <span class="nivel-rotulo">Nível 2</span>
-          <h3>Uma pessoa de confiança</h3>
-          <p>Grava um vídeo novo e manda para 1 pessoa de confiança.</p>
+        <li class="etapa" style="--cor: color-mix(in srgb, var(--blue), var(--orange) 18%)">
+          <div class="etapa-pin">
+            <div class="etapa-foto-wrap">
+              <img class="etapa-foto" src="assets/img/escada/nivel-2.webp" alt="Conversa com uma pessoa, com o vídeo recém-enviado" width="1122" height="1402" loading="lazy" decoding="async">
+              <div class="etapa-legenda">
+              <span class="etapa-rotulo">Nível 2</span>
+              <h3>Uma pessoa de confiança</h3>
+            </div>
+            </div>
+            <p class="etapa-texto">Grava um vídeo novo e manda para 1 pessoa de confiança.</p>
+          </div>
         </li>
-        <li class="nivel-card" style="--i:2">
-          <img class="nivel-foto" src="assets/img/escada/nivel-3.webp" alt="O mesmo vídeo enviado em três conversas" width="1122" height="1402" loading="lazy" decoding="async">
-          <span class="nivel-rotulo">Nível 3</span>
-          <h3>Mais gente de confiança</h3>
-          <p>Grava um vídeo novo e manda para 2 ou 3 pessoas de confiança.</p>
+        <li class="etapa" style="--cor: color-mix(in srgb, var(--blue), var(--orange) 36%)">
+          <div class="etapa-pin">
+            <div class="etapa-foto-wrap">
+              <img class="etapa-foto" src="assets/img/escada/nivel-3.webp" alt="O mesmo vídeo enviado em três conversas" width="1122" height="1402" loading="lazy" decoding="async">
+              <div class="etapa-legenda">
+              <span class="etapa-rotulo">Nível 3</span>
+              <h3>Mais gente de confiança</h3>
+            </div>
+            </div>
+            <p class="etapa-texto">Grava um vídeo novo e manda para 2 ou 3 pessoas de confiança.</p>
+          </div>
         </li>
-        <li class="nivel-card" style="--i:3" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-          <img class="nivel-foto" src="assets/img/escada/nivel-4.webp" alt="Vídeo postado em um grupo fechado, com respostas de apoio" width="1122" height="1402" loading="lazy" decoding="async">
-          <span class="nivel-rotulo">Nível 4</span>
-          <h3>Círculo fechado</h3>
-          <p>Grava um vídeo novo e compartilha num grupo fechado que já participa, no WhatsApp ou Telegram.</p>
+        <li class="etapa" style="--cor: color-mix(in srgb, var(--blue), var(--orange) 54%)" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
+          <div class="etapa-pin">
+            <div class="etapa-foto-wrap">
+              <img class="etapa-foto" src="assets/img/escada/nivel-4.webp" alt="Vídeo postado em um grupo fechado, com respostas de apoio" width="1122" height="1402" loading="lazy" decoding="async">
+              <div class="etapa-legenda">
+              <span class="etapa-rotulo">Nível 4</span>
+              <h3>Círculo fechado</h3>
+            </div>
+            </div>
+            <p class="etapa-texto">Grava um vídeo novo e compartilha num grupo fechado que já participa, no WhatsApp ou Telegram.</p>
+          </div>
         </li>
-        <li class="nivel-card" style="--i:4" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-          <img class="nivel-foto" src="assets/img/escada/nivel-5.webp" alt="Vídeo sendo compartilhado com a lista de melhores amigos" width="1122" height="1402" loading="lazy" decoding="async">
-          <span class="nivel-rotulo">Nível 5</span>
-          <h3>Círculo ampliado</h3>
-          <p>Compartilha com uma lista maior que você mesma monta: close friends do Instagram ou lista de transmissão do WhatsApp.</p>
+        <li class="etapa" style="--cor: color-mix(in srgb, var(--blue), var(--orange) 72%)" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
+          <div class="etapa-pin">
+            <div class="etapa-foto-wrap">
+              <img class="etapa-foto" src="assets/img/escada/nivel-5.webp" alt="Vídeo sendo compartilhado com a lista de melhores amigos" width="1122" height="1402" loading="lazy" decoding="async">
+              <div class="etapa-legenda">
+              <span class="etapa-rotulo">Nível 5</span>
+              <h3>Círculo ampliado</h3>
+            </div>
+            </div>
+            <p class="etapa-texto">Compartilha com uma lista maior que você mesma monta: close friends do Instagram ou lista de transmissão do WhatsApp.</p>
+          </div>
         </li>
-        <li class="nivel-card" style="--i:5" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
-          <img class="nivel-foto" src="assets/img/escada/nivel-6.webp" alt="Story publicado, com o número de visualizações" width="1122" height="1402" loading="lazy" decoding="async">
-          <span class="nivel-rotulo">Nível 6</span>
-          <h3>Quase público</h3>
-          <p>Story aberto ou para os seus seguidores atuais, preparando o terreno para o geral.</p>
+        <li class="etapa" style="--cor: color-mix(in srgb, var(--blue), var(--orange) 88%)" data-confirmar="níveis 4, 5 e 6 ainda não fechados: fechar agora ou tirar o detalhe">
+          <div class="etapa-pin">
+            <div class="etapa-foto-wrap">
+              <img class="etapa-foto" src="assets/img/escada/nivel-6.webp" alt="Story publicado, com o número de visualizações" width="1122" height="1402" loading="lazy" decoding="async">
+              <div class="etapa-legenda">
+              <span class="etapa-rotulo">Nível 6</span>
+              <h3>Quase público</h3>
+            </div>
+            </div>
+            <p class="etapa-texto">Story aberto ou para os seus seguidores atuais, preparando o terreno para o geral.</p>
+          </div>
         </li>
-        <li class="nivel-card" style="--i:6">
-          <img class="nivel-foto" src="assets/img/escada/nivel-7.webp" alt="Vídeo publicado para todo mundo, com curtidas e comentários" width="1122" height="1402" loading="lazy" decoding="async">
-          <span class="nivel-rotulo">Nível 7</span>
-          <h3>Público: o play final</h3>
-          <p>Grava o vídeo final, o seu "depois", e compartilha geral, valendo para qualquer rede. Essa é a sua versão que aparece.</p>
+        <li class="etapa etapa-final" style="--cor: var(--orange)">
+          <div class="etapa-pin">
+            <div class="etapa-foto-wrap">
+              <img class="etapa-foto" src="assets/img/escada/nivel-7.webp" alt="Vídeo publicado para todo mundo, com curtidas e comentários" width="1122" height="1402" loading="lazy" decoding="async">
+              <div class="etapa-legenda">
+              <span class="etapa-rotulo">Nível 7</span>
+              <h3>Público: o play final</h3>
+            </div>
+            </div>
+            <p class="etapa-texto">Grava o vídeo final, o seu "depois", e compartilha geral, valendo para qualquer rede. Essa é a sua versão que aparece.</p>
+          </div>
         </li>
     </ol>
     </div>
