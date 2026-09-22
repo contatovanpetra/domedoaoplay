@@ -137,6 +137,29 @@ function ajustaCena3D() {
     caixa.style.setProperty("--cena-emenda", cenaY.toFixed(1) + "px");
   });
 }
+/* A pista do herói tem exatamente a altura da primeira tela mais a altura
+   real da seção de reconhecimento (que muda com o texto, a fonte e a
+   largura da tela). Sem isso (um valor fixo de 100vh), numa tela onde essa
+   seção rende mais baixa que uma tela inteira, ela soltava antes da foto
+   liberar o lugar — e a escada seguinte aparecia por cima da foto, que
+   ainda estava presa lá atrás. */
+function ajustaRunwayHero() {
+  const hero = REAL_HERO;
+  const reconhecimento = document.getElementById("reconhecimento");
+  if (!hero || !reconhecimento) return;
+  // Tela baixa: o herói vira seção normal e ninguém sobe por cima de
+  // ninguém (ver CSS, media max-height:480px) — limpa o inline pra não
+  // brigar com a regra do media query.
+  if (window.matchMedia("(max-height: 480px)").matches) {
+    hero.style.minHeight = "";
+    reconhecimento.style.marginTop = "";
+    return;
+  }
+  const alturaRecon = reconhecimento.offsetHeight;
+  const tela = alturaDaTela();
+  hero.style.minHeight = (tela + alturaRecon) + "px";
+  reconhecimento.style.marginTop = "-" + alturaRecon + "px";
+}
 function wireScrollEffects() {
   const root = document.documentElement;
   const header = document.querySelector(".site-header");
@@ -167,6 +190,8 @@ function wireScrollEffects() {
     }
     // Depois do fim do texto: a caixa da cena depende dele.
     ajustaCena3D();
+    // Refaz a altura da pista do herói antes de medi-la (ver função acima).
+    ajustaRunwayHero();
     if (hero) {
       heroTop = hero.getBoundingClientRect().top + window.scrollY;
       heroAltura = hero.offsetHeight;

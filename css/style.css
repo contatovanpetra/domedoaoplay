@@ -410,7 +410,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    fica só na primeira tela e rola embora normalmente na segunda. A animação
    da cena (câmera, ícones, brilho — via --cena-p) acompanha a rolagem pelas
    duas telas inteiras; a foto em si não faz mais zoom (--portal-scale fica
-   sempre 1: ver update() em main.js). */
+   sempre 1: ver update() em main.js). 200vh/-100vh aqui são só a estimativa
+   antes do JS medir: a altura real da segunda tela é a altura real da seção
+   de reconhecimento (ajustaRunwayHero() em main.js), pra foto soltar exatamente
+   quando essa seção acabar — nunca antes, o que faria a escada seguinte
+   aparecer por cima da foto ainda presa. */
 .hero {
   position: relative;
   padding: 0;
@@ -950,15 +954,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    sem isso, cada cartão esticava pra altura da tela inteira. */
 .etapa { position: relative; flex: none; width: clamp(190px, 21vw, 240px); }
 .etapa-pin {
+  display: flex;
+  flex-direction: column;
+}
+/* A moldura (cantos arredondados + sombra) é só da foto, como uma miniatura
+   de produto da Apple (ex.: cartões do app TV). O texto abaixo é solto, sem
+   fundo nem borda, "colado" na foto só pela proximidade — nunca dentro da
+   mesma caixa visual dela. */
+.etapa-foto-wrap {
+  position: relative;
   border-radius: var(--radius-md);
   overflow: hidden;
   isolation: isolate;
   box-shadow: var(--shadow-md);
 }
-/* Contêiner só da foto: a legenda ("bottom: 0" logo abaixo) precisa de um
-   pai com posição relativa do tamanho exato da imagem, senão ela gruda no
-   fundo do cartão inteiro (foto + texto pequeno) em vez de só na foto. */
-.etapa-foto-wrap { position: relative; }
 .etapa-foto {
   display: block;
   width: 100%;
@@ -998,23 +1007,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--white);
 }
 /* Altura fixa (não só mínima): a legenda de cada nível tem um tamanho de
-   texto diferente, e sem isso os cartões saíam de alturas diferentes. O
-   texto centraliza verticalmente no espaço, do mais curto ao mais longo. */
+   texto diferente, e sem isso os cartões saíam de alturas diferentes. Texto
+   solto, sem fundo, alinhado à esquerda e ao topo — como a legenda de um
+   cartão de produto da Apple, nunca um painel colado na foto. */
 .etapa-texto {
-  margin: 0;
-  height: 7.4rem;
-  padding: .8rem .8rem .9rem;
+  margin: .75rem 0 0;
+  height: 6.6rem;
+  padding: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   overflow: hidden;
-  background: #0E1D31;
   font-size: var(--t-pequeno);
   line-height: 1.45;
   color: var(--cor-corpo);
-  text-align: center;
+  text-align: left;
 }
-.etapa-final .etapa-pin { box-shadow: var(--shadow-lg); }
+.etapa-final .etapa-foto-wrap { box-shadow: var(--shadow-lg); }
 @media (max-width: 699.98px) {
   .etapa { width: clamp(148px, 42vw, 190px); }
 }
