@@ -1419,8 +1419,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--text-muted);
 }
 .depo-card figcaption { display: flex; flex-direction: column; gap: .1rem; margin-top: .7rem; }
-.depo-card figcaption strong { font-family: var(--font-head); font-size: var(--t-corpo); color: var(--white); }
-.depo-card figcaption span { font-size: var(--t-pequeno); color: var(--text-muted); }
+/* Sem nome: o cargo/atuação é a própria "manchete" do card, por isso assume
+   o peso e a cor que antes eram do nome (ver depoimentos, sem pessoa real
+   ainda). */
+.depo-card figcaption span { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 600; color: var(--white); }
 .depo-card figcaption .depo-resultado { margin: .3rem 0 0; font-size: var(--t-pequeno); line-height: 1.4; color: var(--text); }
 
 
@@ -2020,6 +2022,17 @@ html.abertura-on { overflow: hidden; }
   .hero-copy { max-width: 600px; margin-left: auto; margin-right: auto; }
   .hero-headline, .hero-lead { max-width: none; }
   .hero-lead { margin-left: auto; margin-right: auto; }
+  /* Faltava aqui: sem isto, o botão ficava com a regra geral (position:
+     absolute, flutuando perto do fim da tela) em vez de seguir logo depois
+     do subtítulo, como já acontece no celular e na tela deitada. */
+  .hero-cta-foto {
+    position: static;
+    width: 100%;
+    max-width: 600px;
+    margin: clamp(1.5rem, 3.5vh, 2.25rem) auto 0;
+    padding: 0 24px;
+    justify-content: center;
+  }
   .hero-scrim {
     background: linear-gradient(180deg, rgba(3, 10, 29, .55) 0, rgba(3, 10, 29, .3) 300px, transparent 480px);
   }
