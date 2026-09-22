@@ -1465,25 +1465,21 @@ html.abertura-on { overflow: hidden; }
   color: var(--orange-light);
 }
 
-.btn-play-text { display: flex; flex-direction: column; gap: .12rem; text-align: left; }
-.btn-play-text strong {
+/* Um recado por elemento: o botão só leva a chamada de ação. Preço e forma de
+   pagamento saem do botão e viram legenda enxuta logo abaixo (referência:
+   apple.com/br/services — CTA nunca carrega preço/subtítulo dentro dele). */
+.btn-play strong {
   font-family: var(--font-head);
   font-weight: 700;
   font-size: 1.12rem;
   line-height: 1.1;
   letter-spacing: .01em;
 }
-.btn-play-text small {
-  font-family: var(--font-body);
-  font-size: .76rem;
-}
-
 @media (max-width: 480px) {
   .btn-play { gap: .7rem; padding: .6rem 1.15rem .6rem .6rem; }
   .btn-play-disc { width: 40px; height: 40px; }
   .btn-play-disc svg { width: 17px; height: 17px; }
-  .btn-play-text strong { font-size: 1rem; }
-  .btn-play-text small { font-size: .75rem; }
+  .btn-play strong { font-size: 1rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .btn-play:hover { transform: none; }
@@ -1680,7 +1676,8 @@ html.abertura-on { overflow: hidden; }
   text-align: center;
 }
 .hero-cta-foto .hero-actions { margin-top: 0; }
-.hero-cta-foto .hero-numeros { text-shadow: 0 1px 3px rgba(3, 10, 29, .7); }
+.hero-cta-foto .hero-numeros,
+.hero-cta-foto .hero-microcopy { text-shadow: 0 1px 3px rgba(3, 10, 29, .7); }
 /* A seta de "role" fica no pé da primeira tela, não no fim da foto. */
 .cinema-stage .scroll-cue { top: calc(100vh - 64px); top: calc(100svh - 64px); bottom: auto; }
 
