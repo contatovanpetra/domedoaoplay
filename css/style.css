@@ -1273,18 +1273,43 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    Quatro quadradinhos (2 x 2 no celular), transparentes: título e uma linha.
    Card quadrado, como os outros da página, e flutua no mouse. */
 .beneficios {
+  --beneficios-gap: clamp(.8rem, 2vw, 1.2rem);
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(.8rem, 2vw, 1.2rem);
+  gap: var(--beneficios-gap);
   margin: 2.6rem 0 4.4rem;
 }
-/* Transparente, sem traço laranja e sem ícone: só o fio fino do card, o
-   título e a linha de apoio. */
+/* Setinha ligando o 1º card ao 2º, e o 3º ao 4º: tanto faz o grid estar em
+   4 colunas (computador) ou 2 (tablet/celular) — nas duas, o par 1-2 e o
+   par 3-4 sempre ficam lado a lado na mesma linha, então a seta sempre
+   aponta pro card certo. Fica meio a meio no vão entre os dois cards. */
+.beneficio:nth-child(1)::after,
+.beneficio:nth-child(3)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: calc(var(--beneficios-gap) * -.5);
+  transform: translate(50%, -50%);
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange-light), var(--orange-button));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13M13 6l6 6-6 6'/%3E%3C/svg%3E") center / 60% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13M13 6l6 6-6 6'/%3E%3C/svg%3E") center / 60% no-repeat;
+}
+@media (max-width: 699.98px) {
+  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { width: 20px; height: 20px; }
+}
+/* Fundo azul claro (tom leve, o mesmo do resto da página), sem traço
+   laranja e sem ícone: só o card tingido, o título e a linha de apoio. */
 .beneficio {
   container-type: inline-size;
+  position: relative;
   padding: clamp(1.2rem, 2vw, 1.5rem);
-  background: transparent;
-  border: 1px solid var(--border);
+  background: rgba(144, 190, 217, .1);
+  border: 1px solid rgba(144, 190, 217, .32);
 }
 /* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
    que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
@@ -1322,7 +1347,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: var(--t-rotulo);
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--orange-light);
 }
 .bonus-lista {
   display: grid;

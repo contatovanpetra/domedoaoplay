@@ -40,14 +40,14 @@
 <link rel="stylesheet" href="css/style.css">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
-     primeira pintura (a página não pisca por baixo dela). Sem abertura quando o
-     A abertura toca em toda chegada, inclusive recarregando. Ela é pulada só
-     quando a pessoa está VOLTANDO e perderia o lugar: endereço com âncora
-     (#oferta etc.), volta de uma página do próprio site, botão voltar do
-     navegador, ou recarga no meio da leitura (o lugar guardado em
-     wireGuardaLugar, no main.js). Duas travas: se o main.js não assumir a
-     abertura em 5s, ou se ela passar de 20s, a página é liberada. -->
-<script>(function(){var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location),y=+sessionStorage.getItem("dmap-lugar")||0;if(veioDeOutraNossa||t==="back_forward"||(t==="reload"&&y>100))return}catch(e){}d.classList.add("abertura-on");if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
+     primeira pintura (a página não pisca por baixo dela). A abertura toca em
+     toda chegada, inclusive recarregando (não importa o quanto já tinha
+     rolado). Ela é pulada só quando a pessoa está VOLTANDO e perderia o
+     lugar: endereço com âncora (#oferta etc.), volta de uma página do
+     próprio site, ou o botão voltar do navegador. Duas travas: se o main.js
+     não assumir a abertura em 5s, ou se ela passar de 20s, a página é
+     liberada. -->
+<script>(function(){var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
      durante uma revisão, basta descomentar a linha abaixo.
@@ -663,7 +663,7 @@
         <article class="bonus-item" data-confirmar="limite de uso, de mensagens ou de prazo do assistente: escrever aqui antes da compra e testar antes do lançamento">
           <div class="bonus-item-texto">
             <h3>Assistente de IA para gravar melhor</h3>
-            <p>Um assistente disponível a qualquer hora que você precisar. Envia uma foto do seu setup e recebe orientações sobre áudio, iluminação, altura e apoio da câmera; usa a ferramenta pra escolher o assunto e receber palavras-chave; manda o que vai falar pra revisão antes de gravar; treina voz e dicção na hora; e tira qualquer dúvida de técnica quando precisar.</p>
+            <p>Um assistente disponível a qualquer hora. Envia uma foto do seu setup e recebe orientações de áudio, luz, altura e apoio da câmera. Ajuda a escolher o assunto e dá palavras-chave, revisa o que você vai falar antes de gravar, treina voz e dicção na hora e tira dúvidas de técnica quando precisar.</p>
           </div>
           <div class="bonus-item-foto" data-confirmar="imagem provisória: print do assistente em uso">
             <span class="bonus-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="7" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.4"/><circle cx="9.5" cy="12.5" r="1.2" fill="currentColor"/><circle cx="14.5" cy="12.5" r="1.2" fill="currentColor"/><path d="M12 7V4M9 4h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
@@ -802,20 +802,12 @@
   <!-- ===== CTA FINAL ===== -->
   <section class="section final-cta" aria-labelledby="final-cta-title">
     <div class="container final-cta-grid">
-      <!-- O portal da marca em arcos, parado: fecha a história em vez de só
-           repetir o CTA solto num fundo. Os arcos cabem inteiros no desenho. -->
-      <svg class="final-tunnel" viewBox="0 0 360 400" aria-hidden="true">
-        <g fill="none" stroke-width="2.5" stroke-linejoin="round">
-          <path d="M 100,358 H 260 Q 315,358 315,303 V 173 A 135,135 0 0 0 45,173 V 303 Q 45,358 100,358 Z" stroke="#5C8FAF" transform="translate(180,198) scale(1.15) translate(-180,-198)" opacity=".7"/>
-          <path d="M 100,358 H 260 Q 315,358 315,303 V 173 A 135,135 0 0 0 45,173 V 303 Q 45,358 100,358 Z" stroke="#8FB9CE" transform="translate(180,198) scale(.78) translate(-180,-198)" opacity=".85"/>
-          <path d="M 100,358 H 260 Q 315,358 315,303 V 173 A 135,135 0 0 0 45,173 V 303 Q 45,358 100,358 Z" stroke="#E08A2A" transform="translate(180,198) scale(.5) translate(-180,-198)"/>
-        </g>
-      </svg>
+      <!-- A logo de verdade, parada: fecha a história em vez de só repetir
+           o CTA solto num fundo (antes era um desenho de arcos à parte). -->
+      <img class="final-tunnel" src="assets/img/logo.svg" alt="Do Medo ao Play" width="827" height="324" loading="lazy">
       <div class="final-cta-copy">
         <p class="eyebrow">DO MEDO AO PLAY</p>
         <h2 id="final-cta-title" class="section-title">Sua versão que aparece já existe.</h2>
-        <p class="section-lead">Talvez hoje exista uma distância entre a forma como você se comunica normalmente e aquilo que consegue mostrar quando a câmera liga. O Do Medo ao Play foi criado para trabalhar justamente esse espaço, usando técnica, prática e uma progressão que começa no nível em que você está agora.</p>
-        <p class="section-lead">A primeira gravação não precisa parecer com a última. É para isso que existe a Escada de Exposição.</p>
         <p class="final-frase">Atravesse o medo. <span class="text-orange">Apareça.</span></p>
         <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
         <p class="hero-microcopy">R$ 197 · compra única · sem mensalidade</p>
