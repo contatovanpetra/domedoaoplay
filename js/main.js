@@ -20,6 +20,13 @@ let REAL_HERO = null;
 let REAL_HEADER = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Páginas de apoio (política, termos, suporte): sempre abrem no topo. Sem
+  // isso, o navegador às vezes restaura a posição de rolagem de uma visita
+  // anterior à mesma URL (voltar, recarregar, cache de navegação).
+  if (document.body.classList.contains("pagina-apoio")) {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }
   REAL_HERO = document.querySelector(".hero");
   REAL_HEADER = document.querySelector(".site-header");
   wireCheckoutLinks();

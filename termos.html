@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0B1728">
+<!-- Sem isso, um recarregar ou "voltar" pode reabrir a página onde a pessoa
+     tinha rolado antes. Tem que vir cedo (antes do <body>): o navegador
+     decide restaurar a rolagem logo no início da navegação. -->
+<script>if("scrollRestoration" in history)history.scrollRestoration="manual"</script>
 <title>Termos de Uso · Do Medo ao Play</title>
 <meta name="description" content="As regras de compra, acesso, garantia e uso do curso Do Medo ao Play.">
 <meta name="robots" content="noindex">
