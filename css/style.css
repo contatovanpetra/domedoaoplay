@@ -466,9 +466,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      medida de linha são calculados pra ela cair em 3 ou 4 linhas cheias (umas
      30 letras por linha). Com a escala de título e 22ch ele virava 5 ou 6
      linhas curtas, que leem como um paredão. */
-  font-size: clamp(1.75rem, 3.4vw, 2.6rem);
-  line-height: 1.12;
-  letter-spacing: -.02em;
+  /* Manchete: fonte condensada e pesada (Anton), fora do manual, pedida pelo
+     usuário pra primeira tela ter a força das páginas de venda de referência.
+     Condensada cabe mais palavra por linha, então a frase inteira ocupa 3
+     linhas em vez de 5 e o bloco vira uma massa só. O resto da página segue
+     com Quicksand. */
+  font-family: "Anton", var(--font-head);
+  font-weight: 400;
+  font-size: clamp(2.25rem, 3.6vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -.01em;
   color: var(--white);
   max-width: 34ch;
   text-wrap: balance;
@@ -480,7 +487,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O apoio fica um degrau maior que o texto corrido e mais estreito que o
    título: a hierarquia lê de cima pra baixo, sem o apoio parecer mais largo
    (e mais importante) que a frase principal. */
-.hero-lead { font-size: var(--t-lead); max-width: 38ch; }
+/* O apoio volta pro tamanho de texto corrido e numa cor mais discreta: quem
+   manda na primeira tela é o título. As linhas são equilibradas pra não sobrar
+   uma palavra sozinha no fim. */
+.hero-lead { font-size: var(--t-corpo); max-width: 44ch; color: var(--cor-corpo); text-wrap: balance; }
 /* Texto de apoio do herói: dois parágrafos corridos, sem marcador. */
 .hero-lead-list {
   display: block;
@@ -488,7 +498,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      no texto. */
   margin: clamp(1.1rem, 2.2vw, 1.75rem) 0 0;
   padding: 0;
-  font-size: var(--t-lead);
+  font-size: var(--t-corpo);
   line-height: 1.6;
   color: var(--cor-corpo);
 }
@@ -1590,8 +1600,11 @@ html.abertura-on { overflow: hidden; }
   gap: .9rem;
   padding: .7rem 1.5rem .7rem .7rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--orange-light), var(--orange-button));
-  color: var(--white);
+  /* Azul claro da marca só aqui, no botão da primeira tela (pedido do usuário):
+     texto no azul escuro do fundo, contraste alto. Os outros botões de compra
+     seguem no laranja do manual. */
+  background: linear-gradient(135deg, #A9D3E8, var(--blue-light));
+  color: var(--bg);
   text-decoration: none;
   box-shadow: var(--shadow-md);
   transition: transform .2s ease, box-shadow .2s ease;
@@ -1907,6 +1920,17 @@ html.abertura-on { overflow: hidden; }
   /* No celular e no tablet em pé os dois ocupam a mesma coluna: as bordas do
      título e do subtítulo batem, em vez de cada um ter uma largura. */
   .hero-headline, .hero-lead { max-width: none; }
+  /* No celular o título acompanha a largura da tela: com o tamanho das telas
+     grandes ele virava 6 ou 7 linhas picadas num aparelho de 320px. */
+  .hero-headline { font-size: clamp(1.5rem, 7.4vw, 2.25rem); }
+  /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
+     ficar solto no meio da foto. */
+  .hero-cta-foto {
+    position: static;
+    margin-top: clamp(1.25rem, 3.5vh, 2rem);
+    padding: 0 24px;
+    justify-content: center;
+  }
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
   /* Degradê leve sobre a foto, só pra leitura do texto: não é um fundo à parte. */

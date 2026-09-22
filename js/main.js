@@ -9,9 +9,6 @@ const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI";
 // 2) O GSAP (em js/vendor) toca a abertura. Sem ele (falha de rede, bloqueio
 //    de script), a abertura é pulada e a página abre direto: nada fica preso.
 const hasGSAP = typeof gsap !== "undefined";
-// A abertura só toca na primeira visita da sessão: quem volta das páginas de
-// apoio ou recarrega cai direto na página, no mesmo lugar (ver o <head>).
-const ABERTURA_VISTA = "dmap-abertura-vista";
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // A abertura monta uma réplica do menu e do herói dentro da câmera. As
@@ -44,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireHeaderReveal();
   playHeroIntro();
   wireVoltar();
+  wireGuardaLugar();
   wireReviewMode();
 });
 
@@ -690,12 +688,8 @@ function wireIntroStage() {
     }
     root.classList.remove("abertura-on");
     if (stage) stage.remove();
-    // Daqui em diante, nesta visita, a landing abre direto (sem abertura) e o
-    // navegador volta a guardar o lugar da rolagem, que a abertura desliga pra
-    // sempre começar do topo.
-    if (REAL_HERO) {
-      try { sessionStorage.setItem(ABERTURA_VISTA, "1"); } catch { /* sem armazenamento: a abertura toca de novo, só isso */ }
-    }
+    // O navegador volta a guardar o lugar da rolagem, que a abertura desliga
+    // pra sempre começar do topo.
     if ("scrollRestoration" in history) history.scrollRestoration = "auto";
     document.dispatchEvent(new Event("abertura:fim"));
   }
@@ -1012,6 +1006,18 @@ function wireHeaderReveal() {
     if (!pedido) { pedido = true; requestAnimationFrame(confere); }
   }, { passive: true });
   header.addEventListener("focusin", () => header.classList.remove("is-recolhido"));
+}
+
+// Onde a pessoa parou de ler, guardado na aba. O <head> usa isto pra decidir a
+// abertura: quem recarrega no meio da leitura volta direto pro mesmo lugar, sem
+// assistir tudo de novo; quem chega ou recarrega no topo vê a abertura.
+function wireGuardaLugar() {
+  let espera = 0;
+  const guarda = () => {
+    try { sessionStorage.setItem("dmap-lugar", String(Math.round(window.scrollY))); } catch { /* sem armazenamento: a abertura toca de novo, só isso */ }
+  };
+  window.addEventListener("scroll", () => { clearTimeout(espera); espera = setTimeout(guarda, 250); }, { passive: true });
+  guarda();
 }
 
 // Páginas de apoio: "Voltar para a página inicial" volta pelo histórico quando a

@@ -29,11 +29,11 @@
 <!-- GSAP/ScrollTrigger ficam local (js/vendor), não em CDN externo: a abertura
      depende deles pra rodar, e um bloqueio de rede/proxy no ambiente de quem
      visualiza (preview, sandbox etc.) não pode derrubar a animação inteira. -->
-<!-- Só os pesos do manual: Quicksand 600/700 (títulos) e Nunito Sans 400/600 (texto e botões).
+<!-- Anton no título da primeira tela (manchete), Quicksand 600/700 nos títulos de seção e Nunito Sans 400/600 no texto e nos botões.
      Carregado sem bloquear a primeira pintura: antes a página inteira esperava o
      servidor de fontes do Google (de 0,3 a 1,4 s num celular em 4G). -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anton&family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
 
 <!-- A foto horizontal do herói só existe em tela deitada: pedida cedo, sem esperar o CSS. -->
 <link rel="preload" as="image" href="assets/img/vivi-hero-desktop.webp" type="image/webp" media="(min-width: 700px) and (orientation: landscape)">
@@ -41,11 +41,13 @@
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). Sem abertura quando o
-     endereço já aponta para uma seção (#oferta etc.) ou quando a pessoa já viu a
-     abertura nesta visita (voltou das páginas de apoio, recarregou): aí a página
-     abre direto, no mesmo lugar. Duas travas: se o main.js não assumir a
+     A abertura toca em toda chegada, inclusive recarregando. Ela é pulada só
+     quando a pessoa está VOLTANDO e perderia o lugar: endereço com âncora
+     (#oferta etc.), volta de uma página do próprio site, botão voltar do
+     navegador, ou recarga no meio da leitura (o lugar guardado em
+     wireGuardaLugar, no main.js). Duas travas: se o main.js não assumir a
      abertura em 5s, ou se ela passar de 20s, a página é liberada. -->
-<script>(function(){var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{if(sessionStorage.getItem("dmap-abertura-vista"))return}catch(e){}d.classList.add("abertura-on");if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
+<script>(function(){var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location),y=+sessionStorage.getItem("dmap-lugar")||0;if(veioDeOutraNossa||t==="back_forward"||(t==="reload"&&y>100))return}catch(e){}d.classList.add("abertura-on");if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
      durante uma revisão, basta descomentar a linha abaixo.
@@ -126,7 +128,7 @@
         <div class="hero-copy">
           <h1 class="hero-headline" id="hero-headline">Domine a comunicação diante da câmera e transforme cada vídeo em <span class="text-orange">vendas, clientes e parcerias</span>.</h1>
           <div class="hero-lead hero-lead-list" id="hero-lead">
-            <p>A formação mais completa de comunicação diante da câmera: são 7 módulos e 32 aulas sobre conteúdo e estrutura, voz, dicção, corpo e rosto na câmera, além da Escada de Exposição, o método exclusivo do Do Medo ao Play.</p>
+            <p>A formação mais completa de comunicação diante da câmera para quem vende, divulga o próprio trabalho, cria conteúdo ou atua como afiliado.</p>
           </div>
         </div>
       </div>
