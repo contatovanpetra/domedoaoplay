@@ -749,8 +749,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .vivi-assinatura {
   position: absolute;
   z-index: 1;
-  /* Logo abaixo do menu: o nome abre a foto. */
-  top: calc(var(--header-h, 71px) + .5rem);
+  /* Bem rente ao início da foto, logo abaixo do menu: o nome abre a foto. */
+  top: calc(var(--header-h, 71px) + .15rem);
   left: 0;
   right: 0;
   margin: 0;
@@ -770,30 +770,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card > p:not(.eyebrow) + p { margin-top: .9em; }
 /* Números no pé da foto, como uma segunda "assinatura" fechando-a (a
-   primeira é o nome, no alto — ver .vivi-assinatura): por cima do degradê
-   escuro que a própria foto já tem embaixo (.vivi-foto::after), com o
-   mesmo texto-sombra do nome pra continuar legível em qualquer foto. */
-.vivi-credenciais {
-  /* Presa no pé da tela, igual a foto fica presa no alto (mesma duração:
-     as duas são filhas diretas da seção) — assim nunca fica pela metade,
-     com o ícone de fora e o texto escondido atrás do card. */
-  position: sticky;
+   primeira é o nome, no alto — ver .vivi-assinatura): estáticos na foto,
+   presos junto com ela (mesmo mecanismo do nome — filhos de .vivi-foto,
+   não da seção), por cima do degradê escuro que a própria foto já tem
+   embaixo (.vivi-foto::after). Só o card com o texto grande se move. */
+.vivi-foto .vivi-credenciais {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
   bottom: 0;
-  z-index: 2;
   margin: 0;
   padding: 1rem clamp(24px, 5vw, 96px) clamp(1.4rem, 4vh, 2rem);
   text-shadow: 0 1px 3px rgba(3, 10, 29, .65), 0 2px 18px rgba(3, 10, 29, .5);
-  /* Opaca o bastante pra nunca deixar o texto do card (que passa por trás,
-     rolando) transparecer por baixo do texto dos números — as duas coisas
-     legíveis ao mesmo tempo, sobrepostas, ficava impossível de ler. */
-  background: rgba(11, 23, 40, .84);
-}
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .vivi-credenciais {
-    background: rgba(11, 23, 40, .58);
-    -webkit-backdrop-filter: blur(14px) saturate(1.15);
-    backdrop-filter: blur(14px) saturate(1.15);
-  }
 }
 .vivi-credenciais .credential-item { padding: .6rem 0; }
 .vivi-credenciais .credential-item + .credential-item { border-top-color: rgba(245, 245, 245, .18); }
