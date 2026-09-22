@@ -15,33 +15,40 @@
   align-items: center;
   gap: .4rem;
   margin-bottom: 1.6rem;
-  font-size: var(--t-pequeno);
+  font-size: clamp(.8rem, .75rem + .3vw, .9rem);
   color: var(--text-muted);
   text-decoration: none;
 }
 .apoio-voltar:hover, .apoio-voltar:focus-visible { color: var(--white); }
 .apoio-voltar svg { width: 1em; height: 1em; }
+/* Escala tipográfica própria destas páginas (não reaproveita --t-titulo e
+   companhia direto): esses tokens foram calibrados pro texto curto e
+   comercial da landing, então crescem muito devagar — ficam quase parados
+   perto do tamanho mínimo do celular até a tela ficar bem larga (perto de
+   1000-1300px), o que faz um texto de leitura longa parecer pequeno demais
+   em tablet e em janelas de notebook mais estreitas. Aqui o crescimento
+   começa mais cedo e chega ao tamanho final já por volta de 700-900px. */
 .apoio-main h1 {
   margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: var(--t-titulo);
+  font-size: clamp(1.9rem, 1.5rem + 2.4vw, 2.75rem);
   line-height: 1.1;
   letter-spacing: -.03em;
   color: var(--white);
 }
-.apoio-data { margin: .8rem 0 0; font-size: var(--t-pequeno); color: var(--text-muted); }
-.apoio-intro { margin: 1.6rem 0 0; font-size: var(--t-lead); line-height: 1.55; color: var(--cor-corpo); }
+.apoio-data { margin: .8rem 0 0; font-size: clamp(.8rem, .75rem + .3vw, .9rem); color: var(--text-muted); }
+.apoio-intro { margin: 1.6rem 0 0; font-size: clamp(1.05rem, .9rem + 1vw, 1.3rem); line-height: 1.55; color: var(--cor-corpo); }
 .apoio-main h2 {
   margin: 2.6rem 0 .8rem;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: var(--t-subtitulo);
+  font-size: clamp(1.3rem, 1.05rem + 1.4vw, 1.75rem);
   line-height: 1.25;
   color: var(--white);
 }
 .apoio-main p,
-.apoio-main li { font-size: var(--t-corpo); line-height: 1.7; color: var(--cor-corpo); }
+.apoio-main li { font-size: clamp(1rem, .92rem + .5vw, 1.15rem); line-height: 1.7; color: var(--cor-corpo); }
 .apoio-main p { margin: 0 0 1em; }
 .apoio-main ul { margin: 0 0 1em; padding-left: 1.2rem; }
 .apoio-main li + li { margin-top: .45em; }
