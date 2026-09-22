@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireDepoimentos();
   wireCountUp();
   wireScrollEffects();
+  wireNiveisHorizontal();
   wireScrollCue();
   wireIntroStage();
   wireManterLugar();
@@ -248,6 +249,51 @@ function wireScrollEffects() {
   }
 
   measure();
+}
+
+// A escada de exposição desliza na horizontal enquanto a página rola na
+// vertical (referência: a "loja" do Fitness+ na Apple). A faixa (.niveis-pin)
+// fica presa na tela; o quanto a pessoa já rolou dentro da pista extra
+// (.niveis-pin-wrap, mais alta que uma tela) vira a posição horizontal da
+// faixa. Sem JS, os cartões seguem lado a lado e dá pra arrastar com o dedo
+// (overflow-x normal, ligado por padrão no CSS).
+function wireNiveisHorizontal() {
+  const wrap = document.querySelector(".niveis-pin-wrap");
+  const pin = document.querySelector(".niveis-pin");
+  const track = document.querySelector(".etapas");
+  if (!wrap || !pin || !track) return;
+
+  // JS assumiu: desliga o arrastar nativo (vira scroll vertical da página só).
+  pin.style.overflowX = "hidden";
+
+  let wrapTop = 0;
+  let pistaVertical = 0;
+  let maxDeslocamento = 0;
+
+  function medir() {
+    const alturaTela = window.innerHeight;
+    maxDeslocamento = Math.max(0, track.scrollWidth - pin.clientWidth);
+    // 1,15px de rolagem vertical pra cada 1px de deslocamento horizontal: dá
+    // tempo de ver cada nível passar, sem a faixa correr rápido demais.
+    pistaVertical = maxDeslocamento * 1.15;
+    wrap.style.height = (alturaTela + pistaVertical) + "px";
+    wrapTop = wrap.getBoundingClientRect().top + window.scrollY;
+  }
+
+  let ticking = false;
+  function atualizar() {
+    ticking = false;
+    const p = pistaVertical > 0 ? clamp((window.scrollY - wrapTop) / pistaVertical) : 0;
+    track.style.transform = `translate3d(${(-p * maxDeslocamento).toFixed(1)}px, 0, 0)`;
+  }
+  window.addEventListener("scroll", () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(atualizar); }
+  }, { passive: true });
+  window.addEventListener("resize", () => { medir(); atualizar(); }, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { medir(); atualizar(); });
+
+  medir();
+  atualizar();
 }
 
 // Repassa pro checkout os parâmetros de rastreio com que a pessoa chegou na página

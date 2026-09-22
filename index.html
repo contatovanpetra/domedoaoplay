@@ -188,11 +188,15 @@
         <p>No Do Medo ao Play, teoria, técnica e prática andam juntas. Em cada módulo você aprende uma parte da sua comunicação e já leva isso para a câmera, em uma gravação nova e um pouco mais exposta que a anterior: começa gravando só para você e termina publicando para todo mundo.</p>
       </div>
     </div>
-    <!-- Os 7 níveis: a foto de cada um fica presa na tela (position: sticky)
-         enquanto a pessoa rola, com o rótulo e o título por cima dela; a
-         legenda pequena vem logo abaixo. Ao continuar rolando, a foto solta
-         e o próximo nível sobe por cima, tomando o lugar dela. -->
-    <div class="container niveis" data-confirmar="fotos da escada provisórias: telas e mensagens em inglês, refazer em português">
+    <!-- Os 7 níveis deslizam na horizontal enquanto a página rola na vertical
+         (referência: a "loja" de apps do Fitness+ na Apple): a faixa fica
+         presa na tela (position: sticky) e os cartões passam da direita pra
+         esquerda conforme a pessoa rola pra baixo, um nível de cada vez, até
+         soltar no fim e a página seguir normalmente. Ver wireNiveisHorizontal
+         em main.js — sem JS, os cartões ficam lado a lado e dá pra arrastar
+         com o dedo/mouse normalmente. -->
+    <div class="niveis-pin-wrap" data-confirmar="fotos da escada provisórias: telas e mensagens em inglês, refazer em português">
+    <div class="niveis-pin">
     <ol class="etapas" aria-label="Os 7 níveis da escada de exposição">
         <li class="etapa" style="--cor: var(--blue)">
           <div class="etapa-pin">
@@ -279,6 +283,7 @@
           </div>
         </li>
     </ol>
+    </div>
     </div>
     <div class="container metodo-fecho">
       <p class="metodo-frase">Um nível de cada vez. <span class="text-orange">Até dar o play.</span></p>

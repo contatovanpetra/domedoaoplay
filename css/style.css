@@ -882,27 +882,38 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 /* ---------- Os 7 níveis da escada ----------
-   Referência: como a Apple faz seus scrollers de produto (ex.: apple.com/br/
-   apple-fitness-plus) — o cartão de cada nível (foto + legenda) fica preso na
-   tela (sticky) enquanto a pessoa rola por ele, com o rótulo e o título por
-   cima da foto. Rolando mais, o cartão solta e o do próximo nível sobe por
-   cima, tomando o lugar dele — sem nenhum JS de rolagem, só sticky com uma
-   pista de altura extra por nível (.etapa bem mais alto que o cartão, pra
-   sobrar distância de rolagem antes de soltar). A cor do acento esquenta do
-   azul (nível 1, só você) ao laranja (nível 7, público), a mesma lógica de
-   antes. */
-.niveis { margin-top: clamp(2rem, 5vw, 3.2rem); }
-.etapas { margin: 0; padding: 0; list-style: none; }
-.etapa {
-  position: relative;
-  /* A pista de rolagem: bem mais alta que o cartão preso, pra ele ter tempo
-     de ficar "parado" na tela antes do próximo nível cobrir ele. */
-  min-height: 145vh;
-}
-.etapa:last-child { min-height: 0; }
-.etapa-pin {
+   Referência: a "loja" de apps do Fitness+ na Apple — a faixa de cartões fica
+   presa na tela (sticky) e desliza da direita pra esquerda conforme a pessoa
+   rola pra baixo (JS calcula o quanto rolou dentro da pista e move a faixa
+   com transform; ver wireNiveisHorizontal em main.js). Sem JS, os cartões
+   ficam lado a lado e dá pra arrastar com o dedo/mouse (overflow-x normal).
+   A cor do acento esquenta do azul (nível 1, só você) ao laranja (nível 7,
+   público). */
+.niveis-pin-wrap { position: relative; margin-top: clamp(2rem, 5vw, 3.2rem); }
+.niveis-pin {
   position: sticky;
-  top: calc(var(--header-h, 85px) + 14px);
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Some com a barra de rolagem nativa (o controle visual passa a ser só o
+     movimento da faixa, guiado pela rolagem vertical da página). */
+  scrollbar-width: none;
+}
+.niveis-pin::-webkit-scrollbar { display: none; }
+.etapas {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 0;
+  padding: 0 clamp(24px, 8vw, 12vw);
+  list-style: none;
+  will-change: transform;
+}
+.etapa { position: relative; flex: none; width: min(560px, 78vw); }
+.etapa-pin {
   border-radius: var(--radius-lg);
   overflow: hidden;
   isolation: isolate;
@@ -915,8 +926,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .etapa-foto {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  max-height: 58vh;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
 }
 /* Rótulo e título ficam dentro da foto, não do lado: a legenda "gruda" na
@@ -946,8 +956,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   line-height: 1.15;
   color: var(--white);
 }
-/* A legenda pequena: dentro do mesmo cartão preso, logo abaixo da foto —
-   sobe e desce junto com ela, não solta por conta própria. */
 .etapa-texto {
   margin: 0;
   padding: 1.1rem clamp(1.1rem, 3vw, 1.8rem);
@@ -959,8 +967,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .etapa-final .etapa-pin { box-shadow: var(--shadow-lg); }
 @media (max-width: 699.98px) {
-  .etapa { min-height: 115vh; }
-  .etapa-foto { aspect-ratio: 4 / 5; max-height: 50vh; }
+  .etapa { width: min(400px, 84vw); }
 }
 
 /* ---------- Accordion (módulos + FAQ) ---------- */
