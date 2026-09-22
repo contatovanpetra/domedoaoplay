@@ -462,11 +462,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: var(--t-display);
-  line-height: 1.02;
-  letter-spacing: -.03em;
+  /* O título passou a ser a frase que explica o curso (antes eram duas
+     palavras), então ele vem um degrau menor que o display e numa medida de
+     linha maior: continua o maior texto da página, sem virar bloco gigante. */
+  font-size: var(--t-titulo);
+  line-height: 1.1;
+  letter-spacing: -.02em;
   color: var(--white);
-  max-width: 14ch;
+  max-width: 22ch;
+  text-wrap: balance;
 }
 .hero-inner {
   position: relative;
@@ -2033,7 +2037,7 @@ html.abertura-on { overflow: hidden; }
     padding-bottom: 36px;
     margin-top: calc(-100vh - 140px);
   }
-  .hero-headline { font-size: 2rem; }
+  .hero-headline { font-size: 1.6rem; }
   .hero-lead-list { margin-top: .5rem; font-size: .88rem; line-height: 1.4; }
   .hero-actions { margin-top: .6rem; }
   #reconhecimento { margin-top: 0; }
