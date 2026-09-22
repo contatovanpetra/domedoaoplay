@@ -768,9 +768,35 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .vivi-card { padding-inline: 18px; }
 }
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
-.vivi-card .credential-text { text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card > p:not(.eyebrow) + p { margin-top: .9em; }
-.vivi-credenciais { margin-top: 1.6rem; padding-top: 1.1rem; border-top: 1px solid var(--border); }
+/* Números no pé da foto, como uma segunda "assinatura" fechando-a (a
+   primeira é o nome, no alto — ver .vivi-assinatura): por cima do degradê
+   escuro que a própria foto já tem embaixo (.vivi-foto::after), com o
+   mesmo texto-sombra do nome pra continuar legível em qualquer foto. */
+.vivi-credenciais {
+  /* Presa no pé da tela, igual a foto fica presa no alto (mesma duração:
+     as duas são filhas diretas da seção) — assim nunca fica pela metade,
+     com o ícone de fora e o texto escondido atrás do card. */
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 1rem clamp(24px, 5vw, 96px) clamp(1.4rem, 4vh, 2rem);
+  text-shadow: 0 1px 3px rgba(3, 10, 29, .65), 0 2px 18px rgba(3, 10, 29, .5);
+  /* Opaca o bastante pra nunca deixar o texto do card (que passa por trás,
+     rolando) transparecer por baixo do texto dos números — as duas coisas
+     legíveis ao mesmo tempo, sobrepostas, ficava impossível de ler. */
+  background: rgba(11, 23, 40, .84);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .vivi-credenciais {
+    background: rgba(11, 23, 40, .58);
+    -webkit-backdrop-filter: blur(14px) saturate(1.15);
+    backdrop-filter: blur(14px) saturate(1.15);
+  }
+}
+.vivi-credenciais .credential-item { padding: .6rem 0; }
+.vivi-credenciais .credential-item + .credential-item { border-top-color: rgba(245, 245, 245, .18); }
 @media (min-width: 900px) {
   /* Computador: a Vitória fica à direita e o card passa pela esquerda. */
   .vivi-foto img { object-position: 64% 18%; }
@@ -1331,7 +1357,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background: none;
   border: none;
 }
-.bonus-imagem { display: block; width: 100%; height: auto; max-width: 420px; }
+.bonus-imagem {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 460px;
+  animation: bonus-flutua 5s ease-in-out infinite;
+}
+/* Flutua devagar, como se estivesse no ar — mesmo efeito que o mockup já
+   sugere com o próprio brilho embaixo do aparelho. */
+@keyframes bonus-flutua {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(-1.4deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bonus-imagem { animation: none; }
+}
 .bonus-item-texto h3 { margin: 0 0 .7rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
 .bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.6; color: var(--cor-corpo); }
 .bonus-item-texto p + p { margin-top: .8em; }
@@ -1356,7 +1397,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   min-height: 100vh;
   min-height: 100svh;
   padding-top: calc(var(--header-h, 85px) + 20px);
-  padding-bottom: clamp(24px, 5vh, 56px);
+  /* Antes (24-56px) era baixo demais: a foto da seção seguinte (sem
+     padding, de propósito — ver .vivi-apple) começava quase colada no
+     depoimento, sem nenhum respiro comparável ao resto da página. */
+  padding-bottom: clamp(56px, 11vh, 128px);
+}
+/* Bug real, não só estética das setas: dentro de um flex container em
+   coluna, a margem automática do .container (a forma normal de centralizar
+   ele) desliga o esticamento e ele encolhe pro tamanho do próprio conteúdo.
+   Como os únicos filhos do .depo-palco são posicionados em absolute (não
+   contam pra largura do conteúdo), o .container encolhia bem menos do que
+   os 1160px de sempre — e todo o carrossel (vídeos e setas) era calculado
+   em cima dessa largura errada, resultando nas setas grudadas no vídeo. */
+#depoimentos .container {
+  width: min(100%, var(--container-w));
 }
 .depo-palco {
   --depo-h: min(62vh, calc(100vh - 18rem), 660px);
@@ -1383,25 +1437,37 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 12;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   transform: translateY(-50%);
   border: none;
   border-radius: 50%;
-  background: var(--orange-button);
+  background: linear-gradient(135deg, var(--orange-light), var(--orange-button));
   color: var(--white);
   box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
   cursor: pointer;
   transition: background .3s ease, transform .3s cubic-bezier(.25, .1, .25, 1);
+  /* Pulso leve e contínuo, tipo "toque aqui": um anel que nasce da própria
+     seta e se apaga ao crescer, avisando sem gritar que dá pra passar. */
+  animation: depo-seta-pulso 2.6s ease-in-out infinite;
 }
 .depo-seta svg { width: 18px; height: 18px; }
-.depo-seta--antes { left: clamp(2px, 2vw, 18px); }
-.depo-seta--depois { right: clamp(2px, 2vw, 18px); }
-.depo-seta:hover { background: var(--orange); transform: translateY(-50%) scale(1.06); }
+/* Bem mais afastadas do vídeo, perto da borda de verdade do carrossel (que
+   agora tem a largura certa — ver #depoimentos .container acima): antes
+   ficavam coladas na lateral do vídeo do lado, fáceis de confundir com o
+   play. */
+.depo-seta--antes { left: clamp(4px, 6vw, 56px); }
+.depo-seta--depois { right: clamp(4px, 6vw, 56px); }
+.depo-seta:hover { background: linear-gradient(135deg, var(--orange-light), var(--orange)); transform: translateY(-50%) scale(1.08); animation-play-state: paused; }
 .depo-seta:active { transform: translateY(-50%) scale(.96); }
 @media (prefers-reduced-motion: reduce) {
+  .depo-seta { animation: none; }
   .depo-seta:hover, .depo-seta:active { transform: translateY(-50%); }
+}
+@keyframes depo-seta-pulso {
+  0%, 100% { box-shadow: 0 2px 10px rgba(0, 0, 0, .35), 0 0 0 0 rgba(215, 119, 19, .45); }
+  50% { box-shadow: 0 2px 10px rgba(0, 0, 0, .35), 0 0 0 9px rgba(215, 119, 19, 0); }
 }
 .depo-palco:focus-visible { outline: 2px solid var(--orange); outline-offset: 6px; }
 .depo-card {
