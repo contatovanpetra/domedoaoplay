@@ -466,7 +466,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      medida de linha são calculados pra ela cair em 3 ou 4 linhas cheias (umas
      30 letras por linha). Com a escala de título e 22ch ele virava 5 ou 6
      linhas curtas, que leem como um paredão. */
-  font-size: clamp(1.45rem, 2.8vw, 2.4rem);
+  font-size: clamp(1.75rem, 3.4vw, 2.6rem);
   line-height: 1.12;
   letter-spacing: -.02em;
   color: var(--white);
@@ -480,7 +480,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O apoio fica um degrau maior que o texto corrido e mais estreito que o
    título: a hierarquia lê de cima pra baixo, sem o apoio parecer mais largo
    (e mais importante) que a frase principal. */
-.hero-lead { font-size: var(--t-lead); max-width: 46ch; }
+.hero-lead { font-size: var(--t-lead); max-width: 38ch; }
 /* Texto de apoio do herói: dois parágrafos corridos, sem marcador. */
 .hero-lead-list {
   display: block;
@@ -1904,7 +1904,9 @@ html.abertura-on { overflow: hidden; }
     justify-content: flex-start;
     align-items: stretch;
   }
-  .hero-headline { max-width: none; }
+  /* No celular e no tablet em pé os dois ocupam a mesma coluna: as bordas do
+     título e do subtítulo batem, em vez de cada um ter uma largura. */
+  .hero-headline, .hero-lead { max-width: none; }
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
   /* Degradê leve sobre a foto, só pra leitura do texto: não é um fundo à parte. */
@@ -1974,6 +1976,7 @@ html.abertura-on { overflow: hidden; }
   .hero .container.hero-inner { width: 100%; }
   .hero-inner { text-align: center; }
   .hero-copy { max-width: 600px; margin-left: auto; margin-right: auto; }
+  .hero-headline, .hero-lead { max-width: none; }
   .hero-lead { margin-left: auto; margin-right: auto; }
   .hero-scrim {
     background: linear-gradient(180deg, rgba(3, 10, 29, .55) 0, rgba(3, 10, 29, .3) 300px, transparent 480px);
