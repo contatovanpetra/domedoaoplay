@@ -669,41 +669,46 @@ function wireIntroStage() {
     relogio = setInterval(() => { s += 1; if (texto) texto.textContent = "00:00:" + String(s).padStart(2, "0"); }, 1000);
   }
 
-  // ---- A ANIMAÇÃO (em segundos de verdade, uns 6 no total) ----
+  // ---- A ANIMAÇÃO (em segundos de verdade, uns 4,5 no total) ----
+  // A mesma sequência de antes, mais curta (eram 6,5s): encurtaram a montagem
+  // do celular e a travessia; a pergunta continua com cerca de 1s de leitura
+  // depois da última palavra.
+  const CRESCE = 1.1; // a travessia: o iPhone crescendo junto com o túnel
   tl = gsap.timeline({ paused: true });
   tl
     // O túnel surge do escuro.
-    .to(veil, { opacity: 0, duration: .9, ease: "power1.out" }, 0)
-    .to(faixas, { opacity: .7, duration: .6 }, .2)
-    .to(burstPre, { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, .45)
+    .to(veil, { opacity: 0, duration: .5, ease: "power1.out" }, 0)
+    .to(faixas, { opacity: .7, duration: .4 }, .1)
+    .to(burstPre, { opacity: 1, y: 0, duration: .4, ease: "power2.out" }, .25)
     // O celular se forma: a linha do contorno se desenha, girando em 3D...
-    .to(burstLinha, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" }, .55)
-    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1.6, ease: "power2.out" }, .55)
+    .to(burstLinha, { strokeDashoffset: 0, duration: .7, ease: "power2.inOut" }, .3)
+    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1, ease: "power2.out" }, .3)
     // ...o corpo do iPhone aparece por dentro dela e a tela acende com a página.
-    .to(burstAparelho, { opacity: 1, duration: .5, ease: "power1.out" }, 1.4)
-    .to(burstScreen, { opacity: 1, duration: .6, ease: "power2.out" }, 1.6)
-    .to(burstCamera, { opacity: 1, duration: .4 }, 1.95)
-    .to(faixas, { opacity: 1, duration: .9, ease: "power2.inOut" }, 2.2)
-    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .45, stagger: .15, ease: "back.out(1.7)" }, 2.5)
-    .call(aperta, null, 3.05)
+    .to(burstAparelho, { opacity: 1, duration: .3, ease: "power1.out" }, .8)
+    .to(burstScreen, { opacity: 1, duration: .35, ease: "power2.out" }, .95)
+    .to(burstCamera, { opacity: 1, duration: .3 }, 1.15)
+    .to(faixas, { opacity: 1, duration: .5, ease: "power2.inOut" }, 1.3)
+    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .35, stagger: .1, ease: "back.out(1.7)" }, 1.45)
+    .call(aperta, null, 1.8)
     // Tempo de ler a pergunta inteira; depois o texto sai e o iPhone fica de frente.
-    .addLabel("atravessa", 4.6)
-    .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .4 }, "atravessa")
-    .to(faixas, { opacity: 0, duration: .4 }, "atravessa")
-    .to(burstStage, { rotationX: 0, rotationY: 0, duration: .5, ease: "power2.inOut" }, "atravessa")
-    .to([burstCamera, burstIlha, burstContorno], { opacity: 0, duration: .35 }, "atravessa+=.15")
+    .addLabel("atravessa", 3.1)
+    .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .3 }, "atravessa")
+    .to(faixas, { opacity: 0, duration: .3 }, "atravessa")
+    .to(burstStage, { rotationX: 0, rotationY: 0, duration: .4, ease: "power2.inOut" }, "atravessa")
+    .to([burstCamera, burstIlha, burstContorno], { opacity: 0, duration: .3 }, "atravessa+=.1")
     // ATRAVESSA: o iPhone cresce junto com o túnel, até a porta de luz, e
     // explode no clarão. A réplica lá dentro chega em escala 1: a tela VIRA a
     // página, sem corte.
-    .addLabel("cresce", "atravessa+=.4")
-    .to(burstStage, { scale: () => 1 / escalaDaReplica(), duration: 1.5, ease: "power3.in" }, "cresce")
-    .to(burstScreen, { borderRadius: 0, duration: 1.5, ease: "power3.in" }, "cresce")
-    .to(flash, { opacity: 1, duration: .45, ease: "power2.in" }, "cresce+=1.05")
+    .addLabel("cresce", "atravessa+=.3")
+    .to(burstStage, { scale: () => 1 / escalaDaReplica(), duration: CRESCE, ease: "power3.in" }, "cresce")
+    .to(burstScreen, { borderRadius: 0, duration: CRESCE, ease: "power3.in" }, "cresce")
+    // O clarão acende no fim da travessia (termina junto com o crescimento).
+    .to(flash, { opacity: 1, duration: .32, ease: "power2.in" }, "cresce+=" + (CRESCE - .32).toFixed(2))
     .call(libera)
-    .to(flash, { opacity: 0, duration: .8, ease: "power2.out" });
+    .to(flash, { opacity: 0, duration: .7, ease: "power2.out" });
 
   // ---- O TÚNEL ----
-  // Vídeo de 9s dos arcos até a porta de luz laranja, tocando sozinho. O
+  // Vídeo de 7s dos arcos até a porta de luz laranja, tocando sozinho. O
   // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
   // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
   const VIDEOS = {
@@ -711,37 +716,40 @@ function wireIntroStage() {
     computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.jpg" },
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
-  const porta = tl.labels.cresce + 1.5;
-  // Os 3 primeiros segundos do vídeo original (os mesmos arcos azuis passando
+  const porta = tl.labels.cresce + CRESCE;
+  // Os 5 primeiros segundos do vídeo original (os mesmos arcos azuis passando
   // devagar) foram cortados do próprio arquivo: ele já começa onde a abertura
-  // começa, e ninguém baixa o pedaço que não aparecia.
+  // começa, e ninguém baixa o pedaço que não aparecia. Com a abertura de 4,5s,
+  // o vídeo inteiro de 12s pedia um ritmo de 4x no fim, que o celular não
+  // acompanha enquanto desenha a página (o vídeo engasgava antes da porta).
   let comecou = false;
   let semVideo = false;
   let esperaVideo = 0;
 
-  // O túnel começa devagar e vai acelerando até a porta de luz. O ritmo final
-  // é o que faz ele chegar lá quando a tela da câmera termina de crescer (a luz
-  // do vídeo emenda no clarão).
+  // O túnel começa devagar e vai acelerando por igual até a porta de luz. O
+  // ritmo final é o que faz ele chegar lá quando a tela da câmera termina de
+  // crescer (a luz do vídeo emenda no clarão); fica perto de 2,2x, o mesmo pico
+  // da abertura longa, que o vídeo sempre acompanhou.
   const RITMO_INICIAL = 1;
   let ritmoFinal = 2;
   let ritmo = null;
   function ajustaRitmo() {
     video.defaultPlaybackRate = RITMO_INICIAL;
     video.playbackRate = RITMO_INICIAL;
-    // Com power1.in (t²), o ritmo médio é inicial + (final - inicial) / 3.
+    // Subindo por igual, o ritmo médio é a média entre o inicial e o final.
     if (isFinite(video.duration) && video.duration > 0) {
-      ritmoFinal = gsap.utils.clamp(1, 4, RITMO_INICIAL + 3 * (video.duration / porta - RITMO_INICIAL));
+      ritmoFinal = gsap.utils.clamp(1, 4, 2 * (video.duration / porta) - RITMO_INICIAL);
     }
   }
   // Onde o vídeo deve estar em cada instante da animação (a soma do ritmo).
-  const tempoDoVideo = (t) => RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t * t / (3 * porta * porta);
+  const tempoDoVideo = (t) => RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t / (2 * porta);
   function aceleraTunel() {
     const r = { v: RITMO_INICIAL };
     video.playbackRate = RITMO_INICIAL;
     ritmo = gsap.to(r, {
       v: ritmoFinal,
       duration: porta,
-      ease: "power1.in",
+      ease: "none",
       // Muda o ritmo do vídeo em passos pequenos, não a cada quadro.
       onUpdate: () => { if (Math.abs(video.playbackRate - r.v) >= .04) video.playbackRate = r.v; },
     });
