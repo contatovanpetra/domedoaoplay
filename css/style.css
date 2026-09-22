@@ -711,16 +711,28 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   padding-bottom: 16vh;
   padding-bottom: 16svh;
 }
+/* Card de cantos retos e quase transparente: a foto aparece através dele,
+   desfocada (vidro fosco). Sem suporte a desfoque, o fundo fica mais escuro
+   pra o texto continuar legível. */
 .vivi-card {
   max-width: 560px;
   padding: clamp(1.5rem, 4vw, 2.6rem);
-  border-radius: 28px;
-  background: rgba(11, 23, 40, .92);
-  border: 1px solid rgba(144, 190, 217, .18);
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .85);
+  border-radius: 0;
+  background: rgba(11, 23, 40, .62);
+  border: 1px solid rgba(245, 245, 245, .16);
 }
-.vivi-card .section-title { margin: .2rem 0 1.1rem; font-size: clamp(1.6rem, 3vw, 2.4rem); }
-.vivi-card > p:not(.eyebrow) { margin: 0; font-size: clamp(.92rem, 1.3vw, 1.02rem); line-height: 1.65; color: var(--text-muted); }
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .vivi-card {
+    background: rgba(11, 23, 40, .22);
+    -webkit-backdrop-filter: blur(16px) saturate(1.15);
+    backdrop-filter: blur(16px) saturate(1.15);
+  }
+}
+/* Nome e título centralizados, maiores; o resto do texto fica alinhado à esquerda. */
+.vivi-card .eyebrow { text-align: center; font-size: .9rem; }
+.vivi-card .section-title { margin: .3rem 0 1.3rem; text-align: center; font-size: clamp(1.75rem, 3.4vw, 2.6rem); }
+.vivi-card > p:not(.eyebrow) { margin: 0; font-size: clamp(.92rem, 1.3vw, 1.02rem); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
+.vivi-card .credential-text { text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card > p:not(.eyebrow) + p { margin-top: .9em; }
 .vivi-credenciais { margin-top: 1.6rem; padding-top: 1.1rem; border-top: 1px solid var(--border); }
 @media (min-width: 900px) {
@@ -731,7 +743,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
       linear-gradient(90deg, rgba(11, 23, 40, .72) 0%, rgba(11, 23, 40, .28) 40%, transparent 58%),
       linear-gradient(180deg, rgba(11, 23, 40, .35) 0%, transparent 22%, transparent 72%, var(--bg) 100%);
   }
-  .vivi-trilho { margin-top: -46vh; margin-top: -46svh; }
+  /* O card encosta mais na esquerda e fica um pouco mais estreito: a foto é
+     centralizada, e o rosto dela fica livre, do lado do card. */
+  .vivi-trilho { width: auto; max-width: none; margin: -46vh 0 0; margin-top: -46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
+  .vivi-card { max-width: 520px; }
 }
 
 /* Credenciais: 3 linhas com ícone próprio e separador fino entre elas —
