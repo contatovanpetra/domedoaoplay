@@ -882,39 +882,46 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 /* ---------- Os 7 níveis da escada ----------
-   Referência: a "loja" de apps do Fitness+ na Apple — a faixa de cartões fica
-   presa na tela (sticky) e desliza da direita pra esquerda conforme a pessoa
-   rola pra baixo (JS calcula o quanto rolou dentro da pista e move a faixa
-   com transform; ver wireNiveisHorizontal em main.js). Sem JS, os cartões
-   ficam lado a lado e dá pra arrastar com o dedo/mouse (overflow-x normal).
+   Rolagem infinita automática, tipo letreiro: a faixa nunca para e não
+   depende de rolagem nem mouse — puro CSS (@keyframes, sem JS nenhum). A
+   faixa tem os 7 níveis duplicados lado a lado (a 2ª cópia é decorativa,
+   aria-hidden); andando -50% da própria largura ela volta pro início sem
+   ninguém notar a costura. Pausa ao passar o mouse, pra dar tempo de ler.
    A cor do acento esquenta do azul (nível 1, só você) ao laranja (nível 7,
    público). */
-.niveis-pin-wrap { position: relative; margin-top: clamp(2rem, 5vw, 3.2rem); }
-.niveis-pin {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  overflow-y: hidden;
-  /* Some com a barra de rolagem nativa (o controle visual passa a ser só o
-     movimento da faixa, guiado pela rolagem vertical da página). */
-  scrollbar-width: none;
+.niveis-marquee {
+  position: relative;
+  overflow: hidden;
+  margin-top: clamp(2rem, 5vw, 3.2rem);
+  /* Máscara nas bordas: os cartões somem suavemente ao entrar/sair da faixa,
+     em vez de cortar em seco. */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
 }
-.niveis-pin::-webkit-scrollbar { display: none; }
+.etapas-track {
+  display: flex;
+  width: max-content;
+  animation: niveis-marquee 38s linear infinite;
+}
+.niveis-marquee:hover .etapas-track { animation-play-state: paused; }
+@keyframes niveis-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
 .etapas {
   display: flex;
   align-items: center;
-  gap: clamp(1rem, 3vw, 2rem);
+  gap: clamp(.9rem, 2vw, 1.4rem);
   margin: 0;
-  padding: 0 clamp(24px, 8vw, 12vw);
+  padding: 0 clamp(.45rem, 1vw, .7rem);
   list-style: none;
-  will-change: transform;
 }
-.etapa { position: relative; flex: none; width: min(560px, 78vw); }
+/* Tamanho de vitrine, não de tela cheia: dá pra ver vários níveis por vez.
+   Altura vem só do conteúdo (foto + legenda pequena), não de "100% de algo" —
+   sem isso, cada cartão esticava pra altura da tela inteira. */
+.etapa { position: relative; flex: none; width: clamp(190px, 21vw, 240px); }
 .etapa-pin {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
   isolation: isolate;
   box-shadow: var(--shadow-md);
@@ -926,6 +933,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .etapa-foto {
   display: block;
   width: 100%;
+  /* Sem "height: auto" aqui, os atributos width/height do <img> no HTML
+     (1122x1402, usados contra CLS) ganham do aspect-ratio, e a foto
+     renderizava na altura real do arquivo (1402px) em vez da altura da
+     vitrine pequena. */
+  height: auto;
   aspect-ratio: 4 / 5;
   object-fit: cover;
 }
@@ -937,37 +949,41 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   left: 0;
   right: 0;
   bottom: 0;
-  padding: clamp(1.1rem, 3vw, 1.8rem) clamp(1.1rem, 3vw, 1.8rem) clamp(1.3rem, 3.4vw, 2rem);
-  background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .55) 45%, rgba(6, 14, 28, .92) 100%);
+  padding: .9rem .8rem 1rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .6) 45%, rgba(6, 14, 28, .94) 100%);
 }
 .etapa-rotulo {
   display: block;
-  font-size: var(--t-rotulo);
+  font-size: .68rem;
   font-weight: 600;
-  letter-spacing: .1em;
+  letter-spacing: .09em;
   text-transform: uppercase;
   /* Um pouco mais claro que a cor do degrau: do azul (nível 1) ao laranja
      (nível 7), todos ficam acima de 4,5 de contraste com o fundo escuro. */
   color: color-mix(in srgb, var(--cor), #fff 24%);
 }
 .etapa-legenda h3 {
-  margin: .3rem 0 0;
-  font-size: var(--t-subtitulo);
-  line-height: 1.15;
+  margin: .2rem 0 0;
+  font-size: .98rem;
+  line-height: 1.2;
   color: var(--white);
 }
 .etapa-texto {
   margin: 0;
-  padding: 1.1rem clamp(1.1rem, 3vw, 1.8rem);
+  padding: .8rem .8rem .9rem;
   background: #0E1D31;
-  font-size: var(--t-corpo);
-  line-height: 1.5;
+  font-size: var(--t-pequeno);
+  line-height: 1.45;
   color: var(--cor-corpo);
   text-align: center;
 }
 .etapa-final .etapa-pin { box-shadow: var(--shadow-lg); }
 @media (max-width: 699.98px) {
-  .etapa { width: min(400px, 84vw); }
+  .etapa { width: clamp(148px, 42vw, 190px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .etapas-track { animation: none; }
+  .niveis-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
 }
 
 /* ---------- Accordion (módulos + FAQ) ---------- */
