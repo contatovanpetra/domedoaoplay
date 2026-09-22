@@ -725,19 +725,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .vivi-nome { font-family: var(--font-head); font-weight: 700; font-size: var(--t-titulo); line-height: 1.05; letter-spacing: -.015em; color: var(--orange); }
 .vivi-cargo { margin-top: .5rem; font-family: var(--font-body); font-weight: 600; font-size: var(--t-rotulo); letter-spacing: .14em; text-transform: uppercase; color: var(--white); }
-/* Título centralizado, maior, uma frase em cada linha; o resto do texto fica à esquerda. */
-.vivi-card { container-type: inline-size; }
-.vivi-card .section-title { margin: .3rem 0 1.3rem; text-align: center; font-size: clamp(1.75rem, 3.4vw, 2.6rem); }
-.vivi-card .section-title span { display: block; white-space: nowrap; }
+/* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
+   título da seção. */
 @media (max-width: 899.98px) {
-  /* Celular: menos borda e o título do tamanho que cabe. A regra geral fica
-     antes desta: quando vinha depois, ela ganhava, o título ficava com 28px e
-     "Criadora de conteúdo há 8." saía cortado. O tamanho acompanha a largura
-     do card (cqi): a frase mais longa ocupa 12,24 vezes o tamanho da letra,
-     então 7,9cqi sempre cabe, com folga. O vw é a reserva pra navegador sem cqi. */
   .vivi-trilho { padding-inline: 16px; }
   .vivi-card { padding-inline: 18px; }
-  .vivi-card .section-title { font-size: clamp(1.1rem, 5.8vw, 1.75rem); font-size: min(1.75rem, 7.9cqi); }
 }
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card .credential-text { text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
@@ -755,7 +747,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      centralizada, e o rosto dela fica livre, do lado do card. */
   .vivi-trilho { width: auto; max-width: none; margin: -46vh 0 0; margin-top: -46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
   .vivi-card { max-width: 600px; }
-  .vivi-card .section-title { font-size: clamp(1.75rem, 2.5vw, 2.2rem); }
 }
 
 /* Credenciais: 3 linhas com ícone próprio e separador fino entre elas —
@@ -850,7 +841,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O fecho do raciocínio ganha a cor do texto principal. */
 .texto-corrido .texto-forte { color: var(--text); }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
-.texto-corrido .texto-destaque { padding-left: 1.1rem; border-left: 2px solid var(--orange); color: var(--text); }
 
 /* Cards do "você se reconhece": cada sinal batendo o olho, em vez de um
    parágrafo corrido — mesmo tratamento discreto do .beneficio (transparente,
@@ -914,25 +904,32 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    público). */
 .niveis-marquee {
   position: relative;
-  overflow: hidden;
+  /* A faixa anda sozinha pelo JS (wireNiveisFaixa) e a pessoa pode arrastar
+     com o dedo ou com o mouse: por isso ela é uma tira que rola de verdade,
+     não mais uma animação de transform. A barra de rolagem fica escondida;
+     o gesto é o comando. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  /* Sem isto, arrastar com o mouse em cima de uma foto começa o "arrastar
+     imagem" do navegador e a faixa não anda. */
+  user-select: none;
+  -webkit-user-select: none;
   margin-top: clamp(2rem, 5vw, 3.2rem);
   /* Máscara nas bordas: os cartões somem suavemente ao entrar/sair da faixa,
      em vez de cortar em seco. */
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
 }
+.niveis-marquee::-webkit-scrollbar { width: 0; height: 0; display: none; }
+.niveis-marquee.is-arrastando { cursor: grabbing; }
+.niveis-marquee:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
 .etapas-track {
   display: flex;
   width: max-content;
-  animation: niveis-marquee 38s linear infinite;
-  /* GPU compositing: a faixa roda no próprio layer, sem competir com o
-     trabalho de layout/pintura da rolagem da página (evita engasgo). */
-  will-change: transform;
-}
-.niveis-marquee:hover .etapas-track { animation-play-state: paused; }
-@keyframes niveis-marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
 }
 .etapas {
   display: flex;
@@ -963,6 +960,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .etapa-foto {
   display: block;
+  -webkit-user-drag: none;
   width: 100%;
   /* Sem "height: auto" aqui, os atributos width/height do <img> no HTML
      (1122x1402, usados contra CLS) ganham do aspect-ratio, e a foto
@@ -1020,10 +1018,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 @media (max-width: 699.98px) {
   .etapa { width: clamp(148px, 42vw, 190px); }
 }
-@media (prefers-reduced-motion: reduce) {
-  .etapas-track { animation: none; }
-  .niveis-marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
-}
+/* Quem pede menos movimento não vê a faixa andar sozinha (o JS não liga o
+   passo automático), mas continua podendo arrastar. */
 
 /* ---------- Accordion (módulos + FAQ) ---------- */
 .accordion { margin-top: 2.5rem; display: grid; gap: .9rem; }
@@ -1289,6 +1285,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O vídeo do meio é sempre o maior; os outros dois aparecem menores dos lados
    e vêm pro meio arrastando (ver wireDepoimentos em main.js). A altura segue a
    tela, pra seção inteira caber de uma vez, sem rolar dentro dela. */
+/* A seção cabe numa tela só: título, vídeos e legenda, sem precisar rolar no
+   meio dela. O palco ocupa o que sobra da altura da tela. */
+#depoimentos {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding-top: calc(var(--header-h, 85px) + 20px);
+  padding-bottom: clamp(24px, 5vh, 56px);
+}
 .depo-palco {
   --depo-h: min(54vh, calc(100vh - 21rem), 560px);
   --depo-h: min(54svh, calc(100svh - 21rem), 560px);
@@ -1303,6 +1310,36 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   -webkit-user-select: none;
 }
 .depo-palco.is-arrastando { cursor: grabbing; }
+/* Setas dos dois lados: mesmo desenho discreto do resto da página, tamanho de
+   toque de 44px e sempre por cima dos vídeos dos lados. */
+.depo-seta {
+  position: absolute;
+  top: calc(var(--depo-w) * 8 / 9);
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(11, 23, 40, .72);
+  color: var(--white);
+  cursor: pointer;
+  transition: background .3s ease, transform .3s cubic-bezier(.25, .1, .25, 1);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .depo-seta { background: rgba(11, 23, 40, .45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+}
+.depo-seta svg { width: 22px; height: 22px; }
+.depo-seta--antes { left: clamp(2px, 2vw, 18px); }
+.depo-seta--depois { right: clamp(2px, 2vw, 18px); }
+.depo-seta:hover { background: rgba(11, 23, 40, .9); transform: translateY(-50%) scale(1.06); }
+.depo-seta:active { transform: translateY(-50%) scale(.96); }
+@media (prefers-reduced-motion: reduce) {
+  .depo-seta:hover, .depo-seta:active { transform: translateY(-50%); }
+}
 .depo-palco:focus-visible { outline: 2px solid var(--orange); outline-offset: 6px; }
 .depo-card {
   position: absolute;
@@ -1816,17 +1853,6 @@ html.abertura-on { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue svg { animation: none; }
 }
-
-/* ---------- Seta nos botões de compra ----------
-   Aponta pra ação e dá um empurrãozinho de vez em quando, sem piscar. */
-.btn-seta { width: 1.05em; height: 1.05em; margin-left: .55em; flex: none; vertical-align: -.16em; animation: btn-seta 3.2s cubic-bezier(.25, .1, .25, 1) infinite; }
-.btn:hover .btn-seta { animation: none; transform: translateX(4px); transition: transform .3s cubic-bezier(0, 0, .5, 1); }
-@keyframes btn-seta {
-  0%, 72%, 100% { transform: translateX(0); }
-  82% { transform: translateX(5px); }
-  92% { transform: translateX(0); }
-}
-@media (prefers-reduced-motion: reduce) { .btn-seta { animation: none; } }
 
 /* ---------- Entrada na rolagem (como na Apple) ----------
    Só aparece e sobe um pouco, devagar e sem giro: o movimento acompanha a

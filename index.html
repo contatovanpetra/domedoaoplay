@@ -201,7 +201,7 @@
          uma vez só. Pausa ao passar o mouse, pra dar tempo de ler; some com
          a animação pra quem pede menos movimento (aí vira uma tira com
          rolagem manual). -->
-    <div class="niveis-marquee" data-confirmar="fotos da escada provisórias: telas e mensagens em inglês, refazer em português">
+    <div class="niveis-marquee" role="region" tabindex="0" aria-label="Os 7 níveis da Escada de Exposição. Arraste para o lado ou use as setas do teclado." data-confirmar="fotos da escada provisórias: telas e mensagens em inglês, refazer em português">
       <div class="etapas-track">
         <ol class="etapas" aria-label="Os 7 níveis da escada de exposição">
         <li class="etapa" style="--cor: var(--blue)">
@@ -379,7 +379,7 @@
     </div>
     <div class="container metodo-fecho">
       <p class="metodo-frase">Um nível de cada vez. <span class="text-orange">Até dar o play.</span></p>
-      <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena<svg class="btn-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
     </div>
   </section>
 
@@ -389,7 +389,6 @@
       <h2 id="aplicacao-title" class="section-title center">Falar melhor em vídeo amplia o que você consegue fazer na internet.</h2>
       <div class="texto-corrido">
         <p>Mostrar um produto, explicar um serviço, compartilhar conhecimento, criar conteúdo, construir autoridade ou trabalhar como afiliado depende, muitas vezes, da sua capacidade de se comunicar diante da câmera. Quando você desenvolve essa habilidade, fica mais preparado para apresentar o que faz, defender suas ideias, ser entendido e aproveitar oportunidades que dependem da sua presença.</p>
-        <p class="texto-destaque">Comunicação não substitui estratégia, oferta ou conteúdo, mas coloca você em melhores condições de usar tudo isso quando o vídeo faz parte do caminho.</p>
       </div>
     </div>
   </section>
@@ -400,7 +399,7 @@
   <section class="section" id="depoimentos" aria-labelledby="depoimentos-title">
     <div class="container">
       <h2 id="depoimentos-title" class="section-title center">Veja quem já deu o play.</h2>
-      <div class="depo-palco" role="region" tabindex="0" aria-roledescription="carrossel" aria-label="Depoimentos em vídeo. Arraste para o lado ou use as setas do teclado para ver os outros." data-confirmar="depoimentos a gravar com os alunos que vão testar antes do lançamento">
+      <div class="depo-palco" role="region" tabindex="0" aria-roledescription="carrossel" aria-label="Depoimentos em vídeo. Use as setas dos lados, arraste ou use as setas do teclado para ver os outros." data-confirmar="depoimentos a gravar com os alunos que vão testar antes do lançamento">
         <figure class="depo-card">
           <div class="depo-video">
             <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
@@ -434,6 +433,13 @@
             <p class="depo-resultado">Resultado ou mudança concreta percebida ao longo do curso</p>
           </figcaption>
         </figure>
+        <!-- Setas dos dois lados: quem não descobre o arrasto troca de vídeo no clique. -->
+        <button type="button" class="depo-seta depo-seta--antes" aria-label="Ver o depoimento anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button type="button" class="depo-seta depo-seta--depois" aria-label="Ver o próximo depoimento">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -449,16 +455,15 @@
         <source srcset="assets/img/vitoria-caroline-palestra.webp" type="image/webp">
         <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy">
       </picture>
-      <p class="vivi-assinatura">
+      <h2 class="vivi-assinatura" id="autoridade-title">
         <strong class="vivi-nome">Vitória Caroline</strong>
         <span class="vivi-cargo">criadora do método Do Medo ao Play</span>
-      </p>
+      </h2>
     </div>
     <div class="container vivi-trilho">
       <article class="vivi-card">
-        <h2 id="autoridade-title" class="section-title"><span>Educadora há 13 anos.</span> <span>Criadora de conteúdo há 8.</span></h2>
-        <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional.</p>
-        <p>Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas. Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
+        <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional. Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas.</p>
+        <p>Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
         <ul class="credential-list vivi-credenciais">
           <li class="credential-item credential-item-edu">
           <span class="credential-icon" aria-hidden="true"></span>
@@ -679,7 +684,7 @@
 
         <p class="offer-inclui">7 módulos · 32 aulas · X horas de formação · acompanhamento · 2 bônus · certificado</p>
 
-        <a href="#" data-checkout-link class="btn btn-primary btn-large btn-block">Quero entrar em cena<svg class="btn-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="#" data-checkout-link class="btn btn-primary btn-large btn-block">Quero entrar em cena</a>
         <p class="hero-microcopy center" data-confirmar="link de checkout da Hotmart (os botões ainda levam a um link provisório)">Compra 100% online processada pela Hotmart.</p>
       </div>
     </div>
@@ -799,7 +804,7 @@
         <p class="section-lead">Talvez hoje exista uma distância entre a forma como você se comunica normalmente e aquilo que consegue mostrar quando a câmera liga. O Do Medo ao Play foi criado para trabalhar justamente esse espaço, usando técnica, prática e uma progressão que começa no nível em que você está agora.</p>
         <p class="section-lead">A primeira gravação não precisa parecer com a última. É para isso que existe a Escada de Exposição.</p>
         <p class="final-frase">Atravesse o medo. <span class="text-orange">Apareça.</span></p>
-        <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena<svg class="btn-seta" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
         <p class="hero-microcopy">R$ 197 · compra única · sem mensalidade</p>
       </div>
     </div>

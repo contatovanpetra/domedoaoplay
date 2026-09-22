@@ -35,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireAccordions();
   wireScrollReveal();
   wireDepoimentos();
+  wireNiveisFaixa();
   wireCountUp();
   wireScrollEffects();
   wireScrollCue();
@@ -451,8 +452,99 @@ function wireDepoimentos() {
     if (e.key === "ArrowRight") { e.preventDefault(); vai(ativo + 1); }
     if (e.key === "ArrowLeft") { e.preventDefault(); vai(ativo - 1); }
   });
+  // As setas dos dois lados: quem não descobre o arrasto troca de vídeo no clique.
+  palco.querySelectorAll(".depo-seta").forEach((seta) => {
+    seta.addEventListener("click", (e) => {
+      e.preventDefault();
+      vai(ativo + (seta.classList.contains("depo-seta--antes") ? -1 : 1));
+    });
+  });
   window.addEventListener("resize", () => desenha(false), { passive: true });
   desenha(false);
+}
+
+// A faixa dos níveis anda sozinha, devagar, e obedece à mão: arrastar com o
+// dedo (rolagem nativa) ou com o mouse leva a faixa pro lado, e ela volta a
+// andar sozinha pouco depois que a pessoa solta. Os 7 níveis aparecem
+// duplicados no HTML: ao passar da metade, a rolagem volta pro começo, então a
+// faixa nunca acaba e ninguém vê a emenda.
+function wireNiveisFaixa() {
+  const faixa = document.querySelector(".niveis-marquee");
+  const trilho = faixa && faixa.querySelector(".etapas-track");
+  if (!faixa || !trilho) return;
+  const metade = () => trilho.scrollWidth / 2 || 1;
+  const VELOCIDADE = 26; // pixels por segundo
+  let pausadoAte = 0;    // enquanto a pessoa mexe, o passo automático espera
+  let comOMouseEmCima = false;
+  let mao = null;        // dedo ou mouse segurando a faixa
+  let naTela = true;
+  let ultimo = 0;
+
+  // Emenda invisível: passando da metade, volta pro começo (e vice-versa).
+  const emenda = () => {
+    const m = metade();
+    if (faixa.scrollLeft >= m) faixa.scrollLeft -= m;
+    else if (faixa.scrollLeft < 0) faixa.scrollLeft += m;
+  };
+  const espera = (ms) => { pausadoAte = performance.now() + ms; };
+
+  // A posição é contada aqui em número quebrado e só depois vira rolagem: a
+  // 26px por segundo, cada quadro anda menos de meio pixel, e somar isso
+  // direto na rolagem não sai do lugar (o navegador arredonda e perde o resto).
+  let pos = faixa.scrollLeft;
+  function passo(t) {
+    const dt = ultimo ? Math.min(.05, (t - ultimo) / 1000) : 0;
+    ultimo = t;
+    if (naTela && !mao && !comOMouseEmCima && t > pausadoAte && !prefersReducedMotion) {
+      const m = metade();
+      pos += VELOCIDADE * dt;
+      if (pos >= m) pos -= m;
+      faixa.scrollLeft = pos;
+    } else {
+      // Enquanto a pessoa manda (arrasto, roda, teclado), a conta acompanha ela.
+      pos = faixa.scrollLeft;
+    }
+    requestAnimationFrame(passo);
+  }
+  requestAnimationFrame(passo);
+
+  // O navegador tenta "arrastar a imagem" quando a mão começa em cima de uma foto.
+  faixa.addEventListener("dragstart", (e) => e.preventDefault());
+  faixa.addEventListener("mouseenter", () => { comOMouseEmCima = true; });
+  faixa.addEventListener("mouseleave", () => { comOMouseEmCima = false; });
+  faixa.addEventListener("wheel", () => espera(1500), { passive: true });
+  faixa.addEventListener("keydown", () => espera(2500));
+  // A rolagem nativa (dedo, trackpad, teclado) também precisa da emenda.
+  faixa.addEventListener("scroll", emenda, { passive: true });
+
+  faixa.addEventListener("pointerdown", (e) => {
+    // No dedo, quem rola é o próprio navegador: aqui só seguramos o passo automático.
+    mao = { id: e.pointerId, mouse: e.pointerType === "mouse", x: e.clientX, inicio: faixa.scrollLeft };
+    if (mao.mouse) {
+      faixa.classList.add("is-arrastando");
+      try { faixa.setPointerCapture(e.pointerId); } catch { /* segue sem captura */ }
+    }
+  });
+  faixa.addEventListener("pointermove", (e) => {
+    if (!mao || !mao.mouse || e.pointerId !== mao.id) return;
+    e.preventDefault();
+    faixa.scrollLeft = mao.inicio - (e.clientX - mao.x);
+    emenda();
+  });
+  const solta = (e) => {
+    if (!mao || (e && e.pointerId !== mao.id)) return;
+    mao = null;
+    faixa.classList.remove("is-arrastando");
+    espera(1200);
+  };
+  faixa.addEventListener("pointerup", solta);
+  faixa.addEventListener("pointercancel", solta);
+  faixa.addEventListener("pointerleave", solta);
+
+  // Parada quando a faixa não está na tela: nada de rodar à toa.
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((e) => { naTela = e[0].isIntersecting; }, { threshold: 0 }).observe(faixa);
+  }
 }
 
 function wireScrollReveal() {
