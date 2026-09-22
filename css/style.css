@@ -882,12 +882,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .nivel-card:nth-child(6) { --cor: color-mix(in srgb, var(--blue), var(--orange) 88%); }
 .nivel-card:nth-child(7) { --cor: var(--orange); }
 .nivel-card {
+  --pad-x: clamp(.7rem, 2.6vw, 1.5rem);
   position: relative;
   flex: 0 0 var(--card);
   display: flex;
   flex-direction: column;
-  min-height: calc(var(--card) * 1.28);
-  padding: clamp(.8rem, 3vw, 1.6rem) clamp(.7rem, 2.6vw, 1.5rem) clamp(.9rem, 3vw, 1.7rem);
+  padding: 0 var(--pad-x) clamp(.9rem, 3vw, 1.7rem);
   overflow: hidden;
   background:
     radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--cor), transparent 78%), transparent 70%),
@@ -907,21 +907,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: color-mix(in srgb, var(--cor), transparent 84%);
   pointer-events: none;
 }
-.nivel-icone {
-  display: grid;
-  place-items: center;
-  width: clamp(2.3rem, 9vw, 4.4rem);
-  height: clamp(2.3rem, 9vw, 4.4rem);
-  margin-bottom: auto;
-  border-radius: 50%;
-  color: var(--cor);
-  background: color-mix(in srgb, var(--cor), transparent 86%);
-  border: 1px solid color-mix(in srgb, var(--cor), transparent 55%);
+/* A foto de cada nível ocupa o alto do card, de ponta a ponta: a plateia que
+   cresce aparece na tela do celular e na cor do fundo. */
+.nivel-foto {
+  position: relative;
+  display: block;
+  width: calc(100% + 2 * var(--pad-x));
+  max-width: none;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  margin: 0 calc(-1 * var(--pad-x)) clamp(.7rem, 2.6vw, 1rem);
+  object-fit: cover;
 }
-.nivel-icone svg { width: 55%; height: 55%; }
 .nivel-rotulo {
   position: relative;
-  margin-top: clamp(1rem, 5vw, 2.2rem);
+  margin-top: 0;
   font-size: clamp(.66rem, 2.2vw, .78rem);
   font-weight: 600;
   letter-spacing: .1em;
@@ -965,6 +965,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Cada nível, um degrau acima do anterior. */
 .cinema-on .nivel-card { translate: 0 calc(var(--i, 0) * var(--degrau) * -1); }
+/* Tela baixa (celular deitado, janela baixa): foto mais baixa e degraus
+   menores, pra fila caber inteira no palco. */
+@media (max-height: 620px) {
+  .cinema-on .niveis-trilho { --card: 220px; --degrau: 10px; }
+  .nivel-foto { aspect-ratio: 16 / 10; object-position: 50% 42%; }
+  .nivel-card h3 { font-size: 1.05rem; }
+  .nivel-card p { font-size: .8rem; }
+}
+@media (max-height: 420px) {
+  .cinema-on .niveis-trilho { --card: 200px; }
+  .nivel-foto { aspect-ratio: 16 / 9; }
+  .nivel-card p { display: none; }
+}
 /* Barra fininha que enche conforme a pessoa sobe os níveis. */
 .niveis-progresso { display: none; }
 .cinema-on .niveis-progresso {
