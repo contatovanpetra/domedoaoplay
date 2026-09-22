@@ -9,7 +9,6 @@
 :root {
   --black: #0A0A0A;
   --bg: #0B1728;
-  --bg-panel: rgba(27, 48, 70, 0.78);
   --white: #FFFFFF;
   --blue: #4682B4;
   --blue-deep: #14456B;
@@ -22,7 +21,6 @@
      texto/detalhe ficar sempre o da marca. */
   --orange-light: #D77713;
   --orange-button: #B65B08;
-  --silver: #C0CBD6;
   --text: #F5F5F5;
   --text-muted: #C0CBD6;
   --border: rgba(192, 203, 214, 0.16);
@@ -45,9 +43,6 @@
   /* Canto redondo é linguagem de CTA e de bônus. Card (comparação, qualificação,
      módulo, pergunta, oferta, quem ensina) é quadrado: o contraste entre a caixa
      reta e o botão arredondado é o que faz o botão saltar. */
-  --radius-lg: 28px;
-  --radius-md: 18px;
-  --radius-sm: 12px;
 
   --container-w: 1160px;
 
@@ -226,8 +221,13 @@ ul { padding: 0; margin: 0; list-style: none; }
    continuar legível quando passa sobre uma parte clara da página. */
 .site-header .logo-mark { filter: drop-shadow(0 1px 6px rgba(3, 10, 29, .6)); }
 .site-header.is-on { transform: translateY(0); opacity: 1; visibility: visible; transition: transform .5s ease, opacity .4s ease, visibility 0s; }
+/* Depois do topo, o menu sobe e some quando a pessoa desce (o texto não passa
+   mais por baixo da logo e do botão) e volta assim que ela sobe. Continua sem
+   cor nenhuma atrás. Ver wireHeaderReveal em main.js. */
+.site-header.is-on.is-recolhido { transform: translateY(-100%); opacity: 0; visibility: hidden; transition: transform .35s ease, opacity .3s ease, visibility 0s linear .35s; }
 @media (prefers-reduced-motion: reduce) {
   .site-header { transform: none; opacity: 1; visibility: visible; transition: none; }
+  .site-header.is-on.is-recolhido { transition: none; }
 }
 .header-inner {
   display: flex;
@@ -242,6 +242,10 @@ ul { padding: 0; margin: 0; list-style: none; }
   align-items: center;
   gap: .6rem;
   flex-shrink: 0;
+  /* Área de toque de 44px; a margem negativa devolve o espaço, então o menu
+     e o rodapé continuam com a mesma altura. */
+  min-height: 44px;
+  margin-block: -2px;
 }
 /* Logo recortada (sem a margem vazia do arquivo): 40px de altura = 102px de largura. */
 .logo-mark { display: block; height: 40px; width: auto; }
@@ -251,6 +255,14 @@ ul { padding: 0; margin: 0; list-style: none; }
 html { scroll-padding-top: var(--header-h, 85px); }
 
 .header-cta { flex-shrink: 0; }
+/* Tela de toque (tablet): o botão do menu também chega a 44px de altura. */
+@media (pointer: coarse) { .header-cta { min-height: 44px; } }
+
+/* ---------- Títulos sem palavra sozinha na última linha ----------
+   O navegador equilibra as linhas (sem mudar o texto). O título do herói e a
+   frase final ficam de fora: a quebra deles é de propósito ("cresce." e
+   "Apareça." sozinhos na linha de baixo). */
+.section-title, .statement-title, .nivel-card h3, .beneficio h3, .bonus-item h3, .accordion-trigger > span:first-child, .vivi-cargo { text-wrap: balance; }
 
 /* ---------- Eyebrow / Section titles ---------- */
 /* Indicador "gravando", não pílula genérica: liga direto com o tema do curso (câmera). */
@@ -300,15 +312,11 @@ html { scroll-padding-top: var(--header-h, 85px); }
    fica idêntico em qualquer celular. Os ícones em linha herdam a cor do texto;
    os marcadores de lista usam máscara pra poder trocar a cor por variante. */
 :root {
-  --ico-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M7 7l10 10M17 7 7 17'/%3E%3C/svg%3E");
-  --ico-play: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5.5v13l11-6.5z' fill='black'/%3E%3C/svg%3E");
-  --ico-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5 10 17.5 19 7'/%3E%3C/svg%3E");
   /* Credenciais da autoridade (seção #vivi): um ícone por credencial, no
      lugar da bolinha de lista genérica. */
   --ico-cred-edu: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4 2 9l10 5 10-5-10-5Z'/%3E%3Cpath d='M6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5'/%3E%3Cpath d='M20 9v5.2'/%3E%3C/svg%3E");
   --ico-cred-camera: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='7' width='12' height='10' rx='2.2'/%3E%3Cpath d='M15 10.3 21 7v10l-6-3.3'/%3E%3C/svg%3E");
   --ico-cred-mic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='3' width='6' height='11' rx='3'/%3E%3Cpath d='M5 11a7 7 0 0 0 14 0'/%3E%3Cpath d='M12 18v3M9 21h6'/%3E%3C/svg%3E");
-  --ico-cred-steps: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='14' width='4' height='6' rx='1'/%3E%3Crect x='10' y='9' width='4' height='11' rx='1'/%3E%3Crect x='17' y='4' width='4' height='16' rx='1'/%3E%3C/svg%3E");
 }
 .icon {
   width: 1.1em;
@@ -370,22 +378,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Sections generic ---------- */
 .section { padding: 128px 0; position: relative; }
 
-/* "Fumaça" de transição entre o fim do herói e a primeira seção comum: o
-   herói termina com cor sólida (.cinema-stage::after) e o resto da página
-   só tem o brilho fraco do .page-bg fixo — sem nada aqui, a costura entre
-   os dois aparece como um corte duro de tela. Este glow solto (mesmo azul
-   do .hero-bg/.page-bg, nada de cor nova) preenche só o topo da seção. */
-#reconhecimento::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -1px;
-  height: 55vh;
-  background: radial-gradient(65% 100% at 50% 0%, rgba(70, 130, 180, .26), transparent 78%);
-  z-index: -1;
-  pointer-events: none;
-}
 
 /* Fundo único e fixo atrás de toda a página (a partir do fim do hero):
    não rola nem se repete por seção, então não existe corte entre elas —
@@ -408,8 +400,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    um degradê suave quase não aparece. A profundidade vem da sombra em camadas. */
 
 /* ---------- Hero ---------- */
-/* O herói é uma pista de rolagem alta; o "palco" gruda na tela e o portal se
-   aproxima conforme você desce. Sem biblioteca: só variáveis CSS que o JS move. */
+/* A foto é o fundo do herói inteiro: a página sobe normalmente e a foto cresce
+   devagar conforme você desce. Sem biblioteca: só variáveis CSS que o JS move. */
 .hero {
   position: relative;
   padding: 0;
@@ -431,17 +423,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   display: flex;
   align-items: center;
 }
-/* A foto dissolve no fundo da página, em qualquer nível de zoom do portal. */
-.cinema-stage::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -4px;
-  height: 26%;
-  background: linear-gradient(180deg, transparent, var(--bg) 88%);
-  z-index: 2;
-  pointer-events: none;
+/* A foto dissolve no fundo da página: o pé dela fica transparente e deixa ver
+   o mesmo fundo fixo (.page-bg) que continua na seção seguinte, então não sobra
+   emenda. Antes ela escurecia até uma cor chapada e a seção de baixo começava
+   num azul mais claro, com uma linha reta entre as duas. O degradê é curto (no
+   máximo 150px) pra nunca apagar o botão, que fica logo acima do pé da foto. */
+.hero-photo-bg {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - min(18%, 150px)), rgba(0, 0, 0, .62) calc(100% - min(18%, 150px) * .55), rgba(0, 0, 0, .22) calc(100% - min(18%, 150px) * .22), transparent 100%);
+  mask-image: linear-gradient(180deg, #000 calc(100% - min(18%, 150px)), rgba(0, 0, 0, .62) calc(100% - min(18%, 150px) * .55), rgba(0, 0, 0, .22) calc(100% - min(18%, 150px) * .22), transparent 100%);
 }
 /* will-change só enquanto o herói está na tela (classe ligada pelo JS). */
 .cinema-stage.is-live .hero-photo-bg img { will-change: transform; }
@@ -454,14 +443,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   letter-spacing: -.03em;
   color: var(--white);
   max-width: 14ch;
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(60% 50% at 78% 15%, rgba(70, 130, 180, 0.35), transparent 60%),
-    radial-gradient(40% 40% at 20% 80%, rgba(215, 119, 19, 0.12), transparent 60%);
-  z-index: 0;
 }
 .hero-inner {
   position: relative;
@@ -503,7 +484,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   position: absolute;
   inset: 0;
   overflow: hidden;
-  transform: scale(var(--portal-scale, 1)) translateY(var(--portal-y, 0px));
+  transform: scale(var(--portal-scale, 1));
   transform-origin: var(--portal-origin, 50% 50%);
   /* O céu escuro do alto da própria foto: quando a cena desce, ele continua. */
   background: #030a1d;
@@ -651,27 +632,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 1;
 }
 
-/* Brilho de portal atrás do CTA final: azul-aço com um núcleo quente pequeno.
-   O manual proíbe laranja em fundo grande, e o filter: blur deixava a
-   rolagem pesada. O próprio degradê já é suave. */
-.portal-glow {
-  position: absolute;
-  left: 50%;
-  bottom: 6%;
-  width: 55%;
-  height: 45%;
-  transform: translateX(-50%);
-  background:
-    radial-gradient(closest-side, rgba(248, 161, 50, .38), rgba(215, 119, 19, .12) 32%, transparent 58%),
-    radial-gradient(closest-side, rgba(144, 190, 217, .34), rgba(70, 130, 180, .2) 55%, transparent 100%);
-  border-radius: 50%;
-  animation: glow-pulse 4s ease-in-out infinite;
-  z-index: 1;
-}
-@keyframes glow-pulse {
-  0%, 100% { opacity: .75; }
-  50% { opacity: 1; }
-}
 
 /* ---------- Autoridade: foto grande parada, card por cima ----------
    Como nas páginas da Apple: a foto da Vitória ocupa a tela e fica parada
@@ -742,14 +702,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .vivi-nome { font-family: var(--font-head); font-weight: 700; font-size: var(--t-titulo); line-height: 1.05; letter-spacing: -.015em; color: var(--orange); }
 .vivi-cargo { margin-top: .5rem; font-family: var(--font-body); font-weight: 600; font-size: var(--t-rotulo); letter-spacing: .14em; text-transform: uppercase; color: var(--white); }
 /* Título centralizado, maior, uma frase em cada linha; o resto do texto fica à esquerda. */
+.vivi-card { container-type: inline-size; }
+.vivi-card .section-title { margin: .3rem 0 1.3rem; text-align: center; font-size: clamp(1.75rem, 3.4vw, 2.6rem); }
 .vivi-card .section-title span { display: block; white-space: nowrap; }
 @media (max-width: 899.98px) {
-  /* Celular: um pouco menor e com menos borda, pra cada frase caber numa linha. */
+  /* Celular: menos borda e o título do tamanho que cabe. A regra geral fica
+     antes desta: quando vinha depois, ela ganhava, o título ficava com 28px e
+     "Criadora de conteúdo há 8." saía cortado. O tamanho acompanha a largura
+     do card (cqi): a frase mais longa ocupa 12,24 vezes o tamanho da letra,
+     então 7,9cqi sempre cabe, com folga. O vw é a reserva pra navegador sem cqi. */
   .vivi-trilho { padding-inline: 16px; }
   .vivi-card { padding-inline: 18px; }
-  .vivi-card .section-title { font-size: clamp(1.1rem, 5.8vw, 1.75rem); }
+  .vivi-card .section-title { font-size: clamp(1.1rem, 5.8vw, 1.75rem); font-size: min(1.75rem, 7.9cqi); }
 }
-.vivi-card .section-title { margin: .3rem 0 1.3rem; text-align: center; font-size: clamp(1.75rem, 3.4vw, 2.6rem); }
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card .credential-text { text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card > p:not(.eyebrow) + p { margin-top: .9em; }
@@ -940,6 +905,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--cor);
+  /* Um pouco mais claro que a cor do degrau: do azul (nível 1) ao laranja
+     (nível 7), todos ficam acima de 4,5 de contraste com o fundo do card. */
+  color: color-mix(in srgb, var(--cor), #fff 14%);
 }
 .nivel-card h3 {
   position: relative;
@@ -1003,9 +971,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 #accordion-modulos .accordion-item::before {
   content: "";
   position: absolute;
-  left: 2.85rem;
-  top: 2.65rem;
-  bottom: -3.55rem;
+  left: 3.05rem;
+  top: 2.85rem;
+  bottom: -3.75rem;
   width: 1px;
   background: var(--border);
   z-index: -1;
@@ -1038,21 +1006,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Selo circular: o "nó" da trilha de progressão (ver #accordion-modulos
    acima), não mais uma pílula com texto correndo na largura. Mantém o texto
-   "Módulo N" já existente dentro dele — só encolhe a fonte pra caber no
-   círculo, sem trocar o conteúdo. */
+   "Módulo N" já existente dentro dele, com 12px (o mínimo pra leitura
+   confortável): o círculo cresceu o bastante pra caber. */
 .accordion-tag {
   display: grid;
   place-items: center;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
-  width: 2.9rem;
-  height: 2.9rem;
+  width: 3.3rem;
+  height: 3.3rem;
   border-radius: 50%;
   border: 1px solid var(--border);
   background: rgba(70, 130, 180, .18);
   color: var(--blue-light);
-  font-size: .65rem;
+  font-size: .75rem;
   line-height: 1.05;
   /* Espaço largo entre "Módulo" e o número: força sempre a quebra em duas
      linhas (com número estreito, "Módulo 1" cabia numa linha e vazava). */
@@ -1339,20 +1307,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 /* ---------- Final CTA ---------- */
 .final-cta { position: relative; text-align: center; padding: 110px 0; overflow: hidden; }
-.final-glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
-  height: 260px;
-}
 .final-cta .container { position: relative; z-index: 1; }
-/* O texto fica ao lado do túnel, não sozinho sobre o brilho: o mesmo arco da
-   abertura reaparece aqui, parado, fechando a história em vez de deixar o
-   CTA solto num fundo vazio. Sem card ao redor do botão: "CTA pequeno,
-   espaço grande" — o bloco de texto+botão fica mais estreito que o
-   .container, cercado de espaço vazio sobre a .page-bg fixa. */
+/* O texto fica ao lado do portal da marca em arcos, parado, fechando a
+   história em vez de deixar o CTA solto num fundo vazio. Sem card ao redor do
+   botão ("CTA pequeno, espaço grande"): o bloco de texto e botão fica mais
+   estreito que o .container, cercado de espaço vazio sobre a .page-bg fixa. */
 .final-cta-grid {
   display: grid;
   grid-template-columns: .8fr 1.1fr;
@@ -1409,6 +1368,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .footer-meta { align-items: center; }
   .footer-legal { justify-content: center; }
   .footer-copy { text-align: center; }
+  /* Sem os pontos no celular: quando os links quebravam de linha, o "·" sobrava
+     sozinho no fim da primeira. O espaço entre eles já separa. */
+  .footer-sep { display: none; }
 }
 
 /* ---------- ABERTURA ----------
@@ -1501,8 +1463,6 @@ html.abertura-on { overflow: hidden; }
   color: var(--orange-light);
 }
 
-/* Anéis que pulsam pra fora do disco, como um play prestes a tocar. */
-
 .btn-play-text { display: flex; flex-direction: column; gap: .12rem; text-align: left; }
 .btn-play-text strong {
   font-family: var(--font-head);
@@ -1514,7 +1474,6 @@ html.abertura-on { overflow: hidden; }
 .btn-play-text small {
   font-family: var(--font-body);
   font-size: .76rem;
-  opacity: .9;
 }
 
 @media (max-width: 480px) {
@@ -1522,7 +1481,7 @@ html.abertura-on { overflow: hidden; }
   .btn-play-disc { width: 40px; height: 40px; }
   .btn-play-disc svg { width: 17px; height: 17px; }
   .btn-play-text strong { font-size: 1rem; }
-  .btn-play-text small { font-size: .7rem; }
+  .btn-play-text small { font-size: .75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .btn-play:hover { transform: none; }
@@ -1738,7 +1697,10 @@ html.abertura-on { overflow: hidden; }
   transition: opacity .5s ease;
   z-index: 2;
 }
-.scroll-cue.is-hidden { opacity: 0; }
+/* O !important vence a opacidade que a entrada do herói (GSAP) deixa escrita
+   no próprio elemento: sem ele, a seta continuava na tela depois da rolagem. */
+.scroll-cue.is-hidden { opacity: 0 !important; visibility: hidden; transition: opacity .5s ease, visibility 0s linear .5s; }
+.scroll-cue.is-hidden svg { animation: none; }
 .scroll-cue span {
   font-family: var(--font-body);
   font-size: .68rem;
@@ -1754,22 +1716,6 @@ html.abertura-on { overflow: hidden; }
 @media (max-width: 699.98px) { .scroll-cue { bottom: 18px; } }
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue svg { animation: none; }
-}
-
-/* ---------- Textura de grão (atmosfera de cinema) ---------- */
-/* mix-blend-mode num elemento fixed cobrindo a tela inteira é uma das coisas
-   mais caras que dá pra pedir pro navegador (força ele a misturar essa camada
-   com TODO o resto da página o tempo inteiro, não só durante a animação).
-   Isso provavelmente é a causa real da piscada/sumiço do menu que já
-   aconteceu no celular. No celular, onde a GPU tem menos fôlego e o grão
-   quase não se nota numa tela pequena, a gente tira o efeito inteiro. */
-
-/* ---------- Confete do CTA final ---------- */
-#confetti-cta {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
 }
 
 /* ---------- Seta nos botões de compra ----------
@@ -1810,15 +1756,6 @@ html.abertura-on { overflow: hidden; }
 /* =========================================================
    Responsive
    ========================================================= */
-@media (max-width: 960px) {
-}
-
-/* Escada de exposição em telas largas: com espaço de sobra, a trilha vira
-   uma linha central e os degraus alternam de lado, em vez de ficar tudo
-   colado à esquerda como no celular. */
-@media (min-width: 700px) {
-}
-
 /* Celular: foto em tela cheia atrás, texto sobreposto embaixo, sem precisar rolar.
    699.98px e não 699px: com zoom ou escala de tela a largura pode ser fracionada
    (ex.: 699,2px) e, com 699px, nem este bloco nem o de 700px se aplicavam. */
@@ -1837,9 +1774,7 @@ html.abertura-on { overflow: hidden; }
   .hero-inner { text-align: center; }
   /* Degradê leve sobre a foto, só pra leitura do texto: não é um fundo à parte. */
   .hero-scrim {
-    background:
-      linear-gradient(180deg, rgba(3, 10, 29, .5) 0%, rgba(3, 10, 29, .28) 45%, rgba(3, 10, 29, 0) 62%),
-      linear-gradient(180deg, transparent 84%, var(--bg) 100%);
+    background: linear-gradient(180deg, rgba(3, 10, 29, .5) 0%, rgba(3, 10, 29, .28) 45%, rgba(3, 10, 29, 0) 62%);
   }
   .hero-lead { margin-left: auto; margin-right: auto; margin-bottom: .3rem; }
   .eyebrow { margin-bottom: .55rem; }
@@ -1860,9 +1795,7 @@ html.abertura-on { overflow: hidden; }
   .hero-foto-deitada { display: block; background-image: url("../assets/img/vivi-hero-desktop.webp"); }
   .hero3d-stage, .hero3d-zoom::after { display: none; }
   .hero-scrim {
-    background:
-      linear-gradient(100deg, rgba(1, 7, 25, .5) 0%, rgba(1, 7, 25, .22) 40%, transparent 60%),
-      linear-gradient(180deg, transparent 82%, var(--bg) 100%);
+    background: linear-gradient(100deg, rgba(1, 7, 25, .5) 0%, rgba(1, 7, 25, .22) 40%, transparent 60%);
   }
   .hero-copy { max-width: 620px; }
 }
@@ -1893,12 +1826,8 @@ html.abertura-on { overflow: hidden; }
   .hero-copy { max-width: 600px; margin-left: auto; margin-right: auto; }
   .hero-lead { margin-left: auto; margin-right: auto; }
   .hero-scrim {
-    background:
-      linear-gradient(180deg, rgba(3, 10, 29, .55) 0, rgba(3, 10, 29, .3) 300px, transparent 480px),
-      linear-gradient(180deg, transparent 84%, var(--bg) 100%);
+    background: linear-gradient(180deg, rgba(3, 10, 29, .55) 0, rgba(3, 10, 29, .3) 300px, transparent 480px);
   }
-  /* Degradê de saída mais curto: com a foto vertical, o rosto fica mais perto do fim do palco. */
-  .cinema-stage::after { height: 16%; }
 }
 /* Em pé mas quase quadrada (janela lado a lado no monitor): pouca altura pra texto,
    ícones e rosto. O texto fica mais compacto pra o queixo não cair no degradê. */
@@ -1926,9 +1855,9 @@ html.abertura-on { overflow: hidden; }
   /* Trilha de #modulos: acompanha o novo padding do trigger e o novo gap
      (.6rem) do .accordion nesse breakpoint (ver regras acima). */
   #accordion-modulos .accordion-item::before {
-    left: 2.55rem;
-    top: 2.45rem;
-    bottom: -3.05rem;
+    left: 2.75rem;
+    top: 2.65rem;
+    bottom: -3.25rem;
   }
   /* Título longo ("Conteúdo e estrutura") empurrava o "· 4 aulas" pra linha
      de baixo, embaixo do selo. Agora o selo fica à esquerda e o título com a
@@ -2058,7 +1987,6 @@ html.abertura-on { overflow: hidden; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .portal-glow, .eyebrow::before { animation: none; }
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .btn:hover { transform: none; }
 }

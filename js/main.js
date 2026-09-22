@@ -6,18 +6,12 @@
 //    Todos os botões marcados com [data-checkout-link] vão usar essa URL.
 const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI";
 
-// 2) GSAP + ScrollTrigger (em js/vendor) tocam a abertura. Sem eles (falha de
-//    rede, bloqueio de script), a abertura é pulada e a página abre direto:
-//    nada fica preso.
-const hasGSAP = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
-if (hasGSAP) {
-  gsap.registerPlugin(ScrollTrigger);
-  // No celular, a barra de endereço soma/tira uns pixels de altura da janela
-  // conforme a pessoa rola. Sem isto, cada vez que ela some/aparece dispara um
-  // resize que recalcula a rolagem presa da abertura (5200px) no meio do
-  // caminho — e a rolagem parece "voltar do nada" pro início da abertura.
-  ScrollTrigger.config({ ignoreMobileResize: true });
-}
+// 2) O GSAP (em js/vendor) toca a abertura. Sem ele (falha de rede, bloqueio
+//    de script), a abertura é pulada e a página abre direto: nada fica preso.
+const hasGSAP = typeof gsap !== "undefined";
+// A abertura só toca na primeira visita da sessão: quem volta das páginas de
+// apoio ou recarrega cai direto na página, no mesmo lugar (ver o <head>).
+const ABERTURA_VISTA = "dmap-abertura-vista";
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // A abertura monta uma réplica do menu e do herói dentro da câmera. As
@@ -41,9 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
   wireManterLugar();
   wireHeaderReveal();
   playHeroIntro();
-  wireConfettiCTA();
+  wireVoltar();
   wireReviewMode();
-  if (hasGSAP) ScrollTrigger.refresh();
 });
 
 // Modo revisão (classe "modo-revisao" no <html>, ligada por uma linha no <head>):
@@ -247,10 +240,6 @@ function wireScrollEffects() {
     if (header) ro.observe(header);
   }
 
-  // Quando o ScrollTrigger remede a página (giro do celular, janela nova), a
-  // posição do herói muda junto e precisa ser lida de novo.
-  if (hasGSAP) ScrollTrigger.addEventListener("refresh", queueMeasure);
-
   measure();
 }
 
@@ -281,9 +270,8 @@ function wireLinksVazios() {
   });
 }
 
-// Links pra dentro da página ("Ver como a escada...", a logo) rolam suave pelo
-// JS: a rolagem suave no CSS do html atrapalhava o ScrollTrigger (ver o
-// comentário no style.css). O "Pular para o conteúdo" continua pulando direto.
+// Links pra dentro da página (a logo, por exemplo) rolam suave pelo JS. O
+// "Pular para o conteúdo" continua pulando direto.
 function wireAncoras() {
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest('a[href^="#"]:not(.skip-link)');
@@ -292,7 +280,15 @@ function wireAncoras() {
     const alvo = id && document.getElementById(id);
     if (!alvo) return;
     e.preventDefault();
-    alvo.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "start" });
+    const behavior = prefersReducedMotion ? "auto" : "smooth";
+    // A logo (menu e rodapé) volta pro começo da página, sem deixar "#topo"
+    // no endereço.
+    if (id === "topo") {
+      window.scrollTo({ top: 0, behavior });
+      if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+      return;
+    }
+    alvo.scrollIntoView({ behavior, block: "start" });
     history.pushState(null, "", "#" + id);
   });
 }
@@ -383,6 +379,9 @@ function wireDepoimentos() {
       card.style.opacity = (1 - .3 * a).toFixed(3);
       card.style.zIndex = String(10 - Math.round(Math.abs(p) * 3));
       card.classList.toggle("is-ativo", Math.abs(p) < .5);
+      // Pro leitor de tela, só o vídeo do meio está na frente.
+      if (Math.abs(p) < .5) card.removeAttribute("aria-hidden");
+      else card.setAttribute("aria-hidden", "true");
     });
   }
   function vai(novo) {
@@ -407,7 +406,7 @@ function wireDepoimentos() {
       try { palco.setPointerCapture(e.pointerId); } catch { /* segue sem captura */ }
     }
     if (arrastando) {
-      arrasto = gsap.utils.clamp(-1.2, 1.2, -dx / passo());
+      arrasto = Math.max(-1.2, Math.min(1.2, -dx / passo()));
       desenha(false);
     }
   });
@@ -556,7 +555,8 @@ function wireIntroStage() {
   let tl = null;
   let relogio = 0;
   // Enquanto a abertura toca, rolar/tocar/teclar não mexe na página: adianta a abertura.
-  const TECLAS_DE_ROLAR = [" ", "PageDown", "PageUp", "ArrowDown", "ArrowUp", "Home", "End", "Tab"];
+  // O Tab fica de fora: ele também adianta, mas já leva o foco pro primeiro link.
+  const TECLAS_DE_ROLAR = [" ", "PageDown", "PageUp", "ArrowDown", "ArrowUp", "Home", "End"];
   const bloqueia = (e) => { e.preventDefault(); adianta(); };
   const tecla = (e) => { if (TECLAS_DE_ROLAR.includes(e.key)) e.preventDefault(); adianta(); };
 
@@ -576,6 +576,13 @@ function wireIntroStage() {
     }
     root.classList.remove("abertura-on");
     if (stage) stage.remove();
+    // Daqui em diante, nesta visita, a landing abre direto (sem abertura) e o
+    // navegador volta a guardar o lugar da rolagem, que a abertura desliga pra
+    // sempre começar do topo.
+    if (REAL_HERO) {
+      try { sessionStorage.setItem(ABERTURA_VISTA, "1"); } catch { /* sem armazenamento: a abertura toca de novo, só isso */ }
+    }
+    if ("scrollRestoration" in history) history.scrollRestoration = "auto";
     document.dispatchEvent(new Event("abertura:fim"));
   }
   window.liberaAbertura = () => libera(true);
@@ -696,7 +703,7 @@ function wireIntroStage() {
     .to(flash, { opacity: 0, duration: .8, ease: "power2.out" });
 
   // ---- O TÚNEL ----
-  // Vídeo de 12s dos arcos até a porta de luz laranja, tocando sozinho. O
+  // Vídeo de 9s dos arcos até a porta de luz laranja, tocando sozinho. O
   // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
   // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
   const VIDEOS = {
@@ -705,9 +712,9 @@ function wireIntroStage() {
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
   const porta = tl.labels.cresce + 1.5;
-  // Os 3 primeiros segundos do vídeo são os mesmos arcos azuis passando
-  // devagar: a abertura começa depois deles.
-  const CORTE = 3;
+  // Os 3 primeiros segundos do vídeo original (os mesmos arcos azuis passando
+  // devagar) foram cortados do próprio arquivo: ele já começa onde a abertura
+  // começa, e ninguém baixa o pedaço que não aparecia.
   let comecou = false;
   let semVideo = false;
   let esperaVideo = 0;
@@ -722,14 +729,12 @@ function wireIntroStage() {
     video.defaultPlaybackRate = RITMO_INICIAL;
     video.playbackRate = RITMO_INICIAL;
     // Com power1.in (t²), o ritmo médio é inicial + (final - inicial) / 3.
-    if (isFinite(video.duration) && video.duration > CORTE) {
-      ritmoFinal = gsap.utils.clamp(1, 4, RITMO_INICIAL + 3 * ((video.duration - CORTE) / porta - RITMO_INICIAL));
-      // Navegador que ignora o "#t=" do endereço: pula o começo aqui.
-      if (video.currentTime < CORTE - .1) video.currentTime = CORTE;
+    if (isFinite(video.duration) && video.duration > 0) {
+      ritmoFinal = gsap.utils.clamp(1, 4, RITMO_INICIAL + 3 * (video.duration / porta - RITMO_INICIAL));
     }
   }
   // Onde o vídeo deve estar em cada instante da animação (a soma do ritmo).
-  const tempoDoVideo = (t) => CORTE + RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t * t / (3 * porta * porta);
+  const tempoDoVideo = (t) => RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t * t / (3 * porta * porta);
   function aceleraTunel() {
     const r = { v: RITMO_INICIAL };
     video.playbackRate = RITMO_INICIAL;
@@ -794,7 +799,7 @@ function wireIntroStage() {
   video.poster = VIDEOS[modo].poster;
   video.addEventListener("loadedmetadata", ajustaRitmo);
   video.addEventListener("playing", comeca, { once: true });
-  video.src = VIDEOS[modo].src + "#t=" + CORTE;
+  video.src = VIDEOS[modo].src;
   const tocando = video.play();
   // Vídeo bloqueado (modo de economia do iPhone): começa na hora, com a imagem.
   if (tocando && tocando.catch) tocando.catch(comeca);
@@ -806,27 +811,44 @@ function wireIntroStage() {
 // seguem o tamanho da tela (a abertura, o herói): a rolagem ficava no mesmo
 // número e a pessoa ia parar em outra seção. Guarda onde ela estava lendo (a
 // seção no meio da tela e quanto dela já tinha passado) e volta pra lá depois
-// que o ScrollTrigger remede a página.
+// que a página se reorganiza.
 function wireManterLugar() {
-  if (!hasGSAP) return;
   let lugar = null;
   let espera = 0;
-  // Toda mudança de largura (girar o celular, mudar a janela) remede a página.
-  // O ScrollTrigger nem sempre remedia sozinho na volta pro modo em pé e a
-  // abertura ficava com o tamanho da tela deitada. A barra de endereço do
-  // celular (só a altura muda) não conta.
+  // Toda mudança de largura (girar o celular, mudar a janela) reorganiza a
+  // página. A barra de endereço do celular (só a altura muda) não conta.
   let largura = window.innerWidth;
   let remede = 0;
   // Enquanto a página se reorganiza depois do giro, o lugar guardado não é
   // regravado: a rolagem desse meio tempo é do ajuste, não da pessoa.
   let congelado = false;
   let solta = 0;
+  // As medidas novas entram no quadro seguinte a cada resize (ver
+  // wireScrollEffects); 250ms depois do último, elas já estão no lugar e a
+  // pessoa volta pro mesmo ponto da mesma seção.
+  const volta = () => {
+    clearTimeout(solta);
+    solta = setTimeout(() => { congelado = false; }, 800);
+    if (!lugar || !lugar.secao.isConnected) return;
+    const r = lugar.secao.getBoundingClientRect();
+    const alvo = Math.round(window.scrollY + r.top + lugar.fracao * r.height - window.innerHeight / 2);
+    if (Math.abs(alvo - window.scrollY) > 2) window.scrollTo({ top: alvo, left: 0, behavior: "instant" });
+  };
   window.addEventListener("resize", () => {
-    if (window.innerWidth === largura) return;
-    largura = window.innerWidth;
-    congelado = true;
+    // Ao girar, a largura e a altura podem mudar em eventos separados: depois
+    // de uma mudança de largura, qualquer resize seguinte adia a volta até a
+    // página parar de mudar.
+    if (window.innerWidth !== largura) {
+      largura = window.innerWidth;
+      congelado = true;
+      // Um giro logo depois do outro: o destrave do giro anterior não pode
+      // soltar o lugar guardado no meio deste.
+      clearTimeout(solta);
+    } else if (!congelado) {
+      return;
+    }
     clearTimeout(remede);
-    remede = setTimeout(() => ScrollTrigger.refresh(), 250);
+    remede = setTimeout(() => requestAnimationFrame(volta), 250);
   });
   const guarda = () => {
     if (congelado) return;
@@ -838,20 +860,54 @@ function wireManterLugar() {
     lugar = { secao, fracao: r.height ? (meio - r.top) / r.height : 0 };
   };
   window.addEventListener("scroll", () => { clearTimeout(espera); espera = setTimeout(guarda, 200); }, { passive: true });
-  ScrollTrigger.addEventListener("refresh", () => {
-    clearTimeout(solta);
-    solta = setTimeout(() => { congelado = false; }, 800);
-    if (!lugar || !lugar.secao.isConnected) return;
-    const r = lugar.secao.getBoundingClientRect();
-    const alvo = Math.round(window.scrollY + r.top + lugar.fracao * r.height - window.innerHeight / 2);
-    if (Math.abs(alvo - window.scrollY) > 2) window.scrollTo({ top: alvo, left: 0, behavior: "instant" });
-  });
 }
 
 // O menu não existe durante a abertura: ele desce junto com a página de vendas.
+// Depois do topo, ele some quando a pessoa desce (o texto não passa mais por
+// baixo da logo e do botão) e volta assim que ela sobe um pouco.
 function wireHeaderReveal() {
   const header = document.querySelector(".site-header");
-  if (header) quandoAberturaAcabar(() => header.classList.add("is-on"));
+  if (!header) return;
+  quandoAberturaAcabar(() => header.classList.add("is-on"));
+  let ultimoY = window.scrollY;
+  let pedido = false;
+  const confere = () => {
+    pedido = false;
+    const y = window.scrollY;
+    if (y <= (header.offsetHeight || 70)) {
+      header.classList.remove("is-recolhido");
+      ultimoY = y;
+      return;
+    }
+    const d = y - ultimoY;
+    if (Math.abs(d) < 8) return;
+    // Com o foco no menu (navegando pelo teclado), ele não some.
+    if (d > 0 && !header.contains(document.activeElement)) header.classList.add("is-recolhido");
+    else if (d < 0) header.classList.remove("is-recolhido");
+    ultimoY = y;
+  };
+  window.addEventListener("scroll", () => {
+    if (!pedido) { pedido = true; requestAnimationFrame(confere); }
+  }, { passive: true });
+  header.addEventListener("focusin", () => header.classList.remove("is-recolhido"));
+}
+
+// Páginas de apoio: "Voltar para a página inicial" volta pelo histórico quando a
+// pessoa veio da landing, então ela cai exatamente onde estava (no rodapé, na
+// oferta...). Quem abriu a página de apoio direto segue pelo link normal.
+function wireVoltar() {
+  const link = document.querySelector(".apoio-voltar");
+  if (!link) return;
+  link.addEventListener("click", (e) => {
+    try {
+      const veio = document.referrer ? new URL(document.referrer) : null;
+      const daLanding = veio && veio.origin === location.origin && /\/(index\.html)?$/.test(veio.pathname);
+      if (daLanding && history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    } catch { /* segue pelo link */ }
+  });
 }
 
 // A página: categoria, título, texto de apoio e botão entram em sequência
@@ -888,86 +944,4 @@ function wireScrollCue() {
     }
   };
   window.addEventListener("scroll", hide, { passive: true });
-}
-
-// Confete em canvas: um estouro de partículas a partir de um ponto, usado no
-// botão do CTA final.
-class Confetti {
-  constructor(canvas) {
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
-    this.particles = [];
-    this.raf = null;
-    this.colors = ["#D77713", "#B65B08", "#4682B4", "#90BED9", "#F5F5F5"];
-    this.resize();
-    window.addEventListener("resize", () => this.resize());
-  }
-  resize() {
-    const rect = this.canvas.parentElement.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = rect.height * dpr;
-    this.canvas.style.width = rect.width + "px";
-    this.canvas.style.height = rect.height + "px";
-    this.w = rect.width;
-    this.h = rect.height;
-  }
-  burst(x, y, count = 80) {
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 5;
-      this.particles.push({
-        x, y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 2,
-        size: 3 + Math.random() * 4,
-        color: this.colors[Math.floor(Math.random() * this.colors.length)],
-        rot: Math.random() * Math.PI,
-        vr: (Math.random() - .5) * .3,
-        life: 1,
-        decay: .008 + Math.random() * .01,
-        shape: Math.random() > .5 ? "rect" : "circle",
-      });
-    }
-    if (!this.raf) this.loop();
-  }
-  loop() {
-    const ctx = this.ctx;
-    const dpr = window.devicePixelRatio || 1;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, this.w, this.h);
-    let alive = false;
-    for (const p of this.particles) {
-      if (p.life <= 0) continue;
-      alive = true;
-      p.vy += .12;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.rot += p.vr;
-      p.life -= p.decay;
-      ctx.save();
-      ctx.globalAlpha = Math.max(p.life, 0);
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle = p.color;
-      if (p.shape === "rect") ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * .6);
-      else { ctx.beginPath(); ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2); ctx.fill(); }
-      ctx.restore();
-    }
-    this.particles = this.particles.filter((p) => p.life > 0);
-    if (alive) this.raf = requestAnimationFrame(() => this.loop());
-    else this.raf = null;
-  }
-}
-
-function wireConfettiCTA() {
-  const btn = document.getElementById("final-cta-btn");
-  const canvas = document.getElementById("confetti-cta");
-  if (!btn || !canvas) return;
-  const confetti = new Confetti(canvas);
-  btn.addEventListener("click", () => {
-    const rect = canvas.getBoundingClientRect();
-    const b = btn.getBoundingClientRect();
-    confetti.burst(b.left - rect.left + b.width / 2, b.top - rect.top + b.height / 2, 90);
-  });
 }
