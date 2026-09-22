@@ -871,9 +871,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: var(--t-titulo);
-  line-height: 1.15;
-  letter-spacing: -.02em;
+  font-size: clamp(1.05rem, 1.4vw + .7rem, 1.3rem);
+  line-height: 1.3;
+  letter-spacing: -.01em;
   color: var(--white);
 }
 
@@ -902,6 +902,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   display: flex;
   width: max-content;
   animation: niveis-marquee 38s linear infinite;
+  /* GPU compositing: a faixa roda no próprio layer, sem competir com o
+     trabalho de layout/pintura da rolagem da página (evita engasgo). */
+  will-change: transform;
 }
 .niveis-marquee:hover .etapas-track { animation-play-state: paused; }
 @keyframes niveis-marquee {
@@ -968,9 +971,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   line-height: 1.2;
   color: var(--white);
 }
+/* Altura fixa (não só mínima): a legenda de cada nível tem um tamanho de
+   texto diferente, e sem isso os cartões saíam de alturas diferentes. O
+   texto centraliza verticalmente no espaço, do mais curto ao mais longo. */
 .etapa-texto {
   margin: 0;
+  height: 7.4rem;
   padding: .8rem .8rem .9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   background: #0E1D31;
   font-size: var(--t-pequeno);
   line-height: 1.45;
