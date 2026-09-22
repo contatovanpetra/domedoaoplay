@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
   wireAncoras();
   wireAccordions();
   wireScrollReveal();
-  wireNiveis();
   wireDepoimentos();
   wireCountUp();
   wireScrollEffects();
@@ -94,6 +93,18 @@ const CENA_ICONES_TOPO = 604;
 // Altura do rosto na cena (entre a testa e o queixo): o zoom da rolagem gira
 // em torno dele, pra ele não fugir da tela.
 const CENA_ROSTO = 880;
+// Altura da tela sem a barra do navegador (100svh): não muda enquanto a pessoa
+// rola, então o herói não fica mudando de tamanho no meio da rolagem.
+let sondaTela = null;
+function alturaDaTela() {
+  if (!sondaTela) {
+    sondaTela = document.createElement("div");
+    sondaTela.setAttribute("aria-hidden", "true");
+    sondaTela.style.cssText = "position:absolute;top:0;left:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none";
+    document.body.appendChild(sondaTela);
+  }
+  return sondaTela.offsetHeight || window.innerHeight;
+}
 function ajustaCena3D() {
   document.querySelectorAll(".hero3d-stage").forEach((palco) => {
     const caixa = palco.parentElement;
@@ -104,23 +115,35 @@ function ajustaCena3D() {
     // (ver CSS); a cena em camadas é a da tela em pé.
     const deitada = window.matchMedia("(min-width: 700px) and (orientation: landscape)").matches;
     palco.classList.toggle("is-lado", deitada);
-    const escala = deitada ? h / 1672 : Math.max(w / 941, h / 1672);
+    // Em pé a conta é pela altura da tela (estável: 100svh não muda quando a
+    // barra do navegador some), não pela do herói, que depende da própria cena.
+    const tela = alturaDaTela();
+    const escala = deitada ? h / 1672 : Math.max(w / 941, tela / 1672);
     palco.style.setProperty("--hero3d-s", escala.toFixed(4));
     // Em pé a cena cobre o herói inteiro, atrás do texto. Com o texto comprido,
     // ela desce até os ícones ficarem logo abaixo do botão; o alto da tela
     // continua o céu escuro da própria foto (degradê no CSS).
     const cinema = palco.closest(".cinema-stage");
     const fimTexto = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-text-bottom")) : NaN;
-    const topo = h / 2 - 836 * escala;
+    const topo = tela / 2 - 836 * escala;
     let desce = 0;
     if (!deitada && isFinite(fimTexto)) {
-      desce = Math.min(h * .4, Math.max(0, fimTexto + 12 - (topo + CENA_ICONES_TOPO * escala)));
+      desce = Math.min(tela * .4, Math.max(0, fimTexto + 12 - (topo + CENA_ICONES_TOPO * escala)));
     }
-    caixa.style.setProperty("--cena-desce", desce.toFixed(1) + "px");
-    caixa.style.setProperty("--cena-emenda", (topo + desce).toFixed(1) + "px");
+    const cenaY = topo + desce;
+    caixa.style.setProperty("--cena-y", cenaY.toFixed(1) + "px");
+    caixa.style.setProperty("--cena-emenda", cenaY.toFixed(1) + "px");
     if (cinema) {
-      if (deitada) cinema.style.removeProperty("--portal-origin");
-      else cinema.style.setProperty("--portal-origin", "52% " + Math.round((topo + desce + CENA_ROSTO * escala) / h * 100) + "%");
+      if (deitada) {
+        cinema.style.removeProperty("--portal-origin");
+        cinema.style.removeProperty("--hero-altura");
+      } else {
+        // O herói vai até o pé da foto: rolando, a pessoa vê a foto inteira
+        // antes de a próxima seção chegar.
+        const altura = Math.max(tela, Math.round(cenaY + 1672 * escala));
+        cinema.style.setProperty("--hero-altura", altura + "px");
+        cinema.style.setProperty("--portal-origin", "52% " + Math.round((cenaY + CENA_ROSTO * escala) / altura * 100) + "%");
+      }
     }
   });
 }
@@ -177,13 +200,12 @@ function wireScrollEffects() {
     stage.classList.toggle("is-live", onScreen);
     if (!onScreen) return;
 
-    // Nada fica preso: a página sobe normalmente e, enquanto isso, a foto sobe
-    // mais devagar (fica pra trás), cresce e os ícones se mexem. É isso que dá a
-    // sensação de ir entrando na imagem enquanto rola.
+    // Nada fica preso nem é coberto: a página sobe normalmente e a foto vai
+    // crescendo devagar em volta do rosto, com os ícones se mexendo. É isso que
+    // dá a sensação de ir entrando na imagem enquanto rola.
     const p = clamp((y - heroTop) / heroAltura);
     if (cena3d) cena3d.style.setProperty("--cena-p", p.toFixed(3));
-    stage.style.setProperty("--portal-scale", (1 + p * 0.3).toFixed(3));
-    stage.style.setProperty("--hero-parallax", (p * heroAltura * 0.45).toFixed(1) + "px");
+    stage.style.setProperty("--portal-scale", (1 + p * 0.15).toFixed(3));
   }
 
   // A animação da cena (câmera balançando, ícones flutuando, brilho pulsando)
@@ -327,47 +349,6 @@ function wireAccordions() {
   });
 }
 
-// A escada anda com a rolagem: enquanto a pessoa rola a página pra baixo, a
-// fila dos 7 níveis passa de lado e sobe um degrau por nível (um jeito só de
-// navegar, sem setas nem arrastar). A .niveis é a pista (a altura dela é o
-// quanto a fila anda) e o .niveis-palco fica preso na tela enquanto isso.
-function wireNiveis() {
-  const pista = document.querySelector(".niveis");
-  const palco = pista && pista.querySelector(".niveis-palco");
-  const trilho = pista && pista.querySelector(".niveis-trilho");
-  const barra = pista && pista.querySelector(".niveis-progresso span");
-  if (!pista || !palco || !trilho) return;
-  // Sem movimento (a classe entra no <head>): os níveis ficam todos à vista, em grade.
-  if (!document.documentElement.classList.contains("cinema-on")) return;
-
-  let inicio = 0;   // rolagem em que o palco gruda na tela
-  let curso = 0;    // quanto a fila anda de lado (e quanto a página rola presa)
-  let subida = 0;   // quanto a fila desce pra acompanhar os degraus
-  let ticking = false;
-
-  function atualiza() {
-    ticking = false;
-    const p = curso ? clamp((window.scrollY - inicio) / curso) : 0;
-    trilho.style.transform = "translate3d(" + (-p * curso).toFixed(1) + "px, " + (p * subida).toFixed(1) + "px, 0)";
-    if (barra) barra.style.transform = "scaleX(" + p.toFixed(3) + ")";
-  }
-  function mede() {
-    const degrau = parseFloat(getComputedStyle(trilho).getPropertyValue("--degrau")) || 0;
-    subida = degrau * (trilho.children.length - 1);
-    curso = Math.max(0, trilho.scrollWidth - palco.clientWidth);
-    pista.style.setProperty("--niveis-curso", curso + "px");
-    inicio = pista.getBoundingClientRect().top + window.scrollY - (parseFloat(getComputedStyle(palco).top) || 0);
-    atualiza();
-  }
-  window.addEventListener("scroll", () => {
-    if (!ticking) { ticking = true; requestAnimationFrame(atualiza); }
-  }, { passive: true });
-  window.addEventListener("resize", mede, { passive: true });
-  window.addEventListener("load", mede);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(mede);
-  if ("ResizeObserver" in window) new ResizeObserver(mede).observe(document.body);
-  mede();
-}
 // Depoimentos em carrossel: o vídeo do meio é sempre o maior e os outros dois
 // aparecem menores dos lados. Arrastar pro lado (dedo ou mouse), tocar num dos
 // lados ou usar as setas do teclado traz outro pro meio. Com três vídeos a
@@ -459,9 +440,9 @@ function wireScrollReveal() {
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
   const targets = [...document.querySelectorAll(
-    ".section .container > *, .band-text > *, .band-media, .accordion-item"
+    ".section .container > *, .nivel-card, .accordion-item"
   )].filter((el) => !el.matches(
-    ".accordion"
+    ".accordion, .niveis-trilho"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 

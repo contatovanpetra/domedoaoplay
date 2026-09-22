@@ -418,15 +418,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   position: relative;
   padding: 0;
 }
-/* O herói ocupa a tela inteira, por baixo do menu transparente. Nada fica
-   preso: a página sobe normalmente e, ao mesmo tempo, a foto sobe mais devagar
-   e cresce (--hero-parallax e --portal-scale, ver update() em main.js), como se
-   a pessoa fosse entrando na imagem enquanto rola. */
+/* O herói começa no alto da tela, por baixo do menu transparente, e é do
+   tamanho da foto: nada fica preso nem é coberto. A página sobe normalmente e
+   a foto vai crescendo devagar (--portal-scale, ver update() em main.js), como
+   se a pessoa fosse entrando na imagem enquanto rola. */
 .cinema-stage {
   position: relative;
-  /* vh antes: iPhones com iOS anterior ao 15.4 não entendem svh. */
-  height: 100vh;
-  height: 100svh;
+  /* Pelo menos uma tela; em pé, a altura vem do JS (--hero-altura), do tamanho
+     da foto inteira: a pessoa rola e continua vendo a foto até o fim dela, e
+     só depois vem a próxima seção. vh antes: iOS anterior ao 15.4 não tem svh. */
+  min-height: 100vh;
+  min-height: 100svh;
+  height: var(--hero-altura, auto);
   overflow: hidden;
   isolation: isolate;
   display: flex;
@@ -497,9 +500,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   position: absolute;
   inset: 0;
   z-index: 0;
-  transform: translate3d(0, var(--hero-parallax, 0px), 0);
 }
-.cinema-stage.is-live .hero-photo-bg { will-change: transform; }
 /* A cena 3D ocupa o lugar que era da foto chapada. O zoom da rolagem fica
    nesta camada (era no <img>), e a cena em si só cuida da profundidade. */
 .hero3d-zoom {
@@ -512,8 +513,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background: #030a1d;
 }
 /* A foto é o fundo do herói inteiro, atrás do texto. Em pé, quando o texto é
-   comprido, a cena desce (--cena-desce, medido pelo JS) até os ícones ficarem
-   logo abaixo do botão, e este degradê emenda o alto dela no céu da foto. */
+   comprido, a cena desce (--cena-y, medido pelo JS) até os ícones ficarem logo
+   abaixo do botão, e este degradê emenda o alto dela no céu da foto. */
 .hero3d-zoom::after {
   content: "";
   position: absolute;
@@ -534,13 +535,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .hero3d-stage {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 0;
   width: 941px;
   height: 1672px;
-  margin: -836px 0 0 -470.5px;
+  margin: 0 0 0 -470.5px;
   transform: scale(var(--hero3d-s, 1));
-  transform-origin: 50% 50%;
-  translate: 0 var(--cena-desce, 0px);
+  transform-origin: 50% 0;
+  /* Onde começa o alto da cena (JS): logo abaixo do texto, com o céu da foto por cima. */
+  translate: 0 var(--cena-y, 0px);
   /* Em pé os ícones sobem menos com a rolagem: o texto fica logo acima deles. */
   --sobe: .1;
   perspective: 1600px;
@@ -857,21 +859,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 /* ---------- Os 7 níveis da escada ----------
-   Os cards passam de lado sozinhos enquanto a pessoa rola a página pra baixo:
-   um jeito só de navegar, sem setas nem arrastar. Cada nível fica um degrau
-   acima do anterior e a fila sobe junto, então rolar é subir a escada (ver
-   wireNiveis em main.js). A cor do acento esquenta do azul (nível 1, só
-   você) ao laranja (nível 7, público). Sem movimento, os 7 ficam em grade. */
-.niveis { position: relative; margin-top: 2.6rem; }
+   Um embaixo do outro, entrando conforme a pessoa rola a página pra baixo.
+   Cada nível fica um degrau mais pra direita, como uma escada, com a foto do
+   nível de um lado e o texto do outro. A cor do acento esquenta do azul
+   (nível 1, só você) ao laranja (nível 7, público). */
+.niveis { margin-top: clamp(2rem, 5vw, 3.2rem); }
 .niveis-trilho {
-  --card: clamp(150px, 44vw, 280px);
-  --degrau: clamp(14px, 3.4vw, 28px);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: clamp(.9rem, 2vw, 1.4rem);
-  margin: 0 auto;
-  padding: .6rem 24px 1.2rem;
+  display: grid;
+  gap: clamp(.9rem, 2.4vw, 1.6rem);
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 .nivel-card:nth-child(1) { --cor: var(--blue); }
@@ -882,12 +879,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .nivel-card:nth-child(6) { --cor: color-mix(in srgb, var(--blue), var(--orange) 88%); }
 .nivel-card:nth-child(7) { --cor: var(--orange); }
 .nivel-card {
-  --pad-x: clamp(.7rem, 2.6vw, 1.5rem);
+  --largura: min(100%, 640px);
   position: relative;
-  flex: 0 0 var(--card);
-  display: flex;
-  flex-direction: column;
-  padding: 0 var(--pad-x) clamp(.9rem, 3vw, 1.7rem);
+  display: grid;
+  grid-template-columns: minmax(0, 38%) minmax(0, 1fr);
+  grid-template-rows: 1fr auto auto auto 1fr;
+  grid-template-areas: "foto ." "foto rotulo" "foto titulo" "foto texto" "foto .";
+  column-gap: clamp(.9rem, 3vw, 1.8rem);
+  width: var(--largura);
+  /* O degrau: cada nível um pouco mais pra direita que o anterior. */
+  margin-left: calc(var(--i, 0) * (100% - var(--largura)) / 6);
+  padding: 0 clamp(.9rem, 3vw, 1.6rem) 0 0;
   overflow: hidden;
   background:
     radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--cor), transparent 78%), transparent 70%),
@@ -907,20 +909,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: color-mix(in srgb, var(--cor), transparent 84%);
   pointer-events: none;
 }
-/* A foto de cada nível ocupa o alto do card, de ponta a ponta: a plateia que
-   cresce aparece na tela do celular e na cor do fundo. */
+/* A foto do nível ocupa o lado esquerdo do card, de cima a baixo. */
 .nivel-foto {
-  position: relative;
+  grid-area: foto;
   display: block;
-  width: calc(100% + 2 * var(--pad-x));
-  max-width: none;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
   aspect-ratio: 4 / 5;
-  margin: 0 calc(-1 * var(--pad-x)) clamp(.7rem, 2.6vw, 1rem);
   object-fit: cover;
 }
 .nivel-rotulo {
   position: relative;
+  grid-area: rotulo;
   margin-top: 0;
   font-size: clamp(.66rem, 2.2vw, .78rem);
   font-weight: 600;
@@ -930,71 +931,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .nivel-card h3 {
   position: relative;
+  grid-area: titulo;
   margin: .3rem 0 .45rem;
   font-size: clamp(.92rem, 3.4vw, 1.5rem);
   line-height: 1.15;
   color: var(--white);
 }
-.nivel-card p { position: relative; margin: 0; font-size: clamp(.78rem, 2.9vw, .98rem); line-height: 1.4; color: var(--text-muted); }
+.nivel-card p { position: relative; grid-area: texto; margin: 0; font-size: clamp(.78rem, 2.9vw, .98rem); line-height: 1.4; color: var(--text-muted); }
+@media (max-width: 699.98px) {
+  /* Celular: degraus menores, pra sobrar largura pro texto. */
+  .nivel-card { --largura: calc(100% - 48px); padding-right: .8rem; }
+}
 
-/* Com movimento: a pista tem a altura do quanto a fila anda, e o palco fica
-   preso na tela enquanto isso. */
-.cinema-on .niveis {
-  height: calc(100vh - var(--header-h, 71px) + var(--niveis-curso, 0px));
-  height: calc(100svh - var(--header-h, 71px) + var(--niveis-curso, 0px));
-}
-.cinema-on .niveis-palco {
-  position: sticky;
-  top: var(--header-h, 71px);
-  height: calc(100vh - var(--header-h, 71px));
-  height: calc(100svh - var(--header-h, 71px));
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-}
-.cinema-on .niveis-trilho {
-  --card: clamp(210px, 62vw, 300px);
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-items: flex-end;
-  width: max-content;
-  margin: 0;
-  padding: calc(var(--degrau) * 6 + .6rem) max(24px, calc((100vw - var(--container-w)) / 2 + 24px)) 1.2rem;
-  will-change: transform;
-}
-/* Cada nível, um degrau acima do anterior. */
-.cinema-on .nivel-card { translate: 0 calc(var(--i, 0) * var(--degrau) * -1); }
-/* Tela baixa (celular deitado, janela baixa): foto mais baixa e degraus
-   menores, pra fila caber inteira no palco. */
-@media (max-height: 620px) {
-  .cinema-on .niveis-trilho { --card: 220px; --degrau: 10px; }
-  .nivel-foto { aspect-ratio: 16 / 10; object-position: 50% 42%; }
-  .nivel-card h3 { font-size: 1.05rem; }
-  .nivel-card p { font-size: .8rem; }
-}
-@media (max-height: 420px) {
-  .cinema-on .niveis-trilho { --card: 200px; }
-  .nivel-foto { aspect-ratio: 16 / 9; }
-  .nivel-card p { display: none; }
-}
-/* Barra fininha que enche conforme a pessoa sobe os níveis. */
-.niveis-progresso { display: none; }
-.cinema-on .niveis-progresso {
-  display: block;
-  width: min(240px, 50vw);
-  height: 3px;
-  margin: 1rem auto 0;
-  background: var(--border);
-  overflow: hidden;
-}
-.niveis-progresso span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--blue), var(--orange));
-  transform-origin: 0 50%;
-  transform: scaleX(0);
-}
 /* ---------- Accordion (módulos + FAQ) ---------- */
 .accordion { margin-top: 2.5rem; display: grid; gap: .9rem; }
 /* Tier estrutural por padrão (mesma superfície plana do painel de declaração /
@@ -1877,7 +1825,8 @@ html.abertura-on { overflow: hidden; }
    horizontal preenche o herói e o texto fica sobreposto à esquerda. */
 @media (min-width: 700px) and (orientation: landscape) {
   :root { --header-h: 85px; --portal-origin: 78% 44%; }
-  .cinema-stage { align-items: center; padding: calc(var(--header-h, 85px) + 20px) 0 60px; }
+  /* Deitada: a foto horizontal passa de uma tela; o texto fica na primeira. */
+  .cinema-stage { height: 130vh; height: 130svh; align-items: flex-start; padding: calc(var(--header-h, 85px) + 12vh) 0 60px; }
   .hero .container.hero-inner { width: 100%; }
   /* A foto horizontal é o fundo do herói inteiro. O lado esquerdo dela já é
      escuro: o degradê só reforça a leitura, sem virar faixa. */
@@ -1896,6 +1845,8 @@ html.abertura-on { overflow: hidden; }
    texto fica mais estreito pra não encostar nos ícones. */
 @media (min-width: 700px) and (orientation: landscape) and (max-aspect-ratio: 13/10) {
   .hero-copy { max-width: min(560px, 40vw); }
+  /* Quase quadrada: com o herói alto demais a foto cortava o rosto na direita. */
+  .cinema-stage { height: 110vh; height: 110svh; }
 }
 
 /* Tablet em pé (e janela mais alta que larga): a foto horizontal cortava o rosto
