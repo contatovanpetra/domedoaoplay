@@ -173,6 +173,19 @@ ul { padding: 0; margin: 0; list-style: none; }
     0 2px 4px rgba(0, 0, 0, .25),
     0 10px 24px -10px rgba(182, 91, 8, .6);
 }
+/* Mesma cor do botão da primeira tela, para os botões de compra marcados. */
+.btn-primary.btn-azul {
+  background:
+    radial-gradient(70% 100% at 50% -30%, rgba(255, 255, 255, .4), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #A9D3E8 0%, var(--blue-light) 55%, #79B0CD 100%);
+  color: var(--bg);
+  text-shadow: none;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, .25),
+    0 10px 24px -10px rgba(144, 190, 217, .55);
+}
+.btn-primary.btn-azul:hover { box-shadow: 0 4px 8px rgba(0, 0, 0, .28), 0 16px 30px -12px rgba(144, 190, 217, .7); }
+.btn-primary.btn-azul:active { background: linear-gradient(180deg, var(--blue-light) 0%, #79B0CD 100%); }
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow:
@@ -490,7 +503,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O apoio volta pro tamanho de texto corrido e numa cor mais discreta: quem
    manda na primeira tela é o título. As linhas são equilibradas pra não sobrar
    uma palavra sozinha no fim. */
-.hero-lead { font-size: var(--t-corpo); max-width: 44ch; color: var(--cor-corpo); text-wrap: balance; }
+.hero-lead { font-size: var(--t-lead); max-width: 46ch; color: var(--cor-corpo); text-wrap: balance; }
 /* Texto de apoio do herói: dois parágrafos corridos, sem marcador. */
 .hero-lead-list {
   display: block;
@@ -498,8 +511,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      no texto. */
   margin: clamp(1.1rem, 2.2vw, 1.75rem) 0 0;
   padding: 0;
-  font-size: var(--t-corpo);
-  line-height: 1.6;
+  font-size: var(--t-lead);
+  line-height: 1.55;
   color: var(--cor-corpo);
 }
 .hero-lead-list p { margin: 0; }
@@ -1036,7 +1049,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .etapa-final .etapa-foto-wrap { box-shadow: var(--shadow-lg); }
 @media (max-width: 699.98px) {
-  .etapa { width: clamp(148px, 42vw, 190px); }
+  /* Celular: as fotos da escada estavam pequenas demais pra dar pra ver a tela do celular dentro delas. */
+  .etapa { width: clamp(190px, 58vw, 260px); }
 }
 /* Quem pede menos movimento não vê a faixa andar sozinha (o JS não liga o
    passo automático), mas continua podendo arrastar. */
@@ -1317,13 +1331,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   padding-bottom: clamp(24px, 5vh, 56px);
 }
 .depo-palco {
-  --depo-h: min(54vh, calc(100vh - 21rem), 560px);
-  --depo-h: min(54svh, calc(100svh - 21rem), 560px);
+  --depo-h: min(58vh, calc(100vh - 19.5rem), 620px);
+  --depo-h: min(58svh, calc(100svh - 19.5rem), 620px);
   /* No celular estreito o do meio não passa de 62% da largura: sobra lugar pros dois dos lados aparecerem. */
-  --depo-w: min(calc(var(--depo-h) * 9 / 16), 62vw);
+  --depo-w: min(calc(var(--depo-h) * 9 / 16), 72vw);
   position: relative;
   height: calc(var(--depo-w) * 16 / 9 + 6rem);
-  margin: clamp(1.1rem, 3vw, 2rem) auto 0;
+  margin: clamp(.7rem, 2vw, 1.2rem) auto 0;
   touch-action: pan-y;
   cursor: grab;
   user-select: none;
@@ -1600,8 +1614,8 @@ html.abertura-on { overflow: hidden; }
   gap: .9rem;
   padding: .7rem 1.5rem .7rem .7rem;
   border-radius: 999px;
-  /* Azul claro da marca só aqui, no botão da primeira tela (pedido do usuário):
-     texto no azul escuro do fundo, contraste alto. Os outros botões de compra
+  /* Azul claro da marca com texto no azul escuro do fundo (contraste alto).
+     Usado na primeira tela e na seção da escada; os outros botões de compra
      seguem no laranja do manual. */
   background: linear-gradient(135deg, #A9D3E8, var(--blue-light));
   color: var(--bg);
@@ -1923,6 +1937,7 @@ html.abertura-on { overflow: hidden; }
   /* No celular o título acompanha a largura da tela: com o tamanho das telas
      grandes ele virava 6 ou 7 linhas picadas num aparelho de 320px. */
   .hero-headline { font-size: clamp(1.5rem, 7.4vw, 2.25rem); }
+  .hero-lead, .hero-lead-list { font-size: var(--t-corpo); }
   /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
      ficar solto no meio da foto. */
   .hero-cta-foto {
