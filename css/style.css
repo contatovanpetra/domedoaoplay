@@ -462,28 +462,34 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  /* O título passou a ser a frase que explica o curso (antes eram duas
-     palavras), então ele vem um degrau menor que o display e numa medida de
-     linha maior: continua o maior texto da página, sem virar bloco gigante. */
-  font-size: var(--t-titulo);
-  line-height: 1.1;
+  /* O título é a frase que explica o curso, não duas palavras: o tamanho e a
+     medida de linha são calculados pra ela cair em 3 ou 4 linhas cheias (umas
+     30 letras por linha). Com a escala de título e 22ch ele virava 5 ou 6
+     linhas curtas, que leem como um paredão. */
+  font-size: clamp(1.45rem, 2.8vw, 2.4rem);
+  line-height: 1.12;
   letter-spacing: -.02em;
   color: var(--white);
-  max-width: 22ch;
+  max-width: 34ch;
   text-wrap: balance;
 }
 .hero-inner {
   position: relative;
   z-index: 4;
 }
-.hero-lead { font-size: var(--t-corpo); max-width: 560px; }
+/* O apoio fica um degrau maior que o texto corrido e mais estreito que o
+   título: a hierarquia lê de cima pra baixo, sem o apoio parecer mais largo
+   (e mais importante) que a frase principal. */
+.hero-lead { font-size: var(--t-lead); max-width: 46ch; }
 /* Texto de apoio do herói: dois parágrafos corridos, sem marcador. */
 .hero-lead-list {
   display: block;
-  margin: 1.2rem 0 0;
+  /* Respiro proporcional ao título: com 1,2rem fixo, um título de 38px colava
+     no texto. */
+  margin: clamp(1.1rem, 2.2vw, 1.75rem) 0 0;
   padding: 0;
-  font-size: var(--t-corpo);
-  line-height: 1.65;
+  font-size: var(--t-lead);
+  line-height: 1.6;
   color: var(--cor-corpo);
 }
 .hero-lead-list p { margin: 0; }
@@ -1916,8 +1922,25 @@ html.abertura-on { overflow: hidden; }
    horizontal preenche o herói e o texto fica sobreposto à esquerda. */
 @media (min-width: 700px) and (orientation: landscape) {
   :root { --header-h: 85px; --portal-origin: 78% 44%; }
-  /* Deitada: o texto fica alinhado ao alto da primeira tela. */
-  .hero-primeira-tela { align-items: flex-start; padding: calc(var(--header-h, 85px) + 12vh) 0 60px; }
+  /* Deitada: título, texto e botão são um bloco só na coluna da esquerda,
+     centrado na primeira tela. Antes o texto ficava colado no alto e o botão
+     flutuava sozinho mais embaixo, centralizado na tela: sobrava um vazio
+     entre os dois e eles não se liam como uma coisa só. */
+  .hero-primeira-tela {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    padding: calc(var(--header-h, 85px) + 4vh) 0 10vh;
+  }
+  .hero-cta-foto {
+    position: static;
+    width: 100%;
+    max-width: var(--container-w);
+    margin: clamp(1.75rem, 4vh, 2.75rem) auto 0;
+    padding: 0 24px;
+    justify-content: flex-start;
+    text-align: left;
+  }
   .hero .container.hero-inner { width: 100%; }
   /* A foto horizontal é o fundo do herói inteiro. O lado esquerdo dela já é
      escuro: o degradê só reforça a leitura, sem virar faixa. */
@@ -1926,14 +1949,14 @@ html.abertura-on { overflow: hidden; }
   .hero-scrim {
     background: linear-gradient(100deg, rgba(1, 7, 25, .5) 0%, rgba(1, 7, 25, .22) 40%, transparent 60%);
   }
-  .hero-copy { max-width: 620px; }
+  .hero-copy { max-width: 680px; }
 }
 
 /* Deitada mas quase quadrada (janela lado a lado, monitor 5:4): a foto corta mais
    nas laterais. O enquadramento puxa pra direita pra manter o rosto inteiro e o
    texto fica mais estreito pra não encostar nos ícones. */
 @media (min-width: 700px) and (orientation: landscape) and (max-aspect-ratio: 14/10) {
-  .hero-copy { max-width: min(620px, 44vw); }
+  .hero-copy { max-width: min(680px, 46vw); }
 }
 
 /* Tablet em pé (e janela mais alta que larga): a foto horizontal cortava o rosto
