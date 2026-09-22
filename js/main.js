@@ -126,6 +126,7 @@ function ajustaCena3D() {
     // ela desce até os ícones ficarem logo abaixo do botão; o alto da tela
     // continua o céu escuro da própria foto (degradê no CSS).
     const cinema = palco.closest(".cinema-stage");
+    const heroSection = palco.closest(".hero");
     const fimTexto = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-text-bottom")) : NaN;
     const topo = tela / 2 - 836 * escala;
     let desce = 0;
@@ -135,16 +136,14 @@ function ajustaCena3D() {
     const cenaY = topo + desce;
     caixa.style.setProperty("--cena-y", cenaY.toFixed(1) + "px");
     caixa.style.setProperty("--cena-emenda", cenaY.toFixed(1) + "px");
-    if (cinema) {
+    if (heroSection) {
       if (deitada) {
-        cinema.style.removeProperty("--portal-origin");
-        cinema.style.removeProperty("--hero-altura");
+        heroSection.style.removeProperty("--hero-altura");
       } else {
-        // O herói vai até o pé da foto: rolando, a pessoa vê a foto inteira
-        // antes de a próxima seção chegar.
-        const altura = Math.max(tela, Math.round(cenaY + 1672 * escala));
-        cinema.style.setProperty("--hero-altura", altura + "px");
-        cinema.style.setProperty("--portal-origin", "52% " + Math.round((cenaY + CENA_ROSTO * escala) / altura * 100) + "%");
+        // Pista de duas telas: a cena (.cinema-stage) fica presa numa tela só
+        // (CSS) enquanto a pessoa rola pelas duas, sem a foto se mexer — só a
+        // animação (câmera, ícones, brilho) acompanha a rolagem.
+        heroSection.style.setProperty("--hero-altura", (tela * 2) + "px");
       }
     }
   });
@@ -202,12 +201,11 @@ function wireScrollEffects() {
     stage.classList.toggle("is-live", onScreen);
     if (!onScreen) return;
 
-    // Nada fica preso nem é coberto: a página sobe normalmente e a foto vai
-    // crescendo devagar em volta do rosto, com os ícones se mexendo. É isso que
-    // dá a sensação de ir entrando na imagem enquanto rola.
+    // A foto fica parada (presa numa tela, ver .cinema-stage no CSS); só a
+    // cena em volta dela (câmera, ícones, brilho) acompanha a rolagem pelas
+    // duas telas da pista, via --cena-p.
     const p = clamp((y - heroTop) / heroAltura);
     if (cena3d) cena3d.style.setProperty("--cena-p", p.toFixed(3));
-    stage.style.setProperty("--portal-scale", (1 + p * 0.15).toFixed(3));
   }
 
   // A animação da cena (câmera balançando, ícones flutuando, brilho pulsando)

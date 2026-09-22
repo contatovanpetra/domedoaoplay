@@ -403,22 +403,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Hero ---------- */
 /* A foto é o fundo do herói inteiro: a página sobe normalmente e a foto cresce
    devagar conforme você desce. Sem biblioteca: só variáveis CSS que o JS move. */
+/* O herói vira uma pista de duas telas (--hero-altura, em pé: ver
+   ajustaCena3D em main.js): a cena (foto + ícones) fica presa numa tela só
+   (.cinema-stage sticky), parada, enquanto a animação dela (câmera, ícones,
+   brilho — tudo via --cena-p) continua acompanhando a rolagem pelas duas
+   telas. Sem zoom na foto (--portal-scale fica sempre em 1: ver update() em
+   main.js) — só a cena em volta se mexe, a foto em si não cresce mais. */
 .hero {
   position: relative;
   padding: 0;
-}
-/* O herói começa no alto da tela, por baixo do menu transparente, e é do
-   tamanho da foto: nada fica preso nem é coberto. A página sobe normalmente e
-   a foto vai crescendo devagar (--portal-scale, ver update() em main.js), como
-   se a pessoa fosse entrando na imagem enquanto rola. */
-.cinema-stage {
-  position: relative;
-  /* Pelo menos uma tela; em pé, a altura vem do JS (--hero-altura), do tamanho
-     da foto inteira: a pessoa rola e continua vendo a foto até o fim dela, e
-     só depois vem a próxima seção. vh antes: iOS anterior ao 15.4 não tem svh. */
-  min-height: 100vh;
-  min-height: 100svh;
   height: var(--hero-altura, auto);
+}
+.cinema-stage {
+  position: sticky;
+  top: 0;
+  /* vh antes: iOS anterior ao 15.4 não tem svh. */
+  height: 100vh;
+  height: 100svh;
   overflow: hidden;
   isolation: isolate;
   display: flex;
