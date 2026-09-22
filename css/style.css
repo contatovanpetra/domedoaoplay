@@ -681,7 +681,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    Como nas páginas da Apple: a foto da Vitória ocupa a tela e fica parada
    enquanto o card com todas as informações sobe por cima dela. A foto continua
    aparecendo ao lado (computador) ou em volta (celular) durante a leitura. */
-.vivi-apple { position: relative; padding: 0; background: var(--bg); }
+/* Sem respiro no alto (o .section de celular colocava 64px): a foto começa colada na seção anterior. */
+.section.vivi-apple { position: relative; padding: 0; background: var(--bg); }
 .vivi-foto {
   position: sticky;
   top: 0;
@@ -728,8 +729,30 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     backdrop-filter: blur(16px) saturate(1.15);
   }
 }
-/* Nome e título centralizados, maiores; o resto do texto fica alinhado à esquerda. */
-.vivi-card .eyebrow { text-align: center; font-size: .9rem; }
+/* Nome e cargo escritos no alto da foto, como uma assinatura. */
+.vivi-assinatura {
+  position: absolute;
+  z-index: 1;
+  /* Logo abaixo do menu: o nome abre a foto. */
+  top: calc(var(--header-h, 71px) + .5rem);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0 clamp(24px, 5vw, 96px);
+  display: flex;
+  flex-direction: column;
+  text-shadow: 0 1px 3px rgba(3, 10, 29, .65), 0 2px 18px rgba(3, 10, 29, .5);
+}
+.vivi-nome { font-family: var(--font-head); font-weight: 700; font-size: clamp(2.2rem, 4.2vw, 3.4rem); line-height: 1.05; letter-spacing: -.015em; color: var(--orange); }
+.vivi-cargo { margin-top: .5rem; font-family: var(--font-body); font-weight: 600; font-size: clamp(.78rem, 1.1vw, .95rem); letter-spacing: .08em; text-transform: uppercase; color: var(--white); }
+/* Título centralizado, maior, uma frase em cada linha; o resto do texto fica à esquerda. */
+.vivi-card .section-title span { display: block; white-space: nowrap; }
+@media (max-width: 899.98px) {
+  /* Celular: um pouco menor e com menos borda, pra cada frase caber numa linha. */
+  .vivi-trilho { padding-inline: 16px; }
+  .vivi-card { padding-inline: 18px; }
+  .vivi-card .section-title { font-size: clamp(1.1rem, 5.8vw, 1.75rem); }
+}
 .vivi-card .section-title { margin: .3rem 0 1.3rem; text-align: center; font-size: clamp(1.75rem, 3.4vw, 2.6rem); }
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: clamp(.92rem, 1.3vw, 1.02rem); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card .credential-text { text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
@@ -746,7 +769,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* O card encosta mais na esquerda e fica um pouco mais estreito: a foto é
      centralizada, e o rosto dela fica livre, do lado do card. */
   .vivi-trilho { width: auto; max-width: none; margin: -46vh 0 0; margin-top: -46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
-  .vivi-card { max-width: 520px; }
+  .vivi-card { max-width: 600px; }
+  .vivi-card .section-title { font-size: clamp(1.75rem, 2.5vw, 2.2rem); }
 }
 
 /* Credenciais: 3 linhas com ícone próprio e separador fino entre elas —
@@ -1176,11 +1200,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    No primeiro a foto fica à direita; no segundo, à esquerda. Igual no celular
    e no computador. A foto é provisória (o ícone de cada bônus) até chegarem as
    imagens de verdade. */
+/* "+ 2 bônus" pequeno e em letra fina, logo depois dos 4 cards. */
+.bonus-rotulo {
+  margin: clamp(2.4rem, 6vw, 3.6rem) 0 0;
+  text-align: center;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: .92rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
 .bonus-lista {
   display: grid;
   gap: clamp(2rem, 6vw, 4.5rem);
   max-width: 980px;
-  margin: clamp(2rem, 5vw, 3.4rem) auto 0;
+  margin: clamp(1.2rem, 3vw, 2rem) auto 0;
 }
 .bonus-item {
   display: grid;
@@ -1577,11 +1612,24 @@ html.abertura-on { overflow: hidden; }
   text-align: center;
   opacity: 0;
   visibility: hidden;
+  /* Tamanho do iPhone: em pé na tela em pé, deitado na tela deitada. --lado
+     é o lado menor dele (a medida base das bordas, cantos e botões). */
+  --aparelho-h: min(46vh, 540px, 115vw);
+  --aparelho-w: calc(var(--aparelho-h) * .485);
+  --lado: var(--aparelho-w);
+}
+@media (orientation: landscape) {
+  .intro-scene2 {
+    --aparelho-w: min(62vw, 560px, calc(52vh * 2.06));
+    --aparelho-h: calc(var(--aparelho-w) * .485);
+    --lado: var(--aparelho-h);
+  }
 }
 .intro-scene2.is-on { opacity: 1; visibility: visible; }
 .burst-pre {
   position: absolute;
-  top: 16%;
+  /* Logo acima do iPhone, em qualquer tamanho de tela. */
+  bottom: calc(50% + var(--aparelho-h) / 2 + clamp(.9rem, 3vh, 1.8rem));
   left: 0;
   right: 0;
   z-index: 2;
@@ -1594,30 +1642,86 @@ html.abertura-on { overflow: hidden; }
   text-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 2px 16px rgba(0, 0, 0, .55);
   opacity: 0;
 }
-/* O palco da câmera: um retângulo com posição e tamanho próprios (definidos
-   em px pelo JS), pra poder crescer até virar a tela inteira na travessia. */
-/* O palco fica centralizado pelo grid do pai, não por transform: assim a
-   rotação 3D do GSAP não briga com a centralização. */
+/* O palco do iPhone: centralizado pelo grid do pai (não por transform, pra a
+   rotação 3D e o zoom do GSAP não brigarem com a centralização). */
 .burst-stage {
   position: relative;
   z-index: 1;
-  transform-style: preserve-3d;
+  width: var(--aparelho-w);
+  height: var(--aparelho-h);
 }
-
-/* A tela por dentro da moldura: a mesma área do desenho em SVG
-   (x 40→240 e y 30→410 de um quadro de 280x440). */
+/* O corpo: escuro, com um fio de metal na borda e os cantos do iPhone. */
+.burst-aparelho {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--lado) * .16);
+  background: linear-gradient(150deg, #2b313b, #0d1015 45%, #1b2028);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, .16),
+    inset 0 0 0 calc(var(--lado) * .012) #05070a,
+    0 40px 90px -30px rgba(0, 0, 0, .85);
+}
+/* A tela: borda fina e igual nos quatro lados. */
 .burst-screen {
   position: absolute;
-  left: 14.3%;
-  top: 6.8%;
-  width: 71.4%;
-  height: 86.4%;
+  inset: calc(var(--lado) * .034);
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: calc(var(--lado) * .126);
   opacity: 0;
   background: var(--bg);
+}
+/* A ilha do iPhone: no alto da tela (em pé) ou do lado (deitado). */
+.burst-ilha {
+  position: absolute;
+  top: calc(var(--lado) * .065);
+  left: 50%;
+  width: calc(var(--lado) * .3);
+  height: calc(var(--lado) * .088);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #000;
+}
+/* A câmera gravando: o tempo no alto e o botão vermelho embaixo (ou do lado). */
+.burst-camera {
+  position: absolute;
+  inset: calc(var(--lado) * .034);
+  pointer-events: none;
+  opacity: 0;
+}
+.burst-tempo {
+  position: absolute;
+  top: calc(var(--lado) * .16);
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: .35em;
+  padding: .3em .6em;
+  border-radius: .35em;
+  transform: translateX(-50%);
+  font: 600 calc(var(--lado) * .055) / 1 var(--font-body);
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  background: rgba(0, 0, 0, .4);
+}
+.burst-tempo i { width: .5em; height: .5em; border-radius: 50%; background: #ff3b30; }
+.burst-tempo b { font-weight: 600; }
+.burst-gravar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--lado) * .07);
   display: grid;
   place-items: center;
+  width: calc(var(--lado) * .2);
+  height: calc(var(--lado) * .2);
+  transform: translateX(-50%);
+  border: calc(var(--lado) * .014) solid #fff;
+  border-radius: 50%;
+}
+.burst-gravar i { width: 82%; height: 82%; border-radius: 50%; background: #ff3b30; }
+@media (orientation: landscape) {
+  .burst-ilha { top: 50%; left: calc(var(--lado) * .065); width: calc(var(--lado) * .088); height: calc(var(--lado) * .3); transform: translateY(-50%); }
+  .burst-tempo { top: calc(var(--lado) * .07); }
+  .burst-gravar { left: auto; right: calc(var(--lado) * .07); top: 50%; bottom: auto; transform: translateY(-50%); }
 }
 
 /* A réplica da página dentro da tela: tem exatamente o tamanho da janela e é
@@ -1660,19 +1764,10 @@ html.abertura-on { overflow: hidden; }
   .flash { display: none; }
 }
 
-.burst-frame {
-  display: block;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  position: relative;
-  z-index: 1;
-  pointer-events: none;
-}
-
 .burst-title {
   position: absolute;
-  bottom: 24%;
+  /* Logo abaixo do iPhone, em qualquer tamanho de tela. */
+  top: calc(50% + var(--aparelho-h) / 2 + clamp(.8rem, 2.6vh, 1.6rem));
   left: 0;
   right: 0;
   z-index: 2;
@@ -1687,6 +1782,23 @@ html.abertura-on { overflow: hidden; }
 }
 .burst-title span { display: inline-block; opacity: 0; }
 .burst-title .text-orange { font-size: 1.35em; }
+
+/* O botão no fim da foto do herói, por cima dela (acima do degradê do pé). */
+.hero-cta-foto {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(4.5rem, 20%, 15rem);
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  padding: 0 24px;
+  text-align: center;
+}
+.hero-cta-foto .hero-actions { margin-top: 0; }
+.hero-cta-foto .hero-numeros { text-shadow: 0 1px 3px rgba(3, 10, 29, .7); }
+/* A seta de "role" fica no pé da primeira tela, não no fim da foto. */
+.cinema-stage .scroll-cue { top: calc(100vh - 64px); top: calc(100svh - 64px); bottom: auto; }
 
 /* ---------- Indicador de rolagem (hero) ---------- */
 .scroll-cue {
@@ -1841,7 +1953,7 @@ html.abertura-on { overflow: hidden; }
 @media (min-width: 700px) and (orientation: landscape) {
   :root { --header-h: 85px; --portal-origin: 78% 44%; }
   /* Deitada: a foto horizontal passa de uma tela; o texto fica na primeira. */
-  .cinema-stage { height: 130vh; height: 130svh; align-items: flex-start; padding: calc(var(--header-h, 85px) + 12vh) 0 60px; }
+  .cinema-stage { height: 150vh; height: 150svh; align-items: flex-start; padding: calc(var(--header-h, 85px) + 12vh) 0 60px; }
   .hero .container.hero-inner { width: 100%; }
   /* A foto horizontal é o fundo do herói inteiro. O lado esquerdo dela já é
      escuro: o degradê só reforça a leitura, sem virar faixa. */
@@ -1957,7 +2069,8 @@ html.abertura-on { overflow: hidden; }
     position: relative;
     top: 0;
     height: auto;
-    min-height: 100vh;
+    /* Espaço pro botão, que fica no pé da foto, abaixo do texto. */
+    min-height: calc(100vh + 140px);
     /* Aqui o palco não gruda embaixo do menu: o respiro de cima é que tira o
        texto de trás dele. */
     padding-top: calc(var(--header-h, 71px) + 6px);

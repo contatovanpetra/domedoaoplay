@@ -118,7 +118,9 @@ function ajustaCena3D() {
     // Em pé a conta é pela altura da tela (estável: 100svh não muda quando a
     // barra do navegador some), não pela do herói, que depende da própria cena.
     const tela = alturaDaTela();
-    const escala = deitada ? h / 1672 : Math.max(w / 941, tela / 1672);
+    // Em pé a cena fica 10% maior que o necessário pra cobrir a tela: a foto
+    // passa mais da rolagem.
+    const escala = deitada ? h / 1672 : Math.max(w / 941, tela / 1672) * 1.1;
     palco.style.setProperty("--hero3d-s", escala.toFixed(4));
     // Em pé a cena cobre o herói inteiro, atrás do texto. Com o texto comprido,
     // ela desce até os ícones ficarem logo abaixo do botão; o alto da tela
@@ -539,19 +541,17 @@ function wireIntroStage() {
   const faixas = document.getElementById("tunnel-faixas");
   const scene2 = document.getElementById("intro-scene2");
   const burstPre = document.getElementById("burst-pre");
-  const burstFrame = document.getElementById("burst-frame");
   const burstStage = document.getElementById("burst-stage");
   const burstScreen = document.getElementById("burst-screen");
   const flash = document.getElementById("flash");
   const burstTitleSpans = [...document.querySelectorAll("#burst-title span")];
-  const bfRec = document.getElementById("bf-rec");
-  const bfCorners = document.getElementById("bf-corners");
-  const bfReticle = document.getElementById("bf-reticle");
-  const bfPaths = ["bf-left", "bf-right", "bf-top", "bf-bottom"]
-    .map((id) => document.getElementById(id))
-    .filter(Boolean);
+  const burstCamera = document.getElementById("burst-camera");
+  const burstIlha = document.getElementById("burst-ilha");
+  const burstTempo = document.getElementById("burst-tempo");
+  const burstGravar = document.querySelector("#burst-gravar i");
 
   let tl = null;
+  let relogio = 0;
   // Enquanto a abertura toca, rolar/tocar/teclar não mexe na página: adianta a abertura.
   const TECLAS_DE_ROLAR = [" ", "PageDown", "PageUp", "ArrowDown", "ArrowUp", "Home", "End", "Tab"];
   const bloqueia = (e) => { e.preventDefault(); adianta(); };
@@ -563,6 +563,7 @@ function wireIntroStage() {
   function libera(forcado) {
     if (aberturaAcabou) return;
     aberturaAcabou = true;
+    clearInterval(relogio);
     window.removeEventListener("wheel", bloqueia);
     window.removeEventListener("touchmove", bloqueia);
     window.removeEventListener("keydown", tecla);
@@ -589,7 +590,6 @@ function wireIntroStage() {
   // Em vez de uma foto, a tela mostra uma cópia viva do menu + herói, do
   // tamanho exato da janela e reduzida pra caber. Na travessia ela cresce até
   // escala 1, então a tela da câmera VIRA a página, sem corte.
-  const PHONE_RATIO = 440 / 280;          // proporção do quadro desenhado
   let mini = null;
 
   function buildMiniScreen() {
@@ -610,78 +610,79 @@ function wireIntroStage() {
     ajustaCena3D();
   }
 
-  // O palco tem tamanho em px pra poder ser animado até a janela inteira.
-  function stageBaseSize() {
-    // Também pela altura: no celular deitado a câmera desenhada ocupava a tela toda.
-    const w = Math.min(200, window.innerWidth * .42, window.innerHeight * .5 / PHONE_RATIO);
-    return { w, h: w * PHONE_RATIO };
-  }
+  // O iPhone tem tamanho próprio (CSS): em pé na tela em pé, deitado na
+  // deitada. A réplica é do tamanho da janela, reduzida pra caber na tela dele.
   function sizeStage() {
-    if (tl && tl.time() >= tl.labels.cresce) return;
-    const { w, h } = stageBaseSize();
-    gsap.set(burstStage, { width: w, height: h });
-    if (mini) {
-      gsap.set(mini, { width: window.innerWidth, height: window.innerHeight });
-      // As medidas que o JS põe no herói de verdade (onde a cena começa etc.)
-      // valem pra réplica também.
-      const real = REAL_HERO.querySelector(".cinema-stage");
-      const copia = mini.querySelector(".cinema-stage");
-      if (real && copia) copia.setAttribute("style", real.getAttribute("style") || "");
-    }
+    if (!mini) return;
+    gsap.set(mini, { width: window.innerWidth, height: window.innerHeight });
+    // As medidas que o JS põe no herói de verdade (onde a cena começa etc.)
+    // valem pra réplica também.
+    const real = REAL_HERO.querySelector(".cinema-stage");
+    const copia = mini.querySelector(".cinema-stage");
+    if (real && copia) copia.setAttribute("style", real.getAttribute("style") || "");
     fitMini();
   }
-  // A réplica sempre cabe inteira dentro da tela atual. Quando a tela é do
-  // tamanho da janela, a conta dá exatamente 1.
+  // Escala da réplica: cabe inteira na tela do iPhone. Pelo layout (offsetWidth),
+  // que não muda com o giro nem com o zoom do aparelho.
+  const escalaDaReplica = () => Math.min(
+    (burstScreen.offsetWidth || 1) / window.innerWidth,
+    (burstScreen.offsetHeight || 1) / window.innerHeight
+  );
   function fitMini() {
     if (!mini || !burstScreen) return;
-    const r = burstScreen.getBoundingClientRect();
-    const k = Math.min(r.width / window.innerWidth, r.height / window.innerHeight);
-    gsap.set(mini, { scale: k, xPercent: -50, yPercent: -50 });
+    gsap.set(mini, { scale: escalaDaReplica(), xPercent: -50, yPercent: -50 });
   }
 
   buildMiniScreen();
   sizeStage();
-  window.addEventListener("resize", sizeStage);
+  window.addEventListener("resize", () => { if (!tl || tl.time() < tl.labels.cresce) sizeStage(); });
 
-  bfPaths.forEach((p) => {
-    const len = p.getTotalLength();
-    gsap.set(p, { strokeDasharray: len, strokeDashoffset: len });
-  });
-  gsap.set(burstStage, { rotationY: -26, rotationX: 9, transformPerspective: 1000, transformOrigin: "50% 50%" });
+  gsap.set(burstStage, { transformPerspective: 1100, transformOrigin: "50% 50%" });
   gsap.set(scene2, { autoAlpha: 1 });
   gsap.set(burstPre, { opacity: 0, y: 10 });
   gsap.set(burstTitleSpans, { opacity: 0, y: 12 });
 
-  // ---- A ANIMAÇÃO (em segundos de verdade, uns 7 no total) ----
-  tl = gsap.timeline({ paused: true, onUpdate: fitMini });
+  // No "play?" o botão de gravar é apertado (vira o quadradinho de parar,
+  // como no iPhone) e o tempo começa a contar.
+  function aperta() {
+    if (burstGravar) gsap.to(burstGravar, { width: "46%", height: "46%", borderRadius: "22%", duration: .35, ease: "power2.inOut" });
+    if (burstTempo) gsap.to(burstTempo, { backgroundColor: "rgba(255, 59, 48, .9)", duration: .3 });
+    const texto = burstTempo && burstTempo.querySelector("b");
+    let s = 0;
+    clearInterval(relogio);
+    relogio = setInterval(() => { s += 1; if (texto) texto.textContent = "00:00:" + String(s).padStart(2, "0"); }, 1000);
+  }
+
+  // ---- A ANIMAÇÃO (em segundos de verdade, uns 6 no total) ----
+  tl = gsap.timeline({ paused: true });
   tl
     // O túnel surge do escuro.
     .to(veil, { opacity: 0, duration: .9, ease: "power1.out" }, 0)
     .to(faixas, { opacity: .7, duration: .6 }, .2)
-    // "E se, em vez de travar…" e a câmera se desenhando.
     .to(burstPre, { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, .45)
-    .to(bfPaths.slice(0, 2), { strokeDashoffset: 0, duration: .7, ease: "power2.inOut" }, .6)
-    .to(bfPaths.slice(2), { strokeDashoffset: 0, duration: .6, ease: "power2.inOut" }, 1.05)
-    .to(bfRec, { opacity: 1, duration: .3 }, 1.5)
-    .to(bfCorners, { opacity: 1, duration: .3 }, 1.6)
-    // A câmera "enxerga": a página acende dentro da tela.
-    .to(burstScreen, { opacity: 1, duration: .7, ease: "power2.out" }, 1.65)
-    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1.1, ease: "power2.out" }, 1.8)
-    .to(bfReticle, { opacity: 1, duration: .4, ease: "back.out(2)" }, 2)
-    // A pergunta se completa: as faixas firmam antes dela chegar.
+    // O iPhone entra: sobe do fundo girando até ficar quase de frente.
+    .fromTo(burstStage,
+      { autoAlpha: 0, y: 70, scale: .88, rotationX: 24, rotationY: -22 },
+      { autoAlpha: 1, y: 0, scale: 1, rotationX: 7, rotationY: -9, duration: 1.3, ease: "power3.out" }, .5)
+    // A câmera liga: a página aparece na tela e a interface de gravação acende.
+    .to(burstScreen, { opacity: 1, duration: .6, ease: "power2.out" }, 1.05)
+    .to(burstCamera, { opacity: 1, duration: .4 }, 1.45)
+    // Enquanto a pergunta se completa, ele termina de virar de frente, devagar.
+    .to(burstStage, { rotationX: 3, rotationY: -4, duration: 1.6, ease: "sine.inOut" }, 1.8)
     .to(faixas, { opacity: 1, duration: .9, ease: "power2.inOut" }, 2.2)
     .to(burstTitleSpans, { opacity: 1, y: 0, duration: .45, stagger: .15, ease: "back.out(1.7)" }, 2.5)
-    // Tempo de ler a pergunta inteira; depois o texto sai e a câmera se endireita.
+    .call(aperta, null, 3.05)
+    // Tempo de ler a pergunta inteira; depois o texto sai e o iPhone fica de frente.
     .addLabel("atravessa", 4.6)
     .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .4 }, "atravessa")
     .to(faixas, { opacity: 0, duration: .4 }, "atravessa")
-    .to(burstStage, { rotationY: 0, rotationX: 0, duration: .6, ease: "power2.inOut" }, "atravessa")
-    // ATRAVESSA: a tela da câmera cresce até ocupar a janela. Como ela é uma
-    // réplica da página, quando chega no tamanho da janela ela JÁ É a página.
+    .to(burstStage, { rotationX: 0, rotationY: 0, duration: .5, ease: "power2.inOut" }, "atravessa")
+    .to([burstCamera, burstIlha], { opacity: 0, duration: .35 }, "atravessa+=.15")
+    // ATRAVESSA: a câmera entra na tela do iPhone até ela ocupar a janela. A
+    // réplica lá dentro chega em escala 1: a tela VIRA a página, sem corte.
     .addLabel("cresce", "atravessa+=.4")
-    .to(burstStage, { width: () => window.innerWidth, height: () => window.innerHeight, duration: 1.5, ease: "power2.in" }, "cresce")
-    .to(burstScreen, { left: "0%", top: "0%", width: "100%", height: "100%", borderRadius: 0, duration: 1.5, ease: "power2.in" }, "cresce")
-    .to(burstFrame, { opacity: 0, duration: .5 }, "cresce+=.2")
+    .to(burstStage, { scale: () => 1 / escalaDaReplica(), duration: 1.5, ease: "power3.in" }, "cresce")
+    .to(burstScreen, { borderRadius: 0, duration: 1.5, ease: "power3.in" }, "cresce")
     .to(flash, { opacity: 1, duration: .45, ease: "power2.in" }, "cresce+=1.05")
     .call(libera)
     .to(flash, { opacity: 0, duration: .8, ease: "power2.out" });
