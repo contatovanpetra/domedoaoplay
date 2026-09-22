@@ -873,6 +873,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .texto-corrido p + p { margin-top: 1.1em; }
 /* O fecho do raciocínio ganha a cor do texto principal. */
 .texto-corrido .texto-forte { color: var(--text); }
+/* Abertura da escada: bloco centralizado na seção e texto justificado, pra
+   fechar nas duas margens embaixo do título centralizado. */
+#metodo .texto-corrido { text-align: justify; text-align-last: center; }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 
 /* Cards do "você se reconhece": cada sinal batendo o olho, em vez de um
