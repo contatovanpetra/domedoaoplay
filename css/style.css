@@ -454,15 +454,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin-top: -100vh;
   margin-top: -100svh;
 }
-/* A foto dissolve no fundo da página: o pé dela fica transparente e deixa ver
-   o mesmo fundo fixo (.page-bg) que continua na seção seguinte, então não sobra
-   emenda. Antes ela escurecia até uma cor chapada e a seção de baixo começava
-   num azul mais claro, com uma linha reta entre as duas. O degradê é curto (no
-   máximo 150px) pra nunca apagar o botão, que fica logo acima do pé da foto. */
-.hero-photo-bg {
-  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - min(18%, 150px)), rgba(0, 0, 0, .62) calc(100% - min(18%, 150px) * .55), rgba(0, 0, 0, .22) calc(100% - min(18%, 150px) * .22), transparent 100%);
-  mask-image: linear-gradient(180deg, #000 calc(100% - min(18%, 150px)), rgba(0, 0, 0, .62) calc(100% - min(18%, 150px) * .55), rgba(0, 0, 0, .22) calc(100% - min(18%, 150px) * .22), transparent 100%);
-}
+/* Sem degradê no pé da foto: ela termina normal, e a divisão pra seção
+   seguinte é só o fim natural da pista (ver ajustaRunwayHero() em main.js). */
 /* will-change só enquanto o herói está na tela (classe ligada pelo JS). */
 .cinema-stage.is-live .hero-photo-bg img { will-change: transform; }
 .hero-headline {
