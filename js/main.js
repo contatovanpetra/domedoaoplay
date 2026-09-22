@@ -545,6 +545,9 @@ function wireIntroStage() {
   const burstScreen = document.getElementById("burst-screen");
   const flash = document.getElementById("flash");
   const burstTitleSpans = [...document.querySelectorAll("#burst-title span")];
+  const burstAparelho = document.getElementById("burst-aparelho");
+  const burstContorno = document.getElementById("burst-contorno");
+  const burstLinha = document.getElementById("burst-linha");
   const burstCamera = document.getElementById("burst-camera");
   const burstIlha = document.getElementById("burst-ilha");
   const burstTempo = document.getElementById("burst-tempo");
@@ -637,7 +640,13 @@ function wireIntroStage() {
   sizeStage();
   window.addEventListener("resize", () => { if (!tl || tl.time() < tl.labels.cresce) sizeStage(); });
 
-  gsap.set(burstStage, { transformPerspective: 1100, transformOrigin: "50% 50%" });
+  // Começa só a linha do contorno, girada em 3D; o corpo do iPhone aparece depois.
+  if (burstLinha) {
+    const comprimento = burstLinha.getTotalLength();
+    gsap.set(burstLinha, { strokeDasharray: comprimento, strokeDashoffset: comprimento });
+  }
+  gsap.set(burstStage, { transformPerspective: 1100, transformOrigin: "50% 50%", rotationY: -22, rotationX: 9 });
+  gsap.set(burstAparelho, { opacity: 0 });
   gsap.set(scene2, { autoAlpha: 1 });
   gsap.set(burstPre, { opacity: 0, y: 10 });
   gsap.set(burstTitleSpans, { opacity: 0, y: 12 });
@@ -660,15 +669,13 @@ function wireIntroStage() {
     .to(veil, { opacity: 0, duration: .9, ease: "power1.out" }, 0)
     .to(faixas, { opacity: .7, duration: .6 }, .2)
     .to(burstPre, { opacity: 1, y: 0, duration: .6, ease: "power2.out" }, .45)
-    // O iPhone entra: sobe do fundo girando até ficar quase de frente.
-    .fromTo(burstStage,
-      { autoAlpha: 0, y: 70, scale: .88, rotationX: 24, rotationY: -22 },
-      { autoAlpha: 1, y: 0, scale: 1, rotationX: 7, rotationY: -9, duration: 1.3, ease: "power3.out" }, .5)
-    // A câmera liga: a página aparece na tela e a interface de gravação acende.
-    .to(burstScreen, { opacity: 1, duration: .6, ease: "power2.out" }, 1.05)
-    .to(burstCamera, { opacity: 1, duration: .4 }, 1.45)
-    // Enquanto a pergunta se completa, ele termina de virar de frente, devagar.
-    .to(burstStage, { rotationX: 3, rotationY: -4, duration: 1.6, ease: "sine.inOut" }, 1.8)
+    // O celular se forma: a linha do contorno se desenha, girando em 3D...
+    .to(burstLinha, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" }, .55)
+    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1.6, ease: "power2.out" }, .55)
+    // ...o corpo do iPhone aparece por dentro dela e a tela acende com a página.
+    .to(burstAparelho, { opacity: 1, duration: .5, ease: "power1.out" }, 1.4)
+    .to(burstScreen, { opacity: 1, duration: .6, ease: "power2.out" }, 1.6)
+    .to(burstCamera, { opacity: 1, duration: .4 }, 1.95)
     .to(faixas, { opacity: 1, duration: .9, ease: "power2.inOut" }, 2.2)
     .to(burstTitleSpans, { opacity: 1, y: 0, duration: .45, stagger: .15, ease: "back.out(1.7)" }, 2.5)
     .call(aperta, null, 3.05)
@@ -677,9 +684,10 @@ function wireIntroStage() {
     .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .4 }, "atravessa")
     .to(faixas, { opacity: 0, duration: .4 }, "atravessa")
     .to(burstStage, { rotationX: 0, rotationY: 0, duration: .5, ease: "power2.inOut" }, "atravessa")
-    .to([burstCamera, burstIlha], { opacity: 0, duration: .35 }, "atravessa+=.15")
-    // ATRAVESSA: a câmera entra na tela do iPhone até ela ocupar a janela. A
-    // réplica lá dentro chega em escala 1: a tela VIRA a página, sem corte.
+    .to([burstCamera, burstIlha, burstContorno], { opacity: 0, duration: .35 }, "atravessa+=.15")
+    // ATRAVESSA: o iPhone cresce junto com o túnel, até a porta de luz, e
+    // explode no clarão. A réplica lá dentro chega em escala 1: a tela VIRA a
+    // página, sem corte.
     .addLabel("cresce", "atravessa+=.4")
     .to(burstStage, { scale: () => 1 / escalaDaReplica(), duration: 1.5, ease: "power3.in" }, "cresce")
     .to(burstScreen, { borderRadius: 0, duration: 1.5, ease: "power3.in" }, "cresce")

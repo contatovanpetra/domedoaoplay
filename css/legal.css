@@ -1,0 +1,58 @@
+/* =========================================================
+   Páginas de apoio (Política de Privacidade, Termos de Uso e Suporte)
+   Usam as cores, fontes e o rodapé da landing (style.css) e só acrescentam
+   uma coluna de leitura simples: título, data e o texto em blocos.
+   ========================================================= */
+.pagina-apoio { background: var(--bg); }
+.pagina-apoio .site-header { transform: none; opacity: 1; visibility: visible; }
+.apoio-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: calc(var(--header-h, 71px) + clamp(2.5rem, 7vw, 4.5rem)) 24px clamp(4rem, 9vw, 6rem);
+}
+.apoio-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  margin-bottom: 1.6rem;
+  font-size: var(--t-pequeno);
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.apoio-voltar:hover, .apoio-voltar:focus-visible { color: var(--white); }
+.apoio-voltar svg { width: 1em; height: 1em; }
+.apoio-main h1 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: var(--t-titulo);
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  color: var(--white);
+}
+.apoio-data { margin: .8rem 0 0; font-size: var(--t-pequeno); color: var(--text-muted); }
+.apoio-intro { margin: 1.6rem 0 0; font-size: var(--t-lead); line-height: 1.55; color: var(--cor-corpo); }
+.apoio-main h2 {
+  margin: 2.6rem 0 .8rem;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: var(--t-subtitulo);
+  line-height: 1.25;
+  color: var(--white);
+}
+.apoio-main p,
+.apoio-main li { font-size: var(--t-corpo); line-height: 1.7; color: var(--cor-corpo); }
+.apoio-main p { margin: 0 0 1em; }
+.apoio-main ul { margin: 0 0 1em; padding-left: 1.2rem; }
+.apoio-main li + li { margin-top: .45em; }
+.apoio-main strong { color: var(--white); font-weight: 600; }
+.apoio-main a { color: var(--white); text-underline-offset: 3px; }
+/* Informação que ainda falta preencher: aparece destacada até ser trocada. */
+.apoio-pendente { padding: 0 .3em; background: rgba(215, 119, 19, .18); color: var(--white); }
+
+/* Suporte: um bloco por caso, do mais comum ao menos comum. */
+.apoio-casos { display: grid; gap: 1rem; margin-top: 2.2rem; }
+.apoio-caso { padding: clamp(1.2rem, 3vw, 1.6rem); background: #0E1D31; border: 1px solid var(--border); }
+.apoio-caso h2 { margin-top: 0; }
+.apoio-caso p:last-child { margin-bottom: 0; }
+.apoio-fim { margin-top: 2.2rem; }
