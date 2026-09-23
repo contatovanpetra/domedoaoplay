@@ -391,13 +391,48 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Módulos + benefícios: fundo azul claro estático, sem degradê nas pontas —
    divisão clara e reta com a seção anterior (foto da Vitória) e com a
    seguinte (oferta), como se fosse uma foto de fundo lisa, não um brilho
-   que entra e sai. O azul claro de verdade da marca (--blue-light, o mesmo
-   do nome "Vitória Caroline" e do botão "Quero entrar em cena"), não o
-   azul aço acinzentado do resto da página. */
+   que entra e sai. Cor cheia (não um véu por cima do fundo escuro — era
+   isso que deixava tudo acinzentado, com cara de névoa), o azul claro de
+   verdade da marca (--blue-light, o mesmo do nome "Vitória Caroline" e do
+   botão "Quero entrar em cena"). Como a seção agora é clara, os tokens de
+   texto (--white/--text/--cor-corpo/--text-muted/--border) são reescritos
+   pra escuro aqui embaixo — título, corpo e borda de tudo que tem dentro
+   leem essas variáveis, sem precisar caçar seletor por seletor. */
 #modulos.section-tone::before,
 #beneficios.section-tone::before {
-  background: rgba(144, 190, 217, .32);
+  background: var(--blue-light);
 }
+#modulos, #beneficios {
+  --white: #0B1728;
+  --text: #0B1728;
+  --cor-corpo: #1B3046;
+  --text-muted: #3D5872;
+  --border: rgba(11, 23, 40, .16);
+}
+/* Único card com fundo escuro de propósito dentro da seção clara (o módulo
+   aberto — ver .accordion-item.open mais abaixo): devolve os tokens de
+   texto claros originais só dentro dele. */
+#modulos #accordion-modulos .accordion-item.open {
+  /* Reforça o fundo escuro do item aberto (ver .accordion-item.open mais
+     abaixo): a regra dos itens em posição par (:nth-child(even)) tem o
+     mesmo peso e vem depois no arquivo, então vencia nos módulos pares —
+     sem isso, esses abriam com o texto claro daqui em cima de um fundo
+     claro (o par, mais fraco), ilegível. Os dois IDs juntos (#modulos
+     #accordion-modulos) garantem prioridade sem depender da ordem. */
+  background: #0E1D31;
+  --white: #FFFFFF;
+  --text: #F5F5F5;
+  --cor-corpo: #D8E0E8;
+  --text-muted: #C0CBD6;
+  --border: rgba(192, 203, 214, 0.16);
+}
+/* Os cards fechados do acordeão eram um vidro quase invisível, pensado pra
+   ficar sobre fundo escuro: sem nenhum contraste contra a seção clara.
+   Ganham um fundo bem claro pra continuarem lendo como cartões separados. */
+#modulos .accordion-item { background: rgba(255, 255, 255, .55); }
+#modulos .accordion-item:nth-child(even) { background: rgba(255, 255, 255, .32); }
+#accordion-modulos .accordion-tag { background: rgba(11, 23, 40, .08); color: var(--blue-deep); }
+#accordion-modulos .accordion-icon { color: var(--blue-deep); }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
    no meio (.20 em vez de .16) — sem nenhum card, é a pausa antes do CTA
    final ganhando uma leve elevação tonal sólida em vez de textura repetida. */
@@ -1318,8 +1353,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   container-type: inline-size;
   position: relative;
   padding: clamp(1.2rem, 2vw, 1.5rem);
-  background: rgba(144, 190, 217, .1);
-  border: 1px solid rgba(144, 190, 217, .32);
+  background: rgba(11, 23, 40, .05);
+  border: 1px solid rgba(11, 23, 40, .18);
 }
 /* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
    que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
@@ -2046,6 +2081,15 @@ html.abertura-on { overflow: hidden; }
   :is(.bonus-item-foto, .beneficio, .offer-card, .depo-video):hover {
     transform: scale(1.015);
     box-shadow: 0 18px 44px -20px rgba(0, 0, 0, .7);
+  }
+  /* As fotos dos bônus (mockups soltos, sem caixa — ver
+     .bonus-item-foto:has(.bonus-imagem) acima) não são clicáveis nem
+     interativas: sem o "cresce e ganha sombra" do resto dos cards, que aqui
+     desenhava um quadrado (a sombra) em volta de uma imagem sem fundo. Só a
+     animação de flutuar continua rodando, sozinha. */
+  .bonus-item-foto:has(.bonus-imagem):hover {
+    transform: none;
+    box-shadow: none;
   }
 }
 

@@ -126,10 +126,19 @@ function ajustaCena3D() {
     // continua o céu escuro da própria foto (degradê no CSS).
     const cinema = palco.closest(".cinema-stage");
     const fimTexto = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-text-bottom")) : NaN;
+    // O botão fica preso perto do fim da tela (bottom: clamp(...) no CSS), não
+    // embaixo do texto: em telas mais baixas ele sobe e passa na frente dos
+    // ícones antes do texto "avisar". Os ícones precisam ficar abaixo dos dois,
+    // o texto e o botão — o que descer mais por último decide.
+    const fimCta = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-cta-bottom")) : NaN;
+    const piso = Math.max(
+      isFinite(fimTexto) ? fimTexto + 12 : 0,
+      isFinite(fimCta) ? fimCta + 12 : 0
+    );
     const topo = tela / 2 - 836 * escala;
     let desce = 0;
-    if (!deitada && isFinite(fimTexto)) {
-      desce = Math.min(tela * .4, Math.max(0, fimTexto + 12 - (topo + CENA_ICONES_TOPO * escala)));
+    if (!deitada && piso > 0) {
+      desce = Math.min(tela * .4, Math.max(0, piso - (topo + CENA_ICONES_TOPO * escala)));
     }
     const cenaY = topo + desce;
     caixa.style.setProperty("--cena-y", cenaY.toFixed(1) + "px");
@@ -168,6 +177,7 @@ function wireScrollEffects() {
   const cena3d = hero ? hero.querySelector(".hero3d-stage") : null;
   const inner = document.querySelector(".hero-inner");
   const copy = document.querySelector(".hero-copy");
+  const ctaFoto = document.querySelector(".hero-cta-foto");
   const bar = document.querySelector(".read-progress");
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
@@ -186,6 +196,13 @@ function wireScrollEffects() {
       // O fim do texto decide quanto a cena desce em tela em pé (ajustaCena3D).
       // offsetTop/offsetHeight ignoram o translateY da animação.
       stage.style.setProperty("--hero-text-bottom", inner.offsetTop + copy.offsetTop + copy.offsetHeight + "px");
+    }
+    if (stage && ctaFoto) {
+      // O botão "Quero entrar em cena" também é um piso: sem isso, em telas
+      // mais baixas os ícones (na mão dela) ficavam por trás dele. Mesma
+      // referência (offsetTop/offsetHeight, ignora o translateY da animação)
+      // — o botão é irmão do texto dentro do mesmo pai posicionado.
+      stage.style.setProperty("--hero-cta-bottom", ctaFoto.offsetTop + ctaFoto.offsetHeight + "px");
     }
     // Depois do fim do texto: a caixa da cena depende dele.
     ajustaCena3D();
@@ -573,7 +590,11 @@ function wireScrollReveal() {
         }
       });
     },
-    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    // Margem positiva embaixo: o elemento "conta" como visível bem antes de
+    // entrar de fato na tela (ainda na metade da seção anterior), não só
+    // quando a rolagem já chega nele — pra revelação (e a subida do card da
+    // Vitória, que usa esse mesmo mecanismo) começar cedo, não em cima da hora.
+    { threshold: 0.12, rootMargin: "0px 0px 45% 0px" }
   );
 
   targets.forEach((el) => observer.observe(el));
