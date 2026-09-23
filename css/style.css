@@ -402,6 +402,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 #beneficios.section-tone::before {
   background: var(--blue-light);
 }
+/* Aplicação ("Falar bem na câmera vira venda..."): mesma ideia de seção
+   clara, mas fundo branco (não o azul da marca) — só título e subtítulo
+   aqui dentro, sem cards, então não precisa de mais nenhum ajuste. */
+#aplicacao.section-tone::before {
+  background: #FFFFFF;
+}
+#aplicacao {
+  --white: #0B1728;
+  --text: #0B1728;
+  --cor-corpo: #1B3046;
+  --text-muted: #3D5872;
+  --border: rgba(11, 23, 40, .16);
+}
 #modulos, #beneficios {
   --white: #0B1728;
   --text: #0B1728;
@@ -409,28 +422,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   --text-muted: #3D5872;
   --border: rgba(11, 23, 40, .16);
 }
-/* Único card com fundo escuro de propósito dentro da seção clara (o módulo
-   aberto — ver .accordion-item.open mais abaixo): devolve os tokens de
-   texto claros originais só dentro dele. */
-#modulos #accordion-modulos .accordion-item.open {
-  /* Reforça o fundo escuro do item aberto (ver .accordion-item.open mais
-     abaixo): a regra dos itens em posição par (:nth-child(even)) tem o
-     mesmo peso e vem depois no arquivo, então vencia nos módulos pares —
-     sem isso, esses abriam com o texto claro daqui em cima de um fundo
-     claro (o par, mais fraco), ilegível. Os dois IDs juntos (#modulos
-     #accordion-modulos) garantem prioridade sem depender da ordem. */
-  background: #0E1D31;
-  --white: #FFFFFF;
-  --text: #F5F5F5;
-  --cor-corpo: #D8E0E8;
-  --text-muted: #C0CBD6;
-  --border: rgba(192, 203, 214, 0.16);
-}
-/* Os cards fechados do acordeão eram um vidro quase invisível, pensado pra
-   ficar sobre fundo escuro: sem nenhum contraste contra a seção clara.
-   Ganham um fundo bem claro pra continuarem lendo como cartões separados. */
+/* Os cards do acordeão são todos no formato claro (item fechado ou aberto):
+   sem fundo escuro nenhum aqui dentro, só uma opacidade maior pro aberto se
+   destacar dos outros (isso e a borda laranja da esquerda, que já existia). */
 #modulos .accordion-item { background: rgba(255, 255, 255, .55); }
 #modulos .accordion-item:nth-child(even) { background: rgba(255, 255, 255, .32); }
+#modulos #accordion-modulos .accordion-item.open {
+  /* O mesmo peso de #accordion-modulos .accordion-item:nth-child(even) e
+     vindo depois no arquivo: sem os dois IDs juntos, o par (mais fraco)
+     vencia nos módulos pares abertos. */
+  background: rgba(255, 255, 255, .8);
+}
 #accordion-modulos .accordion-tag { background: rgba(11, 23, 40, .08); color: var(--blue-deep); }
 #accordion-modulos .accordion-icon { color: var(--blue-deep); }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
@@ -1353,7 +1355,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   container-type: inline-size;
   position: relative;
   padding: clamp(1.2rem, 2vw, 1.5rem);
-  background: rgba(11, 23, 40, .05);
+  /* Mesmo formato claro dos cards do acordeão de módulos (ver
+     #modulos .accordion-item), não mais um vidro escuro. */
+  background: rgba(255, 255, 255, .55);
   border: 1px solid rgba(11, 23, 40, .18);
 }
 /* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
@@ -1383,16 +1387,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    No primeiro a foto fica à direita; no segundo, à esquerda. Igual no celular
    e no computador. A foto é provisória (o ícone de cada bônus) até chegarem as
    imagens de verdade. */
-/* "+ 2 bônus" pequeno e em letra fina, logo depois dos 4 cards. */
+/* "+ 2 bônus exclusivos", logo depois dos 4 cards. Contra o fundo azul
+   claro da seção, o laranja de texto normal (--orange-light) quase não
+   aparecia — o laranja mais escuro do botão (--orange-button) tem mais
+   contraste aqui, reforçado com negrito (a letra fina sumia ainda mais). */
 .bonus-rotulo {
   margin: clamp(2.4rem, 6vw, 3.6rem) 0 0;
   text-align: center;
   font-family: var(--font-body);
-  font-weight: 400;
+  font-weight: 700;
   font-size: var(--t-rotulo);
   letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--orange-light);
+  color: var(--orange-button);
 }
 .bonus-lista {
   display: grid;
@@ -1442,6 +1449,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 @media (prefers-reduced-motion: reduce) {
   .bonus-imagem { animation: none; }
+}
+/* Texto em branco sobre um fundo escuro próprio (não no azul claro direto
+   da seção — branco em cima do azul claro ficaria sem contraste nenhum):
+   os dois tokens são reescritos só aqui dentro, então os h3/p abaixo (que
+   leem --white/--cor-corpo) já saem claros sem precisar repetir a cor. */
+.bonus-item-texto {
+  background: rgba(11, 23, 40, .88);
+  padding: clamp(1.3rem, 3vw, 2rem);
+  --white: #FFFFFF;
+  --cor-corpo: #D8E0E8;
 }
 .bonus-item-texto h3 { margin: 0 0 .7rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
 .bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.6; color: var(--cor-corpo); }
