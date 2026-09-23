@@ -770,8 +770,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .vivi-trilho {
   position: relative;
   z-index: 1;
-  margin-top: -12vh;
-  margin-top: -12svh;
+  margin-top: -20vh;
+  margin-top: -20svh;
   padding-bottom: 40vh;
   padding-bottom: 40svh;
 }
@@ -844,7 +844,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   }
   /* O card encosta mais na esquerda e fica um pouco mais estreito: a foto é
      centralizada, e o rosto dela fica livre, do lado do card. */
-  .vivi-trilho { width: auto; max-width: none; margin: -20vh 0 0; margin-top: -20svh; padding-bottom: 46vh; padding-bottom: 46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
+  .vivi-trilho { width: auto; max-width: none; margin: -28vh 0 0; margin-top: -28svh; padding-bottom: 46vh; padding-bottom: 46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
   .vivi-card { max-width: 600px; }
 }
 
