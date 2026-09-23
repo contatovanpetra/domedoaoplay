@@ -819,32 +819,42 @@ function wireIntroStage() {
     relogio = setInterval(() => { s += 1; if (texto) texto.textContent = "00:00:" + String(s).padStart(2, "0"); }, 1000);
   }
 
-  // ---- A ANIMAÇÃO (em segundos de verdade, uns 4,5 no total) ----
-  // A mesma sequência de antes, mais curta (eram 6,5s): encurtaram a montagem
-  // do celular e a travessia; a pergunta continua com cerca de 1s de leitura
-  // depois da última palavra.
+  // ---- A ANIMAÇÃO ----
+  // Antes tudo aparecia quase junto (túnel, frase, celular montando e o
+  // resto da pergunta praticamente ao mesmo tempo) — dava pra piscar e
+  // perder pedaço. Agora é em fases separadas, uma de cada vez, com um
+  // instante de pausa entre elas pra cada coisa "entrar" antes da próxima:
+  // 1) só o túnel (a pessoa vê o túnel antes de qualquer texto/celular);
+  // 2) a frase "E se, em vez de travar…" sozinha;
+  // 3) o celular se monta (contorno, corpo, tela, câmera);
+  // 4) o resto da pergunta ("você desse o play?"), com a frase da fase 2
+  //    ainda na tela, fechando a pergunta inteira;
+  // 5) segura tudo montado um tempo pra dar pra ler, só então atravessa.
   const CRESCE = 1.1; // a travessia: o iPhone crescendo junto com o túnel
   tl = gsap.timeline({ paused: true });
   tl
-    // O túnel surge do escuro.
+    // FASE 1 — só o túnel: o véu abre e as faixas de luz aparecem, sem
+    // nenhum texto ou celular ainda — a pessoa vê o túnel primeiro.
     .to(veil, { opacity: 0, duration: .5, ease: "power1.out" }, 0)
-    .to(faixas, { opacity: .7, duration: .4 }, .1)
-    .to(burstPre, { opacity: 1, y: 0, duration: .4, ease: "power2.out" }, .25)
-    // O celular se forma: a linha do contorno se desenha, girando em 3D...
-    .to(burstLinha, { strokeDashoffset: 0, duration: .7, ease: "power2.inOut" }, .3)
-    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1, ease: "power2.out" }, .3)
-    // ...o corpo do iPhone aparece por dentro dela e a tela acende com a página.
-    .to(burstAparelho, { opacity: 1, duration: .3, ease: "power1.out" }, .8)
-    .to(burstScreen, { opacity: 1, duration: .35, ease: "power2.out" }, .95)
-    .to(burstCamera, { opacity: 1, duration: .3 }, 1.15)
-    .to(faixas, { opacity: 1, duration: .5, ease: "power2.inOut" }, 1.3)
-    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .35, stagger: .14, ease: "back.out(1.7)" }, 1.45)
-    .call(aperta, null, 1.8)
-    // Tempo de ler a pergunta inteira ("E se, em vez de travar... você desse o
-    // play?"): mais folga aqui do que antes — a frase inteira só fica de pé
-    // por volta de 2,3s, e precisa ficar parada um tempo depois disso pra dar
-    // pra ler, não só piscar. Depois o texto sai e o iPhone fica de frente.
-    .addLabel("atravessa", 3.7)
+    .to(faixas, { opacity: .7, duration: .4 }, .2)
+    // FASE 2 — a frase de abertura, sozinha.
+    .to(burstPre, { opacity: 1, y: 0, duration: .4, ease: "power2.out" }, .9)
+    // FASE 3 — o celular se monta: contorno desenhando e girando, depois o
+    // corpo, a tela e a câmera, cada um entrando atrás do outro.
+    .addLabel("celular", 1.7)
+    .to(burstLinha, { strokeDashoffset: 0, duration: .7, ease: "power2.inOut" }, "celular")
+    .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1, ease: "power2.out" }, "celular")
+    .to(burstAparelho, { opacity: 1, duration: .3, ease: "power1.out" }, "celular+=.6")
+    .to(burstScreen, { opacity: 1, duration: .35, ease: "power2.out" }, "celular+=.85")
+    .to(burstCamera, { opacity: 1, duration: .3 }, "celular+=1.15")
+    .to(faixas, { opacity: 1, duration: .5, ease: "power2.inOut" }, "celular+=1.2")
+    // FASE 4 — o resto da pergunta, já com o celular montado na tela.
+    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .35, stagger: .14, ease: "back.out(1.7)" }, "celular+=1.7")
+    .call(aperta, null, "celular+=2.05")
+    // FASE 5 — segura tudo montado ("E se, em vez de travar... você
+    // desse o play?" inteira, celular gravando) um tempo de verdade antes
+    // de atravessar — sem isso, pisca e passa antes de dar pra ler.
+    .addLabel("atravessa", "celular+=3.6")
     .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .3 }, "atravessa")
     .to(faixas, { opacity: 0, duration: .3 }, "atravessa")
     .to(burstStage, { rotationX: 0, rotationY: 0, duration: .4, ease: "power2.inOut" }, "atravessa")

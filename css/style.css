@@ -1885,14 +1885,17 @@ html.abertura-on { overflow: hidden; }
      media query abaixo — mesma lógica do "modo" do vídeo em main.js): o
      túnel aparece em volta dele. --lado é a medida da borda estreita do
      aparelho de verdade (a base das bordas, cantos e botões): a largura em
-     pé, a altura deitado. */
-  --aparelho-h: min(40vh, 380px, 92vw);
+     pé, a altura deitado. Pequeno de propósito: a experiência que importa
+     aqui é o túnel + a pergunta, não o aparelho — ele só existe pra fazer a
+     transição de tela, então fica discreto (menor que antes) e o texto (as
+     duas frases da pergunta, ver .burst-pre/.burst-title) ganha mais peso. */
+  --aparelho-h: min(28vh, 260px, 62vw);
   --aparelho-w: calc(var(--aparelho-h) * .485);
   --lado: var(--aparelho-w);
 }
 @media (min-width: 700px) and (orientation: landscape) {
   .intro-scene2 {
-    --aparelho-w: min(40vh, 380px, 60vw);
+    --aparelho-w: min(28vh, 260px, 40vw);
     --aparelho-h: calc(var(--aparelho-w) * .485);
     --lado: var(--aparelho-h);
   }
@@ -1916,7 +1919,9 @@ html.abertura-on { overflow: hidden; }
   padding: 0 1.25rem;
   margin: 0;
   font-family: var(--font-body);
-  font-size: clamp(.82rem, 3.6vw, .98rem);
+  /* Maior que antes: o aparelho encolheu de propósito, e a experiência de
+     verdade é o túnel + a pergunta — o texto tem que carregar esse peso. */
+  font-size: clamp(1.05rem, 4.8vw, 1.3rem);
   letter-spacing: .03em;
   color: var(--text);
   text-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 2px 16px rgba(0, 0, 0, .55);
@@ -2060,7 +2065,7 @@ html.abertura-on { overflow: hidden; }
   font-family: var(--font-head);
   font-weight: 700;
   line-height: 1.05;
-  font-size: clamp(1.7rem, 7vw, 3rem);
+  font-size: clamp(2rem, 8.5vw, 3.4rem);
   color: var(--text);
   text-shadow: 0 2px 4px rgba(0, 0, 0, .45), 0 4px 26px rgba(0, 0, 0, .6);
 }
