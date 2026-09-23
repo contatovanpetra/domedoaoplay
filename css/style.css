@@ -418,10 +418,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    contínua (sem nenhuma linha entre elas), então o respiro de seção padrão
    (128px + 128px) só deixava vão vazio de sobra ali no meio. */
 #modulos { padding-bottom: 64px; }
-#beneficios { padding-top: 64px; padding-bottom: 300px; }
+#beneficios { padding-top: 64px; padding-bottom: 380px; }
 @media (max-width: 699.98px) {
   #modulos { padding-bottom: 40px; }
-  #beneficios { padding-top: 40px; padding-bottom: 190px; }
+  #beneficios { padding-top: 40px; padding-bottom: 250px; }
 }
 /* Aplicação ("Falar bem na câmera vira venda..."): mesma ideia de seção
    clara, mas fundo branco (não o azul da marca) — só título e subtítulo
@@ -1706,10 +1706,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: 2.5rem;
   text-align: left;
 }
-.final-tunnel { width: 100%; height: auto; max-width: 320px; justify-self: center; }
-/* Sem imagem por enquanto: só reserva a mesma proporção (827x324) da logo
-   anterior, pra grade não pular quando a nova chegar. */
-.final-tunnel--pendente { aspect-ratio: 827 / 324; }
+/* O símbolo do portal (só o ícone, sem a palavra escrita — o mesmo do
+   favicon), não mais a logo com o nome escrito por extenso. */
+.final-tunnel { width: 100%; height: auto; max-width: 220px; justify-self: center; }
 .final-cta-copy {
   max-width: 520px;
 }
