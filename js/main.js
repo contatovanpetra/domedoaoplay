@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireLinksVazios();
   wireAncoras();
   wireAccordions();
+  wireModulosTrilha();
   wireScrollReveal();
   wireDepoimentos();
   wireNiveisFaixa();
@@ -369,6 +370,27 @@ function wireAccordions() {
       });
     });
   });
+}
+
+// Os pontinhos de cronologia em cima do acordeão dos módulos: o ponto do
+// módulo aberto fica laranja, acompanhando qual está aberto (a ordem dos
+// pontos no SVG é a mesma dos módulos no acordeão, um por um).
+function wireModulosTrilha() {
+  const accordion = document.getElementById("accordion-modulos");
+  const trilha = document.querySelector(".modulos-trail");
+  if (!accordion || !trilha) return;
+  const items = [...accordion.querySelectorAll(".accordion-item")];
+  const pontos = [...trilha.querySelectorAll(".modulos-trail-dot")];
+  function atualiza() {
+    items.forEach((item, i) => {
+      if (pontos[i]) pontos[i].classList.toggle("is-ativo", item.classList.contains("open"));
+    });
+  }
+  items.forEach((item) => {
+    const trigger = item.querySelector(".accordion-trigger");
+    if (trigger) trigger.addEventListener("click", atualiza);
+  });
+  atualiza();
 }
 
 // Depoimentos em carrossel: o vídeo do meio é sempre o maior e os outros dois

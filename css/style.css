@@ -992,6 +992,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .reconhecimento-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* Respiro maior depois do botão "Quero entrar em cena": o padding padrão da
+   seção deixava pouco azul-escuro antes da tela branca começar a aparecer,
+   ficando "grudado" no CTA. */
+#metodo { padding-bottom: 200px; }
+@media (max-width: 699.98px) {
+  #metodo { padding-bottom: 112px; }
+}
 /* Fecho da escada: a frase grande e o botão, centralizados embaixo do carrossel. */
 .metodo-fecho {
   display: flex;
@@ -1301,7 +1308,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin: 2rem auto 0;
 }
 .modulos-trail-line { stroke: var(--border); stroke-width: 1.5; }
-.modulos-trail-dot { fill: var(--blue-mid); }
+.modulos-trail-dot { fill: var(--blue-mid); transition: fill .25s ease; }
+/* O ponto do módulo aberto no momento fica laranja (JS, wireModulosTrilha). */
+.modulos-trail-dot.is-ativo { fill: var(--orange); }
 
 
 /* ---------- Quadradinhos de benefícios ----------
