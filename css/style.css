@@ -453,8 +453,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* A emenda #metodo→#aplicacao estava curta demais: sobrava pouco respiro
    azul depois do botão "Quero entrar em cena" antes da tela branca começar
-   a subir por cima. Mais padding-top (e o mesmo embaixo, pra continuar
-   centralizado — ver min-height acima) resolve isso nos dois tamanhos. */
+   a subir por cima. Esse padding é rolagem pura, antes do texto preso
+   grudar no topo (ver .aplicacao-preso) — o mesmo embaixo dá uma folga
+   parecida do lado de fora antes da seção acabar de vez. */
 #aplicacao { padding-top: 104px; padding-bottom: 104px; }
 @media (min-width: 700px) {
   #aplicacao { padding-top: 176px; padding-bottom: 176px; }
@@ -486,16 +487,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      entra por cima do fim de #metodo. */
   margin-top: -56px;
   box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .35);
-  /* "A tela branca", do jeito que a Vitória descreve: uma tela cheia, não
-     uma faixa curta no meio da rolagem. Com o texto sendo bem menor que a
-     altura da seção, um padding simétrico sozinho não garante "centralizar
-     na tela" — onde a rolagem para dentro dela é variável — então um
-     mínimo de altura + centralização por flex resolve isso de vez. 100vh
-     ficou grande demais (virou uma tela cheia igual ao herói); 78vh é
-     curta o bastante pra não parecer uma seção "a mais", mas ainda alta o
-     bastante pra a centralização valer a pena. */
-  min-height: 78vh;
-  min-height: 78svh;
+  position: relative;
+  /* O texto tem que ficar preso no centro da tela enquanto a pessoa rola por
+     dentro da seção, e só sair de lá (subindo, saindo por cima) quando ela
+     termina de passar por ela — a Vitória foi clara sobre isso. Um mínimo de
+     altura sozinho (o que tinha antes) centraliza o texto na CAIXA da seção,
+     mas não trava ele na tela: como a caixa é mais curta que a rolagem
+     necessária, o texto só passa pela tela como qualquer outra coisa, sem
+     parar. A seção precisa ser bem mais alta que uma tela (dá o espaço extra
+     de rolagem) pra o texto (dentro dela, preso — ver .aplicacao-preso)
+     ficar de verdade parado no meio enquanto essa sobra de altura rola por
+     baixo. Mesmo mecanismo já usado na foto da Vitória (.vivi-foto) e no
+     herói (.cinema-stage). */
+  min-height: 170vh;
+  min-height: 170svh;
+}
+.aplicacao-preso {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
   display: flex;
   align-items: center;
 }
