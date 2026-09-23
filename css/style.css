@@ -798,11 +798,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin-top: -20svh;
   padding-bottom: 40vh;
   padding-bottom: 40svh;
-  /* Empurrão extra pra baixo, some enquanto a foto ainda está presa na tela
-     (JS, wireViviCard em main.js): sem isso, o card já vinha subindo desde o
-     primeiro pixel de rolagem — a Vitória queria ele parado até a pessoa
-     rolar metade da seção (dar tempo de ver a foto), só subindo de vez na
-     segunda metade. */
+  /* Empurrão extra pra baixo, some a partir do instante em que a tela mostra
+     metade do depoimento anterior e metade desta foto (JS, wireViviCard em
+     main.js): sem isso, o card já vinha subindo desde o primeiro pixel de
+     rolagem da seção. */
   transform: translateY(var(--vivi-empurrao, 0));
 }
 /* Card de cantos retos, vidro fosco: a foto aparece através dele, bem

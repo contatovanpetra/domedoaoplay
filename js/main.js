@@ -576,28 +576,32 @@ function wireNiveisFaixa() {
 
 // O card da Vitória (.vivi-trilho) sobe por cima da foto enquanto ela fica
 // presa na tela (position: sticky). Só o CSS (margem negativa) fazia ele
-// começar a subir desde o primeiro pixel de rolagem da seção — a Vitória
-// queria ele parado (a pessoa vendo só a foto) até a metade da rolagem, e
-// só aí subindo, na segunda metade. O empurrão extra pra baixo (--vivi-
-// empurrao, ver CSS) começa em 100% (o card "escondido" um pouco mais além
-// da posição que o CSS já dá) e some conforme a rolagem passa da metade.
+// começar a subir desde o primeiro pixel de rolagem da seção. A Vitória
+// definiu "metade" como um ponto visual, não uma fração da rolagem presa:
+// o instante em que a tela mostra metade do depoimento anterior (Afiliada
+// TikTok) e metade da foto dela — ou seja, quando o topo de #vivi passa
+// pelo meio vertical da tela, ainda durante a transição normal de entrada
+// da seção, antes mesmo da foto ficar presa. Daí em diante o card sobe até
+// a posição final de descanso (mesmo ponto de sempre: foto totalmente presa
+// mais o percurso de rolagem presa).
 function wireViviCard() {
   const vivi = document.getElementById("vivi");
   const trilho = document.querySelector(".vivi-trilho");
   if (!vivi || !trilho || prefersReducedMotion) return;
 
-  let viviTop = 0;
-  let pinado = 1;
+  let limiar = 0;
+  let fim = 1;
 
   function medir() {
-    viviTop = vivi.getBoundingClientRect().top + window.scrollY;
-    pinado = Math.max(1, vivi.offsetHeight - alturaDaTela());
+    const viviTop = vivi.getBoundingClientRect().top + window.scrollY;
+    const pinado = Math.max(1, vivi.offsetHeight - alturaDaTela());
+    limiar = viviTop - alturaDaTela() / 2;
+    fim = viviTop + pinado;
     aplica();
   }
 
   function aplica() {
-    const p = clamp((window.scrollY - viviTop) / pinado);
-    const r = clamp((p - 0.5) * 2);
+    const r = clamp((window.scrollY - limiar) / (fim - limiar));
     trilho.style.setProperty("--vivi-empurrao", ((1 - r) * 100).toFixed(1) + "%");
   }
 
