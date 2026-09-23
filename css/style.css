@@ -1683,18 +1683,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .final-cta-copy .section-lead { font-size: var(--t-corpo); line-height: 1.65; }
 .final-cta-copy .section-lead + .section-lead { margin-top: .9em; }
-/* "Atravesse o medo. Apareça." fecha a página com a frase do herói. */
-.final-frase {
-  margin: 1.4rem 0 1.6rem;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: var(--t-titulo);
-  line-height: 1.2;
-  color: var(--orange-light);
-}
 .final-cta-copy .hero-microcopy { margin-top: .9rem; }
 .final-cta-copy .section-title,
 .final-cta-copy .section-lead { margin-left: 0; margin-right: 0; }
+/* Frase de fechamento: o título manda (maior que o padrão de seção — é o
+   último golpe da página) e "Atravesse o medo." vira só um subtítulo
+   pequeno e leve, colado nele, não mais do mesmo tamanho e peso. */
+.final-cta-copy .section-title { font-size: clamp(2.25rem, 4.4vw, 3.75rem); }
+.final-frase {
+  margin: .5rem 0 1.6rem;
+  font-family: var(--font-head);
+  font-weight: 400;
+  font-size: var(--t-lead);
+  line-height: 1.3;
+  color: var(--orange-light);
+}
 @media (max-width: 899.98px) {
   .final-cta-grid { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
   .final-tunnel { max-width: 200px; }
