@@ -26,6 +26,12 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Quando a pessoa clicar em "Quero entrar em cena", o checkout (Hotmart)
+     abre numa aba nova — mas o DNS/TLS dele só começa a esquentar nesse
+     clique. Preconectando cedo (o link real entra em HOTMART_CHECKOUT_URL,
+     main.js), o checkout carrega mais rápido assim que a pessoa clicar. -->
+<link rel="preconnect" href="https://pay.hotmart.com" crossorigin>
+<link rel="dns-prefetch" href="https://pay.hotmart.com">
 <!-- GSAP/ScrollTrigger ficam local (js/vendor), não em CDN externo: a abertura
      depende deles pra rodar, e um bloqueio de rede/proxy no ambiente de quem
      visualiza (preview, sandbox etc.) não pode derrubar a animação inteira. -->
@@ -35,12 +41,17 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anton&family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
 
-<!-- A foto horizontal do herói só existe em tela deitada: pedida cedo, sem esperar o CSS. -->
+<!-- A foto do herói é o LCP da página (o que mais demora a pintar): pedida
+     cedo, sem esperar o CSS descobrir o background-image (só depois de
+     casar seletor, calcular estilo etc.). Duas versões, uma por formato de
+     tela — cada visitante baixa só a que vai realmente usar (ver
+     .hero-foto-deitada no CSS: mesma condição dos dois lados). -->
 <link rel="preload" as="image" href="assets/img/vivi-hero-desktop.webp" type="image/webp" media="(min-width: 700px) and (orientation: landscape)">
+<link rel="preload" as="image" href="assets/img/vivi-hero-mobile.webp" type="image/webp" media="(max-width: 699.98px), (orientation: portrait)">
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=11">
+<link rel="stylesheet" href="css/style.css?v=12">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -431,7 +442,7 @@
       <div class="vivi-foto">
         <picture>
           <source srcset="assets/img/vitoria-caroline-palestra.webp" type="image/webp">
-          <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy">
+          <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy" decoding="async">
         </picture>
         <h2 class="vivi-assinatura" id="autoridade-title">
           <strong class="vivi-nome">Vitória Caroline</strong>

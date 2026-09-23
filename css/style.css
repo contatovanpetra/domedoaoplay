@@ -101,8 +101,8 @@ h1, h2, h3, h4 {
 
 /* Degrau tipográfico entre "título de seção" (h2, 700, branco puro) e "título
    de card" (h3, 600, --text ligeiramente mais macio) — h1/h2/h4 continuam
-   como acima, só h3 (títulos dentro de .statement-col/.qualify-card/
-   .nivel-card/.beneficio) recebe o peso e a cor mais suaves. */
+   como acima, só h3 (títulos dentro de cards como .etapa-legenda/.beneficio)
+   recebe o peso e a cor mais suaves. */
 h3 {
   font-weight: 600;
   color: var(--text);
@@ -740,15 +740,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* O céu escuro do alto da própria foto: quando a cena desce, ele continua. */
   background: #030a1d;
 }
-/* Sem uso desde que a cena em 3D saiu (era o degradê que emendava o alto
-   dela no céu da foto) — mantido só escondido, pra não desmontar o CSS de
-   quem reabrir esse projeto depois. */
-.hero3d-zoom::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
 /* Foto parada (sem animação nenhuma, a pedido da Vitória): em pé usa a
    foto vertical dela com os ícones já prontos na cena; deitada (computador)
    troca pra foto horizontal (ver media query lá embaixo). A cena em 3D que
@@ -766,7 +757,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      rola. */
   background: #010719 url("../assets/img/vivi-hero-mobile.webp") 60% 30% / cover no-repeat;
 }
-.hero3d-zoom::after { display: none; }
 .hero-scrim {
   display: block;
   position: absolute;
