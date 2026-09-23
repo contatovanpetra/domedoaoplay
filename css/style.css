@@ -452,10 +452,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Havia uma regra de :nth-child(even) com o mesmo peso e vindo depois
      no arquivo, que vencia nos módulos pares — removida (era o motivo dos
      cards alternarem entre claro e escuro). Os dois IDs juntos garantem
-     prioridade sobre a regra de cima sem depender da ordem. */
-  background: rgba(255, 255, 255, .8);
+     prioridade sobre a regra de cima sem depender da ordem. Mesma
+     transparência de vidro do fechado (não mais um branco quase opaco):
+     só a borda laranja da esquerda e o selo já diferenciam o aberto. */
+  background: rgba(255, 255, 255, .55);
 }
-#accordion-modulos .accordion-tag { background: rgba(11, 23, 40, .08); color: var(--blue-deep); }
 #accordion-modulos .accordion-icon { color: var(--blue-deep); }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
    no meio (.20 em vez de .16) — sem nenhum card, é a pausa antes do CTA
@@ -991,10 +992,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .reconhecimento-card p { margin: 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--cor-corpo); }
 @media (max-width: 899.98px) {
+  /* Sempre 2 colunas, até no celular estreito: dois em cima, dois embaixo
+     — empilhar os 4 numa coluna só tomava espaço vertical demais. */
   .reconhecimento-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 480px) {
-  .reconhecimento-cards { grid-template-columns: 1fr; }
 }
 
 /* Fecho da escada: a frase grande e o botão, centralizados embaixo do carrossel. */
@@ -1218,18 +1218,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   justify-content: center;
   gap: .05rem;
   flex-shrink: 0;
-  width: 3.1rem;
-  height: 3.1rem;
+  width: 3.4rem;
+  height: 3.4rem;
   border-radius: 50%;
+  overflow: hidden;
   background: var(--blue-deep);
   color: rgba(255, 255, 255, .75);
-  font-size: .58rem;
+  font-size: .52rem;
   line-height: 1;
-  letter-spacing: .02em;
+  letter-spacing: .01em;
   text-transform: uppercase;
   font-weight: 600;
   text-align: center;
-  padding: 0;
+  padding: 0 .2rem;
 }
 .accordion-tag-num {
   font-family: var(--font-head);
@@ -1695,22 +1696,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Final CTA ---------- */
 .final-cta { position: relative; text-align: center; padding: 110px 0; overflow: hidden; }
 .final-cta .container { position: relative; z-index: 1; }
-/* O texto fica ao lado do portal da marca em arcos, parado, fechando a
-   história em vez de deixar o CTA solto num fundo vazio. Sem card ao redor do
-   botão ("CTA pequeno, espaço grande"): o bloco de texto e botão fica mais
-   estreito que o .container, cercado de espaço vazio sobre a .page-bg fixa. */
+/* Sem símbolo nem imagem nenhuma aqui (testamos e não ficou bom): só o
+   texto e o botão, centralizados, soltos sobre a .page-bg fixa. */
 .final-cta-grid {
   display: grid;
-  grid-template-columns: .8fr 1.1fr;
-  align-items: center;
-  gap: 2.5rem;
-  text-align: left;
+  justify-items: center;
 }
-/* O símbolo do portal (só o ícone, sem a palavra escrita — o mesmo do
-   favicon), não mais a logo com o nome escrito por extenso. */
-.final-tunnel { width: 100%; height: auto; max-width: 220px; justify-self: center; }
 .final-cta-copy {
   max-width: 520px;
+  text-align: center;
 }
 .final-cta-copy .section-lead { font-size: var(--t-corpo); line-height: 1.65; }
 .final-cta-copy .section-lead + .section-lead { margin-top: .9em; }
@@ -1728,11 +1722,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: var(--t-lead);
   line-height: 1.3;
   color: var(--orange-light);
-}
-@media (max-width: 899.98px) {
-  .final-cta-grid { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
-  .final-tunnel { max-width: 200px; }
-  .final-cta-copy { max-width: 520px; margin-left: auto; margin-right: auto; }
 }
 
 /* ---------- Footer ---------- */
