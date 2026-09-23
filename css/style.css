@@ -1588,7 +1588,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 /* ---------- Offer ---------- */
-.offer-section { padding-top: 40px; }
+/* Sobe um pouco por cima do fim da seção anterior (fundo azul claro dos
+   benefícios/e-book): fundo opaco + sombra no alto vendem a ideia de uma
+   folha subindo e cobrindo a tela de baixo, sem precisar prender a seção
+   inteira de benefícios (ela é alta demais — um "freeze" dela toda
+   deixaria a rolagem travada por muito tempo antes da oferta aparecer). */
+.offer-section {
+  position: relative;
+  z-index: 1;
+  margin-top: -56px;
+  padding-top: 96px;
+  background: var(--bg);
+  box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .55);
+}
 /* Segurança é território do azul (manual): o card da oferta é azul-aço;
    o laranja fica só no preço, nos checks e no botão. */
 .offer-card {
@@ -1663,6 +1675,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   text-align: left;
 }
 .final-tunnel { width: 100%; height: auto; max-width: 320px; justify-self: center; }
+/* Sem imagem por enquanto: só reserva a mesma proporção (827x324) da logo
+   anterior, pra grade não pular quando a nova chegar. */
+.final-tunnel--pendente { aspect-ratio: 827 / 324; }
 .final-cta-copy {
   max-width: 520px;
 }
@@ -1675,7 +1690,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-weight: 700;
   font-size: var(--t-titulo);
   line-height: 1.2;
-  color: var(--white);
+  color: var(--orange-light);
 }
 .final-cta-copy .hero-microcopy { margin-top: .9rem; }
 .final-cta-copy .section-title,
