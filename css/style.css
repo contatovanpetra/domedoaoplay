@@ -597,14 +597,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    presa numa tela só, parada, e continua lá embaixo, atrás da segunda tela —
    que é onde a seção seguinte ("Você sente...") sobe por cima dela com
    margem negativa (ver #reconhecimento). O texto/CTA do herói (.hero-primeira-tela)
-   fica só na primeira tela e rola embora normalmente na segunda. A animação
-   da cena (câmera, ícones, brilho — via --cena-p) acompanha a rolagem pelas
-   duas telas inteiras; a foto em si não faz mais zoom (--portal-scale fica
-   sempre 1: ver update() em main.js). 200vh/-100vh aqui são só a estimativa
-   antes do JS medir: a altura real da segunda tela é a altura real da seção
-   de reconhecimento (ajustaRunwayHero() em main.js), pra foto soltar exatamente
-   quando essa seção acabar — nunca antes, o que faria a escada seguinte
-   aparecer por cima da foto ainda presa. */
+   fica só na primeira tela e rola embora normalmente na segunda. A foto (uma
+   imagem parada, sem a cena em 3D animada que existia antes) só dá o zoom
+   lento da rolagem, via --portal-scale (ver .hero3d-zoom e wireScrollEffects
+   em main.js), acompanhando a rolagem pelas duas telas inteiras. 200vh/-100vh
+   aqui são só a estimativa antes do JS medir: a altura real da segunda tela é
+   a altura real da seção de reconhecimento (ajustaRunwayHero() em main.js),
+   pra foto soltar exatamente quando essa seção acabar — nunca antes, o que
+   faria a escada seguinte aparecer por cima da foto ainda presa. */
 .hero {
   position: relative;
   padding: 0;
@@ -646,8 +646,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Sem degradê no pé da foto: ela termina normal, e a divisão pra seção
    seguinte é só o fim natural da pista (ver ajustaRunwayHero() em main.js). */
-/* will-change só enquanto o herói está na tela (classe ligada pelo JS). */
-.cinema-stage.is-live .hero-photo-bg img { will-change: transform; }
+/* will-change só enquanto o herói está na tela (classe ligada pelo JS) — só
+   quem de fato anima (o zoom da rolagem, .hero3d-zoom) ganha camada própria;
+   antes essa regra mirava um <img> que não existe mais desde que a cena em
+   3D animada saiu (era o zoom acontecendo nele, agora é no --portal-scale
+   do .hero3d-zoom mesmo). */
+.cinema-stage.is-live .hero3d-zoom { will-change: transform; }
 .hero-headline {
   margin: 0;
   font-family: var(--font-head);
@@ -957,8 +961,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .texto-corrido { max-width: 640px; margin: clamp(1.6rem, 3vw, 2.2rem) auto 0; }
 .texto-corrido p { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--cor-corpo); }
 .texto-corrido p + p { margin-top: 1.1em; }
-/* O fecho do raciocínio ganha a cor do texto principal. */
-.texto-corrido .texto-forte { color: var(--text); }
 /* Abertura da escada: bloco centralizado na seção e texto justificado, pra
    fechar nas duas margens embaixo do título centralizado. */
 #metodo .texto-corrido { text-align: justify; text-align-last: center; }
@@ -1433,8 +1435,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background: #0E1D31;
   border: 1px solid var(--border);
 }
-.bonus-icone { width: 34%; max-width: 7rem; color: var(--orange-light); opacity: .9; }
-.bonus-icone svg { display: block; width: 100%; height: auto; }
 /* Assim que existe a foto de verdade (mockup do aparelho, já com o próprio
    brilho e fundo transparente): sem caixa nem fundo — a imagem flutua livre
    na seção, do jeito que já vem pronta, em vez de ficar presa num quadrado. */
