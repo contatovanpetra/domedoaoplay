@@ -780,7 +780,25 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    enquanto o card com todas as informações sobe por cima dela. A foto continua
    aparecendo ao lado (computador) ou em volta (celular) durante a leitura. */
 /* Sem respiro no alto (o .section de celular colocava 64px): a foto começa colada na seção anterior. */
-.section.vivi-apple { position: relative; isolation: isolate; padding: 0; background: var(--bg); }
+/* Respiro no pé, depois que a foto solta (ver .vivi-pin, embaixo) e antes
+   de #modulos começar a entrar por cima (comentário lá adiante): sem essa
+   distância, a foto — ainda 100% nítida, nome/card/créditos todos legíveis
+   — era cortada de repente pelo retângulo claro de #modulos, no meio da
+   rolagem. Parecia bug de tela, não transição. Com esse respiro, a foto já
+   saiu (ou quase) de cena, só o fundo escuro (--bg, o mesmo da própria
+   seção) por trás, quando #modulos aparece. */
+.section.vivi-apple { position: relative; isolation: isolate; padding: 0 0 26vh; background: var(--bg); }
+.section.vivi-apple { padding-bottom: 26svh; }
+@media (max-width: 699.98px) {
+  .section.vivi-apple { padding-bottom: 18vh; }
+  .section.vivi-apple { padding-bottom: 18svh; }
+}
+/* Agrupa a foto presa + o card que sobe por cima: é ela (não a seção
+   #vivi inteira, que agora é mais alta por causa do respiro acima) quem
+   define até onde "position: sticky" prende a foto — o limite do sticky é
+   sempre o contêiner-pai mais próximo. Ver wireViviCard em main.js: a
+   matemática do quanto a foto fica presa usa .vivi-pin como referência. */
+.vivi-pin { position: relative; }
 .vivi-foto {
   position: sticky;
   top: 0;
@@ -2096,33 +2114,6 @@ html.abertura-on { overflow: hidden; }
   pointer-events: none;
 }
 
-/* A réplica da página dentro da tela: tem exatamente o tamanho da janela e é
-   reduzida pra caber. Quando a tela cresce até a janela inteira, ela chega em
-   escala 1 — é isso que faz uma tela emendar na outra. */
-/* Centralizada de propósito (e não pela grade da tela do celular): numa grade,
-   a trilha cresce até o tamanho da réplica e ela ficava presa no canto de cima
-   à esquerda — no zoom, a página aparecia deslocada e cortada à direita. O
-   recuo de -50% vem do GSAP (xPercent/yPercent) junto com a escala. */
-.burst-mini {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform-origin: 50% 50%;
-  pointer-events: none;
-  background: var(--bg);
-  overflow: hidden;
-}
-/* Dentro da réplica, o hero ocupa exatamente uma tela: sem a pista de rolagem
-   de 195vh (que só existe pra animação do original) e sem sticky. */
-.burst-mini .site-header { position: absolute; top: 0; left: 0; right: 0; transform: none; opacity: 1; visibility: visible; }
-.burst-mini .hero { height: auto; min-height: auto; }
-.burst-mini .cinema-stage { position: relative; top: 0; }
-/* A réplica é uma imagem parada da página: nada nela pisca, gira ou convida a
-   rolar, senão vira uma segunda página viva dentro da primeira. */
-.burst-mini .scroll-cue,
-
-.burst-mini * { animation: none !important; transition: none !important; }
-
 /* Clarão: a luz da saída do túnel tomando a tela inteira por um instante. */
 .flash {
   position: fixed;
@@ -2175,14 +2166,6 @@ html.abertura-on { overflow: hidden; }
 
 /* ---------- Indicador de rolagem (hero) ---------- */
 .scroll-cue {
-  /* Agora é um <button> de verdade (clicável, rola pro resto do herói) —
-     reseta a aparência padrão de botão do navegador. */
-  appearance: none;
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
   position: absolute;
   left: 50%;
   bottom: 28px;

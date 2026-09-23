@@ -40,7 +40,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=10">
+<link rel="stylesheet" href="css/style.css?v=11">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -124,9 +124,9 @@
       </div>
       </div>
 
-      <button type="button" class="scroll-cue" id="hero-scrollcue" aria-label="Rolar para baixo">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"/><path d="M5 12l7 7 7-7"/></svg>
-      </button>
+      <div class="scroll-cue" aria-hidden="true" id="hero-scrollcue">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15"/><path d="M5 12l7 7 7-7"/></svg>
+      </div>
     </div>
   </section>
 
@@ -418,42 +418,53 @@
   <section class="section vivi-apple" id="vivi" aria-labelledby="autoridade-title">
     <!-- A foto fica grande e parada na tela enquanto o card, com todas as
          informações da educadora, sobe por cima dela (como nas páginas da Apple). -->
-    <div class="vivi-foto">
-      <picture>
-        <source srcset="assets/img/vitoria-caroline-palestra.webp" type="image/webp">
-        <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy">
-      </picture>
-      <h2 class="vivi-assinatura" id="autoridade-title">
-        <strong class="vivi-nome">Vitória Caroline</strong>
-        <span class="vivi-cargo">criadora do método Do Medo ao Play</span>
-      </h2>
-      <!-- Mesma lógica da assinatura, só que no pé da foto: os números
-           fecham a foto, estáticos nela — presos junto com o resto da foto
-           enquanto o card sobe por cima. Só o texto grande se move. -->
-      <ul class="credential-list vivi-credenciais">
-        <li class="credential-item credential-item-edu">
-        <span class="credential-icon" aria-hidden="true"></span>
-        <span class="credential-text"><span class="credential-figure big-fact-num" data-count="13">13</span> anos como educadora</span>
-        </li>
-        <li class="credential-item credential-item-camera">
-        <span class="credential-icon" aria-hidden="true"></span>
-        <span class="credential-text"><span class="credential-figure big-fact-num" data-count="8">8</span> anos como criadora de conteúdo</span>
-        </li>
-        <li class="credential-item credential-item-voice">
-        <span class="credential-icon" aria-hidden="true"></span>
-        <span class="credential-text"><span class="credential-figure big-fact-num" data-count="4">4</span> anos de especialização em comunicação e oratória</span>
-        </li>
-        <li class="credential-item credential-item-business">
-        <span class="credential-icon" aria-hidden="true"></span>
-        <span class="credential-text">CEO de uma marca de sucesso e de uma consultoria de negócios</span>
-        </li>
-      </ul>
-    </div>
-    <div class="container vivi-trilho">
-      <article class="vivi-card">
-        <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional. Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas.</p>
-        <p>Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
-      </article>
+    <!-- .vivi-pin agrupa a foto presa + o card que sobe por cima dela: é ela
+         (não a seção #vivi inteira) quem define até onde a foto fica presa
+         (position: sticky usa o contêiner-pai mais próximo como limite).
+         Sem esse agrupamento, a foto só soltava no exato instante em que
+         #modulos começava a entrar por cima (ver comentário lá embaixo) —
+         cortava a foto ainda nítida (nome, card e créditos 100% legíveis),
+         sem nenhuma folga, parecendo um bug de tela. Com o limite aqui
+         dentro, sobra o respiro de #vivi-apple (padding-bottom, ver embaixo)
+         pra foto sair de cena antes de #modulos aparecer. -->
+    <div class="vivi-pin">
+      <div class="vivi-foto">
+        <picture>
+          <source srcset="assets/img/vitoria-caroline-palestra.webp" type="image/webp">
+          <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy">
+        </picture>
+        <h2 class="vivi-assinatura" id="autoridade-title">
+          <strong class="vivi-nome">Vitória Caroline</strong>
+          <span class="vivi-cargo">criadora do método Do Medo ao Play</span>
+        </h2>
+        <!-- Mesma lógica da assinatura, só que no pé da foto: os números
+             fecham a foto, estáticos nela — presos junto com o resto da foto
+             enquanto o card sobe por cima. Só o texto grande se move. -->
+        <ul class="credential-list vivi-credenciais">
+          <li class="credential-item credential-item-edu">
+          <span class="credential-icon" aria-hidden="true"></span>
+          <span class="credential-text"><span class="credential-figure big-fact-num" data-count="13">13</span> anos como educadora</span>
+          </li>
+          <li class="credential-item credential-item-camera">
+          <span class="credential-icon" aria-hidden="true"></span>
+          <span class="credential-text"><span class="credential-figure big-fact-num" data-count="8">8</span> anos como criadora de conteúdo</span>
+          </li>
+          <li class="credential-item credential-item-voice">
+          <span class="credential-icon" aria-hidden="true"></span>
+          <span class="credential-text"><span class="credential-figure big-fact-num" data-count="4">4</span> anos de especialização em comunicação e oratória</span>
+          </li>
+          <li class="credential-item credential-item-business">
+          <span class="credential-icon" aria-hidden="true"></span>
+          <span class="credential-text">CEO de uma marca de sucesso e de uma consultoria de negócios</span>
+          </li>
+        </ul>
+      </div>
+      <div class="container vivi-trilho">
+        <article class="vivi-card">
+          <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional. Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas.</p>
+          <p>Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
+        </article>
+      </div>
     </div>
   </section>
 
@@ -852,6 +863,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=7"></script>
+<script src="js/main.js?v=8"></script>
 </body>
 </html>

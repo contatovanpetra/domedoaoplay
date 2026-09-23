@@ -601,9 +601,14 @@ function wireNiveisFaixa() {
 // a posição final de descanso (mesmo ponto de sempre: foto totalmente presa
 // mais o percurso de rolagem presa).
 function wireViviCard() {
-  const vivi = document.getElementById("vivi");
+  // .vivi-pin (não #vivi) é quem trava o "position: sticky" da foto — a
+  // seção #vivi por si só é mais alta (sobra um respiro no pé antes de
+  // #modulos entrar por cima, ver CSS) — por isso a matemática do quanto a
+  // foto fica presa usa .vivi-pin como referência, não a seção inteira.
+  const vivi = document.querySelector(".vivi-pin");
   const trilho = document.querySelector(".vivi-trilho");
   const card = document.querySelector(".vivi-card");
+  const assinatura = document.querySelector(".vivi-assinatura");
   const credenciais = document.querySelector(".vivi-credenciais");
   if (!vivi || !trilho || !card || prefersReducedMotion) return;
 
@@ -629,10 +634,20 @@ function wireViviCard() {
     // Posição de descanso "de verdade" do card (sem nenhum transform), na
     // página inteira: onde ele cairia se não fizéssemos nada.
     const topoNaturalDoc = trilho.getBoundingClientRect().top + window.scrollY;
-    // Ponto onde a tela mostra o card a ~28% do alto (deixa a foto e o nome
-    // "Vitória Caroline" respirarem acima, sem precisar tocar em nada
-    // dentro do card pra empurrar mais pra baixo).
-    const alvoNaTela = alturaDaTela() * 0.28;
+    // O nome "Vitória Caroline" e as credenciais no pé da foto ficam
+    // estáticos o tempo todo (parte da própria foto presa) — o card não
+    // pode cobrir nenhum dos dois. O alvo é o meio do espaço que sobra
+    // entre onde o nome termina e onde as credenciais começam, calculado
+    // pela posição real dos dois (não um número fixo), pra se ajustar
+    // sozinho se a altura de qualquer um dos três mudar.
+    const fimNome = assinatura
+      ? parseFloat(getComputedStyle(assinatura).top) + assinatura.offsetHeight
+      : alturaDaTela() * 0.15;
+    const inicioCredenciais = credenciais
+      ? alturaDaTela() - credenciais.offsetHeight
+      : alturaDaTela() * 0.85;
+    const espaco = Math.max(0, inicioCredenciais - fimNome);
+    const alvoNaTela = fimNome + Math.max(0, (espaco - alturaCard) / 2);
     inicioSegura = topoNaturalDoc - alvoNaTela;
     aplica();
   }
@@ -653,16 +668,6 @@ function wireViviCard() {
       empurrao = Math.min(y, fim) - inicioSegura;
     }
     card.style.transform = "translateY(" + empurrao.toFixed(1) + "px)";
-
-    // A foto é "position: sticky", e enquanto presa alguns navegadores pintam
-    // ela (e o que tem dentro, como as credenciais) por cima de qualquer
-    // irmão mais tarde no HTML, não importa o z-index — nem opacidade cobre
-    // de vez. Em vez de depender do card cobrir as credenciais visualmente,
-    // elas mesmas somem pouco antes do card chegar no lugar e ficam assim
-    // por todo o tempo em que ele segura ali.
-    const inicioSome = inicioSegura - alturaDaTela() * 0.15;
-    const p2 = clamp((y - inicioSome) / Math.max(1, inicioSegura - inicioSome));
-    if (credenciais) credenciais.style.opacity = String(1 - p2);
   }
 
   let ticking = false;
@@ -848,61 +853,21 @@ function wireIntroStage() {
   }
   window.aberturaAssumida = true;
 
-  // ---- A RÉPLICA DA PÁGINA DENTRO DA CÂMERA ----
-  // Em vez de uma foto, a tela mostra uma cópia viva do menu + herói, do
-  // tamanho exato da janela e reduzida pra caber. Na travessia ela cresce até
-  // escala 1, então a tela da câmera VIRA a página, sem corte.
-  let mini = null;
-
-  // A réplica viva (clonar cabeçalho+herói, com a foto de fundo em tamanho
-  // de tela cheia, girando em 3D ao mesmo tempo que o vídeo do túnel toca)
-  // pesava demais e travava a abertura — no celular e, mesmo com mais
-  // força de processamento, também no computador (o clone é do tamanho da
-  // janela inteira, então em telas largas fica ainda maior). A tela da
-  // câmera fica sem a réplica, só escura mesmo, nos dois casos.
-  function buildMiniScreen() {
-    if (!burstScreen || !REAL_HERO) return;
-    mini = document.createElement("div");
-    mini.className = "burst-mini";
-    [REAL_HEADER, REAL_HERO].forEach((node) => {
-      if (!node) return;
-      const copy = node.cloneNode(true);
-      // Sem ids repetidos: a cópia não pode responder ao CSS/JS do original
-      // (é por causa dos ids que o herói de verdade começa invisível).
-      copy.removeAttribute("id");
-      copy.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
-      copy.querySelectorAll("a, button").forEach((el) => el.setAttribute("tabindex", "-1"));
-      mini.appendChild(copy);
-    });
-    burstScreen.appendChild(mini);
-  }
-
-  // O iPhone tem tamanho próprio (CSS): em pé na tela em pé, deitado na
-  // deitada. A réplica é do tamanho da janela, reduzida pra caber na tela dele.
-  function sizeStage() {
-    if (!mini) return;
-    gsap.set(mini, { width: window.innerWidth, height: window.innerHeight });
-    // As medidas que o JS põe no herói de verdade (onde a cena começa etc.)
-    // valem pra réplica também.
-    const real = REAL_HERO.querySelector(".cinema-stage");
-    const copia = mini.querySelector(".cinema-stage");
-    if (real && copia) copia.setAttribute("style", real.getAttribute("style") || "");
-    fitMini();
-  }
-  // Escala da réplica: cabe inteira na tela do iPhone. Pelo layout (offsetWidth),
-  // que não muda com o giro nem com o zoom do aparelho.
+  // ---- A TELA DA CÂMERA ----
+  // A ideia original era mostrar, dentro da câmera, uma cópia viva do menu +
+  // herói (clonando os dois elementos, com a foto de fundo em tamanho de
+  // tela cheia, girando em 3D ao mesmo tempo que o vídeo do túnel toca) —
+  // pesava demais e travava a abertura, no celular e, mesmo com mais força
+  // de processamento, também no computador (o clone é do tamanho da janela
+  // inteira, então em telas largas fica ainda maior). A tela da câmera fica
+  // sem a réplica, só escura mesmo, nos dois casos: nenhuma cópia é
+  // montada. A escala abaixo continua servindo pra travessia (burstStage
+  // crescendo até a tela da câmera virar a página, sem réplica nenhuma
+  // dentro pra mostrar o crescimento).
   const escalaDaReplica = () => Math.min(
     (burstScreen.offsetWidth || 1) / window.innerWidth,
     (burstScreen.offsetHeight || 1) / window.innerHeight
   );
-  function fitMini() {
-    if (!mini || !burstScreen) return;
-    gsap.set(mini, { scale: escalaDaReplica(), xPercent: -50, yPercent: -50 });
-  }
-
-  buildMiniScreen();
-  sizeStage();
-  window.addEventListener("resize", () => { if (!tl || tl.time() < tl.labels.cresce) sizeStage(); });
 
   // Computador (tela larga e deitada, mesmo corte do vídeo do túnel logo
   // abaixo): o contorno do iPhone é desenhado deitado, não em pé — sem
@@ -1283,12 +1248,4 @@ function wireScrollCue() {
     ticking = true;
     requestAnimationFrame(aplica);
   }, { passive: true });
-
-  // Agora é um botão de verdade: clicar rola a tela, um pedaço de cada vez.
-  cue.addEventListener("click", () => {
-    window.scrollBy({
-      top: window.innerHeight * 0.9,
-      behavior: prefersReducedMotion ? "auto" : "smooth",
-    });
-  });
 }
