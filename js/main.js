@@ -864,6 +864,10 @@ function wireIntroStage() {
     gsap.set(burstLinha, { strokeDasharray: comprimento, strokeDashoffset: comprimento });
   }
   gsap.set(burstStage, { transformPerspective: 1100, transformOrigin: "50% 50%", rotationY: -22, rotationX: 9 });
+  // O contorno também começa escondido por opacidade, não só pelo traço
+  // (strokeDashoffset): sem isso, um risquinho do traço ficava visível bem
+  // no início, antes da hora do celular começar a se montar.
+  if (burstContorno) gsap.set(burstContorno, { opacity: 0 });
   gsap.set(burstAparelho, { opacity: 0 });
   gsap.set(scene2, { autoAlpha: 1 });
   gsap.set(burstPre, { opacity: 0, y: 10 });
@@ -903,6 +907,7 @@ function wireIntroStage() {
     // FASE 3 — o celular se monta: contorno desenhando e girando, depois o
     // corpo, a tela e a câmera, cada um entrando atrás do outro.
     .addLabel("celular", 1.7)
+    .to(burstContorno, { opacity: 1, duration: .15 }, "celular")
     .to(burstLinha, { strokeDashoffset: 0, duration: .7, ease: "power2.inOut" }, "celular")
     .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1, ease: "power2.out" }, "celular")
     .to(burstAparelho, { opacity: 1, duration: .3, ease: "power1.out" }, "celular+=.6")
@@ -1205,15 +1210,20 @@ function playHeroIntro() {
 }
 
 // Indicador de "role para continuar" no hero: some assim que a pessoa começa
-// a rolar, pra não ficar sobrando na tela depois que ela já entendeu o gesto.
+// a rolar, pra não ficar sobrando na tela depois que ela já entendeu o gesto,
+// e volta a aparecer se ela rolar de volta pro topo (antes o listener saía
+// de vez na primeira rolagem, então ele nunca mais voltava).
 function wireScrollCue() {
   const cue = document.querySelector(".scroll-cue");
   if (!cue) return;
-  const hide = () => {
-    if (window.scrollY > 60) {
-      cue.classList.add("is-hidden");
-      window.removeEventListener("scroll", hide);
-    }
+  let ticking = false;
+  const aplica = () => {
+    ticking = false;
+    cue.classList.toggle("is-hidden", window.scrollY > 60);
   };
-  window.addEventListener("scroll", hide, { passive: true });
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(aplica);
+  }, { passive: true });
 }

@@ -973,37 +973,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .texto-corrido p { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--cor-corpo); }
 .texto-corrido p + p { margin-top: 1.1em; }
 /* Abertura da escada: bloco centralizado na seção e texto justificado, pra
-   fechar nas duas margens embaixo do título centralizado. */
-#metodo .texto-corrido { text-align: justify; text-align-last: center; }
+   fechar nas duas margens embaixo do título centralizado. Maior que o
+   texto-corrido padrão (era pequeno demais pra abrir a seção) e mais
+   largo, pra caber em duas linhas bem cheias em vez de três curtinhas. */
+#metodo .texto-corrido { max-width: 760px; text-align: justify; text-align-last: center; }
+#metodo .texto-corrido p { font-size: var(--t-lead); }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
-
-/* Cards do "você se reconhece": cada sinal batendo o olho, em vez de um
-   parágrafo corrido — mesmo tratamento discreto do .beneficio (transparente,
-   só o fio fino, sem ícone). */
-.reconhecimento-cards {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(.8rem, 2vw, 1.2rem);
-  max-width: 1040px;
-  margin: clamp(1.8rem, 4vw, 2.6rem) auto 0;
-}
-.reconhecimento-card {
-  padding: clamp(1.2rem, 2vw, 1.5rem);
-  border: 1px solid var(--border);
-  text-align: left;
-}
-.reconhecimento-card h3 {
-  margin: 0 0 .5rem;
-  font-size: var(--t-subtitulo);
-  line-height: 1.2;
-  color: var(--white);
-}
-.reconhecimento-card p { margin: 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--cor-corpo); }
-@media (max-width: 899.98px) {
-  /* Sempre 2 colunas, até no celular estreito: dois em cima, dois embaixo
-     — empilhar os 4 numa coluna só tomava espaço vertical demais. */
-  .reconhecimento-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 
 /* Respiro maior depois do botão "Quero entrar em cena": o padding padrão da
    seção deixava pouco azul-escuro antes da tela branca começar a aparecer,
@@ -1025,10 +1000,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(1.05rem, 1.4vw + .7rem, 1.3rem);
+  /* Teto bem maior que antes (1.3rem): fechava a Escada de Exposição com um
+     texto e um botão pequenos demais pro tamanho da seção no computador. */
+  font-size: clamp(1.05rem, 2.6vw + .5rem, 1.9rem);
   line-height: 1.3;
   letter-spacing: -.01em;
   color: var(--white);
+}
+@media (min-width: 900px) {
+  .metodo-fecho .btn-large { font-size: 1.2rem; }
 }
 
 
@@ -1128,7 +1108,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .etapa-rotulo {
   display: block;
-  font-size: .68rem;
+  /* Antes fixo em .68rem: ficava minúsculo nos cartões grandes do
+     computador (cresceram bastante desde o formato Reels). Agora acompanha
+     um pouco o tamanho da tela. */
+  font-size: clamp(.68rem, .6rem + .35vw, .85rem);
   font-weight: 600;
   letter-spacing: .09em;
   text-transform: uppercase;
@@ -1140,7 +1123,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .etapa-legenda h3 {
   margin: .2rem 0 0;
-  font-size: .98rem;
+  /* Mesmo motivo do .etapa-rotulo acima: fixo ficava pequeno nos cartões
+     maiores do computador. */
+  font-size: clamp(.98rem, .85rem + .5vw, 1.3rem);
   line-height: 1.2;
   color: var(--white);
 }
@@ -1150,13 +1135,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    cartão de produto da Apple, nunca um painel colado na foto. */
 .etapa-texto {
   margin: .75rem 0 0;
-  height: 6.6rem;
+  height: 7.6rem;
   padding: 0;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
   overflow: hidden;
-  font-size: var(--t-pequeno);
+  /* Um pouco maior que --t-pequeno (a Vitória achou difícil de ler no
+     celular) — a altura do bloco acima cresceu junto, pra não cortar o
+     texto mais alto. */
+  font-size: clamp(.9rem, .82rem + .35vw, 1rem);
   line-height: 1.45;
   color: var(--cor-corpo);
   text-align: left;
@@ -1557,6 +1545,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    estreito (quase sem sobra), a conta fique negativa e a seta grude na tela. */
 .depo-seta--antes { left: max(-16px, calc((100% - var(--depo-w)) / 2 - 84px)); }
 .depo-seta--depois { right: max(-16px, calc((100% - var(--depo-w)) / 2 - 84px)); }
+@media (min-width: 900px) {
+  /* No computador, em vez de ficar perto do vídeo (que sobra bastante
+     espaço vazio até a borda da tela em monitores largos), a seta vai lá
+     pro canto de verdade — mesma conta do "full bleed": a distância do
+     centro do .depo-palco até a borda da janela, não até a borda do container. */
+  .depo-seta--antes { left: calc(50% - 50vw + 24px); }
+  .depo-seta--depois { right: calc(50% - 50vw + 24px); }
+}
 .depo-seta:hover { background: var(--orange-button); color: var(--white); transform: translateY(-50%) scale(1.08); }
 .depo-seta:active { transform: translateY(-50%) scale(.96); }
 @media (prefers-reduced-motion: reduce) {
@@ -1929,10 +1925,13 @@ html.abertura-on { overflow: hidden; }
   padding: 0 1.25rem;
   margin: 0;
   font-family: var(--font-body);
-  /* Maior que antes: o aparelho encolheu de propósito, e a experiência de
-     verdade é o túnel + a pergunta — o texto tem que carregar esse peso. */
-  font-size: clamp(1.05rem, 4.8vw, 1.3rem);
-  letter-spacing: .03em;
+  /* Bem maior que antes: o aparelho encolheu de propósito, e a experiência de
+     verdade é o túnel + a pergunta — essa frase é a primeira coisa que
+     alguém lê na abertura, tem que ser bem notável, tanto no celular quanto
+     no computador. */
+  font-size: clamp(1.6rem, 6.4vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: .02em;
   color: var(--text);
   text-shadow: 0 1px 2px rgba(0, 0, 0, .5), 0 2px 16px rgba(0, 0, 0, .55);
   opacity: 0;
@@ -2131,7 +2130,12 @@ html.abertura-on { overflow: hidden; }
   0%, 100% { transform: translateY(0); opacity: .5; }
   50% { transform: translateY(6px); opacity: 1; }
 }
-@media (max-width: 699.98px) { .scroll-cue { bottom: 18px; } }
+@media (max-width: 699.98px) {
+  /* Pequenininha demais pra notar em cima de uma foto cheia de coisa: maior
+     e com mais opacidade de base, sem depender só da animação de "boiar". */
+  .scroll-cue { bottom: 18px; opacity: 1; }
+  .scroll-cue svg { width: 26px; height: 26px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue svg { animation: none; }
 }
