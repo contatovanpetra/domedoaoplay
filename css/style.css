@@ -451,14 +451,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   #modulos { padding-top: 120px; padding-bottom: 40px; }
   #beneficios { padding-top: 40px; padding-bottom: 250px; }
 }
-/* As três emendas "em camada" (#modulos sobre #vivi, #aplicacao sobre
-   #metodo, #depoimentos sobre #aplicacao) são a mesma família de efeito —
-   o respiro antes de cada uma precisa ficar parecido, senão uma parece mais
-   "grudada" que a outra. #aplicacao usava o padding-top padrão da seção
-   (128px), bem maior que o das outras duas emendas — reduzido aqui só pra
-   igualar o ritmo entre as três. */
+/* A emenda #metodo→#aplicacao estava curta demais: sobrava pouco respiro
+   azul depois do botão "Quero entrar em cena" antes da tela branca começar
+   a subir por cima. Mais padding-top (e o mesmo embaixo, pra continuar
+   centralizado — ver min-height acima) resolve isso nos dois tamanhos. */
+#aplicacao { padding-top: 104px; padding-bottom: 104px; }
 @media (min-width: 700px) {
-  #aplicacao { padding-top: 96px; padding-bottom: 96px; }
+  #aplicacao { padding-top: 176px; padding-bottom: 176px; }
 }
 /* Estilo Apple (referência: apple.com/br/apple-podcasts): a tela principal
    (azul escuro) tem o conteúdo se movendo por cima dela; as duas telas de
@@ -487,15 +486,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      entra por cima do fim de #metodo. */
   margin-top: -56px;
   box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .35);
-  /* "A tela branca", do jeito que a Vitória descreve: uma tela cheia, igual
-     ao herói e à foto da Vitória, não uma faixa curta no meio da rolagem.
-     Com o texto sendo bem menor que 100vh, um padding simétrico (ver embaixo)
-     não é suficiente pra "centralizar na tela": onde a rolagem para dentro
-     dela é variável, então só um mínimo de altura + centralização por flex
-     garante o texto sempre no meio de verdade, não importa onde a pessoa
-     parar de rolar. */
-  min-height: 100vh;
-  min-height: 100svh;
+  /* "A tela branca", do jeito que a Vitória descreve: uma tela cheia, não
+     uma faixa curta no meio da rolagem. Com o texto sendo bem menor que a
+     altura da seção, um padding simétrico sozinho não garante "centralizar
+     na tela" — onde a rolagem para dentro dela é variável — então um
+     mínimo de altura + centralização por flex resolve isso de vez. 100vh
+     ficou grande demais (virou uma tela cheia igual ao herói); 78vh é
+     curta o bastante pra não parecer uma seção "a mais", mas ainda alta o
+     bastante pra a centralização valer a pena. */
+  min-height: 78vh;
+  min-height: 78svh;
   display: flex;
   align-items: center;
 }
@@ -509,11 +509,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    branco), com a mesma revelação em camada — precisa de um fundo opaco
    próprio pra cobrir o branco (sem isso, é só a .page-bg fixa por trás,
    que também aparece por baixo do branco). */
+/* Emenda maior que as outras duas emendas "em camada", só aqui: a Vitória
+   pediu pra sentir a tela escura subindo por cima da branca DURANTE a
+   rolagem (não só uma costura de 56px no fim). Como #aplicacao é uma tela
+   cheia (78vh) com o texto centralizado bem longe da borda de baixo, uma
+   sobreposição bem maior não esconde o texto em momento nenhum — só faz a
+   escura aparecer mais cedo, subindo visivelmente por cima da branca
+   enquanto ainda dá pra ler o texto acima dela. */
 #depoimentos {
   position: relative;
-  margin-top: -56px;
+  margin-top: -45vh;
+  margin-top: -45svh;
   background: var(--bg);
-  box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .45);
+  box-shadow: 0 -64px 120px -40px rgba(0, 0, 0, .55);
 }
 #modulos, #beneficios {
   --white: #0B1728;
@@ -708,13 +716,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   pointer-events: none;
   background: linear-gradient(180deg, #030a1d 0, #030a1d var(--cena-emenda, -200px), rgba(3, 10, 29, 0) calc(var(--cena-emenda, -200px) + 160px));
 }
-/* Tela deitada: a foto horizontal inteira (o arquivo só baixa nessa tela). */
+/* Foto parada (sem animação nenhuma, a pedido da Vitória): em pé usa a
+   foto vertical dela com os ícones já prontos na cena; deitada (computador)
+   troca pra foto horizontal (ver media query lá embaixo). A cena em 3D
+   (.hero3d-stage) fica sempre escondida agora — ver regra global mais abaixo. */
 .hero-foto-deitada {
-  display: none;
+  display: block;
   position: absolute;
   inset: 0;
-  background: #010719 70% 35% / cover no-repeat;
+  /* "cover" simples deixava os ícones (perto da mão, no meio da foto) bem
+     atrás do botão "Quero entrar em cena" — antes a cena em 3D empurrava os
+     ícones pra baixo do botão sozinha (JS), mas isso não existe mais numa
+     foto parada. Um zoom manual (150% da altura, ancorado no topo) empurra
+     os ícones pra baixo do botão de vez — só corta um pouco do reflexo no
+     chão, que não faz falta. */
+  background: #010719 url("../assets/img/vivi-hero-mobile.webp") 42% 0% / auto 150% no-repeat;
 }
+/* A cena em 3D animada (câmera, ícones flutuando, zoom na rolagem) foi
+   substituída pela foto parada acima, em qualquer tamanho de tela — a
+   Vitória preferiu assim. Os arquivos/JS da cena continuam no projeto (caso
+   ela mude de ideia depois), só ficam sem uso. */
+.hero3d-stage, .hero3d-zoom::after { display: none; }
 /* Palco de tamanho fixo (o tamanho em que a cena foi montada), centralizado e
    escalado pra cobrir a tela — o fator vem do JS porque o CSS não consegue
    comparar largura e altura pra fazer "cover". */
@@ -2308,8 +2330,7 @@ html.abertura-on { overflow: hidden; }
   .hero .container.hero-inner { width: 100%; }
   /* A foto horizontal é o fundo do herói inteiro. O lado esquerdo dela já é
      escuro: o degradê só reforça a leitura, sem virar faixa. */
-  .hero-foto-deitada { display: block; background-image: url("../assets/img/vivi-hero-desktop.webp"); }
-  .hero3d-stage, .hero3d-zoom::after { display: none; }
+  .hero-foto-deitada { background: #010719 url("../assets/img/vivi-hero-desktop.webp") 70% 35% / cover no-repeat; }
   .hero-scrim {
     background: linear-gradient(100deg, rgba(1, 7, 25, .5) 0%, rgba(1, 7, 25, .22) 40%, transparent 60%);
   }
