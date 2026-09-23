@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireIntroStage();
   wireManterLugar();
   wireHeaderReveal();
+  wireHeaderTema();
   playHeroIntro();
   wireVoltar();
   wireGuardaLugar();
@@ -1097,6 +1098,34 @@ function wireHeaderReveal() {
     if (!pedido) { pedido = true; requestAnimationFrame(confere); }
   }, { passive: true });
   header.addEventListener("focusin", () => header.classList.remove("is-recolhido"));
+}
+
+// A logo (texto branco) some sobre as seções claras (módulos, benefícios,
+// aplicação) — mesma ideia do "LocalnavThemeChanger" da Apple, o menu fixo
+// mudando de tema conforme a seção que está passando por baixo dele. Aqui,
+// em vez de trocar a cor da logo, o menu ganha um fundo escuro translúcido
+// só enquanto está sobre uma dessas seções (ver .site-header.on-light).
+function wireHeaderTema() {
+  const header = document.querySelector(".site-header");
+  const alvos = [...document.querySelectorAll("#modulos, #beneficios, #aplicacao")];
+  if (!header || !alvos.length) return;
+  let ticking = false;
+  function aplica() {
+    const y = (header.offsetHeight || 70) / 2;
+    const sobreClaro = alvos.some((el) => {
+      const r = el.getBoundingClientRect();
+      return r.top <= y && r.bottom >= y;
+    });
+    header.classList.toggle("on-light", sobreClaro);
+    ticking = false;
+  }
+  aplica();
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(aplica);
+  }, { passive: true });
+  window.addEventListener("resize", aplica, { passive: true });
 }
 
 // Onde a pessoa parou de ler, guardado na aba. O <head> usa isto pra decidir a

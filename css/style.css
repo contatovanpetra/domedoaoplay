@@ -235,7 +235,23 @@ ul { padding: 0; margin: 0; list-style: none; }
   /* Escondido de verdade (fora do Tab) enquanto a abertura roda; o atraso
      deixa a subida terminar antes de sumir. */
   visibility: hidden;
-  transition: transform .5s ease, opacity .4s ease, visibility 0s linear .5s;
+  transition: transform .5s ease, opacity .4s ease, visibility 0s linear .5s, background-color .3s ease;
+}
+/* A logo (nome em branco) e o "Quero entrar em cena" leem bem sobre o fundo
+   escuro da página, mas ficam quase invisíveis quando o menu passa por cima
+   de uma seção clara (módulos, benefícios, aplicação). Mesma ideia do menu
+   da Apple mudando de tema conforme a seção por baixo dele (ver
+   wireHeaderTema em main.js): em vez de trocar a cor da logo, ganha um
+   fundo escuro translúcido só nesse momento — mais simples e sem precisar
+   de uma segunda versão da logo. */
+.site-header.on-light {
+  background: rgba(11, 23, 40, .68);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .site-header.on-light {
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+  }
 }
 /* Menu sem cor nenhuma atrás. A logo leva só uma sombra suave nas letras, pra
    continuar legível quando passa sobre uma parte clara da página. */
