@@ -423,6 +423,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   #modulos { padding-bottom: 40px; }
   #beneficios { padding-top: 40px; padding-bottom: 250px; }
 }
+/* Estilo Apple (referência: apple.com/br/apple-podcasts): a tela principal
+   (azul escuro) tem o conteúdo se movendo por cima dela; as duas telas de
+   cor diferente (azul claro aqui, branco em #aplicacao) parecem já estar
+   "por baixo", estáticas, reveladas conforme a tela de cima desliza pra
+   fora — não um corte seco, nem um degradê esfumaçado: a seção nova sobe
+   um pouco por cima do fim da anterior, opaca, com uma sombra vendendo a
+   profundidade. #modulos entra dessa forma por cima do fim de #vivi. */
+#modulos {
+  margin-top: -56px;
+  box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .35);
+}
 /* Aplicação ("Falar bem na câmera vira venda..."): mesma ideia de seção
    clara, mas fundo branco (não o azul da marca) — só título e subtítulo
    aqui dentro, sem cards, então não precisa de mais nenhum ajuste. */
@@ -435,6 +446,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   --cor-corpo: #1B3046;
   --text-muted: #3D5872;
   --border: rgba(11, 23, 40, .16);
+  /* Mesma revelação em camada de #modulos (ver comentário lá em cima):
+     entra por cima do fim de #metodo. */
+  margin-top: -56px;
+  box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .35);
+}
+/* #depoimentos volta a ficar escuro por cima do fim de #aplicacao (fundo
+   branco), com a mesma revelação em camada — precisa de um fundo opaco
+   próprio pra cobrir o branco (sem isso, é só a .page-bg fixa por trás,
+   que também aparece por baixo do branco). */
+#depoimentos {
+  position: relative;
+  margin-top: -56px;
+  background: var(--bg);
+  box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .45);
 }
 #modulos, #beneficios {
   --white: #0B1728;
@@ -1212,46 +1237,33 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   row-gap: .4rem;
   min-width: 0;
 }
-/* Selo numerado cheio (não mais translúcido): rótulo pequeno "Módulo" em
-   cima, número grande em baixo — um selo de curso de verdade, não uma
-   pílula de texto espremida numa linha só. */
+/* Selo com só o número: mais discreto, translúcido como o resto do vidro
+   claro da seção — nada de rótulo "Módulo" nem fundo cheio, virava
+   informação demais e um azul pesado demais pro tamanho da bolinha. */
 .accordion-tag {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .05rem;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 2.6rem;
+  height: 2.6rem;
   border-radius: 50%;
-  overflow: hidden;
-  background: var(--blue-deep);
-  color: rgba(255, 255, 255, .75);
-  font-size: .52rem;
-  line-height: 1;
-  letter-spacing: .01em;
-  text-transform: uppercase;
-  font-weight: 600;
-  text-align: center;
-  padding: 0 .2rem;
-}
-.accordion-tag-num {
+  border: 1px solid var(--border);
+  background: rgba(70, 130, 180, .18);
+  color: var(--blue-deep);
   font-family: var(--font-head);
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #FFFFFF;
-  line-height: 1.15;
+  line-height: 1;
 }
 /* Aberto: o selo vira laranja, estendendo o mesmo princípio que já existe
    no .accordion-icon. */
 #accordion-modulos .accordion-item.open .accordion-tag {
+  border-color: var(--orange);
   background: var(--orange);
-  color: rgba(11, 23, 40, .65);
+  color: var(--bg);
   transform: scale(1.06);
   box-shadow: var(--shadow-sm);
 }
-#accordion-modulos .accordion-item.open .accordion-tag-num { color: var(--bg); }
 .accordion-title-text { flex: 0 1 auto; min-width: 0; }
 /* Contador de aulas fica colado ao título (mesmo separador "·" que antes
    marcava o nível ali), não mais solto no meio do header por conta do
