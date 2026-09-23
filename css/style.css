@@ -718,10 +718,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    livre entre a mão e o rosto (sem sair da tela no celular), a luz do arco
    acende e a pessoa dá um passo à frente.
    Só translate/scale: fica na GPU, sem repintar a cena. */
-.hero3d-ico-kuai { translate: calc(var(--cena-p, 0) * 120px) calc(var(--cena-p, 0) * -200px * var(--sobe, 1)); }
-.hero3d-ico-tiktok { translate: calc(var(--cena-p, 0) * 170px) calc(var(--cena-p, 0) * -250px * var(--sobe, 1)); }
-.hero3d-ico-insta { translate: calc(var(--cena-p, 0) * 60px) calc(var(--cena-p, 0) * -120px * var(--sobe, 1)); }
-.hero3d-ico-yt { translate: calc(var(--cena-p, 0) * 160px) calc(var(--cena-p, 0) * -190px * var(--sobe, 1)); }
+/* --icone-extra-y (JS, ajustaCena3D): empurrão extra só nos ícones, em
+   telas onde o botão "Quero entrar em cena" fica baixo o bastante pra
+   entrar na frente deles — sem descer a pessoa/o fundo junto (isso cortava
+   o busto dela, que deve aparecer até a cintura). */
+.hero3d-ico-kuai { translate: calc(var(--cena-p, 0) * 120px) calc(var(--cena-p, 0) * -200px * var(--sobe, 1) + var(--icone-extra-y, 0px)); }
+.hero3d-ico-tiktok { translate: calc(var(--cena-p, 0) * 170px) calc(var(--cena-p, 0) * -250px * var(--sobe, 1) + var(--icone-extra-y, 0px)); }
+.hero3d-ico-insta { translate: calc(var(--cena-p, 0) * 60px) calc(var(--cena-p, 0) * -120px * var(--sobe, 1) + var(--icone-extra-y, 0px)); }
+.hero3d-ico-yt { translate: calc(var(--cena-p, 0) * 160px) calc(var(--cena-p, 0) * -190px * var(--sobe, 1) + var(--icone-extra-y, 0px)); }
 .hero3d-glow { scale: calc(1 + var(--cena-p, 0) * .32); }
 .hero3d-person { translate: 0 calc(var(--cena-p, 0) * -36px) calc(var(--cena-p, 0) * 130px); }
 
