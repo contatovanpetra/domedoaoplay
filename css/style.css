@@ -829,10 +829,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   padding-bottom: 55vh;
   padding-bottom: 55svh;
 }
-/* Card de cantos retos, vidro fosco: a foto aparece através dele, bem
-   desfocada. Precisa ser opaco o bastante pra, quando sobe por cima das
-   credenciais no pé da foto, cobrir o texto delas de vez — não deixar as
-   duas escritas aparecerem juntas, embaralhadas. */
+/* Card de cantos retos, opaco de vez (era vidro fosco, translúcido — mesmo
+   com bem pouca transparência, ainda deixava o texto das credenciais
+   passar de leve, borrado, quando o card subia por cima delas no pé da
+   foto: lia-se as duas escritas juntas, embaralhadas). Nada de meio-termo
+   aqui: com o card 100% opaco, o que estiver atrás nunca aparece. */
 .vivi-card {
   /* Sobe e para no lugar (não é só um ponto de passagem): o transform é
      calculado e aplicado por JS a cada rolagem (wireViviCard em main.js),
@@ -845,7 +846,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   max-width: 560px;
   padding: clamp(1.5rem, 4vw, 2.6rem);
   border-radius: 0;
-  background: rgba(11, 23, 40, .55);
+  background: var(--bg);
   border: 1px solid rgba(245, 245, 245, .16);
 }
 /* O card também tem a classe .reveal (efeito de entrada, aparece aos
@@ -857,13 +858,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    depois de parar de rolar. Precisa do .vivi-card junto pra ganhar de
    .reveal sozinho (mesma especificidade, e .reveal vem depois no arquivo). */
 .vivi-card.reveal { transition: none; }
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .vivi-card {
-    background: rgba(11, 23, 40, .38);
-    -webkit-backdrop-filter: blur(20px) saturate(1.15);
-    backdrop-filter: blur(20px) saturate(1.15);
-  }
-}
 /* Nome e cargo escritos no alto da foto, como uma assinatura. */
 .vivi-assinatura {
   position: absolute;

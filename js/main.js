@@ -1128,6 +1128,24 @@ function wireHeaderReveal() {
   const header = document.querySelector(".site-header");
   if (!header) return;
   quandoAberturaAcabar(() => header.classList.add("is-on"));
+
+  // Dentro da seção Vitória Caroline, o card e as credenciais são pra ficar
+  // sempre visíveis, sem nada cobrindo (ver wireViviCard) — mas o menu volta
+  // a aparecer assim que a pessoa rola um pouco pra cima, em qualquer seção,
+  // e aqui ele podia vir cobrir o topo do card. Enquanto a rolagem estiver
+  // dentro de #vivi, o menu fica sempre recolhido, não importa a direção.
+  const vivi = document.getElementById("vivi");
+  let viviTop = 0;
+  let viviBottom = -1;
+  function medeVivi() {
+    if (!vivi) return;
+    viviTop = vivi.getBoundingClientRect().top + window.scrollY;
+    viviBottom = viviTop + vivi.offsetHeight;
+  }
+  medeVivi();
+  window.addEventListener("resize", medeVivi, { passive: true });
+  if ("ResizeObserver" in window && vivi) new ResizeObserver(medeVivi).observe(vivi);
+
   let ultimoY = window.scrollY;
   let pedido = false;
   const confere = () => {
@@ -1135,6 +1153,11 @@ function wireHeaderReveal() {
     const y = window.scrollY;
     if (y <= (header.offsetHeight || 70)) {
       header.classList.remove("is-recolhido");
+      ultimoY = y;
+      return;
+    }
+    if (vivi && y >= viviTop && y < viviBottom) {
+      header.classList.add("is-recolhido");
       ultimoY = y;
       return;
     }
