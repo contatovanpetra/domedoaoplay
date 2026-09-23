@@ -207,10 +207,7 @@ function wireScrollEffects() {
   let ticking = false;
 
   function measure() {
-    if (header) {
-      // Altura real do menu (muda com a logo, a fonte e o zoom de telas grandes).
-      root.style.setProperty("--header-h", header.getBoundingClientRect().height + "px");
-    }
+    sincronizaHeaderH();
     // Refaz a altura da pista do herói antes de medi-la (ver função acima).
     ajustaRunwayHero();
     if (hero) {
@@ -221,9 +218,27 @@ function wireScrollEffects() {
     update();
   }
 
+  // Altura real do header, sempre em dia: antes só era recalculada em
+  // resize/orientação/fonte — rolando a página, se a
+  // altura do header mudasse por qualquer razão (zoom do navegador, troca
+  // de fonte tardia), --header-h ficava desatualizado até o próximo
+  // resize, e elementos que dependem dele (como o nome no alto da foto da
+  // Vitória Caroline, ver .vivi-assinatura) ficavam mal posicionados —
+  // às vezes escondidos atrás do próprio header.
+  let ultimaHeaderH = -1;
+  function sincronizaHeaderH() {
+    if (!header) return;
+    const h = header.getBoundingClientRect().height;
+    if (Math.abs(h - ultimaHeaderH) > .5) {
+      root.style.setProperty("--header-h", h + "px");
+      ultimaHeaderH = h;
+    }
+  }
+
   function update() {
     ticking = false;
     const y = window.scrollY;
+    sincronizaHeaderH();
 
     // A trilha de leitura fica parada enquanto a abertura toca.
     const introActive = root.classList.contains("abertura-on");

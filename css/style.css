@@ -846,8 +846,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .vivi-assinatura {
   position: absolute;
   z-index: 1;
-  /* Bem rente ao início da foto, logo abaixo do menu: o nome abre a foto. */
-  top: calc(var(--header-h, 71px) + .15rem);
+  /* Logo abaixo do menu, com respiro de verdade (não .15rem — isso deixava
+     a margem de segurança praticamente zero, e o nome acabava escondido
+     atrás do próprio menu fixo quando a altura real dele variava um
+     pouco). Fallback de 80px também atualizado (o menu cresceu desde que
+     esse número foi escrito). */
+  top: calc(var(--header-h, 80px) + 1rem);
   left: 0;
   right: 0;
   margin: 0;
