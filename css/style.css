@@ -767,7 +767,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    enquanto o card com todas as informações sobe por cima dela. A foto continua
    aparecendo ao lado (computador) ou em volta (celular) durante a leitura. */
 /* Sem respiro no alto (o .section de celular colocava 64px): a foto começa colada na seção anterior. */
-.section.vivi-apple { position: relative; padding: 0; background: var(--bg); }
+.section.vivi-apple { position: relative; isolation: isolate; padding: 0; background: var(--bg); }
 .vivi-foto {
   position: sticky;
   top: 0;
@@ -793,7 +793,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    ler antes da foto soltar — sem isso a transição fica curta e apressada. */
 .vivi-trilho {
   position: relative;
-  z-index: 1;
+  /* Precisa ficar acima das credenciais no pé da foto (.vivi-credenciais,
+     z-index: 1) — com o mesmo z-index os dois textos apareciam embaralhados
+     quando o card subia por cima delas, porque a foto presa (position:
+     sticky) desempata a favor dela em vez do card. */
+  z-index: 2;
   margin-top: -20vh;
   margin-top: -20svh;
   padding-bottom: 40vh;
@@ -871,9 +875,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
       linear-gradient(90deg, rgba(11, 23, 40, .72) 0%, rgba(11, 23, 40, .28) 40%, transparent 58%),
       linear-gradient(180deg, rgba(11, 23, 40, .35) 0%, transparent 22%, transparent 72%, var(--bg) 100%);
   }
-  /* O card encosta mais na esquerda e fica um pouco mais estreito: a foto é
-     centralizada, e o rosto dela fica livre, do lado do card. */
-  .vivi-trilho { width: auto; max-width: none; margin: -28vh 0 0; margin-top: -28svh; padding-bottom: 46vh; padding-bottom: 46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
+  /* Mesma margem esquerda do container de todas as outras seções (senão o
+     texto pula pra mais perto da borda só aqui, e a página parece torta ao
+     passar de uma seção pra outra) — só solta o teto de largura, então o
+     card fica livre dentro do container e o rosto dela sobra do lado. */
+  .vivi-trilho { margin: -28vh auto 0; margin-top: -28svh; padding-bottom: 58vh; padding-bottom: 58svh; }
   .vivi-card { max-width: 600px; }
 }
 
@@ -1080,7 +1086,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* 210px de teto ficava pequeno demais em telas de computador largas (a
    escada é a única vitrine da página que não usa a largura do container:
    ela rola livre, então pode crescer mais que os 210px de antes). */
-.etapa { position: relative; flex: none; width: clamp(170px, 22vw, 340px); }
+.etapa { position: relative; flex: none; width: clamp(170px, 20vw, 305px); }
 .etapa-pin {
   display: flex;
   flex-direction: column;

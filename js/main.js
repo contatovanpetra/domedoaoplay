@@ -193,8 +193,9 @@ function wireScrollEffects() {
   const hero = REAL_HERO;
   const stage = document.querySelector(".cinema-stage");
   // A foto parada (ver .hero-foto-deitada) dá um zoom lento na rolagem:
-  // começa um pouco menor (os ícones da foto ficam mais longe do botão) e
-  // cresce até cobrir a tela.
+  // já começa cobrindo a tela inteira (sem borda nenhuma aparecendo) e cresce
+  // mais um pouco conforme rola — começar abaixo de 100% deixava uma faixa
+  // do fundo escuro visível nas bordas em telas largas.
   const zoomFoto = hero ? hero.querySelector(".hero3d-zoom") : null;
   const bar = document.querySelector(".read-progress");
   // A classe é ligada no <head> só quando o movimento é permitido.
@@ -238,7 +239,7 @@ function wireScrollEffects() {
     // A foto fica parada (presa numa tela, ver .cinema-stage no CSS); só o
     // zoom dela acompanha a rolagem pelas duas telas da pista.
     const p = clamp((y - heroTop) / heroAltura);
-    if (zoomFoto) zoomFoto.style.setProperty("--portal-scale", (0.92 + 0.18 * p).toFixed(3));
+    if (zoomFoto) zoomFoto.style.setProperty("--portal-scale", (1 + 0.12 * p).toFixed(3));
   }
 
   window.addEventListener("scroll", () => {
@@ -587,6 +588,7 @@ function wireNiveisFaixa() {
 function wireViviCard() {
   const vivi = document.getElementById("vivi");
   const trilho = document.querySelector(".vivi-trilho");
+  const credenciais = document.querySelector(".vivi-credenciais");
   if (!vivi || !trilho || prefersReducedMotion) return;
 
   let limiar = 0;
@@ -603,6 +605,13 @@ function wireViviCard() {
   function aplica() {
     const r = clamp((window.scrollY - limiar) / (fim - limiar));
     trilho.style.setProperty("--vivi-empurrao", ((1 - r) * 100).toFixed(1) + "%");
+    // A foto é "position: sticky", e enquanto presa alguns navegadores pintam
+    // ela (e o que tem dentro, como as credenciais) por cima de qualquer
+    // irmão mais tarde no HTML, não importa o z-index — nem opacidade cobre
+    // de vez. Em vez de depender do card cobrir as credenciais visualmente,
+    // elas mesmas somem conforme o card chega no lugar (só nos últimos 30%
+    // da subida, pra não sumir cedo demais).
+    if (credenciais) credenciais.style.opacity = String(1 - clamp((r - 0.7) / 0.3));
   }
 
   let ticking = false;
