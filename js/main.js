@@ -43,7 +43,56 @@ document.addEventListener("DOMContentLoaded", () => {
   wireVoltar();
   wireGuardaLugar();
   wireReviewMode();
+  wireCorDaTransicao();
 });
+
+// A cor de fundo fixa (.page-bg) escurece aos poucos enquanto a pessoa rola
+// do fim dos benefícios/e-book pra oferta — não é um degradê parado no CSS
+// (isso já existe, ver #beneficios.section-tone::before), é a cor de
+// verdade mudando com a rolagem, tipo a página da Apple Podcasts: quanto
+// mais rola pra dentro da seção escura, mais escuro o azul claro fica.
+function wireCorDaTransicao() {
+  const fundo = document.querySelector(".page-bg");
+  const beneficios = document.querySelector("#beneficios");
+  const oferta = document.querySelector("#oferta");
+  if (!fundo || !beneficios || !oferta || prefersReducedMotion) return;
+
+  const AZUL_CLARO = [144, 190, 217]; // --blue-light
+  const ESCURO = [11, 23, 40]; // --bg
+  let zonaInicio = 0;
+  let zonaFim = 1;
+  let ticking = false;
+
+  function medir() {
+    // Começa onde o degradê de #beneficios já começa a esmaecer (78% da
+    // altura dela, ver o CSS) e termina um pouco depois do início da
+    // oferta: o mesmo trecho que o degradê pintado cobre, só que aqui a
+    // cor de trás acompanha a rolagem em tempo real.
+    const topo = beneficios.getBoundingClientRect().top + window.scrollY;
+    zonaInicio = topo + beneficios.offsetHeight * 0.78;
+    const ofertaTopo = oferta.getBoundingClientRect().top + window.scrollY;
+    zonaFim = ofertaTopo + window.innerHeight * 0.6;
+  }
+
+  function aplica() {
+    const y = window.scrollY + window.innerHeight * 0.5;
+    const p = Math.max(0, Math.min(1, (y - zonaInicio) / Math.max(1, zonaFim - zonaInicio)));
+    const r = Math.round(AZUL_CLARO[0] + (ESCURO[0] - AZUL_CLARO[0]) * p);
+    const g = Math.round(AZUL_CLARO[1] + (ESCURO[1] - AZUL_CLARO[1]) * p);
+    const b = Math.round(AZUL_CLARO[2] + (ESCURO[2] - AZUL_CLARO[2]) * p);
+    fundo.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+    ticking = false;
+  }
+
+  medir();
+  aplica();
+  window.addEventListener("resize", () => { medir(); aplica(); });
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(aplica);
+  }, { passive: true });
+}
 
 // Modo revisão (classe "modo-revisao" no <html>, ligada por uma linha no <head>):
 // botão flutuante que conta e percorre os itens marcados com data-confirmar.

@@ -402,19 +402,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background: var(--blue-light);
 }
 /* Benefícios: o alto continua liso e reto (emenda com #modulos, mesma cor,
-   sem nenhuma costura ali) mas o pé agora esmaece em degradê pro fundo
-   escuro da oferta — como na página da Apple Podcasts (roxo indo pro tom
-   seguinte aos poucos, nunca um corte seco): a pessoa lê os benefícios e o
-   e-book, e só depois de ultrapassar os dois é que a cor começa a virar. */
+   sem nenhuma costura ali) mas o pé esmaece pra transparente — não pro
+   escuro direto: quem pinta o escuro por trás, ao vivo, é o .page-bg fixo
+   (ver wireCorDaTransicao em main.js), que vai escurecendo aos poucos
+   conforme a rolagem avança, tipo a página da Apple Podcasts (a cor muda
+   com o tanto que se rola, não é só um degradê parado). */
 #beneficios.section-tone::before {
-  background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 80%, var(--bg) 100%);
+  background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 78%, transparent 100%);
 }
-/* Respiro maior no pé, antes da oferta: sem isso o degradê acima ficava
-   grudado no último bônus (o e-book), sem espaço nenhum pra "respirar"
-   antes de a cor começar a mudar. */
-#beneficios { padding-bottom: 220px; }
+/* Respiro maior no pé, antes da oferta — só um pouco mais (a transição
+   precisa de alguma distância de rolagem pra acontecer, mas não de uma
+   folga enorme): estava grudado no último bônus (o e-book), sem espaço
+   nenhum pra "respirar" antes de a cor começar a mudar. */
+#beneficios { padding-bottom: 300px; }
 @media (max-width: 699.98px) {
-  #beneficios { padding-bottom: 140px; }
+  #beneficios { padding-bottom: 190px; }
 }
 /* Aplicação ("Falar bem na câmera vira venda..."): mesma ideia de seção
    clara, mas fundo branco (não o azul da marca) — só título e subtítulo
@@ -1369,10 +1371,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   container-type: inline-size;
   position: relative;
   padding: clamp(1.2rem, 2vw, 1.5rem);
-  /* Mesmo formato claro dos cards do acordeão de módulos (ver
-     #modulos .accordion-item), não mais um vidro escuro. */
-  background: rgba(255, 255, 255, .55);
-  border: 1px solid rgba(11, 23, 40, .18);
+  /* Claro, mas bem mais vidro que o card do acordeão (ver
+     #modulos .accordion-item): não pode ficar um bloco branco opaco, só
+     uma sugestão de card sobre o azul da seção. */
+  background: rgba(255, 255, 255, .2);
+  border: 1px solid rgba(255, 255, 255, .45);
 }
 /* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
    que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
@@ -1464,16 +1467,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 @media (prefers-reduced-motion: reduce) {
   .bonus-imagem { animation: none; }
 }
-/* Texto em branco sobre um fundo escuro próprio (não no azul claro direto
-   da seção — branco em cima do azul claro ficaria sem contraste nenhum):
-   os dois tokens são reescritos só aqui dentro, então os h3/p abaixo (que
-   leem --white/--cor-corpo) já saem claros sem precisar repetir a cor. */
-.bonus-item-texto {
-  background: rgba(11, 23, 40, .88);
-  padding: clamp(1.3rem, 3vw, 2rem);
-  --white: #FFFFFF;
-  --cor-corpo: #D8E0E8;
-}
+/* Sem card: o texto fica direto sobre o azul da seção (como os títulos e
+   corpo de texto em volta), não mais numa caixa escura própria. */
 .bonus-item-texto h3 { margin: 0 0 .7rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
 .bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.6; color: var(--cor-corpo); }
 .bonus-item-texto p + p { margin-top: .8em; }
