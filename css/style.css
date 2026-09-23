@@ -414,9 +414,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    precisa de alguma distância de rolagem pra acontecer, mas não de uma
    folga enorme): estava grudado no último bônus (o e-book), sem espaço
    nenhum pra "respirar" antes de a cor começar a mudar. */
-#beneficios { padding-bottom: 300px; }
+/* Menos respiro no alto: #modulos e #beneficios são a mesma faixa azul
+   contínua (sem nenhuma linha entre elas), então o respiro de seção padrão
+   (128px + 128px) só deixava vão vazio de sobra ali no meio. */
+#modulos { padding-bottom: 64px; }
+#beneficios { padding-top: 64px; padding-bottom: 300px; }
 @media (max-width: 699.98px) {
-  #beneficios { padding-bottom: 190px; }
+  #modulos { padding-bottom: 40px; }
+  #beneficios { padding-top: 40px; padding-bottom: 190px; }
 }
 /* Aplicação ("Falar bem na câmera vira venda..."): mesma ideia de seção
    clara, mas fundo branco (não o azul da marca) — só título e subtítulo
@@ -1160,42 +1165,25 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    ponto de vidro na página. */
 .accordion-item.open { background: #0E1D31; }
 
-/* ---- Acordeão de módulos: trilha de progressão ----
-   Só o acordeão de #modulos (#accordion-modulos) recebe o tratamento de
-   "escada" — selo circular numerado + trilha vertical ligando um selo ao
-   próximo + realce forte no item aberto. O de #faq continua na família
-   estrutural simples (ver comentários acima e na parte 1). */
+/* ---- Acordeão de módulos: cartões limpos, sem trilha ----
+   Redesign pra ficar mais "profissional" (o anterior, com a trilha
+   ligando selo a selo, não estava lendo bem): cada módulo é um cartão
+   independente, cantos arredondados, sombra leve e um selo cheio (não
+   mais translúcido) com o número em destaque — like um curso online
+   comum (Udemy/Coursera), sem enfeite de "escada" tentando fazer o
+   trabalho que o próprio título da seção já faz. */
 #accordion-modulos { position: relative; }
-/* isolation cria um contexto de empilhamento próprio pro item, pra a trilha
-   (z-index -1) ficar sempre atrás do conteúdo do próprio item sem escapar
-   pra fora dele; overflow visível deixa a trilha vazar pro vão entre itens,
-   onde ela precisa continuar pra ligar um selo ao próximo. */
 #accordion-modulos .accordion-item {
   position: relative;
-  overflow: visible;
-  isolation: isolate;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(11, 23, 40, .06), 0 4px 16px -8px rgba(11, 23, 40, .12);
 }
-/* Diferenciação forte "aberto vs. os outros 6", que hoje não existe. */
+/* Diferenciação forte "aberto vs. os outros 6". */
 #accordion-modulos .accordion-item.open {
   border-left: 3px solid var(--orange);
+  box-shadow: 0 2px 4px rgba(11, 23, 40, .08), 0 8px 24px -10px rgba(11, 23, 40, .18);
 }
-/* Trilha individual por item (não uma barra global): um traço fino do
-   centro do selo deste item até o centro do selo do próximo, atravessando
-   o vão do grid. Os deslocamentos (left/top/bottom) espelham o padding do
-   .accordion-trigger + o raio do selo — ver ajuste equivalente no breakpoint
-   mobile mais abaixo, onde esse padding muda. */
-#accordion-modulos .accordion-item::before {
-  content: "";
-  position: absolute;
-  left: 3.05rem;
-  top: 2.85rem;
-  bottom: -3.75rem;
-  width: 1px;
-  background: var(--border);
-  z-index: -1;
-}
-/* Encerra a trilha no Módulo 6: não há próximo selo pra ligar. */
-#accordion-modulos .accordion-item:last-child::before { display: none; }
 .accordion-trigger {
   width: 100%;
   display: flex;
@@ -1220,40 +1208,45 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   row-gap: .4rem;
   min-width: 0;
 }
-/* Selo circular: o "nó" da trilha de progressão (ver #accordion-modulos
-   acima), não mais uma pílula com texto correndo na largura. Mantém o texto
-   "Módulo N" já existente dentro dele, com 12px (o mínimo pra leitura
-   confortável): o círculo cresceu o bastante pra caber. */
+/* Selo numerado cheio (não mais translúcido): rótulo pequeno "Módulo" em
+   cima, número grande em baixo — um selo de curso de verdade, não uma
+   pílula de texto espremida numa linha só. */
 .accordion-tag {
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .05rem;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-  width: 3.3rem;
-  height: 3.3rem;
+  width: 3.1rem;
+  height: 3.1rem;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: rgba(70, 130, 180, .18);
-  color: var(--blue-light);
-  font-size: .75rem;
-  line-height: 1.05;
-  /* Espaço largo entre "Módulo" e o número: força sempre a quebra em duas
-     linhas (com número estreito, "Módulo 1" cabia numa linha e vazava). */
-  word-spacing: 3rem;
-  font-weight: 700;
+  background: var(--blue-deep);
+  color: rgba(255, 255, 255, .75);
+  font-size: .58rem;
+  line-height: 1;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  font-weight: 600;
   text-align: center;
   padding: 0;
 }
-/* Aberto: o número vira knock-out sobre laranja, estendendo ao selo o
-   mesmo princípio que hoje já existe no .accordion-icon. */
+.accordion-tag-num {
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.15;
+}
+/* Aberto: o selo vira laranja, estendendo o mesmo princípio que já existe
+   no .accordion-icon. */
 #accordion-modulos .accordion-item.open .accordion-tag {
-  border-color: var(--orange);
   background: var(--orange);
-  color: var(--bg);
+  color: rgba(11, 23, 40, .65);
   transform: scale(1.06);
   box-shadow: var(--shadow-sm);
 }
+#accordion-modulos .accordion-item.open .accordion-tag-num { color: var(--bg); }
 .accordion-title-text { flex: 0 1 auto; min-width: 0; }
 /* Contador de aulas fica colado ao título (mesmo separador "·" que antes
    marcava o nível ali), não mais solto no meio do header por conta do
@@ -2291,13 +2284,6 @@ html.abertura-on { overflow: hidden; }
   .section { padding: 64px 0; }
   .accordion { margin-top: 1.4rem; gap: .6rem; }
   .accordion-trigger { padding: 1rem 1.1rem; }
-  /* Trilha de #modulos: acompanha o novo padding do trigger e o novo gap
-     (.6rem) do .accordion nesse breakpoint (ver regras acima). */
-  #accordion-modulos .accordion-item::before {
-    left: 2.75rem;
-    top: 2.65rem;
-    bottom: -3.25rem;
-  }
   /* Título longo ("Conteúdo e estrutura") empurrava o "· 4 aulas" pra linha
      de baixo, embaixo do selo. Agora o selo fica à esquerda e o título com a
      contagem de aulas logo abaixo dele, igual em todos os módulos. */
