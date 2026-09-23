@@ -150,12 +150,6 @@ const clamp = (v) => Math.min(1, Math.max(0, v));
 // Vale pra cena de verdade e pra réplica que a abertura monta dentro do
 // celular. Por isso a medida é a do layout (offsetWidth/Height), que ignora o
 // transform que encolhe a réplica — as duas ficam enquadradas igual.
-// Onde começam os ícones na cena montada (y em px no palco de 941x1672): em
-// tela em pé a cena desce até eles ficarem logo abaixo do texto do herói.
-const CENA_ICONES_TOPO = 604;
-// Altura do rosto na cena (entre a testa e o queixo): o zoom da rolagem gira
-// em torno dele, pra ele não fugir da tela.
-const CENA_ROSTO = 880;
 // Altura da tela sem a barra do navegador (100svh): não muda enquanto a pessoa
 // rola, então o herói não fica mudando de tamanho no meio da rolagem.
 let sondaTela = null;
@@ -167,54 +161,6 @@ function alturaDaTela() {
     document.body.appendChild(sondaTela);
   }
   return sondaTela.offsetHeight || window.innerHeight;
-}
-function ajustaCena3D() {
-  document.querySelectorAll(".hero3d-stage").forEach((palco) => {
-    const caixa = palco.parentElement;
-    const w = caixa.offsetWidth;
-    const h = caixa.offsetHeight;
-    if (!w || !h) return;
-    // Tela deitada (computador, tablet deitado) usa a foto horizontal inteira
-    // (ver CSS); a cena em camadas é a da tela em pé.
-    const deitada = window.matchMedia("(min-width: 700px) and (orientation: landscape)").matches;
-    palco.classList.toggle("is-lado", deitada);
-    // Em pé a conta é pela altura da tela (estável: 100svh não muda quando a
-    // barra do navegador some), não pela do herói, que depende da própria cena.
-    const tela = alturaDaTela();
-    // Em pé a cena fica 10% maior que o necessário pra cobrir a tela: a foto
-    // passa mais da rolagem.
-    const escala = deitada ? h / 1672 : Math.max(w / 941, tela / 1672) * 1.1;
-    palco.style.setProperty("--hero3d-s", escala.toFixed(4));
-    // Em pé a cena cobre o herói inteiro, atrás do texto. Com o texto comprido,
-    // ela desce até os ícones ficarem logo abaixo do botão; o alto da tela
-    // continua o céu escuro da própria foto (degradê no CSS).
-    const cinema = palco.closest(".cinema-stage");
-    const fimTexto = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-text-bottom")) : NaN;
-    const topo = tela / 2 - 836 * escala;
-    let desce = 0;
-    if (!deitada && isFinite(fimTexto)) {
-      desce = Math.min(tela * .4, Math.max(0, fimTexto + 12 - (topo + CENA_ICONES_TOPO * escala)));
-    }
-    const cenaY = topo + desce;
-    caixa.style.setProperty("--cena-y", cenaY.toFixed(1) + "px");
-    caixa.style.setProperty("--cena-emenda", cenaY.toFixed(1) + "px");
-    // O botão ("Quero entrar em cena") fica preso perto do fim da tela
-    // (bottom: clamp(...) no CSS), não embaixo do texto: em telas mais
-    // baixas ele sobe e passa na frente dos ícones antes do texto "avisar".
-    // Em vez de descer a cena INTEIRA mais um tanto pra desviar dele (isso
-    // empurrava a pessoa pra baixo e cortava o busto dela, que devia
-    // aparecer até a cintura) — só os ÍCONES ganham um empurrão extra pra
-    // baixo, num espaço próprio (--icone-extra-y, em pixels "locais" do
-    // palco 941x1672, por isso dividido pela escala): a pessoa e o fundo
-    // mantêm o enquadramento de sempre, só os ícones desviam do botão.
-    const fimCta = cinema ? parseFloat(cinema.style.getPropertyValue("--hero-cta-bottom")) : NaN;
-    let iconeExtra = 0;
-    if (!deitada && isFinite(fimCta)) {
-      const iconesTopoTela = cenaY + CENA_ICONES_TOPO * escala;
-      iconeExtra = Math.max(0, (fimCta + 12 - iconesTopoTela) / escala);
-    }
-    caixa.style.setProperty("--icone-extra-y", iconeExtra.toFixed(1) + "px");
-  });
 }
 /* A pista do herói tem exatamente a altura da primeira tela mais a altura
    real da seção de reconhecimento (que muda com o texto, a fonte e a
@@ -244,11 +190,10 @@ function wireScrollEffects() {
   const header = document.querySelector(".site-header");
   const hero = REAL_HERO;
   const stage = document.querySelector(".cinema-stage");
-  // Só a cena de verdade acompanha a rolagem (a réplica da abertura fica parada).
-  const cena3d = hero ? hero.querySelector(".hero3d-stage") : null;
-  const inner = document.querySelector(".hero-inner");
-  const copy = document.querySelector(".hero-copy");
-  const ctaFoto = document.querySelector(".hero-cta-foto");
+  // A foto parada (ver .hero-foto-deitada) dá um zoom lento na rolagem:
+  // começa um pouco menor (os ícones da foto ficam mais longe do botão) e
+  // cresce até cobrir a tela.
+  const zoomFoto = hero ? hero.querySelector(".hero3d-zoom") : null;
   const bar = document.querySelector(".read-progress");
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
@@ -263,20 +208,6 @@ function wireScrollEffects() {
       // Altura real do menu (muda com a logo, a fonte e o zoom de telas grandes).
       root.style.setProperty("--header-h", header.getBoundingClientRect().height + "px");
     }
-    if (stage && inner && copy) {
-      // O fim do texto decide quanto a cena desce em tela em pé (ajustaCena3D).
-      // offsetTop/offsetHeight ignoram o translateY da animação.
-      stage.style.setProperty("--hero-text-bottom", inner.offsetTop + copy.offsetTop + copy.offsetHeight + "px");
-    }
-    if (stage && ctaFoto) {
-      // O botão "Quero entrar em cena" também é um piso: sem isso, em telas
-      // mais baixas os ícones (na mão dela) ficavam por trás dele. Mesma
-      // referência (offsetTop/offsetHeight, ignora o translateY da animação)
-      // — o botão é irmão do texto dentro do mesmo pai posicionado.
-      stage.style.setProperty("--hero-cta-bottom", ctaFoto.offsetTop + ctaFoto.offsetHeight + "px");
-    }
-    // Depois do fim do texto: a caixa da cena depende dele.
-    ajustaCena3D();
     // Refaz a altura da pista do herói antes de medi-la (ver função acima).
     ajustaRunwayHero();
     if (hero) {
@@ -302,24 +233,11 @@ function wireScrollEffects() {
     stage.classList.toggle("is-live", onScreen);
     if (!onScreen) return;
 
-    // A foto fica parada (presa numa tela, ver .cinema-stage no CSS); só a
-    // cena em volta dela (câmera, ícones, brilho) acompanha a rolagem pelas
-    // duas telas da pista, via --cena-p.
+    // A foto fica parada (presa numa tela, ver .cinema-stage no CSS); só o
+    // zoom dela acompanha a rolagem pelas duas telas da pista.
     const p = clamp((y - heroTop) / heroAltura);
-    if (cena3d) cena3d.style.setProperty("--cena-p", p.toFixed(3));
+    if (zoomFoto) zoomFoto.style.setProperty("--portal-scale", (0.92 + 0.18 * p).toFixed(3));
   }
-
-  // A animação da cena (câmera balançando, ícones flutuando, brilho pulsando)
-  // roda enquanto a pessoa rola e congela quando ela para: a classe entra a
-  // cada evento de rolagem e sai 180ms depois do último.
-  let paradaCena = 0;
-  window.addEventListener("scroll", () => {
-    if (cena3d) {
-      cena3d.classList.add("is-rolando");
-      clearTimeout(paradaCena);
-      paradaCena = setTimeout(() => cena3d.classList.remove("is-rolando"), 180);
-    }
-  }, { passive: true });
 
   window.addEventListener("scroll", () => {
     if (!ticking) {
@@ -817,7 +735,6 @@ function wireIntroStage() {
       mini.appendChild(copy);
     });
     burstScreen.appendChild(mini);
-    ajustaCena3D();
   }
 
   // O iPhone tem tamanho próprio (CSS): em pé na tela em pé, deitado na
