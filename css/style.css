@@ -133,6 +133,10 @@ ul { padding: 0; margin: 0; list-style: none; }
   border-radius: 4px;
 }
 
+/* Marcar texto com o laranja da marca em vez do azul padrão do navegador:
+   um detalhe pequeno, mas nu, o resto da página some da identidade. */
+::selection { background: var(--orange-button); color: var(--white); }
+
 .container {
   max-width: var(--container-w);
   margin: 0 auto;
@@ -1380,7 +1384,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   padding: clamp(1.2rem, 2vw, 1.5rem);
   /* Claro, mas bem mais vidro que o card do acordeão (ver
      #modulos .accordion-item): não pode ficar um bloco branco opaco, só
-     uma sugestão de card sobre o azul da seção. */
+     uma sugestão de card sobre o azul da seção. Cantos arredondados iguais
+     aos dos cards de módulo, logo acima na mesma seção clara — os dois
+     lado a lado com cantos diferentes (um reto, um redondo) lia como
+     inconsistência, não como estilo. */
+  border-radius: 14px;
   background: rgba(255, 255, 255, .2);
   border: 1px solid rgba(255, 255, 255, .45);
 }
@@ -1651,7 +1659,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .price-note { font-size: var(--t-pequeno); color: var(--text-muted); }
 /* Sem parágrafo corrido explicando a oferta: só o rótulo comercial e a
-   lista em tópicos, com check laranja — lê muito mais rápido que texto. */
+   lista do que está incluso. Nada de ícone de check (lido como "modelo de
+   IA genérico", nada a ver com o resto da página): o padrão da Apple pra
+   resumir o que uma oferta inclui (Apple One, iCloud+ etc.) é só uma
+   lista de texto limpa, cada linha separada por um fio fino — sem bolinha,
+   sem ícone, sem cor de destaque em cada item. */
 .offer-inclui-rotulo {
   margin: 1.8rem 0 .9rem;
   text-align: center;
@@ -1662,20 +1674,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   text-transform: uppercase;
   color: var(--orange-light);
 }
-.offer-checklist {
-  display: grid;
-  gap: .7rem;
+.offer-lista {
   max-width: 420px;
   margin: 0 auto 1.8rem;
+  border-top: 1px solid var(--border);
 }
-.offer-checklist li {
-  display: flex;
-  align-items: center;
-  gap: .7rem;
+.offer-lista li {
+  padding: .85rem 0;
   font-size: var(--t-corpo);
   color: var(--text);
+  text-align: center;
+  border-bottom: 1px solid var(--border);
 }
-.offer-checklist svg { flex-shrink: 0; width: 20px; height: 20px; color: var(--orange-light); }
 
 /* ---------- Guarantee ---------- */
 .guarantee-block { display: flex; flex-direction: column; align-items: center; }
