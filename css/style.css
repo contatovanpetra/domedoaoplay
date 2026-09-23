@@ -1080,7 +1080,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* 210px de teto ficava pequeno demais em telas de computador largas (a
    escada é a única vitrine da página que não usa a largura do container:
    ela rola livre, então pode crescer mais que os 210px de antes). */
-.etapa { position: relative; flex: none; width: clamp(170px, 20vw, 300px); }
+.etapa { position: relative; flex: none; width: clamp(170px, 22vw, 340px); }
 .etapa-pin {
   display: flex;
   flex-direction: column;
@@ -1105,9 +1105,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      renderizava na altura real do arquivo (1402px) em vez da altura da
      vitrine pequena. */
   height: auto;
-  /* Um pouco mais alto que antes (4/5), pra lembrar mais o formato de Reels
-     — só um pouco, não o 9/16 de verdade, pra não mudar demais o cartão. */
-  aspect-ratio: 3 / 4;
+  /* Formato de Reels de verdade (9/16), como pedido. */
+  aspect-ratio: 9 / 16;
   object-fit: cover;
 }
 /* Rótulo e título ficam dentro da foto, não do lado: a legenda "gruda" na
