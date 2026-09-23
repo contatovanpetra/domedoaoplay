@@ -489,18 +489,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .35);
   position: relative;
   /* O texto tem que ficar preso no centro da tela enquanto a pessoa rola por
-     dentro da seção, e só sair de lá (subindo, saindo por cima) quando ela
-     termina de passar por ela — a Vitória foi clara sobre isso. Um mínimo de
-     altura sozinho (o que tinha antes) centraliza o texto na CAIXA da seção,
-     mas não trava ele na tela: como a caixa é mais curta que a rolagem
-     necessária, o texto só passa pela tela como qualquer outra coisa, sem
-     parar. A seção precisa ser bem mais alta que uma tela (dá o espaço extra
-     de rolagem) pra o texto (dentro dela, preso — ver .aplicacao-preso)
-     ficar de verdade parado no meio enquanto essa sobra de altura rola por
-     baixo. Mesmo mecanismo já usado na foto da Vitória (.vivi-foto) e no
-     herói (.cinema-stage). */
-  min-height: 170vh;
-  min-height: 170svh;
+     dentro da seção, e só sair de lá quando ela termina de passar por ela —
+     sumindo por baixo da tela escura seguinte, nunca escapando por cima
+     (ver #depoimentos, com sobreposição de -100vh, do tamanho da própria
+     caixa presa). As duas coisas (texto limpo e parado ao entrar + sumir
+     coberto, nunca escapando) só cabem juntas se a seção for alta o
+     bastante: a caixa presa é 100vh e a cortina escura precisa de mais
+     100vh pra subir de "só encostando embaixo" até "cobrindo tudo" — então
+     a seção inteira (o espaço extra de rolagem por baixo do texto preso)
+     precisa passar de 200vh, senão a cortina começa a aparecer ainda
+     durante a leitura, antes do texto ter ficado parado um tempo limpo.
+     Mesmo mecanismo já usado na foto da Vitória (.vivi-foto) e no herói
+     (.cinema-stage), só que mais alto porque aqui tem as DUAS pontas
+     (entrada limpa E saída coberta) pra caber. */
+  min-height: 235vh;
+  min-height: 235svh;
 }
 .aplicacao-preso {
   position: sticky;
