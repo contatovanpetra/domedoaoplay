@@ -408,7 +408,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    conforme a rolagem avança, tipo a página da Apple Podcasts (a cor muda
    com o tanto que se rola, não é só um degradê parado). */
 #beneficios.section-tone::before {
-  background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 78%, transparent 100%);
+  background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 55%, transparent 100%);
 }
 /* Respiro maior no pé, antes da oferta — só um pouco mais (a transição
    precisa de alguma distância de rolagem pra acontecer, mas não de uma
@@ -438,15 +438,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   --text-muted: #3D5872;
   --border: rgba(11, 23, 40, .16);
 }
-/* Os cards do acordeão são todos no formato claro (item fechado ou aberto):
-   sem fundo escuro nenhum aqui dentro, só uma opacidade maior pro aberto se
-   destacar dos outros (isso e a borda laranja da esquerda, que já existia). */
+/* Os cards do acordeão são todos no formato claro e todos com a mesma cor
+   (item fechado ou aberto, par ou ímpar) — nada de alternar entre claro e
+   escuro: só uma opacidade maior pro aberto se destacar dos outros (isso
+   e a borda laranja da esquerda, que já existia). */
 #modulos .accordion-item { background: rgba(255, 255, 255, .55); }
-#modulos .accordion-item:nth-child(even) { background: rgba(255, 255, 255, .32); }
 #modulos #accordion-modulos .accordion-item.open {
-  /* O mesmo peso de #accordion-modulos .accordion-item:nth-child(even) e
-     vindo depois no arquivo: sem os dois IDs juntos, o par (mais fraco)
-     vencia nos módulos pares abertos. */
+  /* Havia uma regra de :nth-child(even) com o mesmo peso e vindo depois
+     no arquivo, que vencia nos módulos pares — removida (era o motivo dos
+     cards alternarem entre claro e escuro). Os dois IDs juntos garantem
+     prioridade sobre a regra de cima sem depender da ordem. */
   background: rgba(255, 255, 255, .8);
 }
 #accordion-modulos .accordion-tag { background: rgba(11, 23, 40, .08); color: var(--blue-deep); }
@@ -1165,10 +1166,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    próximo + realce forte no item aberto. O de #faq continua na família
    estrutural simples (ver comentários acima e na parte 1). */
 #accordion-modulos { position: relative; }
-/* Quebra a repetição entre os 6 itens fechados sem sair do tom neutro. */
-#accordion-modulos .accordion-item:nth-child(even) {
-  background: rgba(27, 48, 70, .35);
-}
 /* isolation cria um contexto de empilhamento próprio pro item, pra a trilha
    (z-index -1) ficar sempre atrás do conteúdo do próprio item sem escapar
    pra fora dele; overflow visível deixa a trilha vazar pro vão entre itens,

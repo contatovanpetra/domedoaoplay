@@ -59,23 +59,37 @@ function wireCorDaTransicao() {
 
   const AZUL_CLARO = [144, 190, 217]; // --blue-light
   const ESCURO = [11, 23, 40]; // --bg
+  let zonaAntes = 0;
   let zonaInicio = 0;
   let zonaFim = 1;
   let ticking = false;
 
   function medir() {
-    // Começa onde o degradê de #beneficios já começa a esmaecer (78% da
-    // altura dela, ver o CSS) e termina um pouco depois do início da
-    // oferta: o mesmo trecho que o degradê pintado cobre, só que aqui a
-    // cor de trás acompanha a rolagem em tempo real.
-    const topo = beneficios.getBoundingClientRect().top + window.scrollY;
-    zonaInicio = topo + beneficios.offsetHeight * 0.78;
-    const ofertaTopo = oferta.getBoundingClientRect().top + window.scrollY;
-    zonaFim = ofertaTopo + window.innerHeight * 0.6;
+    // Antes daqui (Escada de Exposição, depoimentos, o começo dos próprios
+    // benefícios): fundo escuro, sempre — só #modulos/#beneficios são azuis,
+    // e eles têm fundo opaco próprio cobrindo o .page-bg o tempo todo, então
+    // nem precisam da cor certa aqui, só as seções ANTERIORES precisam
+    // (senão o azul "vazava" pelos vãos delas, que não são opacos).
+    // A faixa de verdade (esmaecendo) começa em 78% da altura de
+    // benefícios — igual ao degradê pintado no CSS — e termina exatamente
+    // no pé dela: o degradê e a cor ao vivo cobrem o mesmíssimo trecho,
+    // sem entrar seção da oferta adentro (isso é que dava aquele corte
+    // brusco: a cor viva ainda não tinha terminado quando o cartão da
+    // oferta, já escuro e opaco, aparecia por cima). Faixa bem mais alta
+    // (a maior parte de benefícios) pra a transição ficar mesmo fluida.
+    zonaAntes = beneficios.getBoundingClientRect().top + window.scrollY;
+    const altura = beneficios.offsetHeight;
+    zonaInicio = zonaAntes + altura * 0.55;
+    zonaFim = zonaAntes + altura;
   }
 
   function aplica() {
     const y = window.scrollY + window.innerHeight * 0.5;
+    if (y <= zonaAntes) {
+      fundo.style.backgroundColor = "";
+      ticking = false;
+      return;
+    }
     const p = Math.max(0, Math.min(1, (y - zonaInicio) / Math.max(1, zonaFim - zonaInicio)));
     const r = Math.round(AZUL_CLARO[0] + (ESCURO[0] - AZUL_CLARO[0]) * p);
     const g = Math.round(AZUL_CLARO[1] + (ESCURO[1] - AZUL_CLARO[1]) * p);
