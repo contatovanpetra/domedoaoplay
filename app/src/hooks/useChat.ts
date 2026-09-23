@@ -10,15 +10,59 @@ export interface ChatMessage {
   createdAt: string;
 }
 
-function fileToBase64(file: File): Promise<string> {
+const MAX_IMAGE_DIMENSION = 1568;
+const IMAGE_QUALITY = 0.85;
+
+// Fotos de celular podem vir com vários MB e resolução alta o bastante pra
+// estourar o limite de 10MB (base64) da API — redimensiona antes de enviar
+// pra garantir upload rápido e confiável (o servidor ainda ajusta o tamanho
+// final por conta própria, então isso não precisa ser exato).
+function resizeImageForUpload(file: File): Promise<{ data: string; mediaType: string }> {
   return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      resolve(result.split(",")[1] ?? "");
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+        const scale = MAX_IMAGE_DIMENSION / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      URL.revokeObjectURL(objectUrl);
+      if (!ctx) {
+        reject(new Error("Canvas 2D não suportado neste navegador."));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Não foi possível processar a imagem."));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve({ data: result.split(",")[1] ?? "", mediaType: "image/jpeg" });
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        },
+        "image/jpeg",
+        IMAGE_QUALITY,
+      );
     };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Não foi possível ler a imagem."));
+    };
+    img.src = objectUrl;
   });
 }
 
@@ -90,9 +134,7 @@ export function useChat() {
       ]);
 
       try {
-        const image = imageFile
-          ? { data: await fileToBase64(imageFile), mediaType: imageFile.type }
-          : undefined;
+        const image = imageFile ? await resizeImageForUpload(imageFile) : undefined;
 
         const { data, error } = await supabase.functions.invoke("chat", {
           body: { conversationId, message: text, image },

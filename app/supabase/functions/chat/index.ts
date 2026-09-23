@@ -2,9 +2,6 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import Anthropic from "https://esm.sh/@anthropic-ai/sdk";
 import { corsHeaders } from "../_shared/cors.ts";
 
-// Modelo padrão: Claude Opus 5. Para um assistente de altíssimo volume,
-// claude-sonnet-5 custa bem menos ($2/$10 por MTok vs $5/$25) com boa
-// qualidade — troque via variável de ambiente MODEL se fizer sentido pro seu caso.
 const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-opus-5";
 const MAX_MESSAGE_LENGTH = 4000;
 const HISTORY_LIMIT = 20;
@@ -20,6 +17,33 @@ Você ajuda o aluno em cinco frentes, conforme o que ele mandar:
 5. DÚVIDAS DE TÉCNICA: responda de forma direta e prática.
 
 Tom de voz: acolhedor, direto e prático — como alguém que já passou pelo mesmo medo e agora orienta com clareza. Nunca prometa que o aluno "nunca mais vai travar" ou garanta resultado; ofereça sempre um próximo passo realizável. Respostas curtas e específicas, nunca genéricas. Responda sempre em português do Brasil, em markdown simples (parágrafos curtos e listas quando ajudar).`;
+
+const KNOWLEDGE_INSTRUCTION = `Abaixo está a BASE DE CONHECIMENTO oficial do curso — critérios, princípios e respostas definidas pela Vitória Caroline. Sempre que um item da base se aplicar à pergunta do aluno, priorize esse conteúdo acima do seu conhecimento geral. Nunca contradiga a base de conhecimento.`;
+
+async function loadKnowledgeBlock(supabaseUrl: string): Promise<string> {
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!serviceKey) return "";
+
+  try {
+    const admin = createClient(supabaseUrl, serviceKey);
+    const { data, error } = await admin
+      .from("knowledge_base")
+      .select("category, title, content")
+      .eq("active", true)
+      .order("category", { ascending: true });
+
+    if (error || !data || data.length === 0) return "";
+
+    const entries = data
+      .map((row) => `[${row.category}] ${row.title}\n${row.content}`)
+      .join("\n\n");
+
+    return `\n\n---\n${KNOWLEDGE_INSTRUCTION}\n\n${entries}`;
+  } catch (err) {
+    console.error("Falha ao carregar knowledge_base:", err);
+    return "";
+  }
+}
 
 interface ChatRequestBody {
   conversationId: string | null;
@@ -38,11 +62,11 @@ Deno.serve(async (req) => {
       return jsonError("Não autenticado.", 401);
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } },
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabase = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const knowledgeBlockPromise = loadKnowledgeBlock(supabaseUrl);
 
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
@@ -121,11 +145,13 @@ Deno.serve(async (req) => {
       return jsonError("Assistente ainda não configurado. Fale com o suporte do curso.", 500);
     }
 
+    const knowledgeBlock = await knowledgeBlockPromise;
+
     const anthropic = new Anthropic({ apiKey });
     const response = await anthropic.messages.create({
       model: MODEL,
       max_tokens: 2048,
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + knowledgeBlock,
       thinking: { type: "adaptive" },
       output_config: { effort: "medium" },
       messages: apiMessages,

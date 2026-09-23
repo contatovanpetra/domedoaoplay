@@ -21,7 +21,7 @@ npm run dev             # http://localhost:8080
 
 ## Colocando no ar — passo a passo
 
-Isso aqui só tem o código. Para funcionar de verdade, faltam três coisas que precisam ser feitas manualmente (não dá pra automatizar sem acesso às suas contas):
+Isso aqui só tem o código. Para funcionar de verdade, faltam algumas coisas que precisam ser feitas manualmente (não dá pra automatizar sem acesso às suas contas):
 
 ### 1. Criar o projeto Supabase
 
@@ -31,13 +31,13 @@ Isso aqui só tem o código. Para funcionar de verdade, faltam três coisas que 
    VITE_SUPABASE_URL=https://xxxxx.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=eyJ...
    ```
-3. Rode a migration para criar as tabelas (`conversations`, `messages`) com RLS já configurada:
+3. Rode as migrations para criar as tabelas (`conversations`, `messages`, `knowledge_base`) com RLS já configurada:
    ```sh
    npx supabase login
    npx supabase link --project-ref xxxxx
    npx supabase db push
    ```
-   (ou cole o conteúdo de `supabase/migrations/0001_init.sql` no SQL Editor do painel Supabase).
+   (ou cole o conteúdo de `supabase/migrations/0001_init.sql` e depois `0002_knowledge_base.sql`, nessa ordem, no SQL Editor do painel Supabase).
 
 ### 2. Configurar a chave da Anthropic na edge function
 
@@ -51,13 +51,28 @@ Isso aqui só tem o código. Para funcionar de verdade, faltam três coisas que 
    npx supabase functions deploy chat
    ```
 
-   **Custo:** por padrão a função usa `claude-opus-5` (melhor qualidade). Para um assistente de alto volume, `claude-sonnet-5` sai bem mais barato ($2/$10 por milhão de tokens vs $5/$25) com ótima qualidade pra esse tipo de tarefa — pra trocar, defina o secret `ANTHROPIC_MODEL=claude-sonnet-5`.
+   Por padrão usa `claude-opus-5` (o modelo mais capaz da Anthropic). Dá pra trocar depois via secret `ANTHROPIC_MODEL`, se um dia fizer sentido — não é uma prioridade agora.
 
-### 3. Convidar os alunos
+### 3. Alimentar a base de conhecimento (o que a IA sabe do método)
+
+Sem isso, a IA responde só com conhecimento geral de fotografia/comunicação — funciona, mas não reflete o método de vocês. Pra IA priorizar o que vocês realmente ensinam:
+
+1. No painel do Supabase, vá em **Table Editor → knowledge_base**.
+2. Apague as 3 linhas de exemplo (título começa com `[EXEMPLO — apague]`) e crie linhas reais: `category` (`setup`, `tema`, `roteiro`, `voz`, `tecnica` ou `metodo`), `title` e `content` com o critério/resposta oficial de vocês.
+3. Configure a chave de administrador da função, pra ela conseguir ler essa tabela (em **Project Settings → API → service_role key**):
+   ```sh
+   npx supabase secrets set SUPABASE_SERVICE_ROLE_KEY=eyJ...
+   ```
+   **Atenção:** essa chave dá acesso total ao banco, ignorando toda regra de segurança (RLS). Ela só deve existir como secret de edge function — nunca no frontend, nunca num `.env` do navegador, nunca em código versionado.
+4. Sem precisar mudar código: qualquer edição na tabela já vale na próxima mensagem que um aluno mandar.
+
+A IA usa **tudo** que estiver marcado como `active = true` na tabela, em toda conversa. Isso funciona bem para um conteúdo do tamanho de um método/checklist; se um dia a base crescer muito (centenas de itens), o próximo passo é buscar só os itens relevantes pra cada pergunta em vez de mandar tudo sempre — não é o caso agora.
+
+### 4. Convidar os alunos
 
 Não existe cadastro público de propósito — só quem comprou o curso deve entrar. Convide cada aluno pelo painel do Supabase: **Authentication → Users → Invite user** (envia um e-mail com link para definir senha). Automatizar isso a partir da plataforma de vendas/checkout (webhook de compra aprovada) é um próximo passo natural, mas não está implementado aqui.
 
-### 4. Deploy do frontend
+### 5. Deploy do frontend
 
 Build de produção:
 ```sh
@@ -71,3 +86,4 @@ Como esse app mora na mesma pasta do site, publique `app/dist/` como um **site s
 - **Fotos não são salvas** — a imagem enviada é analisada na hora e descartada; só o texto da conversa fica no histórico. Se quiser manter um histórico de fotos, dá pra adicionar um bucket no Supabase Storage.
 - **Treino de voz/dicção** funciona por transcrição (Web Speech API do navegador, mesma técnica do vanpetrastudio) + feedback em texto — não é análise de áudio em tempo real.
 - **Identidade visual** segue o manual de marca do curso (Quicksand/Nunito Sans, azul-aço `#4682B4`, marinho `#0B1728`, laranja `#D77713`).
+- **Base de conhecimento** (`knowledge_base`) é lida por inteiro a cada mensagem via `service_role` — deliberadamente simples, sem busca semântica. Ver seção 3 acima.
