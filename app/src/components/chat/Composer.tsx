@@ -55,7 +55,8 @@ export function Composer({ onSend, disabled }: ComposerProps) {
   }
 
   return (
-    <div className="border-t border-border bg-marinho p-3">
+    <div className="border-t border-border bg-marinho">
+      <div className="mx-auto w-full max-w-2xl p-3">
       {imagePreview && (
         <div className="relative mb-2 inline-block">
           <img src={imagePreview} alt="Prévia" className="h-16 w-16 rounded-md object-cover" />
@@ -106,7 +107,7 @@ export function Composer({ onSend, disabled }: ComposerProps) {
         <Textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Escreva, ou anexe uma foto do seu setup..."
+          placeholder="Escreva aqui..."
           rows={1}
           className="max-h-32 min-h-[44px]"
           onKeyDown={(e) => {
@@ -126,6 +127,7 @@ export function Composer({ onSend, disabled }: ComposerProps) {
         >
           {disabled ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         </Button>
+      </div>
       </div>
     </div>
   );

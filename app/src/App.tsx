@@ -9,7 +9,7 @@ function Gate() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-marinho">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-marinho">
         <Loader2 className="w-6 h-6 animate-spin text-white" />
       </div>
     );

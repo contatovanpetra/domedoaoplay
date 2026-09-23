@@ -34,31 +34,39 @@ export function useChat() {
     loadedOnce.current = true;
 
     (async () => {
-      const { data: conversations } = await supabase
-        .from("conversations")
-        .select("id")
-        .order("created_at", { ascending: false })
-        .limit(1);
+      try {
+        const { data: conversations, error: convError } = await supabase
+          .from("conversations")
+          .select("id")
+          .order("created_at", { ascending: false })
+          .limit(1);
+        if (convError) throw convError;
 
-      const latest = conversations?.[0]?.id ?? null;
-      if (latest) {
-        setConversationId(latest);
-        const { data: rows } = await supabase
-          .from("messages")
-          .select("id, role, content, created_at")
-          .eq("conversation_id", latest)
-          .order("created_at", { ascending: true });
+        const latest = conversations?.[0]?.id ?? null;
+        if (latest) {
+          setConversationId(latest);
+          const { data: rows, error: msgError } = await supabase
+            .from("messages")
+            .select("id, role, content, created_at")
+            .eq("conversation_id", latest)
+            .order("created_at", { ascending: true });
+          if (msgError) throw msgError;
 
-        setMessages(
-          (rows ?? []).map((r) => ({
-            id: r.id,
-            role: r.role as "user" | "assistant",
-            content: r.content,
-            createdAt: r.created_at,
-          })),
-        );
+          setMessages(
+            (rows ?? []).map((r) => ({
+              id: r.id,
+              role: r.role as "user" | "assistant",
+              content: r.content,
+              createdAt: r.created_at,
+            })),
+          );
+        }
+      } catch (err) {
+        console.error(err);
+        toast.error("Não consegui carregar o histórico. Você ainda pode enviar mensagens novas.");
+      } finally {
+        setLoadingHistory(false);
       }
-      setLoadingHistory(false);
     })();
   }, []);
 

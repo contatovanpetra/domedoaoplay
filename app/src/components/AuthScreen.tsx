@@ -40,7 +40,7 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-marinho px-4">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-marinho px-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold text-white">Do Medo ao Play</h1>

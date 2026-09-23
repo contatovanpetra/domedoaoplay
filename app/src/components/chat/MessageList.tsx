@@ -35,7 +35,7 @@ export function MessageList({
 
   if (messages.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
+      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
         <h2 className="font-heading text-lg font-semibold text-white">
           Sobre o que vamos trabalhar hoje?
         </h2>
@@ -54,18 +54,20 @@ export function MessageList({
   }
 
   return (
-    <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-      {messages.map((m) => (
-        <MessageBubble key={m.id} message={m} />
-      ))}
-      {sending && (
-        <div className="flex justify-start">
-          <div className="rounded-lg rounded-bl-sm bg-card px-4 py-2.5">
-            <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+    <div className="flex-1 overflow-y-auto">
+      <div className="mx-auto flex w-full max-w-2xl flex-col gap-3 px-4 py-4">
+        {messages.map((m) => (
+          <MessageBubble key={m.id} message={m} />
+        ))}
+        {sending && (
+          <div className="flex justify-start">
+            <div className="rounded-lg rounded-bl-sm bg-card px-4 py-2.5">
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            </div>
           </div>
-        </div>
-      )}
-      <div ref={bottomRef} />
+        )}
+        <div ref={bottomRef} />
+      </div>
     </div>
   );
 }
