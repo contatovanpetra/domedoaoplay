@@ -847,6 +847,17 @@ function wireIntroStage() {
   sizeStage();
   window.addEventListener("resize", () => { if (!tl || tl.time() < tl.labels.cresce) sizeStage(); });
 
+  // Computador (tela larga e deitada, mesmo corte do vídeo do túnel logo
+  // abaixo): o contorno do iPhone é desenhado deitado, não em pé — sem
+  // isso, o corpo vinha sempre na vertical (CSS) mas o traço de dentro
+  // continuava no formato em pé, esticado sem uniformidade (cantos viravam
+  // elipse em vez de círculo).
+  const telaDeitada = window.matchMedia("(min-width: 700px) and (orientation: landscape)").matches;
+  if (telaDeitada && burstContorno && burstLinha) {
+    burstContorno.setAttribute("viewBox", "0 0 206 100");
+    burstLinha.setAttribute("width", "204");
+    burstLinha.setAttribute("height", "98");
+  }
   // Começa só a linha do contorno, girada em 3D; o corpo do iPhone aparece depois.
   if (burstLinha) {
     const comprimento = burstLinha.getTotalLength();
@@ -888,10 +899,13 @@ function wireIntroStage() {
     .to(burstScreen, { opacity: 1, duration: .35, ease: "power2.out" }, .95)
     .to(burstCamera, { opacity: 1, duration: .3 }, 1.15)
     .to(faixas, { opacity: 1, duration: .5, ease: "power2.inOut" }, 1.3)
-    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .35, stagger: .1, ease: "back.out(1.7)" }, 1.45)
+    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .35, stagger: .14, ease: "back.out(1.7)" }, 1.45)
     .call(aperta, null, 1.8)
-    // Tempo de ler a pergunta inteira; depois o texto sai e o iPhone fica de frente.
-    .addLabel("atravessa", 3.1)
+    // Tempo de ler a pergunta inteira ("E se, em vez de travar... você desse o
+    // play?"): mais folga aqui do que antes — a frase inteira só fica de pé
+    // por volta de 2,3s, e precisa ficar parada um tempo depois disso pra dar
+    // pra ler, não só piscar. Depois o texto sai e o iPhone fica de frente.
+    .addLabel("atravessa", 3.7)
     .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .3 }, "atravessa")
     .to(faixas, { opacity: 0, duration: .3 }, "atravessa")
     .to(burstStage, { rotationX: 0, rotationY: 0, duration: .4, ease: "power2.inOut" }, "atravessa")
