@@ -813,8 +813,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 2;
   margin-top: -20vh;
   margin-top: -20svh;
-  padding-bottom: 40vh;
-  padding-bottom: 40svh;
+  /* Era 40vh: o card (alto, cheio de texto) acabava subindo demais e
+     passava da metade da foto — a Vitória queria ele parando por volta do
+     meio, não perto do topo. */
+  padding-bottom: 30vh;
+  padding-bottom: 30svh;
   /* Empurrão extra pra baixo, some a partir do instante em que a tela mostra
      metade do depoimento anterior e metade desta foto (JS, wireViviCard em
      main.js): sem isso, o card já vinha subindo desde o primeiro pixel de
@@ -859,7 +862,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    título da seção. */
 @media (max-width: 899.98px) {
   .vivi-trilho { padding-inline: 16px; }
-  .vivi-card { padding-inline: 18px; }
+  /* Um pouco menor que o padding padrão (clamp de até 2.6rem): o card
+     estava grande demais no celular. */
+  .vivi-card { padding: 1.15rem 18px; }
 }
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
 .vivi-card > p:not(.eyebrow) + p { margin-top: .9em; }
@@ -888,11 +893,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
       linear-gradient(90deg, rgba(11, 23, 40, .72) 0%, rgba(11, 23, 40, .28) 40%, transparent 58%),
       linear-gradient(180deg, rgba(11, 23, 40, .35) 0%, transparent 22%, transparent 72%, var(--bg) 100%);
   }
-  /* Mesma margem esquerda do container de todas as outras seções (senão o
-     texto pula pra mais perto da borda só aqui, e a página parece torta ao
-     passar de uma seção pra outra) — só solta o teto de largura, então o
-     card fica livre dentro do container e o rosto dela sobra do lado. */
-  .vivi-trilho { margin: -28vh auto 0; margin-top: -28svh; padding-bottom: 54vh; padding-bottom: 54svh; }
+  /* Mesma margem esquerda do nome e das credenciais desta seção (.vivi-
+     assinatura/.vivi-credenciais, ambos com esse clamp) — o card tem que
+     ficar alinhado com "as outras informações" da própria seção, não com
+     a margem genérica do container das outras seções da página. */
+  .vivi-trilho {
+    width: auto;
+    max-width: none;
+    margin: -28vh 0 0;
+    margin-top: -28svh;
+    padding-bottom: 54vh;
+    padding-bottom: 54svh;
+    padding-left: clamp(24px, 5vw, 96px);
+    padding-right: 24px;
+  }
   /* Mais largo que antes (600px): cada linha do texto fica mais curta, o
      bloco todo fica mais baixo, e sobra altura pra seção rolar mais sem o
      card acabar em cima do título "Vitória Caroline" (ver .vivi-trilho). */
@@ -992,8 +1006,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    fechar nas duas margens embaixo do título centralizado. Maior que o
    texto-corrido padrão (era pequeno demais pra abrir a seção) e mais
    largo, pra caber em duas linhas bem cheias em vez de três curtinhas. */
-#metodo .texto-corrido { max-width: 760px; text-align: justify; text-align-last: center; }
-#metodo .texto-corrido p { font-size: var(--t-lead); }
+#metodo .texto-corrido { max-width: 1000px; text-align: justify; text-align-last: center; }
+#metodo .texto-corrido p { font-size: clamp(1.0625rem, .8rem + .9vw, 1.35rem); }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 
 /* Respiro maior depois do botão "Quero entrar em cena": o padding padrão da
@@ -1082,7 +1096,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* 210px de teto ficava pequeno demais em telas de computador largas (a
    escada é a única vitrine da página que não usa a largura do container:
    ela rola livre, então pode crescer mais que os 210px de antes). */
-.etapa { position: relative; flex: none; width: clamp(170px, 20vw, 305px); }
+.etapa { position: relative; flex: none; width: clamp(170px, 19vw, 285px); }
 .etapa-pin {
   display: flex;
   flex-direction: column;
@@ -1134,12 +1148,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-weight: 700;
   letter-spacing: .09em;
   text-transform: uppercase;
-  /* Antes era a cor do degrau quase pura (só 8% de branco): pouco contraste
-     em cima de foto clara. Agora é o oposto — branco quase puro, só um
-     toque da cor do degrau — e ganha sombra própria (a legenda inteira já
-     tinha texto-shadow embutido, mas o rótulo era pequeno demais pra sombra
-     sozinha resolver). */
-  color: color-mix(in srgb, #fff, var(--cor) 35%);
+  /* A Vitória pediu mais cor de volta (tinha ficado quase branco demais na
+     rodada anterior) — agora é a cor do degrau quase cheia, só uma pontinha
+     de branco pra não perder contraste, apoiada na sombra forte abaixo. */
+  color: color-mix(in srgb, var(--cor), #fff 20%);
   text-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 2px 10px rgba(0, 0, 0, .6);
 }
 .etapa-legenda h3 {

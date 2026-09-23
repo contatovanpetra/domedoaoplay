@@ -803,8 +803,13 @@ function wireIntroStage() {
   // escala 1, então a tela da câmera VIRA a página, sem corte.
   let mini = null;
 
+  // No celular a réplica viva (clonar cabeçalho+herói, com a foto de fundo
+  // em tamanho de tela cheia, girando em 3D ao mesmo tempo que o vídeo do
+  // túnel toca) pesava demais e travava a abertura — a tela da câmera fica
+  // sem a réplica, só escura mesmo.
+  const telaPequena = window.matchMedia("(max-width: 699.98px)").matches;
   function buildMiniScreen() {
-    if (!burstScreen || !REAL_HERO) return;
+    if (!burstScreen || !REAL_HERO || telaPequena) return;
     mini = document.createElement("div");
     mini.className = "burst-mini";
     [REAL_HEADER, REAL_HERO].forEach((node) => {
