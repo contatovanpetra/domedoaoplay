@@ -73,6 +73,9 @@ body {
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  /* Sem o flash cinza padrão do navegador ao tocar num link/botão no
+     celular: os próprios estados de :active já dão a resposta ao toque. */
+  -webkit-tap-highlight-color: transparent;
 }
 /* clip corta o que vaza pro lado sem transformar o body num contêiner de rolagem,
    o que em alguns navegadores de celular quebra o position: sticky. */
