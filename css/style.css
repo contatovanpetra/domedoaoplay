@@ -398,9 +398,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    texto (--white/--text/--cor-corpo/--text-muted/--border) são reescritos
    pra escuro aqui embaixo — título, corpo e borda de tudo que tem dentro
    leem essas variáveis, sem precisar caçar seletor por seletor. */
-#modulos.section-tone::before,
-#beneficios.section-tone::before {
+#modulos.section-tone::before {
   background: var(--blue-light);
+}
+/* Benefícios: o alto continua liso e reto (emenda com #modulos, mesma cor,
+   sem nenhuma costura ali) mas o pé agora esmaece em degradê pro fundo
+   escuro da oferta — como na página da Apple Podcasts (roxo indo pro tom
+   seguinte aos poucos, nunca um corte seco): a pessoa lê os benefícios e o
+   e-book, e só depois de ultrapassar os dois é que a cor começa a virar. */
+#beneficios.section-tone::before {
+  background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 80%, var(--bg) 100%);
+}
+/* Respiro maior no pé, antes da oferta: sem isso o degradê acima ficava
+   grudado no último bônus (o e-book), sem espaço nenhum pra "respirar"
+   antes de a cor começar a mudar. */
+#beneficios { padding-bottom: 220px; }
+@media (max-width: 699.98px) {
+  #beneficios { padding-bottom: 140px; }
 }
 /* Aplicação ("Falar bem na câmera vira venda..."): mesma ideia de seção
    clara, mas fundo branco (não o azul da marca) — só título e subtítulo
@@ -1605,19 +1619,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 /* ---------- Offer ---------- */
-/* Sobe um pouco por cima do fim da seção anterior (fundo azul claro dos
-   benefícios/e-book): fundo opaco + sombra no alto vendem a ideia de uma
-   folha subindo e cobrindo a tela de baixo, sem precisar prender a seção
-   inteira de benefícios (ela é alta demais — um "freeze" dela toda
-   deixaria a rolagem travada por muito tempo antes da oferta aparecer). */
-.offer-section {
-  position: relative;
-  z-index: 1;
-  margin-top: -56px;
-  padding-top: 96px;
-  background: var(--bg);
-  box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .55);
-}
+/* Sem sobreposição nem sombra aqui: quem faz a transição com a seção
+   anterior agora é o degradê no pé de #beneficios (ver .section-tone
+   acima) — a cor já chega quase no tom da oferta antes desta seção
+   começar, então o fundo simples (sem custom aqui, herda o da página)
+   já emenda liso. */
+.offer-section { padding-top: 96px; }
 /* Segurança é território do azul (manual): o card da oferta é azul-aço;
    o laranja fica só no preço, nos checks e no botão. */
 .offer-card {
