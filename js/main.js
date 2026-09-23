@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireScrollReveal();
   wireDepoimentos();
   wireNiveisFaixa();
+  wireViviCard();
   wireCountUp();
   wireScrollEffects();
   wireScrollCue();
@@ -571,6 +572,53 @@ function wireNiveisFaixa() {
   if ("IntersectionObserver" in window) {
     new IntersectionObserver((e) => { naTela = e[0].isIntersecting; }, { threshold: 0 }).observe(faixa);
   }
+}
+
+// O card da Vitória (.vivi-trilho) sobe por cima da foto enquanto ela fica
+// presa na tela (position: sticky). Só o CSS (margem negativa) fazia ele
+// começar a subir desde o primeiro pixel de rolagem da seção — a Vitória
+// queria ele parado (a pessoa vendo só a foto) até a metade da rolagem, e
+// só aí subindo, na segunda metade. O empurrão extra pra baixo (--vivi-
+// empurrao, ver CSS) começa em 100% (o card "escondido" um pouco mais além
+// da posição que o CSS já dá) e some conforme a rolagem passa da metade.
+function wireViviCard() {
+  const vivi = document.getElementById("vivi");
+  const trilho = document.querySelector(".vivi-trilho");
+  if (!vivi || !trilho || prefersReducedMotion) return;
+
+  let viviTop = 0;
+  let pinado = 1;
+
+  function medir() {
+    viviTop = vivi.getBoundingClientRect().top + window.scrollY;
+    pinado = Math.max(1, vivi.offsetHeight - alturaDaTela());
+    aplica();
+  }
+
+  function aplica() {
+    const p = clamp((window.scrollY - viviTop) / pinado);
+    const r = clamp((p - 0.5) * 2);
+    trilho.style.setProperty("--vivi-empurrao", ((1 - r) * 100).toFixed(1) + "%");
+  }
+
+  let ticking = false;
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { aplica(); ticking = false; });
+  }, { passive: true });
+
+  let medeQueued = false;
+  const queueMedida = () => {
+    if (medeQueued) return;
+    medeQueued = true;
+    requestAnimationFrame(() => { medeQueued = false; medir(); });
+  };
+  window.addEventListener("resize", queueMedida, { passive: true });
+  window.addEventListener("load", queueMedida);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueMedida);
+
+  medir();
 }
 
 function wireScrollReveal() {
