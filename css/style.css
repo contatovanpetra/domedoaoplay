@@ -388,16 +388,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      corte" descrito acima). */
   background: linear-gradient(180deg, transparent 0%, #0E1D31 12%, #0E1D31 88%, transparent 100%);
 }
-/* Módulos + benefícios: tratados como uma faixa azul clara só, contínua —
-   o degradê de entrada fica só no topo de #modulos e o de saída só no pé
-   de #beneficios; entre as duas seções a cor fica sólida, sem apagar e
-   reacender no meio (o que pareceria uma emenda/costura ali). Azul claro
-   da marca (--blue), não o cinza-azulado neutro do resto da página. */
-#modulos.section-tone::before {
-  background: linear-gradient(180deg, transparent 0%, rgba(70, 130, 180, .16) 12%, rgba(70, 130, 180, .16) 100%);
-}
+/* Módulos + benefícios: fundo azul claro estático, sem degradê nas pontas —
+   divisão clara e reta com a seção anterior (foto da Vitória) e com a
+   seguinte (oferta), como se fosse uma foto de fundo lisa, não um brilho
+   que entra e sai. Azul claro da marca (--blue), não o cinza-azulado
+   neutro do resto da página. */
+#modulos.section-tone::before,
 #beneficios.section-tone::before {
-  background: linear-gradient(180deg, rgba(70, 130, 180, .16) 0%, rgba(70, 130, 180, .16) 88%, transparent 100%);
+  background: rgba(70, 130, 180, .16);
 }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
    no meio (.20 em vez de .16) — sem nenhum card, é a pausa antes do CTA
@@ -730,30 +728,33 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     linear-gradient(160deg, rgba(70, 130, 180, .14), transparent 45%),
     linear-gradient(180deg, rgba(11, 23, 40, .35) 0%, transparent 22%, transparent 60%, rgba(11, 23, 40, .75) 86%, var(--bg) 100%);
 }
-/* O card começa no pé da primeira tela e sobe por cima da foto. */
+/* O card começa no pé da primeira tela e sobe por cima da foto. Sobra de
+   rolagem generosa (padding-bottom) pra a subida ser suave e dar tempo de
+   ler antes da foto soltar — sem isso a transição fica curta e apressada. */
 .vivi-trilho {
   position: relative;
   z-index: 1;
-  margin-top: -30vh;
-  margin-top: -30svh;
-  padding-bottom: 16vh;
-  padding-bottom: 16svh;
+  margin-top: -12vh;
+  margin-top: -12svh;
+  padding-bottom: 40vh;
+  padding-bottom: 40svh;
 }
-/* Card de cantos retos e quase transparente: a foto aparece através dele,
-   desfocada (vidro fosco). Sem suporte a desfoque, o fundo fica mais escuro
-   pra o texto continuar legível. */
+/* Card de cantos retos, vidro fosco: a foto aparece através dele, bem
+   desfocada. Precisa ser opaco o bastante pra, quando sobe por cima das
+   credenciais no pé da foto, cobrir o texto delas de vez — não deixar as
+   duas escritas aparecerem juntas, embaralhadas. */
 .vivi-card {
   max-width: 560px;
   padding: clamp(1.5rem, 4vw, 2.6rem);
   border-radius: 0;
-  background: rgba(11, 23, 40, .5);
+  background: rgba(11, 23, 40, .86);
   border: 1px solid rgba(245, 245, 245, .16);
 }
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .vivi-card {
-    background: rgba(11, 23, 40, .14);
-    -webkit-backdrop-filter: blur(16px) saturate(1.15);
-    backdrop-filter: blur(16px) saturate(1.15);
+    background: rgba(11, 23, 40, .9);
+    -webkit-backdrop-filter: blur(20px) saturate(1.15);
+    backdrop-filter: blur(20px) saturate(1.15);
   }
 }
 /* Nome e cargo escritos no alto da foto, como uma assinatura. */
@@ -807,7 +808,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   }
   /* O card encosta mais na esquerda e fica um pouco mais estreito: a foto é
      centralizada, e o rosto dela fica livre, do lado do card. */
-  .vivi-trilho { width: auto; max-width: none; margin: -46vh 0 0; margin-top: -46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
+  .vivi-trilho { width: auto; max-width: none; margin: -20vh 0 0; margin-top: -20svh; padding-bottom: 46vh; padding-bottom: 46svh; padding-left: clamp(24px, 5vw, 96px); padding-right: 24px; }
   .vivi-card { max-width: 600px; }
 }
 
@@ -1461,48 +1462,42 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   -webkit-user-select: none;
 }
 .depo-palco.is-arrastando { cursor: grabbing; }
-/* Setas dos dois lados: em laranja sólido (a mesma cor dos botões de ação da
-   página), pra nunca serem confundidas com o play (círculo claro, discreto,
-   "dentro" do vídeo). Uma é controle de navegação, a outra é conteúdo — as
-   duas precisam ler como coisas diferentes à primeira vista, não só na cor:
-   o play fica sempre no meio do vídeo ativo, as setas ficam fora dele. */
+/* Setas dos dois lados: discretas (contorno fino, vidro fosco), não mais
+   um botão sólido chamativo — elegante, não genérico. Bem pra fora do
+   vídeo, perto da borda de verdade do carrossel (que agora tem a largura
+   certa — ver #depoimentos .container acima), nunca coladas nele. */
 .depo-seta {
   position: absolute;
   top: calc(var(--depo-w) * 8 / 9);
   z-index: 12;
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   padding: 0;
   transform: translateY(-50%);
-  border: none;
+  border: 1px solid rgba(215, 119, 19, .55);
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--orange-light), var(--orange-button));
-  color: var(--white);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .35);
+  background: rgba(11, 23, 40, .55);
+  color: var(--orange-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
   cursor: pointer;
-  transition: background .3s ease, transform .3s cubic-bezier(.25, .1, .25, 1);
-  /* Pulso leve e contínuo, tipo "toque aqui": um anel que nasce da própria
-     seta e se apaga ao crescer, avisando sem gritar que dá pra passar. */
-  animation: depo-seta-pulso 2.6s ease-in-out infinite;
+  transition: background .3s ease, color .3s ease, transform .3s cubic-bezier(.25, .1, .25, 1);
 }
-.depo-seta svg { width: 18px; height: 18px; }
-/* Bem mais afastadas do vídeo, perto da borda de verdade do carrossel (que
-   agora tem a largura certa — ver #depoimentos .container acima): antes
-   ficavam coladas na lateral do vídeo do lado, fáceis de confundir com o
-   play. */
-.depo-seta--antes { left: clamp(4px, 6vw, 56px); }
-.depo-seta--depois { right: clamp(4px, 6vw, 56px); }
-.depo-seta:hover { background: linear-gradient(135deg, var(--orange-light), var(--orange)); transform: translateY(-50%) scale(1.08); animation-play-state: paused; }
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .depo-seta { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+}
+.depo-seta svg { width: 14px; height: 14px; }
+/* Distância até a borda do vídeo (metade do que sobra do palco) menos uma
+   folga fixa de 50px: a seta fica sempre fora do vídeo, com o mesmo respiro
+   em qualquer largura de tela. Uma trava (max com 8px) evita que, no celular
+   estreito (quase sem sobra), a conta fique negativa e a seta grude na tela. */
+.depo-seta--antes { left: max(-16px, calc((100% - var(--depo-w)) / 2 - 84px)); }
+.depo-seta--depois { right: max(-16px, calc((100% - var(--depo-w)) / 2 - 84px)); }
+.depo-seta:hover { background: var(--orange-button); color: var(--white); transform: translateY(-50%) scale(1.08); }
 .depo-seta:active { transform: translateY(-50%) scale(.96); }
 @media (prefers-reduced-motion: reduce) {
-  .depo-seta { animation: none; }
   .depo-seta:hover, .depo-seta:active { transform: translateY(-50%); }
-}
-@keyframes depo-seta-pulso {
-  0%, 100% { box-shadow: 0 2px 10px rgba(0, 0, 0, .35), 0 0 0 0 rgba(215, 119, 19, .45); }
-  50% { box-shadow: 0 2px 10px rgba(0, 0, 0, .35), 0 0 0 9px rgba(215, 119, 19, 0); }
 }
 .depo-palco:focus-visible { outline: 2px solid var(--orange); outline-offset: 6px; }
 .depo-card {
