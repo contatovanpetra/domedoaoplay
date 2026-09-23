@@ -520,17 +520,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    branco), com a mesma revelação em camada — precisa de um fundo opaco
    próprio pra cobrir o branco (sem isso, é só a .page-bg fixa por trás,
    que também aparece por baixo do branco). */
-/* Emenda maior que as outras duas emendas "em camada", só aqui: a Vitória
-   pediu pra sentir a tela escura subindo por cima da branca DURANTE a
-   rolagem (não só uma costura de 56px no fim). Como #aplicacao é uma tela
-   cheia (78vh) com o texto centralizado bem longe da borda de baixo, uma
-   sobreposição bem maior não esconde o texto em momento nenhum — só faz a
-   escura aparecer mais cedo, subindo visivelmente por cima da branca
-   enquanto ainda dá pra ler o texto acima dela. */
+/* Emenda bem maior que as outras duas "em camada", só aqui: o texto de
+   #aplicacao agora fica preso (sticky, 100vh — ver .aplicacao-preso) parado
+   no meio da tela até a rolagem "passar" por ele. Pra ele sumir por baixo
+   da tela escura (em vez de escapar pela borda de cima da tela, que é o que
+   acontecia com uma sobreposição pequena — o texto soltava do sticky e saía
+   andando por cima, sem nada cobrindo ele), a sobreposição tem que ser pelo
+   menos do tamanho da caixa presa (100vh): assim, no instante exato em que
+   o texto soltaria o sticky, a tela escura já cobriu a tela inteira por
+   cima dele. Mesmo cálculo already usado no herói (#reconhecimento tem
+   -100vh, do tamanho do .cinema-stage que segura a foto). */
 #depoimentos {
   position: relative;
-  margin-top: -45vh;
-  margin-top: -45svh;
+  margin-top: -100vh;
+  margin-top: -100svh;
   background: var(--bg);
   box-shadow: 0 -64px 120px -40px rgba(0, 0, 0, .55);
 }
