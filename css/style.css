@@ -293,6 +293,11 @@ html { scroll-padding-top: var(--header-h, 85px); }
 .header-cta { flex-shrink: 0; }
 /* Tela de toque (tablet): o botão do menu também chega a 44px de altura. */
 @media (pointer: coarse) { .header-cta { min-height: 44px; } }
+@media (min-width: 900px) {
+  /* Pequeno demais perto da logo (40px de altura) no computador — os dois
+     dividem a mesma barra fina do menu. */
+  .header-cta { padding: .8em 1.6em .58em; font-size: 1.05rem; }
+}
 
 /* ---------- Títulos sem palavra sozinha na última linha ----------
    O navegador equilibra as linhas (sem mudar o texto). O título do herói e a
@@ -519,6 +524,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    centralizado nela. */
 #aplicacao .section-lead { margin-bottom: 0; }
 #aplicacao .container { width: 100%; }
+/* Título mais chamativo (pedido da Vitória): azul claro da marca em vez do
+   texto escuro padrão da seção, maior, e uma sombra suave na mesma cor pra
+   dar destaque sem depender só do tamanho. */
+#aplicacao-title {
+  color: var(--blue-light);
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  text-shadow: 0 2px 28px rgba(70, 130, 180, .35);
+}
 /* #depoimentos volta a ficar escuro por cima do fim de #aplicacao (fundo
    branco), com a mesma revelação em camada — precisa de um fundo opaco
    próprio pra cobrir o branco (sem isso, é só a .page-bg fixa por trás,
@@ -879,7 +892,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      texto pula pra mais perto da borda só aqui, e a página parece torta ao
      passar de uma seção pra outra) — só solta o teto de largura, então o
      card fica livre dentro do container e o rosto dela sobra do lado. */
-  .vivi-trilho { margin: -28vh auto 0; margin-top: -28svh; padding-bottom: 58vh; padding-bottom: 58svh; }
+  .vivi-trilho { margin: -28vh auto 0; margin-top: -28svh; padding-bottom: 46vh; padding-bottom: 46svh; }
   .vivi-card { max-width: 600px; }
 }
 
@@ -1104,30 +1117,37 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   right: 0;
   bottom: 0;
   padding: .9rem .8rem 1rem;
-  background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .6) 45%, rgba(6, 14, 28, .94) 100%);
+  /* Escurece mais cedo e mais forte (era só a partir de 45%, e o rótulo
+     fica bem no topo dessa faixa): a Vitória achou o texto pouco legível
+     em cima de fotos mais claras. */
+  background: linear-gradient(180deg, rgba(6, 14, 28, .15) 0%, rgba(6, 14, 28, .78) 40%, rgba(6, 14, 28, .97) 100%);
 }
 .etapa-rotulo {
   display: block;
   /* Antes fixo em .68rem: ficava minúsculo nos cartões grandes do
      computador (cresceram bastante desde o formato Reels). Agora acompanha
      um pouco o tamanho da tela. */
-  font-size: clamp(.68rem, .6rem + .35vw, .85rem);
-  font-weight: 600;
+  font-size: clamp(.72rem, .64rem + .35vw, .88rem);
+  font-weight: 700;
   letter-spacing: .09em;
   text-transform: uppercase;
-  /* Mais próximo da cor cheia do degrau (a Vitória pediu mais visível) —
-     ainda com um pouco de branco misturado pra não perder contraste com o
-     fundo escuro: do azul (nível 1) ao laranja (nível 7), todos ficam acima
-     de 4,5 de contraste. */
-  color: color-mix(in srgb, var(--cor), #fff 8%);
+  /* Antes era a cor do degrau quase pura (só 8% de branco): pouco contraste
+     em cima de foto clara. Agora é o oposto — branco quase puro, só um
+     toque da cor do degrau — e ganha sombra própria (a legenda inteira já
+     tinha texto-shadow embutido, mas o rótulo era pequeno demais pra sombra
+     sozinha resolver). */
+  color: color-mix(in srgb, #fff, var(--cor) 35%);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 2px 10px rgba(0, 0, 0, .6);
 }
 .etapa-legenda h3 {
   margin: .2rem 0 0;
   /* Mesmo motivo do .etapa-rotulo acima: fixo ficava pequeno nos cartões
      maiores do computador. */
   font-size: clamp(.98rem, .85rem + .5vw, 1.3rem);
+  font-weight: 700;
   line-height: 1.2;
   color: var(--white);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 2px 10px rgba(0, 0, 0, .6);
 }
 /* Altura fixa (não só mínima): a legenda de cada nível tem um tamanho de
    texto diferente, e sem isso os cartões saíam de alturas diferentes. Texto
