@@ -40,7 +40,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=9">
+<link rel="stylesheet" href="css/style.css?v=10">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -124,9 +124,9 @@
       </div>
       </div>
 
-      <div class="scroll-cue" aria-hidden="true" id="hero-scrollcue">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15"/><path d="M5 12l7 7 7-7"/></svg>
-      </div>
+      <button type="button" class="scroll-cue" id="hero-scrollcue" aria-label="Rolar para baixo">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"/><path d="M5 12l7 7 7-7"/></svg>
+      </button>
     </div>
   </section>
 
@@ -366,9 +366,12 @@
           <div class="depo-video">
             <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 1</span>
+            <div class="depo-legenda">
+              <strong class="depo-nome">Paloma Gonçalves</strong>
+              <span class="depo-cargo">CEO da Mundo Nuts</span>
+            </div>
           </div>
           <figcaption>
-            <span>Paloma Gonçalves, CEO da Mundo Nuts</span>
             <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar">Passou a gravar sozinha os vídeos de produto da própria marca e viu as vendas do lançamento seguinte crescerem <span class="text-orange">27%</span>, sem pagar mais ninguém pra aparecer no vídeo por ela.</p>
           </figcaption>
         </figure>
@@ -376,9 +379,12 @@
           <div class="depo-video">
             <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 2</span>
+            <div class="depo-legenda">
+              <strong class="depo-nome">Vitória Catarina</strong>
+              <span class="depo-cargo">Afiliada no TikTok</span>
+            </div>
           </div>
           <figcaption>
-            <span>Vitória Catarina, afiliada no TikTok</span>
             <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar">Saiu de 1 vídeo por semana (com dez regravações cada) pra 1 por dia sem travar, e as comissões como afiliada <span class="text-orange">triplicaram em 2 meses</span>.</p>
           </figcaption>
         </figure>
@@ -386,9 +392,12 @@
           <div class="depo-video">
             <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 3</span>
+            <div class="depo-legenda">
+              <strong class="depo-nome">Henrique Coelho</strong>
+              <span class="depo-cargo">Influencer</span>
+            </div>
           </div>
           <figcaption>
-            <span>Henrique Coelho, influencer</span>
             <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar">Passou a gravar e publicar sozinha todos os vídeos do perfil e viu o engajamento subir <span class="text-orange">80% no primeiro mês</span> pós-curso.</p>
           </figcaption>
         </figure>
@@ -843,6 +852,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=6"></script>
+<script src="js/main.js?v=7"></script>
 </body>
 </html>

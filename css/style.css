@@ -813,28 +813,42 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 2;
   margin-top: -20vh;
   margin-top: -20svh;
-  /* Era 40vh: o card (alto, cheio de texto) acabava subindo demais e
-     passava da metade da foto — a Vitória queria ele parando por volta do
-     meio, não perto do topo. */
-  padding-bottom: 30vh;
-  padding-bottom: 30svh;
-  /* Empurrão extra pra baixo, some a partir do instante em que a tela mostra
-     metade do depoimento anterior e metade desta foto (JS, wireViviCard em
-     main.js): sem isso, o card já vinha subindo desde o primeiro pixel de
-     rolagem da seção. */
-  transform: translateY(var(--vivi-empurrao, 0));
+  /* Respiro generoso: o card precisa não só de espaço pra subir, mas de
+     uma sobra de verdade DEPOIS de chegar no lugar — é esse excesso que
+     vira tempo "parado" (ver wireViviCard em main.js: ele mede quanto
+     falta até aqui pra calcular até onde segurar o card parado). Pouco
+     padding aqui = zero tempo parado, o card chega e a seção já acaba. */
+  padding-bottom: 55vh;
+  padding-bottom: 55svh;
 }
 /* Card de cantos retos, vidro fosco: a foto aparece através dele, bem
    desfocada. Precisa ser opaco o bastante pra, quando sobe por cima das
    credenciais no pé da foto, cobrir o texto delas de vez — não deixar as
    duas escritas aparecerem juntas, embaralhadas. */
 .vivi-card {
+  /* Sobe e para no lugar (não é só um ponto de passagem): o transform é
+     calculado e aplicado por JS a cada rolagem (wireViviCard em main.js),
+     não por CSS puro — "position: sticky" foi testado à exaustão aqui e
+     não funciona neste layout (ver comentário longo no JS): um segundo
+     elemento sticky dentro do mesmo contêiner da foto (.vivi-foto, também
+     sticky) nunca gruda neste navegador. O JS faz à mão o que o sticky
+     faria: mede o quanto o card subiria sozinho e empurra ele pra baixo
+     na mesma medida, pra ele ficar visualmente parado. */
   max-width: 560px;
   padding: clamp(1.5rem, 4vw, 2.6rem);
   border-radius: 0;
   background: rgba(11, 23, 40, .55);
   border: 1px solid rgba(245, 245, 245, .16);
 }
+/* O card também tem a classe .reveal (efeito de entrada, aparece aos
+   poucos ao entrar na tela) — mas .reveal tem transition em transform de
+   .9s, e o JS escreve um transform novo a cada frame de rolagem
+   (wireViviCard). As duas coisas competindo faziam o card sempre correr
+   atrás de um alvo que já tinha mudado de novo, nunca alcançando a
+   posição de verdade enquanto a pessoa rolava — só "chegava" cerca de 1s
+   depois de parar de rolar. Precisa do .vivi-card junto pra ganhar de
+   .reveal sozinho (mesma especificidade, e .reveal vem depois no arquivo). */
+.vivi-card.reveal { transition: none; }
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .vivi-card {
     background: rgba(11, 23, 40, .38);
@@ -1643,12 +1657,28 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: clamp(.6rem, 2.2vw, .8rem);
   color: var(--text-muted);
 }
-.depo-card figcaption { display: flex; flex-direction: column; gap: .1rem; margin-top: .7rem; }
-/* Sem nome: o cargo/atuação é a própria "manchete" do card, por isso assume
-   o peso e a cor que antes eram do nome (ver depoimentos, sem pessoa real
-   ainda). */
-.depo-card figcaption span { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 600; color: var(--white); }
-.depo-card figcaption .depo-resultado { margin: .3rem 0 0; font-size: var(--t-pequeno); line-height: 1.4; color: var(--text); }
+/* Nome e cargo dentro do próprio vídeo, como legenda por cima dele (mesma
+   ideia da escada de exposição) — não junto com o resultado, que fica
+   fora, embaixo do card. Só aparece no vídeo do meio, como já acontecia
+   com a legenda antes. */
+.depo-legenda {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  padding: 1.6rem .9rem .8rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .75) 55%, rgba(6, 14, 28, .96) 100%);
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.depo-card.is-ativo .depo-legenda { opacity: 1; }
+.depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 700; color: var(--white); }
+.depo-cargo { font-size: var(--t-pequeno); color: var(--text-muted); }
+.depo-card figcaption { margin-top: .7rem; }
+.depo-card figcaption .depo-resultado { margin: 0; font-size: var(--t-pequeno); line-height: 1.4; color: var(--text); }
 
 
 /* ---------- Offer ---------- */
@@ -1982,6 +2012,11 @@ html.abertura-on { overflow: hidden; }
   z-index: 1;
   width: var(--aparelho-w);
   height: var(--aparelho-h);
+  /* Gira em 3D e depois cresce até tomar a tela — ganha camada própria
+     desde já (não só quando a animação começa), pra não travar bem na
+     hora em que ela mais precisa ser lisa. Sai do DOM inteiro no fim da
+     abertura (stage.remove() em main.js), então não sobra custo depois. */
+  will-change: transform;
 }
 /* O corpo: escuro, com um fio de metal na borda e os cantos do iPhone. */
 .burst-aparelho {
@@ -2140,6 +2175,14 @@ html.abertura-on { overflow: hidden; }
 
 /* ---------- Indicador de rolagem (hero) ---------- */
 .scroll-cue {
+  /* Agora é um <button> de verdade (clicável, rola pro resto do herói) —
+     reseta a aparência padrão de botão do navegador. */
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
   position: absolute;
   left: 50%;
   bottom: 28px;

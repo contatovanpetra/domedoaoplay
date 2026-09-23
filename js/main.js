@@ -603,30 +603,66 @@ function wireNiveisFaixa() {
 function wireViviCard() {
   const vivi = document.getElementById("vivi");
   const trilho = document.querySelector(".vivi-trilho");
+  const card = document.querySelector(".vivi-card");
   const credenciais = document.querySelector(".vivi-credenciais");
-  if (!vivi || !trilho || prefersReducedMotion) return;
+  if (!vivi || !trilho || !card || prefersReducedMotion) return;
 
+  // "position: sticky" no card não funciona aqui: testado à exaustão (até
+  // com um <div> novo, sem nenhum CSS do projeto) e, neste navegador, um
+  // segundo elemento sticky dentro do mesmo contêiner de uma foto que já é
+  // sticky (.vivi-foto) nunca gruda — só o primeiro elemento sticky de cada
+  // contêiner funciona. Por isso o "grudar no meio" é feito à mão aqui: o
+  // JS calcula, a cada rolagem, o quanto precisa empurrar o card pra baixo
+  // pra cancelar exatamente o quanto ele subiria sozinho, e o resultado
+  // visual é idêntico a um sticky de verdade.
   let limiar = 0;
   let fim = 1;
+  let inicioSegura = 0;
+  let alturaCard = 0;
 
   function medir() {
     const viviTop = vivi.getBoundingClientRect().top + window.scrollY;
     const pinado = Math.max(1, vivi.offsetHeight - alturaDaTela());
     limiar = viviTop - alturaDaTela() / 2;
     fim = viviTop + pinado;
+    alturaCard = card.offsetHeight;
+    // Posição de descanso "de verdade" do card (sem nenhum transform), na
+    // página inteira: onde ele cairia se não fizéssemos nada.
+    const topoNaturalDoc = trilho.getBoundingClientRect().top + window.scrollY;
+    // Ponto onde a tela mostra o card a ~28% do alto (deixa a foto e o nome
+    // "Vitória Caroline" respirarem acima, sem precisar tocar em nada
+    // dentro do card pra empurrar mais pra baixo).
+    const alvoNaTela = alturaDaTela() * 0.28;
+    inicioSegura = topoNaturalDoc - alvoNaTela;
     aplica();
   }
 
   function aplica() {
-    const r = clamp((window.scrollY - limiar) / (fim - limiar));
-    trilho.style.setProperty("--vivi-empurrao", ((1 - r) * 100).toFixed(1) + "%");
+    const y = window.scrollY;
+    const escondido = alturaCard + 60;
+    let empurrao;
+    if (y <= limiar) {
+      empurrao = escondido;
+    } else if (y < inicioSegura) {
+      const p = clamp((y - limiar) / Math.max(1, inicioSegura - limiar));
+      empurrao = (1 - p) * escondido;
+    } else {
+      // Segurando: sobe junto com a rolagem até "fim" (a foto solta, a
+      // seção acaba) e então já não sobe mais — o resto da página que
+      // continua rolando por cima.
+      empurrao = Math.min(y, fim) - inicioSegura;
+    }
+    card.style.transform = "translateY(" + empurrao.toFixed(1) + "px)";
+
     // A foto é "position: sticky", e enquanto presa alguns navegadores pintam
     // ela (e o que tem dentro, como as credenciais) por cima de qualquer
     // irmão mais tarde no HTML, não importa o z-index — nem opacidade cobre
     // de vez. Em vez de depender do card cobrir as credenciais visualmente,
-    // elas mesmas somem conforme o card chega no lugar (só nos últimos 30%
-    // da subida, pra não sumir cedo demais).
-    if (credenciais) credenciais.style.opacity = String(1 - clamp((r - 0.7) / 0.3));
+    // elas mesmas somem pouco antes do card chegar no lugar e ficam assim
+    // por todo o tempo em que ele segura ali.
+    const inicioSome = inicioSegura - alturaDaTela() * 0.15;
+    const p2 = clamp((y - inicioSome) / Math.max(1, inicioSegura - inicioSome));
+    if (credenciais) credenciais.style.opacity = String(1 - p2);
   }
 
   let ticking = false;
@@ -818,13 +854,14 @@ function wireIntroStage() {
   // escala 1, então a tela da câmera VIRA a página, sem corte.
   let mini = null;
 
-  // No celular a réplica viva (clonar cabeçalho+herói, com a foto de fundo
-  // em tamanho de tela cheia, girando em 3D ao mesmo tempo que o vídeo do
-  // túnel toca) pesava demais e travava a abertura — a tela da câmera fica
-  // sem a réplica, só escura mesmo.
-  const telaPequena = window.matchMedia("(max-width: 699.98px)").matches;
+  // A réplica viva (clonar cabeçalho+herói, com a foto de fundo em tamanho
+  // de tela cheia, girando em 3D ao mesmo tempo que o vídeo do túnel toca)
+  // pesava demais e travava a abertura — no celular e, mesmo com mais
+  // força de processamento, também no computador (o clone é do tamanho da
+  // janela inteira, então em telas largas fica ainda maior). A tela da
+  // câmera fica sem a réplica, só escura mesmo, nos dois casos.
   function buildMiniScreen() {
-    if (!burstScreen || !REAL_HERO || telaPequena) return;
+    if (!burstScreen || !REAL_HERO) return;
     mini = document.createElement("div");
     mini.className = "burst-mini";
     [REAL_HEADER, REAL_HERO].forEach((node) => {
@@ -1246,4 +1283,12 @@ function wireScrollCue() {
     ticking = true;
     requestAnimationFrame(aplica);
   }, { passive: true });
+
+  // Agora é um botão de verdade: clicar rola a tela, um pedaço de cada vez.
+  cue.addEventListener("click", () => {
+    window.scrollBy({
+      top: window.innerHeight * 0.9,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+  });
 }
