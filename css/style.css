@@ -445,11 +445,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    colado nela (só a sobreposição de -56px, sem nenhum respiro de verdade).
    Este padding-top extra é só pra essa emenda — não mexe no vão com
    #beneficios (padding-bottom continua o mesmo, comentário abaixo). */
-#modulos { padding-top: 192px; padding-bottom: 64px; }
+#modulos { padding-top: 200px; padding-bottom: 64px; }
 #beneficios { padding-top: 64px; padding-bottom: 380px; }
 @media (max-width: 699.98px) {
   #modulos { padding-top: 120px; padding-bottom: 40px; }
   #beneficios { padding-top: 40px; padding-bottom: 250px; }
+}
+/* As três emendas "em camada" (#modulos sobre #vivi, #aplicacao sobre
+   #metodo, #depoimentos sobre #aplicacao) são a mesma família de efeito —
+   o respiro antes de cada uma precisa ficar parecido, senão uma parece mais
+   "grudada" que a outra. #aplicacao usava o padding-top padrão da seção
+   (128px), bem maior que o das outras duas emendas — reduzido aqui só pra
+   igualar o ritmo entre as três. */
+@media (min-width: 700px) {
+  #aplicacao { padding-top: 96px; padding-bottom: 96px; }
 }
 /* Estilo Apple (referência: apple.com/br/apple-podcasts): a tela principal
    (azul escuro) tem o conteúdo se movendo por cima dela; as duas telas de
@@ -478,12 +487,24 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      entra por cima do fim de #metodo. */
   margin-top: -56px;
   box-shadow: 0 -32px 56px -28px rgba(0, 0, 0, .35);
+  /* "A tela branca", do jeito que a Vitória descreve: uma tela cheia, igual
+     ao herói e à foto da Vitória, não uma faixa curta no meio da rolagem.
+     Com o texto sendo bem menor que 100vh, um padding simétrico (ver embaixo)
+     não é suficiente pra "centralizar na tela": onde a rolagem para dentro
+     dela é variável, então só um mínimo de altura + centralização por flex
+     garante o texto sempre no meio de verdade, não importa onde a pessoa
+     parar de rolar. */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
 }
 /* Sem parágrafo depois do subtítulo aqui: a margem de baixo do <p> (a mesma
    que separa parágrafos em corpo de texto corrido) sobrava como respiro
    extra só embaixo, empurrando o bloco pra cima da tela branca em vez de
    centralizado nela. */
 #aplicacao .section-lead { margin-bottom: 0; }
+#aplicacao .container { width: 100%; }
 /* #depoimentos volta a ficar escuro por cima do fim de #aplicacao (fundo
    branco), com a mesma revelação em camada — precisa de um fundo opaco
    próprio pra cobrir o branco (sem isso, é só a .page-bg fixa por trás,
@@ -1139,7 +1160,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Tamanho de vitrine, não de tela cheia: dá pra ver vários níveis por vez.
    Altura vem só do conteúdo (foto + legenda pequena), não de "100% de algo" —
    sem isso, cada cartão esticava pra altura da tela inteira. */
-.etapa { position: relative; flex: none; width: clamp(170px, 18vw, 210px); }
+/* 210px de teto ficava pequeno demais em telas de computador largas (a
+   escada é a única vitrine da página que não usa a largura do container:
+   ela rola livre, então pode crescer mais que os 210px de antes). */
+.etapa { position: relative; flex: none; width: clamp(170px, 20vw, 300px); }
 .etapa-pin {
   display: flex;
   flex-direction: column;
