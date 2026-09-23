@@ -892,8 +892,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      texto pula pra mais perto da borda só aqui, e a página parece torta ao
      passar de uma seção pra outra) — só solta o teto de largura, então o
      card fica livre dentro do container e o rosto dela sobra do lado. */
-  .vivi-trilho { margin: -28vh auto 0; margin-top: -28svh; padding-bottom: 46vh; padding-bottom: 46svh; }
-  .vivi-card { max-width: 600px; }
+  .vivi-trilho { margin: -28vh auto 0; margin-top: -28svh; padding-bottom: 54vh; padding-bottom: 54svh; }
+  /* Mais largo que antes (600px): cada linha do texto fica mais curta, o
+     bloco todo fica mais baixo, e sobra altura pra seção rolar mais sem o
+     card acabar em cima do título "Vitória Caroline" (ver .vivi-trilho). */
+  .vivi-card { max-width: 760px; }
 }
 
 /* Credenciais: 3 linhas com ícone próprio e separador fino entre elas —
