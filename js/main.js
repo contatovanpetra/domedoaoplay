@@ -626,6 +626,11 @@ function wireViviCard() {
   let alturaCard = 0;
 
   function medir() {
+    // Sem isso, uma vez travada (ver abaixo), a próxima medida já enxergaria
+    // a altura JÁ travada como se fosse a "natural" do card, e nunca mais
+    // destravaria — mesmo numa tela depois maior (girar o celular, abrir o
+    // teclado e fechar de novo).
+    card.style.maxHeight = "";
     const viviTop = vivi.getBoundingClientRect().top + window.scrollY;
     const pinado = Math.max(1, vivi.offsetHeight - alturaDaTela());
     limiar = viviTop - alturaDaTela() / 2;
@@ -647,6 +652,19 @@ function wireViviCard() {
       ? alturaDaTela() - credenciais.offsetHeight
       : alturaDaTela() * 0.85;
     const espaco = Math.max(0, inicioCredenciais - fimNome);
+    // Em telas baixas (iPhone SE, alguns Android compactos), o card com o
+    // texto inteiro é mais alto que esse espaço — ele nunca pode vazar e
+    // cobrir o nome ou as credenciais, então trava a altura no que cabe e
+    // deixa o texto rolar por dentro dele (só nesses aparelhos: em qualquer
+    // tela com espaço de sobra isso nunca liga).
+    const alturaMax = Math.max(80, espaco - 4);
+    if (alturaCard > alturaMax) {
+      card.style.maxHeight = alturaMax + "px";
+      card.classList.add("vivi-card--rola");
+      alturaCard = alturaMax;
+    } else {
+      card.classList.remove("vivi-card--rola");
+    }
     const alvoNaTela = fimNome + Math.max(0, (espaco - alturaCard) / 2);
     inicioSegura = topoNaturalDoc - alvoNaTela;
     aplica();
@@ -806,8 +824,13 @@ function wireIntroStage() {
   const flash = document.getElementById("flash");
   const burstTitleSpans = [...document.querySelectorAll("#burst-title span")];
   const burstAparelho = document.getElementById("burst-aparelho");
-  const burstContorno = document.getElementById("burst-contorno");
-  const burstLinha = document.getElementById("burst-linha");
+  // Computador (tela larga e deitada, mesmo corte do vídeo do túnel logo
+  // abaixo): o contorno do iPhone é um SVG diferente do de pé, não o mesmo
+  // elemento com viewBox/width/height trocados por JS depois de montado
+  // (ver index.html) — cada um já nasce com a forma certa.
+  const telaDeitada = window.matchMedia("(min-width: 700px) and (orientation: landscape)").matches;
+  const burstContorno = document.getElementById(telaDeitada ? "burst-contorno-paisagem" : "burst-contorno-retrato");
+  const burstLinha = document.getElementById(telaDeitada ? "burst-linha-paisagem" : "burst-linha-retrato");
   const burstCamera = document.getElementById("burst-camera");
   const burstIlha = document.getElementById("burst-ilha");
   const burstTempo = document.getElementById("burst-tempo");
@@ -869,17 +892,6 @@ function wireIntroStage() {
     (burstScreen.offsetHeight || 1) / window.innerHeight
   );
 
-  // Computador (tela larga e deitada, mesmo corte do vídeo do túnel logo
-  // abaixo): o contorno do iPhone é desenhado deitado, não em pé — sem
-  // isso, o corpo vinha sempre na vertical (CSS) mas o traço de dentro
-  // continuava no formato em pé, esticado sem uniformidade (cantos viravam
-  // elipse em vez de círculo).
-  const telaDeitada = window.matchMedia("(min-width: 700px) and (orientation: landscape)").matches;
-  if (telaDeitada && burstContorno && burstLinha) {
-    burstContorno.setAttribute("viewBox", "0 0 206 100");
-    burstLinha.setAttribute("width", "204");
-    burstLinha.setAttribute("height", "98");
-  }
   // Começa só a linha do contorno, girada em 3D; o corpo do iPhone aparece depois.
   if (burstLinha) {
     const comprimento = burstLinha.getTotalLength();

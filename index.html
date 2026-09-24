@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=13">
+<link rel="stylesheet" href="css/style.css?v=14">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -383,7 +383,7 @@
             </div>
           </div>
           <figcaption>
-            <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar">Passou a aparecer como fundadora nos vídeos da própria marca e viu o engajamento disparar — as vendas do lançamento seguinte cresceram <span class="text-orange">27%</span>.</p>
+            <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar">Passou a aparecer como fundadora nos vídeos da própria marca e viu o engajamento disparar: as vendas do lançamento seguinte cresceram <span class="text-orange">27%</span>.</p>
           </figcaption>
         </figure>
         <figure class="depo-card">
@@ -409,7 +409,7 @@
             </div>
           </div>
           <figcaption>
-            <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar (cargo também trocado de &quot;Influencer&quot; pra &quot;Empresário&quot;, a pedido dela)">Passou a gravar sozinho os vídeos de divulgação do próprio negócio e fechou <span class="text-orange">32% mais vendas</span> no primeiro mês, sem precisar contratar ninguém pra aparecer por ele.</p>
+            <p class="depo-resultado" data-confirmar="frase reescrita pela Claude a pedido da Vitória (cargo trocado de &quot;Influencer&quot; pra &quot;Empresário&quot;): validar antes de publicar">Passou a ensinar o próprio método de crescimento de empresas pela internet: <span class="text-orange">só teve coragem de gravar depois do curso</span>.</p>
           </figcaption>
         </figure>
         <!-- Setas dos dois lados: quem não descobre o arrasto troca de vídeo no clique. -->
@@ -855,16 +855,30 @@
         </div>
         <span class="burst-ilha" id="burst-ilha"></span>
       </div>
-      <!-- O contorno que se desenha primeiro: é ele que forma o celular. -->
-      <svg class="burst-contorno" id="burst-contorno" viewBox="0 0 100 206" preserveAspectRatio="none" aria-hidden="true">
+      <!-- O contorno que se desenha primeiro: é ele que forma o celular. Em
+           pé e deitado usam SVGs DIFERENTES (não o mesmo elemento com os
+           atributos trocados por JS): trocar viewBox/width/height num único
+           elemento, depois de montado, é frágil — dependendo do instante em
+           que o JS mede o comprimento do traço (getTotalLength) e do quanto
+           o navegador já tinha processado, o desenho podia sair pela metade
+           ou distorcido. Com dois SVGs prontos (um escondido por CSS, ver
+           media query em style.css), cada um sempre teve a forma certa
+           desde o início — nada pra trocar depois de montado. O gradiente é
+           definido uma vez só (em objectBoundingBox, que se adapta ao
+           tamanho de cada retângulo sozinho) e os dois traços apontam pra
+           ele. -->
+      <svg class="burst-contorno burst-contorno--retrato" id="burst-contorno-retrato" viewBox="0 0 100 206" preserveAspectRatio="none" aria-hidden="true">
         <defs>
-          <linearGradient id="burstGrad" gradientUnits="userSpaceOnUse" x1="100" y1="0" x2="0" y2="206">
+          <linearGradient id="burstGrad" x1="1" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#90BED9"/>
             <stop offset=".5" stop-color="#4682B4"/>
             <stop offset="1" stop-color="#D77713"/>
           </linearGradient>
         </defs>
-        <rect id="burst-linha" x="1" y="1" width="98" height="204" rx="15.5" ry="15.5" fill="none" stroke="url(#burstGrad)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+        <rect id="burst-linha-retrato" class="burst-linha" x="1" y="1" width="98" height="204" rx="15.5" ry="15.5" fill="none" stroke="url(#burstGrad)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <svg class="burst-contorno burst-contorno--paisagem" id="burst-contorno-paisagem" viewBox="0 0 206 100" preserveAspectRatio="none" aria-hidden="true">
+        <rect id="burst-linha-paisagem" class="burst-linha" x="1" y="1" width="204" height="98" rx="15.5" ry="15.5" fill="none" stroke="url(#burstGrad)" stroke-width="2" vector-effect="non-scaling-stroke"/>
       </svg>
     </div>
     <p class="burst-title" id="burst-title">
@@ -874,6 +888,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=9"></script>
+<script src="js/main.js?v=10"></script>
 </body>
 </html>
