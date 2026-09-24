@@ -813,15 +813,23 @@ html { scroll-padding-top: var(--header-h, 85px); }
      uma sobra de verdade DEPOIS de chegar no lugar — é esse excesso que
      vira tempo "parado" (ver wireViviCard em main.js: ele mede quanto
      falta até aqui pra calcular até onde segurar o card parado). Pouco
-     padding aqui = zero tempo parado, o card chega e a seção já acaba. */
-  padding-bottom: 55vh;
-  padding-bottom: 55svh;
+     padding aqui = zero tempo parado, o card chega e a seção já acaba.
+     A seção inteira (foto + esse respiro) tem que dar uns dois scrolls de
+     tela inteiros — era assim no celular e tinha sumido numa rodada
+     anterior, quando o respiro extra depois da foto (removido, ver
+     .section.vivi-apple) foi tirado sem reforçar o tempo parado aqui pra
+     compensar a rolagem que sumiu junto. */
+  padding-bottom: 79vh;
+  padding-bottom: 79svh;
 }
-/* Card de cantos retos, opaco de vez (era vidro fosco, translúcido — mesmo
-   com bem pouca transparência, ainda deixava o texto das credenciais
-   passar de leve, borrado, quando o card subia por cima delas no pé da
-   foto: lia-se as duas escritas juntas, embaralhadas). Nada de meio-termo
-   aqui: com o card 100% opaco, o que estiver atrás nunca aparece. */
+/* Card de cantos retos, vidro fosco (pedido explícito, repetido, da
+   Vitória: o card É pra ser transparente, a foto aparece através dele,
+   desfocada — nunca um retângulo azul sólido). Com o nome subido e sem o
+   respiro extra no pé (ver .vivi-assinatura e .section.vivi-apple), o
+   card cabe no espaço entre o nome e as credenciais na maioria das telas
+   sem precisar passar por cima delas — o cruzamento rápido só acontece
+   durante a subida em si (não mais parado por cima delas), então o texto
+   passando de leve por trás nesse instante curto é aceitável. */
 .vivi-card {
   /* Sobe e para no lugar (não é só um ponto de passagem): o transform é
      calculado e aplicado por JS a cada rolagem (wireViviCard em main.js),
@@ -834,8 +842,15 @@ html { scroll-padding-top: var(--header-h, 85px); }
   max-width: 560px;
   padding: clamp(1.5rem, 4vw, 2.6rem);
   border-radius: 0;
-  background: var(--bg);
+  background: rgba(11, 23, 40, .55);
   border: 1px solid rgba(245, 245, 245, .16);
+}
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .vivi-card {
+    background: rgba(11, 23, 40, .38);
+    -webkit-backdrop-filter: blur(20px) saturate(1.15);
+    backdrop-filter: blur(20px) saturate(1.15);
+  }
 }
 /* Só liga em telas baixas, quando o JS (wireViviCard) trava a altura do
    card no espaço disponível entre o nome e as credenciais: o texto rola
@@ -909,8 +924,8 @@ html { scroll-padding-top: var(--header-h, 85px); }
     max-width: none;
     margin: -28vh 0 0;
     margin-top: -28svh;
-    padding-bottom: 54vh;
-    padding-bottom: 54svh;
+    padding-bottom: 98vh;
+    padding-bottom: 98svh;
     padding-left: clamp(24px, 5vw, 96px);
     padding-right: 24px;
   }
