@@ -373,17 +373,19 @@ html { scroll-padding-top: var(--header-h, 85px); }
 
 
 /* Barra de progresso de leitura. */
-/* Só uma barra de rolagem na página: a colorida da direita. A nativa some,
-   sem tirar a rolagem em si. */
-html { scrollbar-width: none; -ms-overflow-style: none; }
-html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display: none; }
+/* A barra de rolagem nativa continua — tirá-la deixava quem rola arrastando
+   o próprio polegar da barra (hábito comum no computador) sem jeito nenhum
+   de rolar a página. A faixa colorida embaixo é só um indicador extra de
+   quanto falta pra acabar, não substitui a barra de verdade. */
 
 /* Trilha de leitura: uma faixa vertical na borda direita, com o trilho
    sempre visível e o preenchimento subindo conforme a página avança. */
 .read-progress {
   position: fixed;
   top: 0;
-  right: 0;
+  /* Encostada na barra de rolagem nativa (que voltou a existir, ver acima),
+     não embaixo dela. */
+  right: 14px;
   width: 4px;
   height: 100vh;
   height: 100dvh;
@@ -770,19 +772,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    enquanto o card com todas as informações sobe por cima dela. A foto continua
    aparecendo ao lado (computador) ou em volta (celular) durante a leitura. */
 /* Sem respiro no alto (o .section de celular colocava 64px): a foto começa colada na seção anterior. */
-/* Respiro no pé, depois que a foto solta (ver .vivi-pin, embaixo) e antes
-   de #modulos começar a entrar por cima (comentário lá adiante): sem essa
-   distância, a foto — ainda 100% nítida, nome/card/créditos todos legíveis
-   — era cortada de repente pelo retângulo claro de #modulos, no meio da
-   rolagem. Parecia bug de tela, não transição. Com esse respiro, a foto já
-   saiu (ou quase) de cena, só o fundo escuro (--bg, o mesmo da própria
-   seção) por trás, quando #modulos aparece. */
-.section.vivi-apple { position: relative; isolation: isolate; padding: 0 0 26vh; background: var(--bg); }
-.section.vivi-apple { padding-bottom: 26svh; }
-@media (max-width: 699.98px) {
-  .section.vivi-apple { padding-bottom: 18vh; }
-  .section.vivi-apple { padding-bottom: 18svh; }
-}
+/* Sem respiro nenhum no pé: depois da foto (crua, sem gradiente — ver
+   .vivi-foto acima) vem direto #modulos, pedido explícito. Um respiro
+   extra aqui (testado numa rodada anterior) virava um pedaço de tela
+   parada — sem nada mudando por um trecho bom de rolagem — que lia como
+   a página tendo travado, não como transição. */
+.section.vivi-apple { position: relative; isolation: isolate; padding: 0; background: var(--bg); }
 /* Agrupa a foto presa + o card que sobe por cima: é ela (não a seção
    #vivi inteira, que agora é mais alta por causa do respiro acima) quem
    define até onde "position: sticky" prende a foto — o limite do sticky é
@@ -859,12 +854,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .vivi-assinatura {
   position: absolute;
   z-index: 1;
-  /* Logo abaixo do menu, com respiro de verdade (não .15rem — isso deixava
-     a margem de segurança praticamente zero, e o nome acabava escondido
-     atrás do próprio menu fixo quando a altura real dele variava um
-     pouco). Fallback de 80px também atualizado (o menu cresceu desde que
-     esse número foi escrito). */
-  top: calc(var(--header-h, 80px) + 1rem);
+  /* Perto do topo de verdade da foto (não mais reservando a altura do
+     menu): o menu fica sempre recolhido enquanto a rolagem está dentro de
+     #vivi (ver wireHeaderReveal em main.js), então nunca cobre o nome —
+     não precisa mais do respiro extra pra ele. Isso libera espaço de
+     verdade pro card caber no meio, entre o nome e as credenciais, sem
+     precisar rolar por dentro dele em telas mais baixas. */
+  top: clamp(1rem, 4vh, 1.75rem);
   left: 0;
   right: 0;
   margin: 0;

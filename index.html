@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=14">
+<link rel="stylesheet" href="css/style.css?v=15">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -864,9 +864,10 @@
            ou distorcido. Com dois SVGs prontos (um escondido por CSS, ver
            media query em style.css), cada um sempre teve a forma certa
            desde o início — nada pra trocar depois de montado. O gradiente é
-           definido uma vez só (em objectBoundingBox, que se adapta ao
-           tamanho de cada retângulo sozinho) e os dois traços apontam pra
-           ele. -->
+           definido DENTRO de cada um (não um só, compartilhado): um <defs>
+           dentro de um SVG com display:none não pinta o traço de um
+           elemento em outro SVG (testado — o traço ficava sem cor nenhuma,
+           invisível, só o corpo sólido aparecia depois). -->
       <svg class="burst-contorno burst-contorno--retrato" id="burst-contorno-retrato" viewBox="0 0 100 206" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="burstGrad" x1="1" y1="0" x2="0" y2="1">
@@ -878,7 +879,14 @@
         <rect id="burst-linha-retrato" class="burst-linha" x="1" y="1" width="98" height="204" rx="15.5" ry="15.5" fill="none" stroke="url(#burstGrad)" stroke-width="2" vector-effect="non-scaling-stroke"/>
       </svg>
       <svg class="burst-contorno burst-contorno--paisagem" id="burst-contorno-paisagem" viewBox="0 0 206 100" preserveAspectRatio="none" aria-hidden="true">
-        <rect id="burst-linha-paisagem" class="burst-linha" x="1" y="1" width="204" height="98" rx="15.5" ry="15.5" fill="none" stroke="url(#burstGrad)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+        <defs>
+          <linearGradient id="burstGradPaisagem" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#90BED9"/>
+            <stop offset=".5" stop-color="#4682B4"/>
+            <stop offset="1" stop-color="#D77713"/>
+          </linearGradient>
+        </defs>
+        <rect id="burst-linha-paisagem" class="burst-linha" x="1" y="1" width="204" height="98" rx="15.5" ry="15.5" fill="none" stroke="url(#burstGradPaisagem)" stroke-width="2" vector-effect="non-scaling-stroke"/>
       </svg>
     </div>
     <p class="burst-title" id="burst-title">
