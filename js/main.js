@@ -674,18 +674,29 @@ function wireViviCard() {
     const y = window.scrollY;
     const escondido = alturaCard + 60;
     let empurrao;
+    let opacidade;
     if (y <= limiar) {
       empurrao = escondido;
+      opacidade = 0;
     } else if (y < inicioSegura) {
       const p = clamp((y - limiar) / Math.max(1, inicioSegura - limiar));
       empurrao = (1 - p) * escondido;
+      opacidade = p;
     } else {
       // Segurando: sobe junto com a rolagem até "fim" (a foto solta, a
       // seção acaba) e então já não sobe mais — o resto da página que
       // continua rolando por cima.
       empurrao = Math.min(y, fim) - inicioSegura;
+      opacidade = 1;
     }
     card.style.transform = "translateY(" + empurrao.toFixed(1) + "px)";
+    // A opacidade acompanha a mesma conta do transform, não o observador
+    // genérico de ".reveal" (wireScrollReveal): aquele mede a posição
+    // natural do card no documento, sem contar o transform que o empurra
+    // pra cima — o card ficava de verdade invisível (opacity: 0) por boa
+    // parte da subida, só "aparecendo" de repente perto do fim. Aqui os
+    // dois (posição e opacidade) vêm exatamente da mesma variável.
+    card.style.opacity = opacidade;
   }
 
   let ticking = false;
@@ -715,10 +726,15 @@ function wireScrollReveal() {
   // .etapa fica de fora: o efeito de grudar e soltar (position: sticky) já é
   // a entrada dela. Empilhar um fade por cima, com scroll rápido, deixava a
   // foto parada num meio-termo quase transparente até a rolagem parar.
+  // .vivi-card também fica de fora: tem o próprio fade, sincronizado com a
+  // subida (ver wireViviCard) — o observador genérico mede a posição
+  // natural dela no documento, sem contar o transform que a empurra pra
+  // cima, e ela ficava opacity:0 (de verdade invisível, não só discreta)
+  // por boa parte da subida.
   const targets = [...document.querySelectorAll(
     ".section .container > *, .accordion-item"
   )].filter((el) => !el.matches(
-    ".accordion, .etapas"
+    ".accordion, .etapas, .vivi-card"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 

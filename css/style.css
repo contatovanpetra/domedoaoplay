@@ -2152,11 +2152,13 @@ html.abertura-on { overflow: hidden; }
 .hero-primeira-tela .scroll-cue { top: calc(100vh - 64px); top: calc(100svh - 64px); bottom: auto; }
 
 /* ---------- Indicador de rolagem (hero) ---------- */
+/* No canto (não no meio da tela, embaixo do texto): pedido repetido da
+   Vitória. Ancorado no canto direito, longe dos ícones das redes sociais
+   (que ficam do lado esquerdo da foto). */
 .scroll-cue {
   position: absolute;
-  left: 50%;
+  right: clamp(16px, 5vw, 32px);
   bottom: 28px;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
