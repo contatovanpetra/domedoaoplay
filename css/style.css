@@ -61,6 +61,10 @@
    um instante pra remedir (girar o celular, mudar a janela) e, com a rolagem
    suave, media no meio do caminho: a abertura sumia e a pessoa mudava de lugar.
    Os links internos rolam suave pelo JS (wireAncoras, em main.js). */
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
 
 body {
   margin: 0;
@@ -825,15 +829,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Respiro generoso: o card precisa não só de espaço pra subir, mas de
      uma sobra de verdade DEPOIS de chegar no lugar — é esse excesso que
      vira tempo "parado" (ver wireViviCard em main.js: ele mede quanto
-     falta até aqui pra calcular até onde segurar o card parado). Pouco
-     padding aqui = zero tempo parado, o card chega e a seção já acaba.
-     A seção inteira (foto + esse respiro) tem que dar uns dois scrolls de
-     tela inteiros — era assim no celular e tinha sumido numa rodada
-     anterior, quando o respiro extra depois da foto (removido, ver
-     .section.vivi-apple) foi tirado sem reforçar o tempo parado aqui pra
-     compensar a rolagem que sumiu junto. */
-  padding-bottom: 79vh;
-  padding-bottom: 79svh;
+     falta até aqui pra calcular até onde segurar o card parado). */
+  padding-bottom: 112vh;
+  padding-bottom: 112svh;
 }
 /* Card de cantos retos, vidro fosco (pedido explícito, repetido, da
    Vitória: o card É pra ser transparente, a foto aparece através dele,
@@ -844,14 +842,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    durante a subida em si (não mais parado por cima delas), então o texto
    passando de leve por trás nesse instante curto é aceitável. */
 .vivi-card {
-  /* Sobe e para no lugar (não é só um ponto de passagem): o transform é
-     calculado e aplicado por JS a cada rolagem (wireViviCard em main.js),
-     não por CSS puro — "position: sticky" foi testado à exaustão aqui e
-     não funciona neste layout (ver comentário longo no JS): um segundo
-     elemento sticky dentro do mesmo contêiner da foto (.vivi-foto, também
-     sticky) nunca gruda neste navegador. O JS faz à mão o que o sticky
-     faria: mede o quanto o card subiria sozinho e empurra ele pra baixo
-     na mesma medida, pra ele ficar visualmente parado. */
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   max-width: 560px;
   padding: clamp(1.5rem, 4vw, 2.6rem);
   border-radius: 0;
@@ -937,8 +931,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     max-width: none;
     margin: -28vh 0 0;
     margin-top: -28svh;
-    padding-bottom: 98vh;
-    padding-bottom: 98svh;
+    padding-bottom: 125vh;
+    padding-bottom: 125svh;
     padding-left: clamp(24px, 5vw, 96px);
     padding-right: 24px;
   }
@@ -1080,149 +1074,255 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 
-/* ---------- Os 7 níveis da escada ----------
-   Rolagem infinita automática, tipo letreiro: a faixa nunca para e não
-   depende de rolagem nem mouse — puro CSS (@keyframes, sem JS nenhum). A
-   faixa tem os 7 níveis duplicados lado a lado (a 2ª cópia é decorativa,
-   aria-hidden); andando -50% da própria largura ela volta pro início sem
-   ninguém notar a costura. Pausa ao passar o mouse, pra dar tempo de ler.
-   A cor do acento esquenta do azul (nível 1, só você) ao laranja (nível 7,
-   público). */
-.niveis-marquee {
-  position: relative;
-  /* A faixa anda sozinha pelo JS (wireNiveisFaixa) e a pessoa pode arrastar
-     com o dedo ou com o mouse: por isso ela é uma tira que rola de verdade,
-     não mais uma animação de transform. A barra de rolagem fica escondida;
-     o gesto é o comando. */
-  overflow-x: auto;
-  overflow-y: hidden;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  cursor: grab;
-  /* Sem isto, arrastar com o mouse em cima de uma foto começa o "arrastar
-     imagem" do navegador e a faixa não anda. */
-  user-select: none;
-  -webkit-user-select: none;
-  margin-top: clamp(2rem, 5vw, 3.2rem);
-  /* Máscara nas bordas: os cartões somem suavemente ao entrar/sair da faixa,
-     em vez de cortar em seco. */
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+/* ---------- A Escada de Exposição: Apple Stepper & Showcase ----------
+   Apresentação em vitrine de produto estilo Apple: a rolagem vertical da página
+   é 100% livre e natural (sem travamento, sem sticky, sem hijacking).
+   Os 7 níveis são organizados em uma régua minimalista com 7 degraus interativos
+   e um palco central com cartão em foco, permitindo que a pessoa explore no
+   seu próprio tempo com zero esforço cognitivo. */
+#metodo {
+  position: relative !important;
 }
-.niveis-marquee::-webkit-scrollbar { width: 0; height: 0; display: none; }
-.niveis-marquee.is-arrastando { cursor: grabbing; }
-.niveis-marquee:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
-.etapas-track {
-  display: flex;
-  width: max-content;
-}
-.etapas {
+
+/* Régua de Passos (Stepper) */
+.escada-stepper {
   display: flex;
   align-items: center;
-  gap: clamp(.9rem, 2vw, 1.4rem);
-  margin: 0;
-  padding: 0 clamp(.45rem, 1vw, .7rem);
-  list-style: none;
+  justify-content: center;
+  gap: clamp(.4rem, 1vw, .75rem);
+  flex-wrap: wrap;
+  max-width: 1040px;
+  margin: clamp(2rem, 4vw, 2.8rem) auto 0;
+  padding: .35rem;
 }
-/* Tamanho de vitrine, não de tela cheia: dá pra ver vários níveis por vez.
-   Altura vem só do conteúdo (foto + legenda pequena), não de "100% de algo" —
-   sem isso, cada cartão esticava pra altura da tela inteira. */
-/* 210px de teto ficava pequeno demais em telas de computador largas (a
-   escada é a única vitrine da página que não usa a largura do container:
-   ela rola livre, então pode crescer mais que os 210px de antes). */
-.etapa { position: relative; flex: none; width: clamp(170px, 19vw, 285px); }
-.etapa-pin {
+.escada-step {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .5rem .95rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: clamp(.8rem, .75rem + .2vw, .9rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .25s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+.escada-step:hover {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(255, 255, 255, .22);
+  color: var(--white);
+}
+.escada-step.is-active {
+  background: rgba(255, 255, 255, .12);
+  border-color: var(--blue-light);
+  color: var(--white);
+  box-shadow: 0 4px 18px -4px rgba(70, 130, 180, .4);
+}
+.escada-step--final.is-active {
+  border-color: var(--orange);
+  box-shadow: 0 4px 20px -4px rgba(248, 161, 50, .45);
+}
+.escada-step-badge {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .15em .45em;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .08);
+  color: inherit;
+}
+.escada-step.is-active .escada-step-badge {
+  background: var(--blue-light);
+  color: #030A1D;
+}
+.escada-step--final.is-active .escada-step-badge {
+  background: var(--orange);
+  color: #030A1D;
+}
+
+/* Palco / Showcase */
+.escada-palco-wrap {
+  position: relative;
+  max-width: 1200px;
+  margin: clamp(2rem, 4vw, 3rem) auto 0;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+.escada-vitrine {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  padding: 1rem 0 1.5rem;
+  touch-action: pan-y;
+}
+.escada-track {
+  display: flex;
+  gap: clamp(1rem, 2.5vw, 2.2rem);
+  will-change: transform;
+  transition: transform .55s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Cartão do Nível */
+.escada-card {
+  flex: 0 0 clamp(260px, 30vw, 340px);
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, .025);
+  border: 1px solid rgba(255, 255, 255, .09);
+  transition: transform .55s cubic-bezier(.16, 1, .3, 1), opacity .55s ease, border-color .4s ease, box-shadow .4s ease;
+  transform: scale(.92);
+  opacity: .38;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
 }
-/* A moldura (cantos arredondados + sombra) é só da foto, como uma miniatura
-   de produto da Apple (ex.: cartões do app TV). O texto abaixo é solto, sem
-   fundo nem borda, "colado" na foto só pela proximidade — nunca dentro da
-   mesma caixa visual dela. */
-.etapa-foto-wrap {
+.escada-card.is-active {
+  transform: scale(1);
+  opacity: 1;
+  border-color: var(--cor-degrau, var(--blue-light));
+  box-shadow: 0 20px 50px -16px rgba(0, 0, 0, .75), 0 0 28px -6px color-mix(in srgb, var(--cor-degrau) 35%, transparent);
+  cursor: default;
+}
+.escada-card-media {
   position: relative;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  isolation: isolate;
-  box-shadow: var(--shadow-md);
-}
-.etapa-foto {
-  display: block;
-  -webkit-user-drag: none;
   width: 100%;
-  /* Sem "height: auto" aqui, os atributos width/height do <img> no HTML
-     (1122x1402, usados contra CLS) ganham do aspect-ratio, e a foto
-     renderizava na altura real do arquivo (1402px) em vez da altura da
-     vitrine pequena. */
-  height: auto;
-  /* Formato de Reels de verdade (9/16), como pedido. */
-  aspect-ratio: 9 / 16;
-  object-fit: cover;
+  aspect-ratio: 9 / 13;
+  overflow: hidden;
+  background: #020817;
 }
-/* Rótulo e título ficam dentro da foto, não do lado: a legenda "gruda" na
-   imagem, como nos cartões de produto da Apple. O degradê por trás garante
-   leitura em qualquer foto, clara ou escura. */
-.etapa-legenda {
+.escada-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s ease;
+}
+.escada-card.is-active .escada-card-media img {
+  transform: scale(1.025);
+}
+.escada-card-overlay {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: .9rem .8rem 1rem;
-  /* Escurece mais cedo e mais forte (era só a partir de 45%, e o rótulo
-     fica bem no topo dessa faixa): a Vitória achou o texto pouco legível
-     em cima de fotos mais claras. */
-  background: linear-gradient(180deg, rgba(6, 14, 28, .15) 0%, rgba(6, 14, 28, .78) 40%, rgba(6, 14, 28, .97) 100%);
+  padding: 1.4rem 1.1rem 1rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(3, 10, 29, .72) 38%, rgba(3, 10, 29, .98) 100%);
 }
-.etapa-rotulo {
-  display: block;
-  /* Antes fixo em .68rem: ficava minúsculo nos cartões grandes do
-     computador (cresceram bastante desde o formato Reels). Agora acompanha
-     um pouco o tamanho da tela. */
-  font-size: clamp(.72rem, .64rem + .35vw, .88rem);
+.escada-tag {
+  display: inline-block;
+  font-size: .72rem;
   font-weight: 700;
-  letter-spacing: .09em;
+  letter-spacing: .08em;
   text-transform: uppercase;
-  /* A Vitória pediu mais cor de volta (tinha ficado quase branco demais na
-     rodada anterior) — agora é a cor do degrau quase cheia, só uma pontinha
-     de branco pra não perder contraste, apoiada na sombra forte abaixo. */
-  color: color-mix(in srgb, var(--cor), #fff 20%);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 2px 10px rgba(0, 0, 0, .6);
+  color: var(--cor-degrau, var(--blue-light));
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
+  margin-bottom: .25rem;
 }
-.etapa-legenda h3 {
-  margin: .2rem 0 0;
-  /* Mesmo motivo do .etapa-rotulo acima: fixo ficava pequeno nos cartões
-     maiores do computador. */
-  font-size: clamp(.98rem, .85rem + .5vw, 1.3rem);
+.escada-card-title {
+  margin: 0;
+  font-size: clamp(1.1rem, 1.25vw, 1.4rem);
   font-weight: 700;
   line-height: 1.2;
   color: var(--white);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 2px 10px rgba(0, 0, 0, .6);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 2px 12px rgba(0, 0, 0, .6);
 }
-/* Altura fixa (não só mínima): a legenda de cada nível tem um tamanho de
-   texto diferente, e sem isso os cartões saíam de alturas diferentes. Texto
-   solto, sem fundo, alinhado à esquerda e ao topo — como a legenda de um
-   cartão de produto da Apple, nunca um painel colado na foto. */
-.etapa-texto {
-  margin: .75rem 0 0;
-  height: 7.6rem;
-  padding: 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  overflow: hidden;
-  /* Um pouco maior que --t-pequeno (a Vitória achou difícil de ler no
-     celular) — a altura do bloco acima cresceu junto, pra não cortar o
-     texto mais alto. */
-  font-size: clamp(.9rem, .82rem + .35vw, 1rem);
-  line-height: 1.45;
+.escada-card-body {
+  padding: 1.15rem 1.15rem 1.4rem;
+  background: rgba(9, 21, 41, .85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  flex-grow: 1;
+}
+.escada-card-body p {
+  margin: 0;
+  font-size: clamp(.88rem, .82rem + .2vw, .96rem);
+  line-height: 1.5;
   color: var(--cor-corpo);
-  text-align: left;
 }
-.etapa-final .etapa-foto-wrap { box-shadow: var(--shadow-lg); }
+
+/* Botões de Navegação Frosted Glass */
+.escada-nav-btn {
+  position: absolute;
+  top: calc(50% - 1.2rem);
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(14, 29, 49, .88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, .2);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .25s ease;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .5);
+}
+.escada-nav-prev { left: 0; }
+.escada-nav-next { right: 0; }
+.escada-nav-btn:hover {
+  background: rgba(255, 255, 255, .2);
+  border-color: rgba(255, 255, 255, .4);
+  transform: translateY(-50%) scale(1.08);
+}
+.escada-nav-btn:disabled,
+.escada-nav-btn.is-disabled {
+  opacity: .25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Indicadores de bolinha */
+.escada-dots {
+  display: flex;
+  gap: .5rem;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.2rem;
+}
+.escada-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .22);
+  cursor: pointer;
+  transition: all .3s ease;
+}
+.escada-dot:hover {
+  background: rgba(255, 255, 255, .45);
+}
+.escada-dot.is-active {
+  width: 26px;
+  background: var(--blue-light);
+}
+.escada-dot[data-index="6"].is-active {
+  background: var(--orange);
+}
+
 @media (max-width: 699.98px) {
-  /* Celular: as fotos da escada estavam pequenas demais pra dar pra ver a tela do celular dentro delas. */
-  .etapa { width: clamp(170px, 52vw, 230px); }
+  .escada-stepper {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: .6rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .escada-stepper::-webkit-scrollbar { display: none; }
+  .escada-card {
+    flex: 0 0 82vw;
+    max-width: 320px;
+  }
+  .escada-nav-btn {
+    display: none;
+  }
 }
 /* Quem pede menos movimento não vê a faixa andar sozinha (o JS não liga o
    passo automático), mas continua podendo arrastar. */

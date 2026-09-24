@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireModulosTrilha();
   wireScrollReveal();
   wireDepoimentos();
-  wireNiveisFaixa();
+  wireEscadaShowcase();
   wireViviCard();
   wireCountUp();
   wireScrollEffects();
@@ -102,9 +102,16 @@ function wireCorDaTransicao() {
     ticking = false;
   }
 
+  let ultimaLarguraTrans = window.innerWidth;
   medir();
   aplica();
-  window.addEventListener("resize", () => { medir(); aplica(); });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth !== ultimaLarguraTrans) {
+      ultimaLarguraTrans = window.innerWidth;
+      medir();
+      aplica();
+    }
+  }, { passive: true });
   window.addEventListener("scroll", () => {
     if (ticking) return;
     ticking = true;
@@ -239,7 +246,6 @@ function wireScrollEffects() {
   function update() {
     ticking = false;
     const y = window.scrollY;
-    sincronizaHeaderH();
 
     // A trilha de leitura fica parada enquanto a abertura toca.
     const introActive = root.classList.contains("abertura-on");
@@ -542,88 +548,129 @@ function wireDepoimentos() {
   desenha(false);
 }
 
-// A faixa dos níveis anda sozinha, devagar, e obedece à mão: arrastar com o
-// dedo (rolagem nativa) ou com o mouse leva a faixa pro lado, e ela volta a
-// andar sozinha pouco depois que a pessoa solta. Os 7 níveis aparecem
-// duplicados no HTML: ao passar da metade, a rolagem volta pro começo, então a
-// faixa nunca acaba e ninguém vê a emenda.
-function wireNiveisFaixa() {
-  const faixa = document.querySelector(".niveis-marquee");
-  const trilho = faixa && faixa.querySelector(".etapas-track");
-  if (!faixa || !trilho) return;
-  const metade = () => trilho.scrollWidth / 2 || 1;
-  const VELOCIDADE = 26; // pixels por segundo
-  let pausadoAte = 0;    // enquanto a pessoa mexe, o passo automático espera
-  let comOMouseEmCima = false;
-  let mao = null;        // dedo ou mouse segurando a faixa
-  let naTela = true;
-  let ultimo = 0;
+// A Escada de Exposição: Apple Stepper & Showcase
+// Permite que o visitante navegue pelos 7 níveis no seu próprio ritmo, com zero
+// esforço cognitivo e sem movimento involuntário ou travamento de rolagem.
+function wireEscadaShowcase() {
+  const palco = document.querySelector(".escada-palco-wrap");
+  const vitrine = palco && palco.querySelector(".escada-vitrine");
+  const track = vitrine && vitrine.querySelector(".escada-track");
+  const steps = [...document.querySelectorAll(".escada-step")];
+  const cards = track ? [...track.querySelectorAll(".escada-card")] : [];
+  const dots = [...document.querySelectorAll(".escada-dot")];
+  const prevBtn = palco && palco.querySelector(".escada-nav-prev");
+  const nextBtn = palco && palco.querySelector(".escada-nav-next");
 
-  // Emenda invisível: passando da metade, volta pro começo (e vice-versa).
-  const emenda = () => {
-    const m = metade();
-    if (faixa.scrollLeft >= m) faixa.scrollLeft -= m;
-    else if (faixa.scrollLeft < 0) faixa.scrollLeft += m;
-  };
-  const espera = (ms) => { pausadoAte = performance.now() + ms; };
+  if (!vitrine || !track || !cards.length) return;
 
-  // A posição é contada aqui em número quebrado e só depois vira rolagem: a
-  // 26px por segundo, cada quadro anda menos de meio pixel, e somar isso
-  // direto na rolagem não sai do lugar (o navegador arredonda e perde o resto).
-  let pos = faixa.scrollLeft;
-  function passo(t) {
-    const dt = ultimo ? Math.min(.05, (t - ultimo) / 1000) : 0;
-    ultimo = t;
-    if (naTela && !mao && !comOMouseEmCima && t > pausadoAte && !prefersReducedMotion) {
-      const m = metade();
-      pos += VELOCIDADE * dt;
-      if (pos >= m) pos -= m;
-      faixa.scrollLeft = pos;
-    } else {
-      // Enquanto a pessoa manda (arrasto, roda, teclado), a conta acompanha ela.
-      pos = faixa.scrollLeft;
+  let activeIndex = 0;
+
+  function goToIndex(idx, suave = true) {
+    activeIndex = Math.max(0, Math.min(cards.length - 1, idx));
+
+    // Atualiza o estado visual das cartas
+    cards.forEach((card, i) => {
+      card.classList.toggle("is-active", i === activeIndex);
+    });
+
+    // Atualiza a régua de níveis (stepper)
+    steps.forEach((step, i) => {
+      const isActive = i === activeIndex;
+      step.classList.toggle("is-active", isActive);
+      step.setAttribute("aria-selected", isActive ? "true" : "false");
+      if (isActive) {
+        step.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+      }
+    });
+
+    // Atualiza os indicadores de bolinha
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("is-active", i === activeIndex);
+    });
+
+    // Atualiza o estado dos botões prev / next
+    if (prevBtn) {
+      prevBtn.disabled = activeIndex === 0;
+      prevBtn.classList.toggle("is-disabled", activeIndex === 0);
     }
-    requestAnimationFrame(passo);
-  }
-  requestAnimationFrame(passo);
-
-  // O navegador tenta "arrastar a imagem" quando a mão começa em cima de uma foto.
-  faixa.addEventListener("dragstart", (e) => e.preventDefault());
-  faixa.addEventListener("mouseenter", () => { comOMouseEmCima = true; });
-  faixa.addEventListener("mouseleave", () => { comOMouseEmCima = false; });
-  faixa.addEventListener("wheel", () => espera(1500), { passive: true });
-  faixa.addEventListener("keydown", () => espera(2500));
-  // A rolagem nativa (dedo, trackpad, teclado) também precisa da emenda.
-  faixa.addEventListener("scroll", emenda, { passive: true });
-
-  faixa.addEventListener("pointerdown", (e) => {
-    // No dedo, quem rola é o próprio navegador: aqui só seguramos o passo automático.
-    mao = { id: e.pointerId, mouse: e.pointerType === "mouse", x: e.clientX, inicio: faixa.scrollLeft };
-    if (mao.mouse) {
-      faixa.classList.add("is-arrastando");
-      try { faixa.setPointerCapture(e.pointerId); } catch { /* segue sem captura */ }
+    if (nextBtn) {
+      nextBtn.disabled = activeIndex === cards.length - 1;
+      nextBtn.classList.toggle("is-disabled", activeIndex === cards.length - 1);
     }
-  });
-  faixa.addEventListener("pointermove", (e) => {
-    if (!mao || !mao.mouse || e.pointerId !== mao.id) return;
-    e.preventDefault();
-    faixa.scrollLeft = mao.inicio - (e.clientX - mao.x);
-    emenda();
-  });
-  const solta = (e) => {
-    if (!mao || (e && e.pointerId !== mao.id)) return;
-    mao = null;
-    faixa.classList.remove("is-arrastando");
-    espera(1200);
-  };
-  faixa.addEventListener("pointerup", solta);
-  faixa.addEventListener("pointercancel", solta);
-  faixa.addEventListener("pointerleave", solta);
 
-  // Parada quando a faixa não está na tela: nada de rodar à toa.
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver((e) => { naTela = e[0].isIntersecting; }, { threshold: 0 }).observe(faixa);
+    // Centraliza o cartão ativo no palco
+    const activeCard = cards[activeIndex];
+    const offset = activeCard.offsetLeft - (vitrine.clientWidth - activeCard.offsetWidth) / 2;
+    track.style.transition = suave ? "transform .55s cubic-bezier(.16, 1, .3, 1)" : "none";
+    track.style.transform = "translate3d(-" + Math.max(0, offset).toFixed(2) + "px, 0, 0)";
   }
+
+  // Cliques nos botões da régua
+  steps.forEach((step, i) => {
+    step.addEventListener("click", () => goToIndex(i));
+  });
+
+  // Cliques nas setas
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => goToIndex(activeIndex - 1));
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => goToIndex(activeIndex + 1));
+  }
+
+  // Clicar em cartas laterais as coloca em foco
+  cards.forEach((card, i) => {
+    card.addEventListener("click", () => {
+      if (i !== activeIndex) goToIndex(i);
+    });
+  });
+
+  // Clicar nas bolinhas
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => goToIndex(i));
+  });
+
+  // Navegação por teclado nas abas
+  steps.forEach((step, i) => {
+    step.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goToIndex(i + 1);
+        steps[Math.min(steps.length - 1, i + 1)].focus();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goToIndex(i - 1);
+        steps[Math.max(0, i - 1)].focus();
+      }
+    });
+  });
+
+  // Gesto de swipe no mobile (sem travar a rolagem vertical da página)
+  let touchStartX = 0;
+  let touchStartY = 0;
+  vitrine.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+
+  vitrine.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) goToIndex(activeIndex + 1);
+      else goToIndex(activeIndex - 1);
+    }
+  }, { passive: true });
+
+  // Recálculo do alinhamento ao redimensionar a tela
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => goToIndex(activeIndex, false), 100);
+  }, { passive: true });
+
+  // Posição inicial no primeiro carregamento
+  setTimeout(() => goToIndex(0, false), 50);
 }
 
 // O card da Vitória (.vivi-trilho) sobe por cima da foto enquanto ela fica
@@ -637,10 +684,6 @@ function wireNiveisFaixa() {
 // a posição final de descanso (mesmo ponto de sempre: foto totalmente presa
 // mais o percurso de rolagem presa).
 function wireViviCard() {
-  // .vivi-pin (não #vivi) é quem trava o "position: sticky" da foto — a
-  // seção #vivi por si só é mais alta (sobra um respiro no pé antes de
-  // #modulos entrar por cima, ver CSS) — por isso a matemática do quanto a
-  // foto fica presa usa .vivi-pin como referência, não a seção inteira.
   const vivi = document.querySelector(".vivi-pin");
   const trilho = document.querySelector(".vivi-trilho");
   const card = document.querySelector(".vivi-card");
@@ -648,39 +691,21 @@ function wireViviCard() {
   const credenciais = document.querySelector(".vivi-credenciais");
   if (!vivi || !trilho || !card || prefersReducedMotion) return;
 
-  // "position: sticky" no card não funciona aqui: testado à exaustão (até
-  // com um <div> novo, sem nenhum CSS do projeto) e, neste navegador, um
-  // segundo elemento sticky dentro do mesmo contêiner de uma foto que já é
-  // sticky (.vivi-foto) nunca gruda — só o primeiro elemento sticky de cada
-  // contêiner funciona. Por isso o "grudar no meio" é feito à mão aqui: o
-  // JS calcula, a cada rolagem, o quanto precisa empurrar o card pra baixo
-  // pra cancelar exatamente o quanto ele subiria sozinho, e o resultado
-  // visual é idêntico a um sticky de verdade.
   let limiar = 0;
   let fim = 1;
   let inicioSegura = 0;
   let alturaCard = 0;
+  let ultimaLargura = window.innerWidth;
 
   function medir() {
-    // Sem isso, uma vez travada (ver abaixo), a próxima medida já enxergaria
-    // a altura JÁ travada como se fosse a "natural" do card, e nunca mais
-    // destravaria — mesmo numa tela depois maior (girar o celular, abrir o
-    // teclado e fechar de novo).
     card.style.maxHeight = "";
     const viviTop = vivi.getBoundingClientRect().top + window.scrollY;
     const pinado = Math.max(1, vivi.offsetHeight - alturaDaTela());
     limiar = viviTop - alturaDaTela() / 2;
     fim = viviTop + pinado;
     alturaCard = card.offsetHeight;
-    // Posição de descanso "de verdade" do card (sem nenhum transform), na
-    // página inteira: onde ele cairia se não fizéssemos nada.
     const topoNaturalDoc = trilho.getBoundingClientRect().top + window.scrollY;
-    // O nome "Vitória Caroline" e as credenciais no pé da foto ficam
-    // estáticos o tempo todo (parte da própria foto presa) — o card não
-    // pode cobrir nenhum dos dois. O alvo é o meio do espaço que sobra
-    // entre onde o nome termina e onde as credenciais começam, calculado
-    // pela posição real dos dois (não um número fixo), pra se ajustar
-    // sozinho se a altura de qualquer um dos três mudar.
+
     const fimNome = assinatura
       ? parseFloat(getComputedStyle(assinatura).top) + assinatura.offsetHeight
       : alturaDaTela() * 0.15;
@@ -688,11 +713,7 @@ function wireViviCard() {
       ? alturaDaTela() - credenciais.offsetHeight
       : alturaDaTela() * 0.85;
     const espaco = Math.max(0, inicioCredenciais - fimNome);
-    // Em telas baixas (iPhone SE, alguns Android compactos), o card com o
-    // texto inteiro é mais alto que esse espaço — ele nunca pode vazar e
-    // cobrir o nome ou as credenciais, então trava a altura no que cabe e
-    // deixa o texto rolar por dentro dele (só nesses aparelhos: em qualquer
-    // tela com espaço de sobra isso nunca liga).
+
     const alturaMax = Math.max(80, espaco - 4);
     if (alturaCard > alturaMax) {
       card.style.maxHeight = alturaMax + "px";
@@ -708,47 +729,64 @@ function wireViviCard() {
 
   function aplica() {
     const y = window.scrollY;
-    const escondido = alturaCard + 60;
+    const escondido = Math.max(alturaCard + 80, alturaDaTela() * 0.45);
     let empurrao;
     let opacidade;
+
     if (y <= limiar) {
-      empurrao = escondido;
+      empurrao = (limiar - inicioSegura) + escondido;
       opacidade = 0;
     } else if (y < inicioSegura) {
-      const p = clamp((y - limiar) / Math.max(1, inicioSegura - limiar));
-      empurrao = (1 - p) * escondido;
-      opacidade = p;
+      // Entrada com amortecimento cúbico (smoothstep):
+      // A posição do card na tela desacelera suavemente até velocidade zero
+      // ao atingir exatamente o ponto de retenção (inicioSegura), sem tranco visual.
+      const t = clamp((y - limiar) / Math.max(1, inicioSegura - limiar));
+      const suave = t * t * (3 - 2 * t);
+      empurrao = (y - inicioSegura) + (1 - suave) * escondido;
+      opacidade = Math.min(1, t * 1.4);
+    } else if (y <= fim) {
+      // Faixa de retenção fixa: o card fica 100% parado no teto ideal enquanto você desce a tela
+      empurrao = y - inicioSegura;
+      opacidade = 1;
     } else {
-      // Segurando: sobe junto com a rolagem até "fim" (a foto solta, a
-      // seção acaba) e então já não sobe mais — o resto da página que
-      // continua rolando por cima.
-      empurrao = Math.min(y, fim) - inicioSegura;
+      // Ao terminar a seção, acompanha o fluxo natural do documento e da foto sem solavancos
+      empurrao = fim - inicioSegura;
       opacidade = 1;
     }
-    card.style.transform = "translateY(" + empurrao.toFixed(1) + "px)";
-    // A opacidade acompanha a mesma conta do transform, não o observador
-    // genérico de ".reveal" (wireScrollReveal): aquele mede a posição
-    // natural do card no documento, sem contar o transform que o empurra
-    // pra cima — o card ficava de verdade invisível (opacity: 0) por boa
-    // parte da subida, só "aparecendo" de repente perto do fim. Aqui os
-    // dois (posição e opacidade) vêm exatamente da mesma variável.
-    card.style.opacity = opacidade;
+
+    card.style.transform = "translate3d(0, " + empurrao.toFixed(2) + "px, 0)";
+    card.style.opacity = opacidade.toFixed(3);
   }
 
   let ticking = false;
   window.addEventListener("scroll", () => {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(() => { aplica(); ticking = false; });
+    requestAnimationFrame(() => {
+      aplica();
+      ticking = false;
+    });
   }, { passive: true });
 
   let medeQueued = false;
   const queueMedida = () => {
     if (medeQueued) return;
     medeQueued = true;
-    requestAnimationFrame(() => { medeQueued = false; medir(); });
+    requestAnimationFrame(() => {
+      medeQueued = false;
+      medir();
+    });
   };
-  window.addEventListener("resize", queueMedida, { passive: true });
+
+  // No celular, a barra de endereço muda a altura e disparava resize repetidamente no scroll.
+  // Ignora redimensionamentos que não alterem a largura horizontal da janela.
+  window.addEventListener("resize", () => {
+    if (window.innerWidth !== ultimaLargura) {
+      ultimaLargura = window.innerWidth;
+      queueMedida();
+    }
+  }, { passive: true });
+
   window.addEventListener("load", queueMedida);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueMedida);
 
@@ -1027,8 +1065,8 @@ function wireIntroStage() {
   // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
   // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
   const VIDEOS = {
-    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.jpg" },
-    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.jpg" },
+    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.webp" },
+    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.webp" },
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
   const porta = tl.labels.cresce + CRESCE;
@@ -1211,11 +1249,14 @@ function wireHeaderReveal() {
   if ("ResizeObserver" in window && vivi) new ResizeObserver(medeVivi).observe(vivi);
 
   let ultimoY = window.scrollY;
+  let headerH = header.offsetHeight || 70;
+  const atualizaHeaderH = () => { headerH = header.offsetHeight || 70; };
+  window.addEventListener("resize", atualizaHeaderH, { passive: true });
   let pedido = false;
   const confere = () => {
     pedido = false;
     const y = window.scrollY;
-    if (y <= (header.offsetHeight || 70)) {
+    if (y <= headerH) {
       header.classList.remove("is-recolhido");
       ultimoY = y;
       return;
@@ -1248,22 +1289,32 @@ function wireHeaderTema() {
   const alvos = [...document.querySelectorAll("#modulos, #beneficios, #aplicacao")];
   if (!header || !alvos.length) return;
   let ticking = false;
-  function aplica() {
-    const y = (header.offsetHeight || 70) / 2;
-    const sobreClaro = alvos.some((el) => {
-      const r = el.getBoundingClientRect();
-      return r.top <= y && r.bottom >= y;
+  let intervalos = [];
+
+  function mede() {
+    const h = (header.offsetHeight || 70) / 2;
+    intervalos = alvos.map((el) => {
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      return { top: top - h, bottom: top + el.offsetHeight - h };
     });
+    aplica();
+  }
+
+  function aplica() {
+    const y = window.scrollY;
+    const sobreClaro = intervalos.some((inv) => y >= inv.top && y <= inv.bottom);
     header.classList.toggle("on-light", sobreClaro);
     ticking = false;
   }
-  aplica();
+
+  mede();
   window.addEventListener("scroll", () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(aplica);
   }, { passive: true });
-  window.addEventListener("resize", aplica, { passive: true });
+
+  window.addEventListener("resize", mede, { passive: true });
 }
 
 // Onde a pessoa parou de ler, guardado na aba. O <head> usa isto pra decidir a
