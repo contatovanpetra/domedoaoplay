@@ -1,0 +1,7 @@
+{
+  "name": "Do Medo ao Play",
+  "description": "Aprenda a se comunicar diante da câmera para vender, divulgar seu trabalho, criar conteúdo ou atuar como afiliado, degrau a degrau, a partir do nível em que você está hoje.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
