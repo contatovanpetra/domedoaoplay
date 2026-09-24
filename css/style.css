@@ -373,25 +373,37 @@ html { scroll-padding-top: var(--header-h, 85px); }
 
 
 /* Barra de progresso de leitura. */
-/* A barra de rolagem nativa continua — tirá-la deixava quem rola arrastando
-   o próprio polegar da barra (hábito comum no computador) sem jeito nenhum
-   de rolar a página. A faixa colorida embaixo é só um indicador extra de
-   quanto falta pra acabar, não substitui a barra de verdade. */
+/* Só uma barra de rolagem na página: a colorida da direita, e ela mesma
+   é manuseável com o mouse (clicar/arrastar rola a página) — não é só um
+   indicador, é a própria barra de rolagem. A nativa continua escondida. */
+html { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 /* Trilha de leitura: uma faixa vertical na borda direita, com o trilho
-   sempre visível e o preenchimento subindo conforme a página avança. */
+   sempre visível e o preenchimento subindo conforme a página avança.
+   A área clicável (::before) é bem mais larga que o traço visível — um
+   traço de 4px é fino demais pra mirar o mouse nele com precisão. */
 .read-progress {
   position: fixed;
   top: 0;
-  /* Encostada na barra de rolagem nativa (que voltou a existir, ver acima),
-     não embaixo dela. */
-  right: 14px;
+  right: 0;
   width: 4px;
   height: 100vh;
   height: 100dvh;
   background: rgba(255, 255, 255, .1);
   z-index: 200;
-  pointer-events: none;
+  cursor: pointer;
+  /* Sem isso, arrastar o dedo bem em cima da barrinha (só ela, não o resto
+     da tela) tentava rolar E arrastar a barra ao mesmo tempo. */
+  touch-action: none;
+}
+.read-progress::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -14px;
+  right: -14px;
 }
 .read-progress::after {
   content: "";
@@ -399,6 +411,7 @@ html { scroll-padding-top: var(--header-h, 85px); }
   inset: 0;
   transform: scaleY(var(--read, 0));
   transform-origin: 50% 0;
+  pointer-events: none;
   background: linear-gradient(180deg, var(--blue-light), var(--blue), var(--orange-light));
   box-shadow: 0 0 10px -2px rgba(248, 161, 50, .55);
 }

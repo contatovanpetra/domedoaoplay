@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireViviCard();
   wireCountUp();
   wireScrollEffects();
+  wireReadProgressBar();
   wireScrollCue();
   wireIntroStage();
   wireManterLugar();
@@ -283,6 +284,41 @@ function wireScrollEffects() {
   }
 
   measure();
+}
+
+// A trilha de leitura (.read-progress) não é só um indicador — ela mesma é
+// a barra de rolagem da página (a nativa fica escondida, ver CSS). Clicar
+// ou arrastar nela rola a página proporcionalmente à posição do mouse.
+function wireReadProgressBar() {
+  const bar = document.querySelector(".read-progress");
+  if (!bar) return;
+
+  function rolaPara(clientY) {
+    const r = bar.getBoundingClientRect();
+    const fracao = clamp((clientY - r.top) / Math.max(1, r.height));
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    window.scrollTo(0, fracao * maxScroll);
+  }
+
+  let arrastando = false;
+  bar.addEventListener("pointerdown", (e) => {
+    // Só o botão principal do mouse (ou toque/caneta) — sem isso, um clique
+    // com o botão direito também arrastava a página.
+    if (e.button !== undefined && e.button !== 0) return;
+    arrastando = true;
+    bar.setPointerCapture(e.pointerId);
+    rolaPara(e.clientY);
+  });
+  bar.addEventListener("pointermove", (e) => {
+    if (!arrastando) return;
+    rolaPara(e.clientY);
+  });
+  const solta = (e) => {
+    arrastando = false;
+    if (bar.hasPointerCapture(e.pointerId)) bar.releasePointerCapture(e.pointerId);
+  };
+  bar.addEventListener("pointerup", solta);
+  bar.addEventListener("pointercancel", solta);
 }
 
 // Repassa pro checkout os parâmetros de rastreio com que a pessoa chegou na página
