@@ -1114,10 +1114,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   box-shadow: 0 20px 50px -16px rgba(0, 0, 0, .75), 0 0 28px -6px color-mix(in srgb, var(--cor-degrau) 35%, transparent);
   cursor: default;
 }
+/* 4:5, o mesmo formato das fotos: nada da cena fica cortado nas bordas. */
 .escada-card-media {
   position: relative;
   width: 100%;
-  aspect-ratio: 9 / 13;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   background: #020817;
 }
@@ -1281,11 +1282,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     flex: 0 0 68vw;
     max-width: 240px;
   }
-  /* Foto mais baixa no celular (4:5 em vez de 9:13): título, cartão e
-     bolinhas cabem juntos numa tela — o cartão ativo vira o ponto claro
-     pra onde olhar, como numa galeria da Apple, em vez de um cartão alto
-     que ocupava a tela inteira sozinho. */
-  .escada-card-media { aspect-ratio: 4 / 5; }
   .escada-card-body { padding: .95rem 1rem 1.1rem; }
   .escada-nav-btn {
     display: none;
