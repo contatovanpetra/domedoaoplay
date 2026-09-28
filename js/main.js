@@ -468,6 +468,11 @@ function wireDepoimentos() {
     if (d < -n / 2) d += n;
     return d - arrasto;
   }
+  // Altura do palco = o cartão mais alto (vídeo + legenda inteira): com uma
+  // altura fixa, a legenda mais longa era cortada pelo fim da seção.
+  function mede() {
+    palco.style.height = Math.max(...cards.map((c) => c.offsetHeight)) + "px";
+  }
   function desenha(anima) {
     const s = passo();
     cards.forEach((card, i) => {
@@ -518,9 +523,11 @@ function wireDepoimentos() {
       else vai(ativo);
     } else if (e && e.type === "pointerup") {
       // Toque num vídeo do lado: ele vem pro meio.
+      // Toque num vídeo do lado: ele vem pro meio. No do meio: abre grande.
       const card = e.target.closest && e.target.closest(".depo-card");
       const i = cards.indexOf(card);
       if (i >= 0 && i !== ativo) vai(i);
+      else if (i === ativo) abre(card);
     }
     toque = null;
     arrastando = false;
@@ -530,7 +537,70 @@ function wireDepoimentos() {
   palco.addEventListener("keydown", (e) => {
     if (e.key === "ArrowRight") { e.preventDefault(); vai(ativo + 1); }
     if (e.key === "ArrowLeft") { e.preventDefault(); vai(ativo - 1); }
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abre(cards[ativo]); }
   });
+
+  // ---- Vídeo aberto em destaque (maior, com × pra fechar) ----
+  // Cada depoimento pode ter o vídeo em data-video no <figure>; enquanto
+  // não tem, abre o mesmo espaço reservado do cartão, só que grande.
+  let modal = null;
+  let focoAntes = null;
+  function fecha() {
+    if (!modal) return;
+    const m = modal;
+    modal = null;
+    const v = m.querySelector("video");
+    if (v) v.pause();
+    m.classList.remove("is-aberto");
+    document.documentElement.style.overflow = "";
+    document.removeEventListener("keydown", teclaModal);
+    setTimeout(() => m.remove(), prefersReducedMotion ? 0 : 300);
+    if (focoAntes) focoAntes.focus({ preventScroll: true });
+  }
+  function teclaModal(e) {
+    if (e.key === "Escape") { e.preventDefault(); fecha(); }
+    // Com o vídeo aberto, o Tab não sai de dentro dele.
+    if (e.key === "Tab" && modal) { e.preventDefault(); modal.querySelector(".depo-modal-fechar").focus(); }
+  }
+  function abre(card) {
+    if (!card || modal) return;
+    focoAntes = document.activeElement;
+    const nome = card.querySelector(".depo-nome");
+    modal = document.createElement("div");
+    modal.className = "depo-modal";
+    modal.setAttribute("role", "dialog");
+    modal.setAttribute("aria-modal", "true");
+    modal.setAttribute("aria-label", "Depoimento" + (nome ? " de " + nome.textContent.trim() : ""));
+    modal.innerHTML =
+      '<div class="depo-modal-fundo"></div>' +
+      '<div class="depo-modal-caixa">' +
+        '<button type="button" class="depo-modal-fechar" aria-label="Fechar vídeo">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>' +
+        '</button>' +
+        '<div class="depo-modal-video"></div>' +
+      '</div>';
+    const alvo = modal.querySelector(".depo-modal-video");
+    const src = card.dataset.video;
+    if (src) {
+      const v = document.createElement("video");
+      v.src = src;
+      v.controls = true;
+      v.autoplay = true;
+      v.playsInline = true;
+      alvo.appendChild(v);
+    } else {
+      card.querySelectorAll(".depo-play, .depo-legenda").forEach((el) => alvo.appendChild(el.cloneNode(true)));
+    }
+    modal.querySelector(".depo-modal-fundo").addEventListener("click", fecha);
+    modal.querySelector(".depo-modal-fechar").addEventListener("click", fecha);
+    document.body.appendChild(modal);
+    document.documentElement.style.overflow = "hidden";
+    document.addEventListener("keydown", teclaModal);
+    requestAnimationFrame(() => {
+      if (modal) modal.classList.add("is-aberto");
+    });
+    modal.querySelector(".depo-modal-fechar").focus({ preventScroll: true });
+  }
   // As setas dos dois lados: quem não descobre o arrasto troca de vídeo no clique.
   palco.querySelectorAll(".depo-seta").forEach((seta) => {
     seta.addEventListener("click", (e) => {
@@ -538,7 +608,9 @@ function wireDepoimentos() {
       vai(ativo + (seta.classList.contains("depo-seta--antes") ? -1 : 1));
     });
   });
-  window.addEventListener("resize", () => desenha(false), { passive: true });
+  window.addEventListener("resize", () => { mede(); desenha(false); }, { passive: true });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(mede);
+  mede();
   desenha(false);
 }
 

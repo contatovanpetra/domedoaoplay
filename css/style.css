@@ -1289,6 +1289,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     flex: 0 0 68vw;
     max-width: 240px;
   }
+  /* Foto mais baixa no celular (4:5 em vez de 9:13): título, cartão e
+     bolinhas cabem juntos numa tela — o cartão ativo vira o ponto claro
+     pra onde olhar, como numa galeria da Apple, em vez de um cartão alto
+     que ocupava a tela inteira sozinho. */
+  .escada-card-media { aspect-ratio: 4 / 5; }
+  .escada-card-body { padding: .95rem 1rem 1.1rem; }
   .escada-nav-btn {
     display: none;
   }
@@ -1487,6 +1493,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    4 colunas (computador) ou 2 (tablet/celular) — nas duas, o par 1-2 e o
    par 3-4 sempre ficam lado a lado na mesma linha, então a seta sempre
    aponta pro card certo. Fica meio a meio no vão entre os dois cards. */
+/* O vidro (backdrop-filter) põe cada card numa camada própria: sem subir o
+   1º e o 3º pra frente, a setinha deles ficava por baixo do card vizinho. */
+.beneficio:nth-child(1), .beneficio:nth-child(3) { z-index: 2; }
 .beneficio:nth-child(1)::after,
 .beneficio:nth-child(3)::after {
   content: "";
@@ -1670,6 +1679,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   -webkit-user-select: none;
 }
 .depo-palco.is-arrastando { cursor: grabbing; }
+/* Celular: vídeo um pouco menor no carrossel (agora ele abre grande num
+   toque, ver .depo-modal) — sobra lugar pra legenda inteira do resultado.
+   A altura do palco é medida pelo JS pela maior legenda (wireDepoimentos);
+   a de cima é só o valor de partida. */
+@media (max-width: 699.98px) {
+  .depo-palco {
+    --depo-h: min(56vh, calc(100vh - 18rem), 660px);
+    --depo-h: min(56svh, calc(100svh - 18rem), 660px);
+    --depo-w: min(calc(var(--depo-h) * 9 / 16), 64vw);
+  }
+}
 /* Setas dos dois lados: discretas (contorno fino, vidro fosco), não mais
    um botão sólido chamativo — elegante, não genérico. Bem pra fora do
    vídeo, perto da borda de verdade do carrossel (que agora tem a largura
@@ -1728,6 +1748,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* A legenda aparece só no vídeo do meio. */
 .depo-card figcaption { opacity: 0; transition: opacity .4s ease; }
 .depo-card.is-ativo figcaption { opacity: 1; }
+.depo-card.is-ativo .depo-video { cursor: pointer; }
 .depo-video {
   position: relative;
   display: grid;
@@ -1752,8 +1773,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .depo-card:not(.is-ativo) .depo-play { opacity: .4; }
 .depo-play svg { width: 42%; height: 42%; margin-left: 3px; }
 .depo-vazio {
+  /* No alto do vídeo: embaixo ele ficava por trás do nome e do cargo. */
   position: absolute;
-  bottom: .7rem;
+  top: .8rem;
   left: 0;
   right: 0;
   padding: 0 .3rem;
@@ -2620,4 +2642,74 @@ html.abertura-on { overflow: hidden; }
   inset: -7px -3px;
 }
 .depo-seta::after { inset: -5px; }
+
+/* ---------- Vídeo do depoimento aberto em destaque ----------
+   Um toque no vídeo do meio abre ele grande por cima da página (não em
+   tela cheia), com o fundo escurecido e um × pra fechar — como a Apple
+   abre os vídeos das páginas de produto. */
+.depo-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.depo-modal.is-aberto { opacity: 1; }
+.depo-modal-fundo {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 9, 18, .78);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.depo-modal-caixa {
+  position: relative;
+  transform: scale(.96);
+  transition: transform .35s cubic-bezier(.16, 1, .3, 1);
+}
+.depo-modal.is-aberto .depo-modal-caixa { transform: scale(1); }
+.depo-modal-video {
+  position: relative;
+  height: min(80vh, calc((100vw - 32px) * 16 / 9), 760px);
+  height: min(80svh, calc((100vw - 32px) * 16 / 9), 760px);
+  aspect-ratio: 9 / 16;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: linear-gradient(160deg, #13253C, #0B1728 70%);
+  box-shadow: var(--shadow-lg);
+}
+.depo-modal-video video { width: 100%; height: 100%; object-fit: cover; }
+.depo-modal-video .depo-legenda { opacity: 1; }
+.depo-modal-fechar {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .25);
+  background: rgba(14, 29, 49, .92);
+  color: var(--white);
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .45);
+}
+.depo-modal-fechar svg { width: 16px; height: 16px; }
+.depo-modal-fechar:hover { background: rgba(40, 60, 85, .95); }
+@media (max-width: 699.98px) {
+  /* No celular o × fica dentro do vídeo, no canto (fora dele sairia da tela). */
+  .depo-modal-fechar { top: 10px; right: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .depo-modal, .depo-modal-caixa { transition: none; }
+}
 
