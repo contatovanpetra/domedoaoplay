@@ -566,6 +566,8 @@ function wireEscadaShowcase() {
   let inicioProgresso = 0;
   let progressoAoPausar = 0; // 0..1, guardado ao pausar pra retomar do mesmo ponto
   let rafId = 0;
+  let naTela = false;         // só conta com a escada de fato na tela
+  let saiuDeVez = true;       // chegou de fora dela: recomeça do nível 1
 
   function anelDe(i) {
     return nums[i] && nums[i].querySelector(".escada-num-ring-fill");
@@ -590,7 +592,7 @@ function wireEscadaShowcase() {
   }
   function iniciarProgresso(retomarDoPonto) {
     pararProgresso();
-    if (!tocando || prefersReducedMotion) return;
+    if (!tocando || !naTela || prefersReducedMotion) return;
     const jaFeito = retomarDoPonto ? progressoAoPausar : 0;
     inicioProgresso = performance.now() - jaFeito * DURACAO_MS;
     rafId = requestAnimationFrame(passoProgresso);
@@ -676,13 +678,24 @@ function wireEscadaShowcase() {
     resizeTimer = setTimeout(() => goToIndex(activeIndex, false), 100);
   }, { passive: true });
 
-  // Pausa o avanço automático fora da tela (nada de rodar à toa) e retoma
-  // do ponto onde parou quando a escada volta a aparecer.
+  // Conta só com a escada na tela (metade dela visível). Chegando de fora
+  // dela, a pessoa sempre vê a partir do nível 1; saindo só um pouco e
+  // voltando, continua de onde estava.
   if ("IntersectionObserver" in window) {
     new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) { if (tocando) iniciarProgresso(true); }
-      else pararProgresso();
-    }, { threshold: .2 }).observe(palco);
+      const e = entries[entries.length - 1];
+      if (e.intersectionRatio >= .5) {
+        naTela = true;
+        if (saiuDeVez) { saiuDeVez = false; goToIndex(0, false); }
+        else if (tocando) iniciarProgresso(true);
+      } else {
+        naTela = false;
+        if (!e.isIntersecting) saiuDeVez = true;
+        pararProgresso();
+      }
+    }, { threshold: [0, .5] }).observe(palco);
+  } else {
+    naTela = true;
   }
 
   setTimeout(() => goToIndex(0, false), 50);
@@ -1151,8 +1164,6 @@ function wireIntroStage() {
       ritmoFinal = gsap.utils.clamp(1, 4, 2 * (video.duration / porta) - RITMO_INICIAL);
     }
   }
-  // Onde o vídeo deve estar em cada instante da animação (a soma do ritmo).
-  const tempoDoVideo = (t) => RITMO_INICIAL * t + (ritmoFinal - RITMO_INICIAL) * t * t / (2 * porta);
   function aceleraTunel() {
     const r = { v: RITMO_INICIAL };
     video.playbackRate = RITMO_INICIAL;
@@ -1196,15 +1207,14 @@ function wireIntroStage() {
     adiantou = true;
     const t = tl.labels.atravessa;
     if (ritmo) ritmo.kill();
-    if (tl.time() < t) {
-      tl.seek(t);
-      if (!semVideo && video.readyState >= 1) {
-        try { video.currentTime = Math.min(video.duration || 0, tempoDoVideo(t)); } catch { /* segue sem acertar o vídeo */ }
-      }
-    }
+    if (tl.time() < t) tl.seek(t);
     tl.timeScale(2.2);
-    // Na travessia rápida, o túnel corre até a porta junto com a tela.
-    if (!semVideo) video.playbackRate = Math.min(16, ritmoFinal * 2.2);
+    // O vídeo NÃO pula pra frente junto: pular (currentTime) num vídeo que
+    // ainda está baixando fazia ele travar e voltar pro começo do túnel —
+    // parecia que a abertura recarregava bem na hora do celular, sempre
+    // que a pessoa encostava na tela. Ele só corre mais rápido de onde está;
+    // o clarão do fim cobre a chegada na porta.
+    if (!semVideo) video.playbackRate = Math.min(2.5, ritmoFinal * 2.2);
     if (!comecou) {
       comecou = true;
       clearTimeout(esperaVideo);

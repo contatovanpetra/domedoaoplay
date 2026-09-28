@@ -449,7 +449,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    pra escuro aqui embaixo — título, corpo e borda de tudo que tem dentro
    leem essas variáveis, sem precisar caçar seletor por seletor. */
 #modulos.section-tone::before {
-  background: var(--blue-light);
+  /* Luzes suaves por trás dos cards de vidro (sem elas o vidro não tem o
+     que desfocar e vira um retângulo branco chapado). Somem antes da borda
+     de baixo: a emenda com #beneficios continua sem costura. */
+  background:
+    radial-gradient(38% 22% at 14% 30%, rgba(255, 255, 255, .5), transparent 70%),
+    radial-gradient(42% 26% at 88% 58%, rgba(70, 130, 180, .45), transparent 70%),
+    radial-gradient(30% 18% at 30% 80%, rgba(215, 119, 19, .16), transparent 70%),
+    var(--blue-light);
 }
 /* Benefícios: o alto continua liso e reto (emenda com #modulos, mesma cor,
    sem nenhuma costura ali) mas o pé esmaece pra transparente — não pro
@@ -458,7 +465,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    conforme a rolagem avança, tipo a página da Apple Podcasts (a cor muda
    com o tanto que se rola, não é só um degradê parado). */
 #beneficios.section-tone::before {
-  background: linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 55%, transparent 100%);
+  background:
+    radial-gradient(34% 12% at 82% 14%, rgba(255, 255, 255, .45), transparent 70%),
+    radial-gradient(36% 12% at 14% 22%, rgba(70, 130, 180, .4), transparent 70%),
+    linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 55%, transparent 100%);
 }
 /* Respiro maior no pé, antes da oferta — só um pouco mais (a transição
    precisa de alguma distância de rolagem pra acontecer, mas não de uma
@@ -588,7 +598,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    (item fechado ou aberto, par ou ímpar) — nada de alternar entre claro e
    escuro: só uma opacidade maior pro aberto se destacar dos outros (isso
    e a borda laranja da esquerda, que já existia). */
-#modulos .accordion-item { background: rgba(255, 255, 255, .55); }
+/* Vidro (material da Apple): reflexo em degradê, brilho fino na borda de
+   cima e desfoque do que está atrás — as luzes suaves do fundo da seção
+   (ver #modulos.section-tone::before) aparecem borradas através dele. */
+#modulos .accordion-item,
+.beneficio {
+  background: linear-gradient(150deg, rgba(255, 255, 255, .6) 0%, rgba(255, 255, 255, .26) 100%);
+  border: 1px solid rgba(255, 255, 255, .65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 2px 6px -2px rgba(11, 40, 70, .12),
+    0 14px 34px -18px rgba(11, 40, 70, .4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
 #modulos #accordion-modulos .accordion-item.open {
   /* Havia uma regra de :nth-child(even) com o mesmo peso e vindo depois
      no arquivo, que vencia nos módulos pares — removida (era o motivo dos
@@ -596,7 +620,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      prioridade sobre a regra de cima sem depender da ordem. Mesma
      transparência de vidro do fechado (não mais um branco quase opaco):
      só a borda laranja da esquerda e o selo já diferenciam o aberto. */
-  background: rgba(255, 255, 255, .55);
+  background: linear-gradient(150deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, .36) 100%);
 }
 #accordion-modulos .accordion-icon { color: var(--blue-deep); }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
@@ -906,8 +930,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   flex-direction: column;
   text-shadow: 0 1px 3px rgba(3, 10, 29, .65), 0 2px 18px rgba(3, 10, 29, .5);
 }
-.vivi-nome { font-family: var(--font-head); font-weight: 700; font-size: var(--t-titulo); line-height: 1.05; letter-spacing: -.015em; color: var(--blue-light); }
-.vivi-cargo { margin-top: .5rem; font-family: var(--font-body); font-weight: 600; font-size: var(--t-rotulo); letter-spacing: .14em; text-transform: uppercase; color: var(--white); }
+.vivi-nome { font-family: var(--font-head); font-weight: 700; font-size: var(--t-titulo); line-height: 1.05; letter-spacing: -.015em; color: var(--white); }
+.vivi-cargo { margin-top: .5rem; font-family: var(--font-body); font-weight: 600; font-size: var(--t-rotulo); letter-spacing: .14em; text-transform: uppercase; color: var(--blue-light); }
 /* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
    título da seção. */
 @media (max-width: 899.98px) {
@@ -1220,12 +1244,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    que preenche em laranja enquanto aquele nível fica em foco (tipo stories);
    ao completar, avança sozinha pro próximo. Pausar congela o preenchimento. */
 .escada-progresso {
+  /* Uma cápsula de vidro envolvendo o play/pause e os 7 números: lê como
+     um controle só (como a barra de mídia da Apple), não 8 bolinhas soltas. */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: .45rem;
-  flex-wrap: wrap;
-  margin-top: 1.4rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: 1.4rem auto 0;
+  padding: .4rem .55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 10px 30px -14px rgba(0, 0, 0, .6);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
 }
 .escada-play-pause {
   position: relative;
@@ -1339,12 +1373,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   position: relative;
   border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(11, 23, 40, .06), 0 4px 16px -8px rgba(11, 23, 40, .12);
 }
 /* Diferenciação forte "aberto vs. os outros 6". */
 #accordion-modulos .accordion-item.open {
   border-left: 3px solid var(--orange);
-  box-shadow: 0 2px 4px rgba(11, 23, 40, .08), 0 8px 24px -10px rgba(11, 23, 40, .18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .9),
+    inset 0 -1px 0 rgba(255, 255, 255, .2),
+    0 2px 6px -2px rgba(11, 40, 70, .14),
+    0 18px 40px -18px rgba(11, 40, 70, .45);
 }
 .accordion-trigger {
   width: 100%;
@@ -1524,8 +1561,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      lado a lado com cantos diferentes (um reto, um redondo) lia como
      inconsistência, não como estilo. */
   border-radius: 14px;
-  background: rgba(255, 255, 255, .2);
-  border: 1px solid rgba(255, 255, 255, .45);
 }
 /* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
    que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
@@ -2089,6 +2124,9 @@ html.abertura-on { overflow: hidden; }
 .burst-aparelho {
   position: absolute;
   inset: 0;
+  /* Camada própria: o traço do contorno se desenhando ao lado não obriga a
+     redesenhar esta sombra grande a cada quadro (engasgava o túnel). */
+  will-change: opacity;
   border-radius: calc(var(--lado) * .16);
   background: linear-gradient(150deg, #2b313b, #0d1015 45%, #1b2028);
   box-shadow:
@@ -2606,7 +2644,11 @@ html.abertura-on { overflow: hidden; }
   /* Bolinhas da escada e setas dos depoimentos: o desenho continua pequeno,
      mas a área que o dedo alcança chega perto dos 44px recomendados. */
   .escada-num, .escada-play-pause { width: 30px; height: 30px; }
-  .escada-progresso { gap: .45rem; }
+  .escada-progresso { gap: .3rem; padding: .35rem .45rem; }
+}
+@media (max-width: 360px) {
+  .escada-num, .escada-play-pause { width: 27px; height: 27px; }
+  .escada-progresso { gap: .15rem; }
 }
 .escada-num::after, .escada-play-pause::after, .depo-seta::after {
   content: "";
