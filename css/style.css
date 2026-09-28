@@ -1131,34 +1131,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .escada-card.is-active .escada-card-media img {
   transform: scale(1.025);
 }
-.escada-card-overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 1.4rem 1.1rem 1rem;
-  background: linear-gradient(180deg, transparent 0%, rgba(3, 10, 29, .72) 38%, rgba(3, 10, 29, .98) 100%);
-}
+/* Foto limpa em cima, texto embaixo (como os cartões da Apple): "Nível N"
+   pequeno na cor do degrau, o nome do nível e a legenda de uma linha. */
 .escada-tag {
-  display: inline-block;
+  display: block;
   font-size: var(--t-rotulo);
   font-weight: 700;
-  letter-spacing: .08em;
+  letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--cor-degrau, var(--blue-light));
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
-  margin-bottom: .25rem;
+  margin-bottom: .3rem;
 }
 .escada-card-title {
-  margin: 0;
+  margin: 0 0 .35rem;
   font-size: var(--t-card);
   font-weight: 700;
   line-height: 1.2;
   color: var(--white);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .8), 0 2px 12px rgba(0, 0, 0, .6);
 }
 .escada-card-body {
-  padding: 1.15rem 1.15rem 1.4rem;
+  padding: 1.05rem 1.15rem 1.3rem;
   background: rgba(9, 21, 41, .85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -1441,6 +1433,33 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .accordion-panel ul { display: grid; gap: .55rem; }
 .accordion-panel li { font-size: var(--t-corpo); color: var(--cor-corpo); }
 .accordion-panel p { font-size: var(--t-corpo); margin: 0; color: var(--cor-corpo); }
+/* Aulas numeradas de 1 a 30 em sequência (número discreto à esquerda, como
+   a lista de faixas de um álbum) e a aula que é degrau da Escada marcada
+   com uma pílula "Nível N". */
+#accordion-modulos li { display: flex; align-items: baseline; gap: .7rem; }
+.aula-num {
+  flex: none;
+  min-width: 1.4em;
+  font-size: var(--t-pequeno);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  text-align: right;
+}
+.aula-nivel {
+  display: inline-block;
+  margin-left: .45rem;
+  padding: .12em .6em;
+  border-radius: 999px;
+  font-size: var(--t-rotulo);
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  vertical-align: .08em;
+  color: var(--orange-light);
+  background: color-mix(in srgb, var(--orange) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--orange) 32%, transparent);
+}
 /* FAQ mais compacto: mesmo conteúdo, menos espaço em volta dele. Só design
    (respiro entre itens, padding do cabeçalho e da resposta) — nenhuma
    pergunta ou resposta foi cortada. */
@@ -1845,34 +1864,51 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 @media (min-width: 1069px) { .price-now { font-size: 4rem; } }
 .price-note { font-size: var(--t-pequeno); color: var(--text-muted); }
-/* Sem parágrafo corrido explicando a oferta: só o rótulo comercial e a
-   lista do que está incluso. Nada de ícone de check (lido como "modelo de
-   IA genérico", nada a ver com o resto da página): o padrão da Apple pra
-   resumir o que uma oferta inclui (Apple One, iCloud+ etc.) é só uma
-   lista de texto limpa, cada linha separada por um fio fino — sem bolinha,
-   sem ícone, sem cor de destaque em cada item. */
-.offer-inclui-rotulo {
-  /* O fio acima separa "quanto custa" de "o que vem junto", como no Apple One. */
-  margin: 0 0 .75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
-  text-align: left;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: var(--t-rotulo);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--orange-light);
-}
+/* O fio fino separa "quanto custa" de "o que vem junto", como no Apple One.
+   Cada item com um check laranja fino (traço, sem círculo nem fundo) — o
+   mesmo peso de linha do resto da página, pra não virar enfeite. */
 .offer-lista {
   display: grid;
-  gap: .55rem;
+  gap: .8rem;
   margin: 0 0 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
 }
 .offer-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: .7rem;
   font-size: var(--t-corpo);
   line-height: 1.35;
   color: var(--text);
+}
+.offer-check {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  margin-top: .1em;
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Selos de confiança logo abaixo do botão: uma linha só, pequena e
+   centralizada; no celular estreito quebra entre os selos, nunca no meio. */
+.offer-selos {
+  margin: .9rem 0 0;
+  text-align: center;
+  font-size: var(--t-pequeno);
+  line-height: 1.5;
+  color: var(--text-muted);
+  text-wrap: balance;
+}
+.offer-selos .selo { white-space: nowrap; }
+/* No celular os três não cabem numa linha: em vez de quebrar deixando um
+   "·" solto no começo ou no fim, cada selo vira uma linha curta. */
+@media (max-width: 699.98px) {
+  .offer-selos { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
+  .offer-selos > span[aria-hidden] { display: none; }
 }
 
 /* ---------- Guarantee ---------- */

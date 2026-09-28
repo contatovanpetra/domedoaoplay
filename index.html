@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=31">
+<link rel="stylesheet" href="css/style.css?v=32">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -118,7 +118,7 @@
         <div class="hero-copy">
           <h1 class="hero-headline" id="hero-headline" data-confirmar="rascunho pra validar com a Vitória: título mais curto e direto (duas frases em vez de uma só composta), inspirado no jeito da Apple de escrever manchete">Domine a câmera. Transforme cada vídeo em <span class="text-orange">vendas, clientes e parcerias</span>.</h1>
           <div class="hero-lead hero-lead-list" id="hero-lead">
-            <p>A formação mais completa de comunicação diante da câmera para quem vende, divulga o próprio trabalho, cria conteúdo ou atua como afiliado. São 8 módulos e 33 aulas até você gravar e publicar sozinho.</p>
+            <p>A formação mais completa de comunicação diante da câmera para quem vende, divulga o próprio trabalho, cria conteúdo ou atua como afiliado. São 8 módulos e 30 aulas até você gravar e publicar sozinho.</p>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@
       <div class="hero-cta-foto">
       <div class="hero-actions" id="hero-actions-el">
         <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
-        <p class="hero-numeros" data-confirmar="assim que tiver o total de horas de formação, dá pra voltar a incluir aqui (ex.: '8 módulos · 33 aulas · X horas · certificado')">8 módulos · 33 aulas · certificado</p>
+        <p class="hero-numeros" data-confirmar="assim que tiver o total de horas de formação, dá pra voltar a incluir aqui (ex.: '8 módulos · 30 aulas · X horas · certificado')">8 módulos · 30 aulas · certificado</p>
       </div>
       </div>
 
@@ -164,7 +164,7 @@
 
     <!-- Palco: o cartão do nível ativo fica em foco, os vizinhos aparecem
          menores e apagados dos lados — setas e bolinhas trocam o nível. -->
-    <div class="escada-palco-wrap" role="region" aria-label="Vitrine dos 7 níveis da Escada de Exposição" data-confirmar="fotos da escada ainda são o banco de imagem provisório (a Claude não gera fotos novas): recoloridas em degradê azul→laranja pra combinar com a evolução, mas a tela do celular em cada foto ainda mostra um app genérico em inglês, sem relação direta com o texto de cada nível. Trocar por fotos/prints reais do curso quando houver.">
+    <div class="escada-palco-wrap" role="region" aria-label="Vitrine dos 7 níveis da Escada de Exposição" data-confirmar="fotos da escada ainda são as provisórias: as 5 fotos novas vieram só na conversa (sem arquivo) — reenviar como arquivo. São 7 níveis e chegaram 5 fotos: faltam 2.">
       <button class="escada-nav-btn escada-nav-prev" aria-label="Ver nível anterior">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
@@ -174,91 +174,77 @@
           <article class="escada-card is-active" id="escada-card-1" role="tabpanel" aria-labelledby="tab-escada-1" style="--cor-degrau: var(--blue)" data-index="0">
             <div class="escada-card-media">
               <img src="assets/img/escada/nivel-1.webp" alt="Celular gravando um vídeo de selfie, ainda sem enviar para ninguém" width="700" height="875" loading="lazy" decoding="async">
-              <div class="escada-card-overlay">
-                <span class="escada-tag">Nível 1 de 7</span>
-                <h3 class="escada-card-title">Só você</h3>
-              </div>
             </div>
             <div class="escada-card-body">
-              <p>Você entende como o curso funciona, aperta o gravar pela primeira vez e enxerga o seu ponto de partida.</p>
+              <span class="escada-tag">Nível 1</span>
+              <h3 class="escada-card-title">Ponto de partida</h3>
+              <p>Sua evolução começa aqui.</p>
             </div>
           </article>
 
           <article class="escada-card" id="escada-card-2" role="tabpanel" aria-labelledby="tab-escada-2" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 18%)" data-index="1">
             <div class="escada-card-media">
               <img src="assets/img/escada/nivel-2.webp" alt="Conversa com uma pessoa, com o vídeo recém-enviado" width="700" height="875" loading="lazy" decoding="async">
-              <div class="escada-card-overlay">
-                <span class="escada-tag">Nível 2 de 7</span>
-                <h3 class="escada-card-title">Uma pessoa de confiança</h3>
-              </div>
             </div>
             <div class="escada-card-body">
-              <p>Você aprende o que faz um vídeo funcionar e para de gravar no escuro, sem saber o que está errado.</p>
+              <span class="escada-tag">Nível 2</span>
+              <h3 class="escada-card-title">Conexão</h3>
+              <p>Mais conexão com quem está do outro lado da câmera.</p>
             </div>
           </article>
 
           <article class="escada-card" id="escada-card-3" role="tabpanel" aria-labelledby="tab-escada-3" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 36%)" data-index="2">
             <div class="escada-card-media">
               <img src="assets/img/escada/nivel-3.webp" alt="O mesmo vídeo enviado em três conversas" width="700" height="875" loading="lazy" decoding="async">
-              <div class="escada-card-overlay">
-                <span class="escada-tag">Nível 3 de 7</span>
-                <h3 class="escada-card-title">Mais gente de confiança</h3>
-              </div>
             </div>
             <div class="escada-card-body">
-              <p>Você passa a saber o que dizer e em que ordem, sem depender de inspiração na hora de gravar.</p>
+              <span class="escada-tag">Nível 3</span>
+              <h3 class="escada-card-title">Organização</h3>
+              <p>Ideias organizadas em uma mensagem fácil de acompanhar.</p>
             </div>
           </article>
 
           <article class="escada-card" id="escada-card-4" role="tabpanel" aria-labelledby="tab-escada-4" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 54%)" data-index="3">
             <div class="escada-card-media">
               <img src="assets/img/escada/nivel-4.webp" alt="Vídeo postado em um grupo fechado, com respostas de apoio" width="700" height="875" loading="lazy" decoding="async">
-              <div class="escada-card-overlay">
-                <span class="escada-tag">Nível 4 de 7</span>
-                <h3 class="escada-card-title">Círculo fechado</h3>
-              </div>
             </div>
             <div class="escada-card-body">
-              <p>Sua voz para de entregar o nervosismo: você fala com firmeza e sustenta o que está dizendo.</p>
+              <span class="escada-tag">Nível 4</span>
+              <h3 class="escada-card-title">Expressividade</h3>
+              <p>Uma voz com mais firmeza, ritmo e intenção.</p>
             </div>
           </article>
 
           <article class="escada-card" id="escada-card-5" role="tabpanel" aria-labelledby="tab-escada-5" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 72%)" data-index="4">
             <div class="escada-card-media">
               <img src="assets/img/escada/nivel-5.webp" alt="Vídeo sendo compartilhado com a lista de melhores amigos" width="700" height="875" loading="lazy" decoding="async">
-              <div class="escada-card-overlay">
-                <span class="escada-tag">Nível 5 de 7</span>
-                <h3 class="escada-card-title">Círculo ampliado</h3>
-              </div>
             </div>
             <div class="escada-card-body">
-              <p>Suas palavras saem limpas e fáceis de entender, sem ninguém pedindo pra repetir.</p>
+              <span class="escada-tag">Nível 5</span>
+              <h3 class="escada-card-title">Clareza</h3>
+              <p>Palavras mais nítidas e uma fala mais compreensível.</p>
             </div>
           </article>
 
           <article class="escada-card" id="escada-card-6" role="tabpanel" aria-labelledby="tab-escada-6" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 88%)" data-index="5">
             <div class="escada-card-media">
               <img src="assets/img/escada/nivel-6.webp" alt="Story publicado, com o número de visualizações" width="700" height="875" loading="lazy" decoding="async">
-              <div class="escada-card-overlay">
-                <span class="escada-tag">Nível 6 de 7</span>
-                <h3 class="escada-card-title">Quase público</h3>
-              </div>
             </div>
             <div class="escada-card-body">
-              <p>Corpo, rosto e olhar param de contradizer a sua fala e passam a somar com ela.</p>
+              <span class="escada-tag">Nível 6</span>
+              <h3 class="escada-card-title">Presença</h3>
+              <p>Voz, corpo e expressão em sintonia diante da câmera.</p>
             </div>
           </article>
 
           <article class="escada-card escada-card--final" id="escada-card-7" role="tabpanel" aria-labelledby="tab-escada-7" style="--cor-degrau: var(--orange)" data-index="6">
             <div class="escada-card-media">
               <img src="assets/img/escada/nivel-7.webp" alt="Vídeo publicado para todo mundo, com curtidas e comentários" width="700" height="875" loading="lazy" decoding="async">
-              <div class="escada-card-overlay">
-                <span class="escada-tag">Nível 7 de 7</span>
-                <h3 class="escada-card-title">Público: o play final</h3>
-              </div>
             </div>
             <div class="escada-card-body">
-              <p>Você grava e publica sozinho, com rotina, sem depender da coragem do dia.</p>
+              <span class="escada-tag">Nível 7</span>
+              <h3 class="escada-card-title">Autonomia</h3>
+              <p>Mais autonomia para gravar, aparecer e publicar.</p>
             </div>
           </article>
         </div>
@@ -364,7 +350,7 @@
             </div>
           </div>
           <figcaption>
-            <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar">Passou a aparecer como fundadora nos vídeos da própria marca e viu o engajamento disparar: as vendas do lançamento seguinte cresceram <span class="text-orange">27%</span>.</p>
+            <p class="depo-resultado" data-confirmar="resumo tirado do roteiro (PDF) do depoimento: conferir com o vídeo gravado">Começou a aparecer nos Stories e nos vídeos da própria marca, e as vendas do lançamento seguinte <span class="text-orange">cresceram 27%</span>.</p>
           </figcaption>
         </figure>
         <figure class="depo-card">
@@ -377,7 +363,7 @@
             </div>
           </div>
           <figcaption>
-            <p class="depo-resultado" data-confirmar="resultado inventado pela Claude a pedido da Vitória: validar o número/frase antes de publicar">Saiu de 1 vídeo por semana (com dez regravações cada) pra 1 por dia sem travar, e as comissões como afiliada <span class="text-orange">triplicaram em 2 meses</span>.</p>
+            <p class="depo-resultado" data-confirmar="resumo tirado do roteiro (PDF) do depoimento: conferir com o vídeo gravado">Passou de 1 vídeo por semana para 1 por dia, gravado em 15 minutos, e <span class="text-orange">triplicou as comissões em 2 meses</span>.</p>
           </figcaption>
         </figure>
         <figure class="depo-card">
@@ -390,7 +376,7 @@
             </div>
           </div>
           <figcaption>
-            <p class="depo-resultado" data-confirmar="frase reescrita pela Claude a pedido da Vitória (nome e cargo trocados, resultado reformulado): validar antes de publicar">Sempre teve domínio do conteúdo e coragem de gravar, mas travava no meio da fala e não conseguia terminar: <span class="text-orange">depois do curso, conseguiu finalizar do início ao fim a gravação do próprio método de crescimento de empresas</span>.</p>
+            <p class="depo-resultado" data-confirmar="resumo tirado do roteiro (PDF) do depoimento: conferir com o vídeo gravado">Tinha a mentoria pronta, mas travava na hora de gravar. Depois do curso, <span class="text-orange">gravou e publicou a mentoria completa</span>.</p>
           </figcaption>
         </figure>
         <!-- Setas dos dois lados: quem não descobre o arrasto troca de vídeo no clique. -->
@@ -467,7 +453,7 @@
   <!-- ===== MÓDULOS / CONTEÚDO ===== -->
   <section class="section section-tone" id="modulos" aria-labelledby="modulos-title">
     <div class="container narrow">
-      <h2 id="modulos-title" class="section-title center">8 módulos. 33 aulas.</h2>
+      <h2 id="modulos-title" class="section-title center">8 módulos. 30 aulas.</h2>
 
       <svg class="modulos-trail" viewBox="0 0 320 18" aria-hidden="true" focusable="false">
         <line class="modulos-trail-line" x1="12" y1="9" x2="308" y2="9" />
@@ -490,26 +476,24 @@
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>Como funciona o curso</li>
-              <li>Grave o seu antes (Nível 1)</li>
+              <li><span class="aula-num">1</span><span class="aula-nome">Comece por aqui</span></li>
+              <li><span class="aula-num">2</span><span class="aula-nome">Ponto de partida <span class="aula-nivel">Nível 1</span></span></li>
             </ul>
           </div>
         </div>
 
         <div class="accordion-item">
           <button class="accordion-trigger" aria-expanded="false">
-            <span><span class="accordion-tag">1</span><span class="accordion-title-text">Fundamentos</span><span class="module-count">7 aulas</span></span>
+            <span><span class="accordion-tag">1</span><span class="accordion-title-text">Fundamentos</span><span class="module-count">5 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>A lente não responde</li>
-              <li>Por que você regrava sem parar</li>
-              <li>Para onde olhar</li>
-              <li>As duas perguntas antes de gravar</li>
-              <li>Como assistir seu próprio vídeo</li>
-              <li>A frase antes de gravar</li>
-              <li>Grave e mande para uma pessoa (Nível 2)</li>
+              <li><span class="aula-num">3</span><span class="aula-nome">Conexão com a câmera</span></li>
+              <li><span class="aula-num">4</span><span class="aula-nome">Direção da mensagem</span></li>
+              <li><span class="aula-num">5</span><span class="aula-nome">Revisão do vídeo</span></li>
+              <li><span class="aula-num">6</span><span class="aula-nome">Começo e retomada</span></li>
+              <li><span class="aula-num">7</span><span class="aula-nome">Primeira conexão <span class="aula-nivel">Nível 2</span></span></li>
             </ul>
           </div>
         </div>
@@ -521,27 +505,26 @@
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>O banco de ideias</li>
-              <li>A ordem da fala</li>
-              <li>Contar um caso</li>
-              <li>Fale por marcos</li>
-              <li>Grave e mande para duas ou três pessoas (Nível 3)</li>
+              <li><span class="aula-num">8</span><span class="aula-nome">Ideias para vídeos</span></li>
+              <li><span class="aula-num">9</span><span class="aula-nome">Estrutura da mensagem</span></li>
+              <li><span class="aula-num">10</span><span class="aula-nome">Histórias que comunicam</span></li>
+              <li><span class="aula-num">11</span><span class="aula-nome">Apoio para a fala</span></li>
+              <li><span class="aula-num">12</span><span class="aula-nome">Mensagem em prática <span class="aula-nivel">Nível 3</span></span></li>
             </ul>
           </div>
         </div>
 
         <div class="accordion-item">
           <button class="accordion-trigger" aria-expanded="false">
-            <span><span class="accordion-tag">3</span><span class="accordion-title-text">Voz</span><span class="module-count">5 aulas</span></span>
+            <span><span class="accordion-tag">3</span><span class="accordion-title-text">Voz</span><span class="module-count">4 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>O aquecimento de voz</li>
-              <li>Não projete a voz</li>
-              <li>Voz de conversa, não de locutor</li>
-              <li>Devagar não é melhor</li>
-              <li>Grave e mande para um grupo fechado (Nível 4)</li>
+              <li><span class="aula-num">13</span><span class="aula-nome">Firmeza vocal</span></li>
+              <li><span class="aula-num">14</span><span class="aula-nome">Intenção na voz</span></li>
+              <li><span class="aula-num">15</span><span class="aula-nome">Ritmo da fala</span></li>
+              <li><span class="aula-num">16</span><span class="aula-nome">Voz em prática <span class="aula-nivel">Nível 4</span></span></li>
             </ul>
           </div>
         </div>
@@ -553,9 +536,9 @@
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>A última palavra da frase</li>
-              <li>O treino de dicção</li>
-              <li>Grave e mande para a sua lista (Nível 5)</li>
+              <li><span class="aula-num">17</span><span class="aula-nome">Articulação</span></li>
+              <li><span class="aula-num">18</span><span class="aula-nome">Dicção na prática</span></li>
+              <li><span class="aula-num">19</span><span class="aula-nome">Clareza em prática <span class="aula-nivel">Nível 5</span></span></li>
             </ul>
           </div>
         </div>
@@ -567,39 +550,39 @@
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>O corpo dentro do quadro</li>
-              <li>As mãos ajudam você a falar</li>
-              <li>A cara certa pra cada fala</li>
-              <li>Grave e poste para os seus seguidores (Nível 6)</li>
+              <li><span class="aula-num">20</span><span class="aula-nome">Enquadramento e postura</span></li>
+              <li><span class="aula-num">21</span><span class="aula-nome">Gestos na comunicação</span></li>
+              <li><span class="aula-num">22</span><span class="aula-nome">Expressão facial</span></li>
+              <li><span class="aula-num">23</span><span class="aula-nome">Presença em prática <span class="aula-nivel">Nível 6</span></span></li>
             </ul>
           </div>
         </div>
 
         <div class="accordion-item">
           <button class="accordion-trigger" aria-expanded="false">
-            <span><span class="accordion-tag">6</span><span class="accordion-title-text">Convencer e pedir</span><span class="module-count">4 aulas</span></span>
+            <span><span class="accordion-tag">6</span><span class="accordion-title-text">Prática e publicação</span><span class="module-count">4 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>Convencer em um minuto</li>
-              <li>Como se pede</li>
-              <li>Quando ninguém responde</li>
-              <li>Grave e poste para todo mundo (Nível 7)</li>
+              <li><span class="aula-num">24</span><span class="aula-nome">Credibilidade na fala</span></li>
+              <li><span class="aula-num">25</span><span class="aula-nome">Conclusão da mensagem</span></li>
+              <li><span class="aula-num">26</span><span class="aula-nome">Publicação em prática <span class="aula-nivel">Nível 7</span></span></li>
+              <li><span class="aula-num">27</span><span class="aula-nome">Depois de publicar</span></li>
             </ul>
           </div>
         </div>
 
         <div class="accordion-item">
           <button class="accordion-trigger" aria-expanded="false">
-            <span><span class="accordion-tag">7</span><span class="accordion-title-text">Depois do curso</span><span class="module-count">3 aulas</span></span>
+            <span><span class="accordion-tag">7</span><span class="accordion-title-text">Encerramento e continuidade</span><span class="module-count">3 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
           </button>
           <div class="accordion-panel">
             <ul>
-              <li>Falar sem roteiro</li>
-              <li>Sua rotina depois do curso</li>
-              <li>Você aparece melhor do que imagina</li>
+              <li><span class="aula-num">28</span><span class="aula-nome">Fala espontânea</span></li>
+              <li><span class="aula-num">29</span><span class="aula-nome">Continuidade na prática</span></li>
+              <li><span class="aula-num">30</span><span class="aula-nome">Evolução e próximos passos</span></li>
             </ul>
           </div>
         </div>
@@ -613,9 +596,9 @@
     <div class="container">
       <h2 id="beneficios-title" class="section-title center">As aulas são só uma parte do que você leva.</h2>
       <div class="beneficios">
-        <div class="beneficio" data-confirmar="assim que tiver o total de horas de formação, dá pra incluir de volta aqui (ex.: '8 módulos, 33 aulas e X horas de formação')">
+        <div class="beneficio" data-confirmar="assim que tiver o total de horas de formação, dá pra incluir de volta aqui (ex.: '8 módulos, 30 aulas e X horas de formação')">
           <h3>Formação completa</h3>
-          <p>8 módulos e 33 aulas para desenvolver diferentes aspectos da sua comunicação diante da câmera.</p>
+          <p>8 módulos e 30 aulas para desenvolver diferentes aspectos da sua comunicação diante da câmera.</p>
         </div>
         <div class="beneficio">
           <h3>Escada de Exposição</h3>
@@ -623,7 +606,7 @@
         </div>
         <div class="beneficio">
           <h3>Acompanhamento</h3>
-          <p>Grupo exclusivo no Telegram para alunos, com espaço para tirar dúvidas relacionadas às aulas e acompanhar o processo.</p>
+          <p>Grupo exclusivo no WhatsApp para alunos, com espaço para tirar dúvidas relacionadas às aulas e acompanhar o processo.</p>
         </div>
         <div class="beneficio" data-confirmar="certificado habilitado e configurado na Hotmart">
           <h3>Certificado</h3>
@@ -664,26 +647,25 @@
       <!-- Formato do Apple One: o título fica fora do card; dentro dele, tudo
            alinhado à esquerda, de cima pra baixo na ordem em que se decide
            (o que é, quanto custa, o que vem junto, o botão). -->
-      <h2 id="oferta-title" class="section-title center" data-confirmar="a Vitória avisou que este card ainda não está finalizado e o texto não é definitivo — revisar título, lista e preço antes de publicar">Comece pelo nível em que você está hoje.</h2>
+      <h2 id="oferta-title" class="section-title center" data-confirmar="título da oferta: o card já segue o modelo que a Vitória mandou; confirmar se este título continua">Comece pelo nível em que você está hoje.</h2>
       <div class="offer-card">
-        <p class="eyebrow">DO MEDO AO PLAY</p>
+        <p class="eyebrow">Acesso vitalício</p>
 
         <div class="price-box">
           <span class="price-now">R$ 197</span>
-          <span class="price-note">Compra única · sem mensalidade</span>
+          <span class="price-note">Pagamento único · sem mensalidades</span>
         </div>
 
-        <p class="offer-inclui-rotulo">Você recebe agora</p>
-        <ul class="offer-lista" data-confirmar="assim que tiver o total de horas de formação, dá pra voltar a incluir um item 'X horas de formação' aqui">
-          <li>8 módulos e 33 aulas</li>
-          <li>Escada de Exposição</li>
-          <li>Acompanhamento exclusivo no Telegram</li>
-          <li>2 bônus exclusivos</li>
-          <li>Certificado de conclusão</li>
+        <ul class="offer-lista" data-confirmar="no item 1 a Vitória escreveu '33 aulas práticas', mas a lista de aulas que ela mandou soma 30 — ficou 30 aqui e no resto do site até ela confirmar">
+          <li><svg class="offer-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>8 módulos estruturados (30 aulas práticas) do zero ao avançado</span></li>
+          <li><svg class="offer-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>A Escada de Exposição: os 7 níveis práticos de gravação</span></li>
+          <li><svg class="offer-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Acompanhamento exclusivo no WhatsApp com a Vitória e equipe</span></li>
+          <li><svg class="offer-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Bônus: Assistente de IA 24h + Guia Completo de Equipamentos</span></li>
+          <li><svg class="offer-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Certificado oficial de conclusão Do Medo ao Play</span></li>
         </ul>
 
         <a href="#" data-checkout-link class="btn btn-primary btn-large btn-block">Quero entrar em cena</a>
-        <p class="hero-microcopy center" data-confirmar="link de checkout da Hotmart (os botões ainda levam a um link provisório)">Compra 100% online processada pela Hotmart.</p>
+        <p class="offer-selos" data-confirmar="link de checkout da Hotmart (os botões ainda levam a um link provisório)"><span class="selo">Garantia de 7 dias</span><span aria-hidden="true"> · </span><span class="selo">Pagamento seguro via Hotmart</span><span aria-hidden="true"> · </span><span class="selo">Acesso imediato</span></p>
       </div>
     </div>
   </section>
@@ -750,7 +732,7 @@
             <span>Como funciona o acompanhamento?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
           </button>
-          <div class="accordion-panel"><p>Os alunos têm acesso ao grupo exclusivo no Telegram para tirar dúvidas relacionadas às aulas e acompanhar o processo durante a formação.</p></div>
+          <div class="accordion-panel"><p>Os alunos têm acesso ao grupo exclusivo no WhatsApp para tirar dúvidas relacionadas às aulas e acompanhar o processo durante a formação.</p></div>
         </div>
         <div class="accordion-item">
           <button class="accordion-trigger" aria-expanded="false">
@@ -784,7 +766,7 @@
         <h2 id="final-cta-title" class="section-title">Sua versão que aparece já existe.</h2>
         <p class="final-frase">Atravesse o medo.</p>
         <a href="#" data-checkout-link class="btn btn-primary btn-large">Apareça</a>
-        <p class="hero-microcopy">R$ 197 · compra única · sem mensalidade</p>
+        <p class="hero-microcopy">R$ 197 · acesso vitalício</p>
       </div>
     </div>
   </section>
