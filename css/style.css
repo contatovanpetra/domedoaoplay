@@ -1860,51 +1860,34 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 @media (min-width: 1069px) { .price-now { font-size: 4rem; } }
 .price-note { font-size: var(--t-pequeno); color: var(--text-muted); }
-/* O fio fino separa "quanto custa" de "o que vem junto", como no Apple One.
-   Cada item com um check laranja fino (traço, sem círculo nem fundo) — o
-   mesmo peso de linha do resto da página, pra não virar enfeite. */
-.offer-lista {
-  display: grid;
-  gap: .8rem;
-  margin: 0 0 2rem;
+/* Sem parágrafo corrido explicando a oferta: só o rótulo comercial e a
+   lista do que está incluso. Nada de ícone de check (lido como "modelo de
+   IA genérico", nada a ver com o resto da página): o padrão da Apple pra
+   resumir o que uma oferta inclui (Apple One, iCloud+ etc.) é só uma
+   lista de texto limpa, cada linha separada por um fio fino — sem bolinha,
+   sem ícone, sem cor de destaque em cada item. */
+.offer-inclui-rotulo {
+  /* O fio acima separa "quanto custa" de "o que vem junto", como no Apple One. */
+  margin: 0 0 .75rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border);
+  text-align: left;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: var(--t-rotulo);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange-light);
+}
+.offer-lista {
+  display: grid;
+  gap: .55rem;
+  margin: 0 0 2rem;
 }
 .offer-lista li {
-  display: flex;
-  align-items: flex-start;
-  gap: .7rem;
   font-size: var(--t-corpo);
   line-height: 1.35;
   color: var(--text);
-}
-.offer-check {
-  flex: none;
-  width: 1.15em;
-  height: 1.15em;
-  margin-top: .1em;
-  fill: none;
-  stroke: var(--orange);
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-/* Selos de confiança logo abaixo do botão: uma linha só, pequena e
-   centralizada; no celular estreito quebra entre os selos, nunca no meio. */
-.offer-selos {
-  margin: .9rem 0 0;
-  text-align: center;
-  font-size: var(--t-pequeno);
-  line-height: 1.5;
-  color: var(--text-muted);
-  text-wrap: balance;
-}
-.offer-selos .selo { white-space: nowrap; }
-/* No celular os três não cabem numa linha: em vez de quebrar deixando um
-   "·" solto no começo ou no fim, cada selo vira uma linha curta. */
-@media (max-width: 699.98px) {
-  .offer-selos { display: flex; flex-direction: column; align-items: center; gap: .1rem; }
-  .offer-selos > span[aria-hidden] { display: none; }
 }
 
 /* ---------- Guarantee ---------- */
