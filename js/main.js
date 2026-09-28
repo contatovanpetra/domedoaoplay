@@ -722,6 +722,7 @@ function wireViviCard() {
   let fim = 1;
   let inicioSegura = 0;
   let alturaCard = 0;
+  let topoCard = 0;
 
   function medir() {
     // Sem isso, uma vez travada (ver abaixo), a próxima medida já enxergaria
@@ -765,11 +766,14 @@ function wireViviCard() {
     }
     const alvoNaTela = fimNome + Math.max(0, (espaco - alturaCard) / 2);
     inicioSegura = topoNaturalDoc - alvoNaTela;
+    topoCard = topoNaturalDoc;
     aplica();
   }
 
   function aplica() {
     const y = window.scrollY;
+    // Lido antes de escrever qualquer estilo neste quadro (sem forçar layout).
+    const cr = credenciais ? credenciais.getBoundingClientRect() : null;
     const escondido = alturaCard + 60;
     const r1 = Math.max(1, inicioSegura - limiar);
     // Raio da freada (acima) e da largada (abaixo): sem isso, as duas
@@ -819,6 +823,14 @@ function wireViviCard() {
     // parte da subida, só "aparecendo" de repente perto do fim. Aqui os
     // dois (posição e opacidade) vêm exatamente da mesma variável.
     card.style.opacity = opacidade;
+    // Enquanto o card sobe passando por cima das credenciais, elas saem de
+    // cena e voltam assim que ele passa: sem isso os dois textos se
+    // misturavam através do vidro do card durante a subida.
+    if (cr) {
+      const topo = topoCard - y + empurrao;
+      const cobre = Math.min(topo + alturaCard, cr.bottom) - Math.max(topo, cr.top);
+      credenciais.style.opacity = (1 - clamp(cobre / 40)).toFixed(3);
+    }
   }
 
   let ticking = false;
@@ -1153,7 +1165,11 @@ function wireIntroStage() {
     });
   }
   function comeca() {
-    if (comecou) return;
+    // Liberada antes de começar (trava de segurança, aba escondida): sem
+    // isto, o vídeo chegava depois e dava play na abertura já cancelada —
+    // o palco não existe mais, e só o clarão laranja piscava por cima da
+    // página, segundos depois.
+    if (comecou || aberturaAcabou) return;
     comecou = true;
     clearTimeout(esperaVideo);
     if (video.paused || video.readyState < 2) {
