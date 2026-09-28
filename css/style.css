@@ -1080,71 +1080,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 
 
-/* ---------- A Escada de Exposição: vitrine com régua de passos ----------
+/* ---------- A Escada de Exposição: vitrine com palco em foco ----------
    Rolagem vertical da página livre e natural (sem travar, sem sticky, sem
-   sequestrar o scroll). Régua de 7 degraus clicáveis por cima de um palco
-   com o cartão do nível ativo em foco — dá pra explorar no próprio tempo,
-   sem depender de arrastar a faixa toda como antes. */
+   sequestrar o scroll). Palco com o cartão do nível ativo em foco, e embaixo
+   um controle único (play/pause + 7 bolinhas numeradas com anel de
+   progresso) — dá pra explorar no próprio tempo ou deixar avançar sozinho. */
 #metodo { position: relative; }
-
-.escada-stepper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(.4rem, 1vw, .75rem);
-  flex-wrap: wrap;
-  max-width: 1040px;
-  margin: clamp(2rem, 4vw, 2.8rem) auto 0;
-  padding: .35rem;
-}
-.escada-step {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  padding: .5rem .95rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .04);
-  border: 1px solid rgba(255, 255, 255, .1);
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: clamp(.8rem, .75rem + .2vw, .9rem);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .25s ease;
-  white-space: nowrap;
-  user-select: none;
-}
-.escada-step:hover {
-  background: rgba(255, 255, 255, .08);
-  border-color: rgba(255, 255, 255, .22);
-  color: var(--white);
-}
-.escada-step.is-active {
-  background: rgba(255, 255, 255, .12);
-  border-color: var(--blue-light);
-  color: var(--white);
-  box-shadow: 0 4px 18px -4px rgba(70, 130, 180, .4);
-}
-.escada-step--final.is-active {
-  border-color: var(--orange);
-  box-shadow: 0 4px 20px -4px rgba(248, 161, 50, .45);
-}
-.escada-step-badge {
-  font-size: .72rem;
-  font-weight: 700;
-  padding: .15em .45em;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, .08);
-  color: inherit;
-}
-.escada-step.is-active .escada-step-badge {
-  background: var(--blue-light);
-  color: #030A1D;
-}
-.escada-step--final.is-active .escada-step-badge {
-  background: var(--orange);
-  color: #030A1D;
-}
 
 /* Palco / Showcase */
 .escada-palco-wrap {
@@ -1169,7 +1110,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 
 /* Cartão do Nível */
 .escada-card {
-  flex: 0 0 clamp(260px, 30vw, 340px);
+  flex: 0 0 clamp(190px, 21vw, 250px);
   position: relative;
   border-radius: 20px;
   overflow: hidden;
@@ -1274,56 +1215,94 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   border-color: rgba(255, 255, 255, .4);
   transform: translateY(-50%) scale(1.08);
 }
-.escada-nav-btn:disabled,
-.escada-nav-btn.is-disabled {
-  opacity: .25;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Indicadores de bolinha */
-.escada-dots {
+/* Controle único: play/pause + 7 bolinhas numeradas, cada uma com um anel
+   que preenche em laranja enquanto aquele nível fica em foco (tipo stories);
+   ao completar, avança sozinha pro próximo. Pausar congela o preenchimento. */
+.escada-progresso {
   display: flex;
-  gap: .5rem;
-  justify-content: center;
   align-items: center;
-  margin-top: 1.2rem;
+  justify-content: center;
+  gap: .45rem;
+  flex-wrap: wrap;
+  margin-top: 1.4rem;
 }
-.escada-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .22);
+.escada-play-pause {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .22);
+  color: var(--white);
   cursor: pointer;
-  transition: all .3s ease;
+  transition: background .2s ease, border-color .2s ease;
+  margin-right: .3rem;
 }
-.escada-dot:hover {
-  background: rgba(255, 255, 255, .45);
+.escada-play-pause:hover {
+  background: rgba(255, 255, 255, .16);
+  border-color: rgba(255, 255, 255, .4);
 }
-.escada-dot.is-active {
-  width: 26px;
-  background: var(--blue-light);
+.escada-play-pause .icon-play { margin-left: 2px; }
+.escada-num {
+  position: relative;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
-.escada-dot[data-index="6"].is-active {
-  background: var(--orange);
+.escada-num-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
 }
+.escada-num-ring-bg {
+  fill: rgba(255, 255, 255, .05);
+  stroke: rgba(255, 255, 255, .2);
+  stroke-width: 2;
+}
+.escada-num-ring-fill {
+  fill: none;
+  stroke: var(--orange);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 97.39;
+  stroke-dashoffset: 97.39;
+}
+.escada-num:hover .escada-num-ring-bg { stroke: rgba(255, 255, 255, .38); }
+.escada-num-label {
+  position: relative;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.escada-num.is-active .escada-num-label { color: var(--white); }
 
 @media (max-width: 699.98px) {
-  .escada-stepper {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
-    padding-bottom: .6rem;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .escada-stepper::-webkit-scrollbar { display: none; }
   .escada-card {
-    flex: 0 0 82vw;
-    max-width: 320px;
+    flex: 0 0 68vw;
+    max-width: 240px;
   }
   .escada-nav-btn {
     display: none;
+  }
+  .escada-progresso {
+    gap: .3rem;
+  }
+  .escada-num, .escada-play-pause {
+    width: 26px;
+    height: 26px;
   }
 }
 /* Quem pede menos movimento não avança sozinho entre os níveis (o JS não

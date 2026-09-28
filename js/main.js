@@ -542,61 +542,94 @@ function wireDepoimentos() {
   desenha(false);
 }
 
-// A Escada de Exposição: régua de passos + palco de vitrine. Quem visita
-// navega pelos 7 níveis no próprio ritmo (clique, seta, arrasto no celular),
-// sem nenhum sequestro da rolagem vertical da página.
+// A Escada de Exposição: palco de vitrine com o cartão ativo em foco, e
+// embaixo um controle único de play/pause + 7 bolinhas numeradas. Cada
+// bolinha da vez preenche um anel (tipo stories) enquanto aquele nível fica
+// em foco; ao completar o anel, avança sozinha pro próximo. Clicar num
+// número, seta ou cartão lateral pula direto pra ele (e reinicia o anel).
 function wireEscadaShowcase() {
   const palco = document.querySelector(".escada-palco-wrap");
   const vitrine = palco && palco.querySelector(".escada-vitrine");
   const track = vitrine && vitrine.querySelector(".escada-track");
-  const steps = [...document.querySelectorAll(".escada-step")];
   const cards = track ? [...track.querySelectorAll(".escada-card")] : [];
-  const dots = [...document.querySelectorAll(".escada-dot")];
+  const nums = [...document.querySelectorAll(".escada-num")];
+  const playPauseBtn = document.querySelector(".escada-play-pause");
   const prevBtn = palco && palco.querySelector(".escada-nav-prev");
   const nextBtn = palco && palco.querySelector(".escada-nav-next");
 
   if (!vitrine || !track || !cards.length) return;
 
+  const DURACAO_MS = 4500; // tempo que cada nível fica em foco antes de avançar sozinho
+  const CIRCUNFERENCIA = 97.39; // 2 * PI * 15.5 (raio do anel no SVG)
   let activeIndex = 0;
+  let tocando = true;
+  let inicioProgresso = 0;
+  let progressoAoPausar = 0; // 0..1, guardado ao pausar pra retomar do mesmo ponto
+  let rafId = 0;
+
+  function anelDe(i) {
+    return nums[i] && nums[i].querySelector(".escada-num-ring-fill");
+  }
+  function preencheAnel(i, fracao) {
+    const anel = anelDe(i);
+    if (anel) anel.style.strokeDashoffset = (CIRCUNFERENCIA * (1 - fracao)).toFixed(2);
+  }
+  function pararProgresso() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+  function passoProgresso(t) {
+    const fracao = Math.min(1, (t - inicioProgresso) / DURACAO_MS);
+    preencheAnel(activeIndex, fracao);
+    if (fracao >= 1) {
+      goToIndex((activeIndex + 1) % cards.length);
+      return;
+    }
+    progressoAoPausar = fracao;
+    rafId = requestAnimationFrame(passoProgresso);
+  }
+  function iniciarProgresso(retomarDoPonto) {
+    pararProgresso();
+    if (!tocando || prefersReducedMotion) return;
+    const jaFeito = retomarDoPonto ? progressoAoPausar : 0;
+    inicioProgresso = performance.now() - jaFeito * DURACAO_MS;
+    rafId = requestAnimationFrame(passoProgresso);
+  }
 
   function goToIndex(idx, suave = true) {
-    activeIndex = Math.max(0, Math.min(cards.length - 1, idx));
+    activeIndex = ((idx % cards.length) + cards.length) % cards.length;
+    progressoAoPausar = 0;
 
-    cards.forEach((card, i) => {
-      card.classList.toggle("is-active", i === activeIndex);
-    });
-
-    steps.forEach((step, i) => {
+    cards.forEach((card, i) => card.classList.toggle("is-active", i === activeIndex));
+    nums.forEach((num, i) => {
       const isActive = i === activeIndex;
-      step.classList.toggle("is-active", isActive);
-      step.setAttribute("aria-selected", isActive ? "true" : "false");
-      if (isActive) {
-        step.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
-      }
+      num.classList.toggle("is-active", isActive);
+      num.setAttribute("aria-selected", isActive ? "true" : "false");
+      preencheAnel(i, 0);
     });
-
-    dots.forEach((dot, i) => {
-      dot.classList.toggle("is-active", i === activeIndex);
-    });
-
-    if (prevBtn) {
-      prevBtn.disabled = activeIndex === 0;
-      prevBtn.classList.toggle("is-disabled", activeIndex === 0);
-    }
-    if (nextBtn) {
-      nextBtn.disabled = activeIndex === cards.length - 1;
-      nextBtn.classList.toggle("is-disabled", activeIndex === cards.length - 1);
-    }
 
     // Centraliza o cartão ativo no palco.
     const activeCard = cards[activeIndex];
     const offset = activeCard.offsetLeft - (vitrine.clientWidth - activeCard.offsetWidth) / 2;
     track.style.transition = suave ? "transform .55s cubic-bezier(.16, 1, .3, 1)" : "none";
     track.style.transform = "translate3d(-" + Math.max(0, offset).toFixed(2) + "px, 0, 0)";
+
+    iniciarProgresso(false);
   }
 
-  steps.forEach((step, i) => {
-    step.addEventListener("click", () => goToIndex(i));
+  nums.forEach((num, i) => {
+    num.addEventListener("click", () => goToIndex(i));
+    num.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goToIndex(i + 1);
+        nums[(i + 1) % nums.length].focus();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goToIndex(i - 1);
+        nums[(i - 1 + nums.length) % nums.length].focus();
+      }
+    });
   });
 
   if (prevBtn) prevBtn.addEventListener("click", () => goToIndex(activeIndex - 1));
@@ -609,23 +642,17 @@ function wireEscadaShowcase() {
     });
   });
 
-  dots.forEach((dot, i) => {
-    dot.addEventListener("click", () => goToIndex(i));
-  });
-
-  steps.forEach((step, i) => {
-    step.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        goToIndex(i + 1);
-        steps[Math.min(steps.length - 1, i + 1)].focus();
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        goToIndex(i - 1);
-        steps[Math.max(0, i - 1)].focus();
-      }
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener("click", () => {
+      tocando = !tocando;
+      playPauseBtn.setAttribute("aria-pressed", tocando ? "false" : "true");
+      playPauseBtn.setAttribute("aria-label", tocando ? "Pausar avanço automático" : "Retomar avanço automático");
+      playPauseBtn.querySelector(".icon-pause").hidden = !tocando;
+      playPauseBtn.querySelector(".icon-play").hidden = tocando;
+      if (tocando) iniciarProgresso(true);
+      else pararProgresso();
     });
-  });
+  }
 
   // Arrastar no celular (sem travar a rolagem vertical da página).
   let touchStartX = 0;
@@ -648,6 +675,15 @@ function wireEscadaShowcase() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => goToIndex(activeIndex, false), 100);
   }, { passive: true });
+
+  // Pausa o avanço automático fora da tela (nada de rodar à toa) e retoma
+  // do ponto onde parou quando a escada volta a aparecer.
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { if (tocando) iniciarProgresso(true); }
+      else pararProgresso();
+    }, { threshold: .2 }).observe(palco);
+  }
 
   setTimeout(() => goToIndex(0, false), 50);
 }

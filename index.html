@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=19">
+<link rel="stylesheet" href="css/style.css?v=20">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -163,39 +163,6 @@
       <div class="texto-corrido">
         <p>No Do Medo ao Play, teoria, técnica e prática andam juntas: a cada módulo você aprende uma técnica nova de comunicação e de gravação e já aplica numa gravação um pouco mais exposta que a anterior.</p>
       </div>
-
-      <!-- Régua de passos: 7 degraus clicáveis que trocam o cartão em foco no
-         palco logo abaixo, sem depender de arrastar uma faixa inteira. -->
-    <nav class="escada-stepper" role="tablist" aria-label="Progresso da Escada de Exposição">
-      <button class="escada-step is-active" role="tab" aria-selected="true" aria-controls="escada-card-1" id="tab-escada-1" data-index="0">
-        <span class="escada-step-badge">01</span>
-        <span class="escada-step-label">Só você</span>
-      </button>
-      <button class="escada-step" role="tab" aria-selected="false" aria-controls="escada-card-2" id="tab-escada-2" data-index="1">
-        <span class="escada-step-badge">02</span>
-        <span class="escada-step-label">Confiança</span>
-      </button>
-      <button class="escada-step" role="tab" aria-selected="false" aria-controls="escada-card-3" id="tab-escada-3" data-index="2">
-        <span class="escada-step-badge">03</span>
-        <span class="escada-step-label">Mais gente</span>
-      </button>
-      <button class="escada-step" role="tab" aria-selected="false" aria-controls="escada-card-4" id="tab-escada-4" data-index="3">
-        <span class="escada-step-badge">04</span>
-        <span class="escada-step-label">Círculo fechado</span>
-      </button>
-      <button class="escada-step" role="tab" aria-selected="false" aria-controls="escada-card-5" id="tab-escada-5" data-index="4">
-        <span class="escada-step-badge">05</span>
-        <span class="escada-step-label">Círculo ampliado</span>
-      </button>
-      <button class="escada-step" role="tab" aria-selected="false" aria-controls="escada-card-6" id="tab-escada-6" data-index="5">
-        <span class="escada-step-badge">06</span>
-        <span class="escada-step-label">Quase público</span>
-      </button>
-      <button class="escada-step escada-step--final" role="tab" aria-selected="false" aria-controls="escada-card-7" id="tab-escada-7" data-index="6">
-        <span class="escada-step-badge">07</span>
-        <span class="escada-step-label">O play final</span>
-      </button>
-    </nav>
     </div>
 
     <!-- Palco: o cartão do nível ativo fica em foco, os vizinhos aparecem
@@ -304,14 +271,64 @@
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
 
-      <div class="escada-dots" aria-hidden="true">
-        <span class="escada-dot is-active" data-index="0"></span>
-        <span class="escada-dot" data-index="1"></span>
-        <span class="escada-dot" data-index="2"></span>
-        <span class="escada-dot" data-index="3"></span>
-        <span class="escada-dot" data-index="4"></span>
-        <span class="escada-dot" data-index="5"></span>
-        <span class="escada-dot" data-index="6"></span>
+      <!-- Play/pause do avanço automático + 7 bolinhas numeradas: cada uma
+           preenche em vermelho/laranja enquanto o nível fica em foco e, ao
+           completar, avança sozinha pro próximo (como os stories). Clicar
+           num número pula direto pra ele. -->
+      <div class="escada-progresso" role="tablist" aria-label="Progresso da Escada de Exposição">
+        <button type="button" class="escada-play-pause" aria-label="Pausar avanço automático" aria-pressed="false">
+          <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+          <svg class="icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" hidden><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button type="button" class="escada-num is-active" role="tab" aria-selected="true" aria-controls="escada-card-1" id="tab-escada-1" data-index="0">
+          <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
+            <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="escada-num-label">1</span>
+        </button>
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-2" id="tab-escada-2" data-index="1">
+          <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
+            <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="escada-num-label">2</span>
+        </button>
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-3" id="tab-escada-3" data-index="2">
+          <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
+            <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="escada-num-label">3</span>
+        </button>
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-4" id="tab-escada-4" data-index="3">
+          <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
+            <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="escada-num-label">4</span>
+        </button>
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-5" id="tab-escada-5" data-index="4">
+          <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
+            <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="escada-num-label">5</span>
+        </button>
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-6" id="tab-escada-6" data-index="5">
+          <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
+            <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="escada-num-label">6</span>
+        </button>
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-7" id="tab-escada-7" data-index="6">
+          <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
+            <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
+            <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
+          </svg>
+          <span class="escada-num-label">7</span>
+        </button>
       </div>
     </div>
     <div class="container metodo-fecho">
@@ -860,6 +877,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=14"></script>
+<script src="js/main.js?v=15"></script>
 </body>
 </html>
