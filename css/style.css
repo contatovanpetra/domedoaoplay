@@ -1024,7 +1024,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .credential-figure {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 1.2em;
+  font-size: var(--t-subtitulo);
   color: var(--white);
 }
 
@@ -1261,6 +1261,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin-top: 1.4rem;
 }
 .escada-play-pause {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1785,7 +1786,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   right: 0;
   padding: 0 .3rem;
   text-align: center;
-  font-size: clamp(.6rem, 2.2vw, .8rem);
+  font-size: var(--t-rotulo);
   color: var(--text-muted);
 }
 /* Nome e cargo dentro do próprio vídeo, como legenda por cima dele (mesma
@@ -2546,7 +2547,7 @@ html.abertura-on { overflow: hidden; }
   #accordion-modulos .module-count::before { content: none; }
   .credential-item { gap: .65rem; padding: .6rem 0; font-size: var(--t-pequeno); line-height: 1.43; }
   .credential-icon { width: 2rem; height: 2rem; }
-  .credential-figure { font-size: 1.25em; }
+  .credential-figure { font-size: var(--t-corpo); }
 /* Garantia mais compacta pra caber numa tela só de celular (o selo em si já
    encolhe sozinho, de forma fluida — ver .guarantee-badge). */
   .section-tone--guarantee.section { padding: 48px 0; }
@@ -2668,3 +2669,27 @@ html.abertura-on { overflow: hidden; }
   .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .btn:hover { transform: none; }
 }
+
+/* ---------- Ritmo vertical e toque no celular (padrão medido na Apple) ----------
+   Dois espaços só depois de um título de seção: 16px até o texto de apoio
+   (título e apoio leem como um bloco) e 32px até o conteúdo (cards, listas,
+   vídeos). Antes cada seção tinha o seu (de 13 a 41px). */
+@media (max-width: 699.98px) {
+  .section-title { margin-bottom: 1rem; }
+  .texto-corrido { margin-top: 1rem; }
+  .section-tone--guarantee .section-lead { margin-top: 0; }
+  #faq .accordion { margin-top: 2rem; }
+  .beneficios { margin-top: 2rem; }
+  .depo-palco { margin-top: 2rem; }
+  /* Bolinhas da escada e setas dos depoimentos: o desenho continua pequeno,
+     mas a área que o dedo alcança chega perto dos 44px recomendados. */
+  .escada-num, .escada-play-pause { width: 30px; height: 30px; }
+  .escada-progresso { gap: .45rem; }
+}
+.escada-num::after, .escada-play-pause::after, .depo-seta::after {
+  content: "";
+  position: absolute;
+  inset: -7px -3px;
+}
+.depo-seta::after { inset: -5px; }
+
