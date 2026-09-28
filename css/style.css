@@ -25,15 +25,21 @@
   --text-muted: #C0CBD6;
   --border: rgba(192, 203, 214, 0.16);
 
-  /* Escala de tipo: poucos tamanhos, cada um com um papel (como na Apple, que
-     usa uns 10 estilos na página inteira). Todo texto da página usa um destes. */
-  --t-display: clamp(2.75rem, 6vw, 4.75rem);        /* título do herói */
-  --t-titulo: clamp(1.75rem, 3.4vw, 2.75rem);       /* títulos de seção e frases de efeito */
-  --t-subtitulo: clamp(1.125rem, .95rem + .6vw, 1.375rem);  /* títulos de card */
-  --t-lead: clamp(1.0625rem, .9rem + .6vw, 1.25rem);       /* frase de abertura de seção */
-  --t-corpo: clamp(.9375rem, .75rem + .5vw, 1.0625rem);     /* texto corrido */
-  --t-pequeno: clamp(.8125rem, .7rem + .3vw, .875rem);     /* legendas, notas, cards pequenos */
-  --t-rotulo: .75rem;                               /* rótulos em maiúsculas */
+  /* Escala de tipo medida em apple.com/br (iPhone, AirPods Pro, home), no
+     celular (390px) e no computador (1440px). Degraus fixos por faixa de
+     tela, não fluidos: a Apple não encolhe o texto de leitura no celular —
+     corpo 17px, nota 14px e rótulo 12px são os mesmos em qualquer tela; só
+     os títulos crescem, em saltos (28 → 40 → 56px). Todo texto da página
+     usa um destes. */
+  --t-display: 2rem;          /* título do herói: 32px (Anton, condensada) */
+  --t-manchete: 2rem;         /* frase de efeito que ocupa a seção: 32px */
+  --t-titulo: 1.75rem;        /* título de seção: 28px */
+  --t-subtitulo: 1.3125rem;   /* título de card grande, frase de fecho: 21px */
+  --t-card: 1.1875rem;        /* título de card pequeno: 19px */
+  --t-lead: 1.1875rem;        /* parágrafo de abertura de seção: 19px */
+  --t-corpo: 1.0625rem;       /* texto corrido: 17px */
+  --t-pequeno: .875rem;       /* legendas, notas, texto de card pequeno: 14px */
+  --t-rotulo: .75rem;         /* rótulos em maiúsculas, rodapé: 12px */
   /* Texto corrido claro (o cinza antigo deixava a leitura cansada). */
   --cor-corpo: #D8E0E8;
 
@@ -51,6 +57,25 @@
   --shadow-md: 0 4px 14px -4px rgba(0, 0, 0, .55), 0 16px 36px -18px rgba(0, 0, 0, .5);
   --shadow-lg: 0 8px 22px -6px rgba(0, 0, 0, .6), 0 30px 60px -24px rgba(0, 0, 0, .55);
 }
+/* Tablet (700px+) e computador (1069px+, o mesmo corte da Apple): só os
+   títulos e a abertura de seção sobem de degrau. */
+@media (min-width: 700px) {
+  :root {
+    --t-display: 3rem;        /* 48px */
+    --t-manchete: 3rem;       /* 48px */
+    --t-titulo: 2.5rem;       /* 40px */
+    --t-lead: 1.3125rem;      /* 21px */
+  }
+}
+@media (min-width: 1069px) {
+  :root {
+    --t-display: 3.5rem;      /* 56px */
+    --t-manchete: 4rem;       /* 64px */
+    --t-titulo: 3.5rem;       /* 56px */
+    --t-subtitulo: 1.5rem;    /* 24px */
+    --t-lead: 1.5rem;         /* 24px */
+  }
+}
 
 * { box-sizing: border-box; }
 /* O que o JS esconde (WhatsApp sem número, links sem página) some de verdade,
@@ -67,10 +92,9 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
-  /* 16px é o tamanho que o navegador já dá de graça — e é por isso que passa
-     a sensação de página sem design. Páginas de produto leem em 18-21px. */
-  font-size: 18px;
-  line-height: 1.55;
+  /* 17px com entrelinha de 25px: o texto base da Apple em qualquer tela. */
+  font-size: var(--t-corpo);
+  line-height: 1.47;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   /* Sem o flash cinza padrão do navegador ao tocar num link/botão no
@@ -165,6 +189,8 @@ ul { padding: 0; margin: 0; list-style: none; }
   cursor: pointer;
   transition: transform .2s ease, box-shadow .2s ease;
   white-space: nowrap;
+  /* A altura vem só do padding (não da entrelinha do texto em volta). */
+  line-height: 1.2;
 }
 .btn-primary {
   /* Laranja de botão do manual (#B65B08) com texto branco: a faixa do texto fica
@@ -210,7 +236,9 @@ ul { padding: 0; margin: 0; list-style: none; }
    então o texto desce um pouco (mais respiro em cima que embaixo) pra parecer
    centralizado dentro do túnel. */
 .btn-small { padding: .72em 1.4em .5em; font-size: .9rem; border-radius: 28px 28px 9px 9px; }
-.btn-large { padding: 1.14em 2.2em .88em; font-size: 1.05rem; }
+/* Um tamanho só pra todo botão de compra (herói, escada, oferta, fim): 17px,
+   ~53px de altura em qualquer tela. Antes eram 5 tamanhos diferentes. */
+.btn-large { padding: 1.05em 2em .85em; font-size: var(--t-corpo); }
 .btn-block { display: flex; width: 100%; margin-top: 1.5rem; }
 
 /* ---------- Header ---------- */
@@ -544,7 +572,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    dar destaque sem depender só do tamanho. */
 #aplicacao-title {
   color: var(--blue-light);
-  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  font-size: var(--t-manchete);
   text-shadow: 0 2px 28px rgba(70, 130, 180, .35);
 }
 /* #depoimentos volta a ficar escuro por cima do fim de #aplicacao (fundo
@@ -695,7 +723,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      com Quicksand. */
   font-family: "Anton", var(--font-head);
   font-weight: 400;
-  font-size: clamp(2.25rem, 3.6vw, 3rem);
+  font-size: var(--t-display);
   line-height: 1.05;
   letter-spacing: -.01em;
   color: var(--white);
@@ -907,7 +935,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      estava grande demais no celular. */
   .vivi-card { padding: 1.15rem 18px; }
 }
-.vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
+.vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--text); text-shadow: 0 1px 3px rgba(3, 10, 29, .6); }
+/* Celular baixo (iPhone SE, Android 360x740 e menores): o texto inteiro do
+   card tem que caber entre o nome e as credenciais sem rolar por dentro —
+   aí ele desce um degrau da escala (14px). */
+@media (max-width: 699.98px) and (max-height: 760px) {
+  .vivi-card > p:not(.eyebrow) { font-size: var(--t-pequeno); }
+}
 .vivi-card > p:not(.eyebrow) + p { margin-top: .9em; }
 /* Números no pé da foto, como uma segunda "assinatura" fechando-a (a
    primeira é o nome, no alto — ver .vivi-assinatura): estáticos na foto,
@@ -956,8 +990,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   align-items: center;
   gap: .9rem;
   padding: .85rem 0;
-  font-size: var(--t-lead);
-  line-height: 1.45;
+  font-size: var(--t-card);
+  line-height: 1.4;
   color: var(--text);
 }
 .credential-item + .credential-item { border-top: 1px solid var(--border); }
@@ -1035,14 +1069,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Texto corrido das seções de declaração (reconhecimento, escada, aplicação):
    coluna de leitura no meio da página, texto alinhado à esquerda. */
 .texto-corrido { max-width: 640px; margin: clamp(1.6rem, 3vw, 2.2rem) auto 0; }
-.texto-corrido p { margin: 0; font-size: var(--t-corpo); line-height: 1.65; color: var(--cor-corpo); }
+.texto-corrido p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
 .texto-corrido p + p { margin-top: 1.1em; }
 /* Abertura da escada: bloco centralizado na seção e texto justificado, pra
    fechar nas duas margens embaixo do título centralizado. Maior que o
    texto-corrido padrão (era pequeno demais pra abrir a seção) e mais
    largo, pra caber em duas linhas bem cheias em vez de três curtinhas. */
 #metodo .texto-corrido { max-width: 1000px; text-align: justify; text-align-last: center; }
-#metodo .texto-corrido p { font-size: clamp(1.0625rem, .8rem + .9vw, 1.35rem); }
+#metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; }
+/* Celular: coluna estreita + 19px justificado abria buracos entre as palavras;
+   centralizado, igual às outras aberturas de seção. */
+@media (max-width: 699.98px) { #metodo .texto-corrido { text-align: center; } }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 
 /* Respiro maior depois do botão "Quero entrar em cena": o padding padrão da
@@ -1065,16 +1102,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  /* Teto bem maior que antes (1.3rem): fechava a Escada de Exposição com um
-     texto e um botão pequenos demais pro tamanho da seção no computador. */
-  font-size: clamp(1.05rem, 2.6vw + .5rem, 1.9rem);
-  line-height: 1.3;
+  /* Frase de fecho: 21px no celular, 28px no computador (degraus da Apple). */
+  font-size: var(--t-subtitulo);
+  line-height: 1.2;
   letter-spacing: -.01em;
   color: var(--white);
 }
-@media (min-width: 900px) {
-  .metodo-fecho .btn-large { font-size: 1.2rem; }
-}
+@media (min-width: 1069px) { .metodo-frase { font-size: 1.75rem; } }
 
 
 
@@ -1157,7 +1191,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .escada-tag {
   display: inline-block;
-  font-size: .72rem;
+  font-size: var(--t-rotulo);
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -1167,7 +1201,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .escada-card-title {
   margin: 0;
-  font-size: clamp(1.1rem, 1.25vw, 1.4rem);
+  font-size: var(--t-card);
   font-weight: 700;
   line-height: 1.2;
   color: var(--white);
@@ -1182,8 +1216,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .escada-card-body p {
   margin: 0;
-  font-size: clamp(.88rem, .82rem + .2vw, .96rem);
-  line-height: 1.5;
+  font-size: var(--t-pequeno);
+  line-height: 1.43;
   color: var(--cor-corpo);
 }
 
@@ -1283,7 +1317,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .escada-num:hover .escada-num-ring-bg { stroke: rgba(255, 255, 255, .38); }
 .escada-num-label {
   position: relative;
-  font-size: .72rem;
+  font-size: var(--t-rotulo);
   font-weight: 700;
   color: var(--text-muted);
 }
@@ -1382,7 +1416,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background: rgba(70, 130, 180, .18);
   color: var(--blue-deep);
   font-family: var(--font-head);
-  font-size: 1.05rem;
+  font-size: var(--t-corpo);
   font-weight: 700;
   line-height: 1;
 }
@@ -1442,10 +1476,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    pergunta ou resposta foi cortada. */
 #faq.section { padding: 88px 0; }
 #faq .accordion { margin-top: 1.6rem; gap: .5rem; }
-#faq .accordion-trigger { padding: .95rem 1.2rem; font-size: var(--t-pequeno); }
+#faq .accordion-trigger { padding: 1.05rem 1.2rem; font-size: var(--t-corpo); line-height: 1.3; }
 #faq .accordion-panel { padding: 0 1.2rem; }
 #faq .accordion-item.open .accordion-panel { padding-bottom: 1rem; }
-#faq .accordion-panel p { font-size: var(--t-pequeno); line-height: 1.55; }
+#faq .accordion-panel p { font-size: var(--t-corpo); line-height: 1.5; }
 @media (max-width: 699.98px) {
   #faq.section { padding: 56px 0; }
 }
@@ -1525,8 +1559,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
 .beneficio h3 {
   margin: 0 0 .5rem;
-  font-size: clamp(1.1rem, 1.8vw, 1.35rem);
-  font-size: clamp(.85rem, 10.5cqi, 1.45rem);
+  font-size: clamp(.9375rem, 11.4cqi, var(--t-subtitulo));
   line-height: 1.15;
   color: var(--white);
 }
@@ -1612,7 +1645,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Sem card: o texto fica direto sobre o azul da seção (como os títulos e
    corpo de texto em volta), não mais numa caixa escura própria. */
 .bonus-item-texto h3 { margin: 0 0 .7rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
-.bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.6; color: var(--cor-corpo); }
+.bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
 .bonus-item-texto p + p { margin-top: .8em; }
 @media (max-width: 699.98px) {
   .bonus-item, .bonus-item--invertido { gap: .9rem; }
@@ -1776,7 +1809,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 700; color: var(--white); }
 .depo-cargo { font-size: var(--t-pequeno); color: var(--text-muted); }
 .depo-card figcaption { margin-top: .7rem; }
-.depo-card figcaption .depo-resultado { margin: 0; font-size: var(--t-pequeno); line-height: 1.4; color: var(--text); }
+.depo-card figcaption .depo-resultado { margin: 0; font-size: var(--t-corpo); line-height: 1.4; color: var(--text); }
 
 
 /* ---------- Offer ---------- */
@@ -1805,9 +1838,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .price-now {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  /* O número é o herói do card: 48px no celular, 64px no computador. */
+  font-size: 3rem;
+  line-height: 1.1;
   color: var(--orange-light);
 }
+@media (min-width: 1069px) { .price-now { font-size: 4rem; } }
 .price-note { font-size: var(--t-pequeno); color: var(--text-muted); }
 /* Sem parágrafo corrido explicando a oferta: só o rótulo comercial e a
    lista do que está incluso. Nada de ícone de check (lido como "modelo de
@@ -1858,7 +1894,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   justify-content: center;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(.85rem, .6rem + 1vw, 1rem);
+  font-size: var(--t-pequeno);
   color: var(--white);
   margin-bottom: clamp(1.1rem, 2.4vw, 1.5rem);
 }
@@ -1883,7 +1919,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   max-width: 520px;
   text-align: center;
 }
-.final-cta-copy .section-lead { font-size: var(--t-corpo); line-height: 1.65; }
+.final-cta-copy .section-lead { font-size: var(--t-corpo); line-height: 1.5; }
 .final-cta-copy .section-lead + .section-lead { margin-top: .9em; }
 .final-cta-copy .hero-microcopy { margin-top: .9rem; }
 .final-cta-copy .section-title,
@@ -1891,7 +1927,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Frase de fechamento: o título manda (maior que o padrão de seção — é o
    último golpe da página) e "Atravesse o medo." vira só um subtítulo
    pequeno e leve, colado nele, não mais do mesmo tamanho e peso. */
-.final-cta-copy .section-title { font-size: clamp(2.25rem, 4.4vw, 3.75rem); }
+.final-cta-copy .section-title { font-size: var(--t-manchete); }
 .final-frase {
   margin: .5rem 0 1.6rem;
   font-family: var(--font-head);
@@ -1914,13 +1950,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: 1.5rem 2rem;
 }
 .footer-meta { display: flex; flex-direction: column; align-items: flex-end; gap: .6rem; }
-.footer-legal { display: flex; flex-wrap: wrap; justify-content: flex-end; column-gap: 1rem; font-size: var(--t-pequeno); }
+.footer-legal { display: flex; flex-wrap: wrap; justify-content: flex-end; column-gap: 1rem; font-size: var(--t-rotulo); }
 /* Área de toque de 44px sem aumentar a letra. */
 .footer-legal { align-items: center; }
 .footer-legal a { display: inline-block; white-space: nowrap; color: var(--text-muted); opacity: .75; padding: .8rem .3rem; }
 .footer-sep { color: var(--text-muted); opacity: .45; }
 .footer-legal a:hover { color: var(--white); opacity: 1; }
-.footer-copy { text-align: right; font-size: var(--t-pequeno); color: var(--text-muted); margin: 0; }
+.footer-copy { text-align: right; font-size: var(--t-rotulo); color: var(--text-muted); margin: 0; }
 @media (max-width: 699.98px) {
   .footer-inner { flex-direction: column; text-align: center; }
   .footer-meta { align-items: center; }
@@ -2030,7 +2066,7 @@ html.abertura-on { overflow: hidden; }
 .btn-play strong {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 1.12rem;
+  font-size: var(--t-corpo);
   line-height: 1.1;
   letter-spacing: .01em;
 }
@@ -2038,7 +2074,7 @@ html.abertura-on { overflow: hidden; }
   .btn-play { gap: .7rem; padding: .6rem 1.15rem .6rem .6rem; }
   .btn-play-disc { width: 40px; height: 40px; }
   .btn-play-disc svg { width: 17px; height: 17px; }
-  .btn-play strong { font-size: 1rem; }
+  .btn-play strong { font-size: var(--t-corpo); }
 }
 @media (prefers-reduced-motion: reduce) {
   .btn-play:hover { transform: none; }
@@ -2265,8 +2301,13 @@ html.abertura-on { overflow: hidden; }
    Vitória. Ancorado no canto direito, longe dos ícones das redes sociais
    (que ficam do lado esquerdo da foto). */
 .scroll-cue {
+  /* Centralizada no pé da primeira tela (sem transform: a entrada do herói
+     anima o transform deste elemento e apagaria o translateX). */
   position: absolute;
-  right: clamp(16px, 5vw, 32px);
+  left: 0;
+  right: 0;
+  width: fit-content;
+  margin: 0 auto;
   bottom: 28px;
   display: flex;
   flex-direction: column;
@@ -2283,7 +2324,7 @@ html.abertura-on { overflow: hidden; }
 .scroll-cue.is-hidden svg { animation: none; }
 .scroll-cue span {
   font-family: var(--font-body);
-  font-size: .68rem;
+  font-size: var(--t-rotulo);
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
@@ -2346,24 +2387,33 @@ html.abertura-on { overflow: hidden; }
   .header-inner { padding-top: 10px; padding-bottom: 10px; gap: .75rem; }
   .logo-mark { height: 34px; }
   :root { --header-h: 65px; --portal-origin: 52% 58%; }
+  /* Três andares, como a Apple organiza um herói com foto: o texto no topo
+     (a área escura e limpa da foto), a foto livre no meio (rosto e ícones sem
+     nada por cima) e o botão no pé da primeira tela, sobre a blusa preta —
+     acima da seta. Antes título, texto, botão e a linha "8 módulos" desciam
+     em cascata e caíam em cima dos ícones e do cabelo. */
   .hero-primeira-tela {
-    padding: calc(var(--header-h, 65px) + 28px) 0 40px;
+    padding: calc(var(--header-h, 65px) + 16px) 0 76px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
   }
+  .hero-lead-list { margin-top: .75rem; }
   /* No celular e no tablet em pé os dois ocupam a mesma coluna: as bordas do
      título e do subtítulo batem, em vez de cada um ter uma largura. */
   .hero-headline, .hero-lead { max-width: none; }
   /* No celular o título acompanha a largura da tela: com o tamanho das telas
      grandes ele virava 6 ou 7 linhas picadas num aparelho de 320px. */
-  .hero-headline { font-size: clamp(1.5rem, 7.4vw, 2.25rem); }
+  /* Anton é condensada: com ~29px ela já pesa mais que os títulos de seção
+     (28px, Quicksand) e a frase cabe em 3 linhas — em 32px virava 4 e
+     empurrava o botão pra cima do rosto da Vitória na foto. */
+  .hero-headline { font-size: min(var(--t-display), 7.4vw); }
   .hero-lead, .hero-lead-list { font-size: var(--t-corpo); }
   /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
      ficar solto no meio da foto. */
   .hero-cta-foto {
     position: static;
-    margin-top: clamp(1.25rem, 3.5vh, 2rem);
+    margin-top: auto;
     padding: 0 24px;
     justify-content: center;
   }
@@ -2377,7 +2427,13 @@ html.abertura-on { overflow: hidden; }
   .eyebrow { margin-bottom: .55rem; }
   .hero-actions { margin-top: 1rem; }
   .hero-microcopy { margin-top: .3rem; }
-  .hero .btn-large { padding: .8em 1.6em .6em; font-size: .92rem; }
+}
+
+/* Celular baixo: a foto encolhe junto com a tela e a área escura do topo
+   fica menor — o texto de apoio desce um degrau (14px) pra não encostar
+   nos ícones das redes. */
+@media (max-width: 699.98px) and (max-height: 760px) {
+  .hero-lead, .hero-lead-list { font-size: var(--t-pequeno); line-height: 1.43; }
 }
 
 /* Tela deitada a partir de 700px (tablet deitado, notebook, monitor): a foto
@@ -2466,12 +2522,12 @@ html.abertura-on { overflow: hidden; }
 @media (max-width: 699.98px) {
   /* Área de toque de pelo menos 44px (recomendação da Apple e do Google). */
   .btn-small { min-height: 44px; }
-  .header-cta { padding: .64em 1.1em .46em; font-size: .88rem; }
+  .header-cta { padding: .64em 1.1em .46em; font-size: var(--t-pequeno); }
   /* O texto longo do botão da oferta vazava do card em telas estreitas: o card
      ganha menos respiro lateral e o botão cabe numa linha a partir de 360px.
      Abaixo disso (320px) ele quebra em duas linhas, centralizado, sem vazar. */
   .offer-card { padding: 2rem 1.25rem; }
-  .btn-block { padding-left: 1.1em; padding-right: 1.1em; font-size: 1rem; white-space: normal; text-align: center; line-height: 1.25; }
+  .btn-block { padding-left: 1.1em; padding-right: 1.1em; white-space: normal; text-align: center; }
   .section { padding: 64px 0; }
   .accordion { margin-top: 1.4rem; gap: .6rem; }
   .accordion-trigger { padding: 1rem 1.1rem; }
@@ -2488,9 +2544,9 @@ html.abertura-on { overflow: hidden; }
   #accordion-modulos .accordion-title-text { align-self: end; line-height: 1.2; }
   #accordion-modulos .module-count { align-self: start; }
   #accordion-modulos .module-count::before { content: none; }
-  .credential-item { gap: .65rem; padding: .65rem 0; font-size: var(--t-corpo); line-height: 1.35; }
+  .credential-item { gap: .65rem; padding: .6rem 0; font-size: var(--t-pequeno); line-height: 1.43; }
   .credential-icon { width: 2rem; height: 2rem; }
-  .credential-figure { font-size: 1.1em; }
+  .credential-figure { font-size: 1.25em; }
 /* Garantia mais compacta pra caber numa tela só de celular (o selo em si já
    encolhe sozinho, de forma fluida — ver .guarantee-badge). */
   .section-tone--guarantee.section { padding: 48px 0; }
