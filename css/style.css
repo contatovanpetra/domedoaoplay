@@ -1485,10 +1485,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 #faq .accordion { margin-top: 1.6rem; gap: 0; border-top: 1px solid var(--border); }
 #faq .accordion-item,
 #faq .accordion-item.open { background: none; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; }
-#faq .accordion-trigger { padding: 1.15rem .25rem; font-size: var(--t-corpo); line-height: 1.3; }
+/* Pergunta em peso normal, na fonte do texto (Nunito Sans): a Quicksand em
+   600 lia como negrito pesado — a Apple usa semi-negrito, mas a SF Pro é
+   bem mais leve de desenho. Mais estreita, ela deixa quase toda pergunta
+   numa linha só: o bloco inteiro (título + perguntas) cabe numa tela. */
+#faq .accordion-trigger { padding: .9rem .25rem; font-family: var(--font-body); font-weight: 400; font-size: var(--t-corpo); line-height: 1.35; }
 #faq .accordion-panel { padding: 0 .25rem; }
 #faq .accordion-item.open .accordion-panel { padding-bottom: 1rem; }
-#faq .accordion-panel p { font-size: var(--t-corpo); line-height: 1.5; }
+/* Com a pergunta em peso normal, a hierarquia vem da cor: pergunta branca,
+   resposta no tom secundário (sem isso a resposta se confundia com ela). */
+#faq .accordion-panel p { font-size: var(--t-corpo); line-height: 1.5; color: var(--text-muted); }
+#faq .accordion-trigger { color: var(--white); }
 @media (max-width: 699.98px) {
   #faq.section { padding: 56px 0; }
 }
