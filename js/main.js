@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireModulosTrilha();
   wireScrollReveal();
   wireDepoimentos();
-  wireNiveisFaixa();
+  wireEscadaShowcase();
   wireViviCard();
   wireCountUp();
   wireScrollEffects();
@@ -542,88 +542,114 @@ function wireDepoimentos() {
   desenha(false);
 }
 
-// A faixa dos níveis anda sozinha, devagar, e obedece à mão: arrastar com o
-// dedo (rolagem nativa) ou com o mouse leva a faixa pro lado, e ela volta a
-// andar sozinha pouco depois que a pessoa solta. Os 7 níveis aparecem
-// duplicados no HTML: ao passar da metade, a rolagem volta pro começo, então a
-// faixa nunca acaba e ninguém vê a emenda.
-function wireNiveisFaixa() {
-  const faixa = document.querySelector(".niveis-marquee");
-  const trilho = faixa && faixa.querySelector(".etapas-track");
-  if (!faixa || !trilho) return;
-  const metade = () => trilho.scrollWidth / 2 || 1;
-  const VELOCIDADE = 26; // pixels por segundo
-  let pausadoAte = 0;    // enquanto a pessoa mexe, o passo automático espera
-  let comOMouseEmCima = false;
-  let mao = null;        // dedo ou mouse segurando a faixa
-  let naTela = true;
-  let ultimo = 0;
+// A Escada de Exposição: régua de passos + palco de vitrine. Quem visita
+// navega pelos 7 níveis no próprio ritmo (clique, seta, arrasto no celular),
+// sem nenhum sequestro da rolagem vertical da página.
+function wireEscadaShowcase() {
+  const palco = document.querySelector(".escada-palco-wrap");
+  const vitrine = palco && palco.querySelector(".escada-vitrine");
+  const track = vitrine && vitrine.querySelector(".escada-track");
+  const steps = [...document.querySelectorAll(".escada-step")];
+  const cards = track ? [...track.querySelectorAll(".escada-card")] : [];
+  const dots = [...document.querySelectorAll(".escada-dot")];
+  const prevBtn = palco && palco.querySelector(".escada-nav-prev");
+  const nextBtn = palco && palco.querySelector(".escada-nav-next");
 
-  // Emenda invisível: passando da metade, volta pro começo (e vice-versa).
-  const emenda = () => {
-    const m = metade();
-    if (faixa.scrollLeft >= m) faixa.scrollLeft -= m;
-    else if (faixa.scrollLeft < 0) faixa.scrollLeft += m;
-  };
-  const espera = (ms) => { pausadoAte = performance.now() + ms; };
+  if (!vitrine || !track || !cards.length) return;
 
-  // A posição é contada aqui em número quebrado e só depois vira rolagem: a
-  // 26px por segundo, cada quadro anda menos de meio pixel, e somar isso
-  // direto na rolagem não sai do lugar (o navegador arredonda e perde o resto).
-  let pos = faixa.scrollLeft;
-  function passo(t) {
-    const dt = ultimo ? Math.min(.05, (t - ultimo) / 1000) : 0;
-    ultimo = t;
-    if (naTela && !mao && !comOMouseEmCima && t > pausadoAte && !prefersReducedMotion) {
-      const m = metade();
-      pos += VELOCIDADE * dt;
-      if (pos >= m) pos -= m;
-      faixa.scrollLeft = pos;
-    } else {
-      // Enquanto a pessoa manda (arrasto, roda, teclado), a conta acompanha ela.
-      pos = faixa.scrollLeft;
+  let activeIndex = 0;
+
+  function goToIndex(idx, suave = true) {
+    activeIndex = Math.max(0, Math.min(cards.length - 1, idx));
+
+    cards.forEach((card, i) => {
+      card.classList.toggle("is-active", i === activeIndex);
+    });
+
+    steps.forEach((step, i) => {
+      const isActive = i === activeIndex;
+      step.classList.toggle("is-active", isActive);
+      step.setAttribute("aria-selected", isActive ? "true" : "false");
+      if (isActive) {
+        step.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+      }
+    });
+
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("is-active", i === activeIndex);
+    });
+
+    if (prevBtn) {
+      prevBtn.disabled = activeIndex === 0;
+      prevBtn.classList.toggle("is-disabled", activeIndex === 0);
     }
-    requestAnimationFrame(passo);
-  }
-  requestAnimationFrame(passo);
-
-  // O navegador tenta "arrastar a imagem" quando a mão começa em cima de uma foto.
-  faixa.addEventListener("dragstart", (e) => e.preventDefault());
-  faixa.addEventListener("mouseenter", () => { comOMouseEmCima = true; });
-  faixa.addEventListener("mouseleave", () => { comOMouseEmCima = false; });
-  faixa.addEventListener("wheel", () => espera(1500), { passive: true });
-  faixa.addEventListener("keydown", () => espera(2500));
-  // A rolagem nativa (dedo, trackpad, teclado) também precisa da emenda.
-  faixa.addEventListener("scroll", emenda, { passive: true });
-
-  faixa.addEventListener("pointerdown", (e) => {
-    // No dedo, quem rola é o próprio navegador: aqui só seguramos o passo automático.
-    mao = { id: e.pointerId, mouse: e.pointerType === "mouse", x: e.clientX, inicio: faixa.scrollLeft };
-    if (mao.mouse) {
-      faixa.classList.add("is-arrastando");
-      try { faixa.setPointerCapture(e.pointerId); } catch { /* segue sem captura */ }
+    if (nextBtn) {
+      nextBtn.disabled = activeIndex === cards.length - 1;
+      nextBtn.classList.toggle("is-disabled", activeIndex === cards.length - 1);
     }
-  });
-  faixa.addEventListener("pointermove", (e) => {
-    if (!mao || !mao.mouse || e.pointerId !== mao.id) return;
-    e.preventDefault();
-    faixa.scrollLeft = mao.inicio - (e.clientX - mao.x);
-    emenda();
-  });
-  const solta = (e) => {
-    if (!mao || (e && e.pointerId !== mao.id)) return;
-    mao = null;
-    faixa.classList.remove("is-arrastando");
-    espera(1200);
-  };
-  faixa.addEventListener("pointerup", solta);
-  faixa.addEventListener("pointercancel", solta);
-  faixa.addEventListener("pointerleave", solta);
 
-  // Parada quando a faixa não está na tela: nada de rodar à toa.
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver((e) => { naTela = e[0].isIntersecting; }, { threshold: 0 }).observe(faixa);
+    // Centraliza o cartão ativo no palco.
+    const activeCard = cards[activeIndex];
+    const offset = activeCard.offsetLeft - (vitrine.clientWidth - activeCard.offsetWidth) / 2;
+    track.style.transition = suave ? "transform .55s cubic-bezier(.16, 1, .3, 1)" : "none";
+    track.style.transform = "translate3d(-" + Math.max(0, offset).toFixed(2) + "px, 0, 0)";
   }
+
+  steps.forEach((step, i) => {
+    step.addEventListener("click", () => goToIndex(i));
+  });
+
+  if (prevBtn) prevBtn.addEventListener("click", () => goToIndex(activeIndex - 1));
+  if (nextBtn) nextBtn.addEventListener("click", () => goToIndex(activeIndex + 1));
+
+  // Clicar num cartão lateral também traz ele pro foco.
+  cards.forEach((card, i) => {
+    card.addEventListener("click", () => {
+      if (i !== activeIndex) goToIndex(i);
+    });
+  });
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => goToIndex(i));
+  });
+
+  steps.forEach((step, i) => {
+    step.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goToIndex(i + 1);
+        steps[Math.min(steps.length - 1, i + 1)].focus();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goToIndex(i - 1);
+        steps[Math.max(0, i - 1)].focus();
+      }
+    });
+  });
+
+  // Arrastar no celular (sem travar a rolagem vertical da página).
+  let touchStartX = 0;
+  let touchStartY = 0;
+  vitrine.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].clientX;
+    touchStartY = e.changedTouches[0].clientY;
+  }, { passive: true });
+  vitrine.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) goToIndex(activeIndex + 1);
+      else goToIndex(activeIndex - 1);
+    }
+  }, { passive: true });
+
+  let resizeTimer = 0;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => goToIndex(activeIndex, false), 100);
+  }, { passive: true });
+
+  setTimeout(() => goToIndex(0, false), 50);
 }
 
 // O card da Vitória (.vivi-trilho) sobe por cima da foto enquanto ela fica
@@ -783,10 +809,7 @@ function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
-  // .etapa fica de fora: o efeito de grudar e soltar (position: sticky) já é
-  // a entrada dela. Empilhar um fade por cima, com scroll rápido, deixava a
-  // foto parada num meio-termo quase transparente até a rolagem parar.
-  // .vivi-card também fica de fora: tem o próprio fade, sincronizado com a
+  // .vivi-card fica de fora: tem o próprio fade, sincronizado com a
   // subida (ver wireViviCard) — o observador genérico mede a posição
   // natural dela no documento, sem contar o transform que a empurra pra
   // cima, e ela ficava opacity:0 (de verdade invisível, não só discreta)
@@ -794,7 +817,7 @@ function wireScrollReveal() {
   const targets = [...document.querySelectorAll(
     ".section .container > *, .accordion-item"
   )].filter((el) => !el.matches(
-    ".accordion, .etapas, .vivi-card"
+    ".accordion, .vivi-card"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 
