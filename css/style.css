@@ -222,7 +222,6 @@ ul { padding: 0; margin: 0; list-style: none; }
 /* Em cima o botão é arredondado (porta de túnel): o espaço útil fica mais embaixo,
    então o texto desce um pouco (mais respiro em cima que embaixo) pra parecer
    centralizado dentro do túnel. */
-.btn-small { padding: .72em 1.4em .5em; font-size: .9rem; border-radius: 28px 28px 9px 9px; }
 /* Um tamanho só pra todo botão de compra (herói, escada, oferta, fim): 17px,
    ~53px de altura em qualquer tela. Antes eram 5 tamanhos diferentes. */
 .btn-large { padding: 1.05em 2em .85em; font-size: var(--t-corpo); min-width: 13.5rem; }
@@ -305,14 +304,25 @@ ul { padding: 0; margin: 0; list-style: none; }
 /* O menu fixo cobria o começo da seção ao clicar num link do menu. */
 html { scroll-padding-top: var(--header-h, 85px); }
 
-.header-cta { flex-shrink: 0; }
-/* Tela de toque (tablet): o botão do menu também chega a 44px de altura. */
-@media (pointer: coarse) { .header-cta { min-height: 44px; } }
-@media (min-width: 900px) {
-  /* Pequeno demais perto da logo (40px de altura) no computador — os dois
-     dividem a mesma barra fina do menu. */
-  .header-cta { padding: .8em 1.6em .58em; font-size: 1.05rem; }
+/* Botão do menu no formato do "Comprar" do menu da Apple: pílula pequena
+   e lisa, só com a cor da ação (sem o brilho, a sombra e o formato de
+   túnel dos botões grandes). Continua laranja — ninguém duvida que é o
+   de compra —, mas não compete com os botões do conteúdo nem fica com
+   cara de repetido a página inteira. */
+.header-cta {
+  flex-shrink: 0;
+  padding: .6em 1.2em;
+  border-radius: 999px;
+  font-size: var(--t-pequeno);
+  background: var(--orange-button);
+  box-shadow: none;
+  text-shadow: none;
 }
+.header-cta:hover { transform: none; background: #C4650B; box-shadow: none; }
+.header-cta:active { transform: scale(.97); background: #A65307; box-shadow: none; }
+/* Tela de toque: o desenho fica pequeno, mas a área que o dedo alcança
+   chega a 44px de altura (recomendação da Apple). */
+@media (pointer: coarse) { .header-cta::after { content: ""; position: absolute; inset: -6px -2px; } }
 
 /* ---------- Títulos sem palavra sozinha na última linha ----------
    O navegador equilibra as linhas (sem mudar o texto). O título do herói e a
@@ -477,15 +487,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Menos respiro no alto: #modulos e #beneficios são a mesma faixa azul
    contínua (sem nenhuma linha entre elas), então o respiro de seção padrão
    (128px + 128px) só deixava vão vazio de sobra ali no meio. */
-/* Mais respiro no alto: a subida do card da Vitória (.vivi-trilho) consome
-   toda a própria margem negativa no fim da rolagem, então #modulos entrava
-   colado nela (só a sobreposição de -56px, sem nenhum respiro de verdade).
-   Este padding-top extra é só pra essa emenda — não mexe no vão com
-   #beneficios (padding-bottom continua o mesmo, comentário abaixo). */
-#modulos { padding-top: 200px; padding-bottom: 64px; }
+#modulos { padding-top: 128px; padding-bottom: 64px; }
 #beneficios { padding-top: 64px; padding-bottom: 380px; }
 @media (max-width: 699.98px) {
-  #modulos { padding-top: 120px; padding-bottom: 40px; }
+  #modulos { padding-top: 80px; padding-bottom: 40px; }
   #beneficios { padding-top: 40px; padding-bottom: 250px; }
 }
 /* A emenda #metodo→#aplicacao estava curta demais: sobrava pouco respiro
@@ -843,49 +848,40 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    já têm sombra de texto própria pra continuar legíveis por cima de
    qualquer parte da foto, sem precisar escurecer a foto em si. */
 .vivi-foto img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 14%; }
-/* O card começa no pé da primeira tela e sobe por cima da foto. Sobra de
-   rolagem generosa (padding-bottom) pra a subida ser suave e dar tempo de
-   ler antes da foto soltar — sem isso a transição fica curta e apressada. */
-.vivi-trilho {
-  position: relative;
-  /* Precisa ficar acima das credenciais no pé da foto (.vivi-credenciais,
-     z-index: 1) — com o mesmo z-index os dois textos apareciam embaralhados
-     quando o card subia por cima delas, porque a foto presa (position:
-     sticky) desempata a favor dela em vez do card. */
-  z-index: 2;
-  margin-top: -20vh;
-  margin-top: -20svh;
-  /* Respiro generoso: o card precisa não só de espaço pra subir, mas de
-     uma sobra de verdade DEPOIS de chegar no lugar — é esse excesso que
-     vira tempo "parado" (ver wireViviCard em main.js: ele mede quanto
-     falta até aqui pra calcular até onde segurar o card parado). Pouco
-     padding aqui = zero tempo parado, o card chega e a seção já acaba.
-     A seção inteira (foto + esse respiro) tem que dar uns dois scrolls de
-     tela inteiros — era assim no celular e tinha sumido numa rodada
-     anterior, quando o respiro extra depois da foto (removido, ver
-     .section.vivi-apple) foi tirado sem reforçar o tempo parado aqui pra
-     compensar a rolagem que sumiu junto. */
-  padding-bottom: 79vh;
-  padding-bottom: 79svh;
+/* Rolagem em que a foto fica parada na tela pra leitura (o texto já está
+   nela, ver .vivi-camada): curta de propósito — parada comprida com nada
+   se mexendo lê como a página travada. */
+.vivi-segura { height: 60vh; height: 60svh; }
+@media (min-width: 900px) { .vivi-segura { height: 50vh; height: 50svh; } }
+
+/* Três andares por cima da foto: nome no alto, texto no meio e os números
+   no pé. O do meio ocupa só o espaço que sobra entre os dois — o card
+   nunca cobre o nome nem os números, em nenhum tamanho de tela. */
+.vivi-camada {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1rem, 4vh, 1.75rem) 0 clamp(1.4rem, 4vh, 2rem);
+}
+.vivi-meio {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  padding: 1rem 16px;
 }
 /* Card de cantos retos, vidro fosco (pedido explícito, repetido, da
    Vitória: o card É pra ser transparente, a foto aparece através dele,
-   desfocada — nunca um retângulo azul sólido). Com o nome subido e sem o
-   respiro extra no pé (ver .vivi-assinatura e .section.vivi-apple), o
-   card cabe no espaço entre o nome e as credenciais na maioria das telas
-   sem precisar passar por cima delas — o cruzamento rápido só acontece
-   durante a subida em si (não mais parado por cima delas), então o texto
-   passando de leve por trás nesse instante curto é aceitável. */
+   desfocada — nunca um retângulo azul sólido). Já nasce no lugar, dentro
+   da foto; só aparece de leve quando ela entra na tela (wireViviCard). */
 .vivi-card {
-  /* Sobe e para no lugar (não é só um ponto de passagem): o transform é
-     calculado e aplicado por JS a cada rolagem (wireViviCard em main.js),
-     não por CSS puro — "position: sticky" foi testado à exaustão aqui e
-     não funciona neste layout (ver comentário longo no JS): um segundo
-     elemento sticky dentro do mesmo contêiner da foto (.vivi-foto, também
-     sticky) nunca gruda neste navegador. O JS faz à mão o que o sticky
-     faria: mede o quanto o card subiria sozinho e empurra ele pra baixo
-     na mesma medida, pra ele ficar visualmente parado. */
   max-width: 560px;
+  max-height: 100%;
+  /* Telas muito baixas: o texto rola por dentro em vez de vazar. */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: clamp(1.5rem, 4vw, 2.6rem);
   border-radius: 0;
   background: rgba(11, 23, 40, .55);
@@ -898,32 +894,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     backdrop-filter: blur(20px) saturate(1.15);
   }
 }
-/* Só liga em telas baixas, quando o JS (wireViviCard) trava a altura do
-   card no espaço disponível entre o nome e as credenciais: o texto rola
-   por dentro do card em vez de vazar por cima de um dos dois. */
-.vivi-card--rola { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-/* O card também tem a classe .reveal (efeito de entrada, aparece aos
-   poucos ao entrar na tela) — mas .reveal tem transition em transform de
-   .9s, e o JS escreve um transform novo a cada frame de rolagem
-   (wireViviCard). As duas coisas competindo faziam o card sempre correr
-   atrás de um alvo que já tinha mudado de novo, nunca alcançando a
-   posição de verdade enquanto a pessoa rolava — só "chegava" cerca de 1s
-   depois de parar de rolar. Precisa do .vivi-card junto pra ganhar de
-   .reveal sozinho (mesma especificidade, e .reveal vem depois no arquivo). */
-.vivi-card.reveal { transition: none; }
 /* Nome e cargo escritos no alto da foto, como uma assinatura. */
 .vivi-assinatura {
-  position: absolute;
-  z-index: 1;
-  /* Perto do topo de verdade da foto (não mais reservando a altura do
-     menu): o menu fica sempre recolhido enquanto a rolagem está dentro de
-     #vivi (ver wireHeaderReveal em main.js), então nunca cobre o nome —
-     não precisa mais do respiro extra pra ele. Isso libera espaço de
-     verdade pro card caber no meio, entre o nome e as credenciais, sem
-     precisar rolar por dentro dele em telas mais baixas. */
-  top: clamp(1rem, 4vh, 1.75rem);
-  left: 0;
-  right: 0;
+  /* Perto do topo de verdade da foto: o menu fica sempre recolhido
+     enquanto a rolagem está dentro de #vivi (ver wireHeaderReveal em
+     main.js), então nunca cobre o nome. */
+  flex: none;
   margin: 0;
   padding: 0 clamp(24px, 5vw, 96px);
   display: flex;
@@ -935,7 +911,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
    título da seção. */
 @media (max-width: 899.98px) {
-  .vivi-trilho { padding-inline: 16px; }
   /* Um pouco menor que o padding padrão (clamp de até 2.6rem): o card
      estava grande demais no celular. */
   .vivi-card { padding: 1.15rem 18px; }
@@ -953,32 +928,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    presos junto com ela (mesmo mecanismo do nome — filhos de .vivi-foto,
    não da seção). Só o card com o texto grande se move. */
 .vivi-foto .vivi-credenciais {
-  position: absolute;
-  z-index: 1;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  flex: none;
   margin: 0;
-  padding: 1rem clamp(24px, 5vw, 96px) clamp(1.4rem, 4vh, 2rem);
+  padding: 0 clamp(24px, 5vw, 96px);
   text-shadow: 0 1px 3px rgba(3, 10, 29, .65), 0 2px 18px rgba(3, 10, 29, .5);
 }
 @media (min-width: 900px) {
   /* Computador: a Vitória fica à direita e o card passa pela esquerda. */
   .vivi-foto img { object-position: 64% 18%; }
-  /* Mesma margem esquerda do nome e das credenciais desta seção (.vivi-
-     assinatura/.vivi-credenciais, ambos com esse clamp) — o card tem que
-     ficar alinhado com "as outras informações" da própria seção, não com
-     a margem genérica do container das outras seções da página. */
-  .vivi-trilho {
-    width: auto;
-    max-width: none;
-    margin: -28vh 0 0;
-    margin-top: -28svh;
-    padding-bottom: 98vh;
-    padding-bottom: 98svh;
-    padding-left: clamp(24px, 5vw, 96px);
-    padding-right: 24px;
-  }
+  /* Mesma margem esquerda do nome e das credenciais. */
+  .vivi-meio { padding: 1.5rem clamp(24px, 5vw, 96px); }
   /* Coluna de leitura à esquerda (~55 caracteres por linha): com 760px o
      card parava em cima do rosto da Vitória, e a Apple nunca põe texto em
      cima do rosto de quem aparece na foto. As credenciais agora ocupam só
@@ -1015,7 +974,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Uma linha só, no pé da foto (sobre a blusa, longe do rosto), pra não
      roubar altura do card que sobe pela coluna da esquerda. */
   .credential-list { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 2rem; }
-  .vivi-foto .vivi-credenciais { right: auto; width: min(100%, calc(760px + 2 * clamp(24px, 5vw, 96px))); }
+  .vivi-foto .vivi-credenciais { width: min(100%, calc(760px + 2 * clamp(24px, 5vw, 96px))); }
   .credential-figure { font-size: 2.5rem; }
 }
 
@@ -2492,8 +2451,6 @@ html.abertura-on { overflow: hidden; }
    ficava com herói de desktop e o resto com layout de celular. */
 @media (max-width: 699.98px) {
   /* Área de toque de pelo menos 44px (recomendação da Apple e do Google). */
-  .btn-small { min-height: 44px; }
-  .header-cta { padding: .64em 1.1em .46em; font-size: var(--t-pequeno); }
   /* O texto longo do botão da oferta vazava do card em telas estreitas: o card
      ganha menos respiro lateral e o botão cabe numa linha a partir de 360px.
      Abaixo disso (320px) ele quebra em duas linhas, centralizado, sem vazar. */

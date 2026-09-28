@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=28">
+<link rel="stylesheet" href="css/style.css?v=29">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -87,7 +87,7 @@
       <img class="logo-mark" src="assets/img/logo.svg" alt="Do Medo ao Play" width="102" height="40">
     </a>
 
-    <a href="#" data-checkout-link class="btn btn-primary btn-small header-cta">Quero entrar em cena</a>
+    <a href="#" data-checkout-link class="btn btn-primary header-cta">Quero entrar em cena</a>
   </div>
 </header>
 
@@ -422,36 +422,42 @@
           <source srcset="assets/img/vitoria-caroline-palestra.webp" type="image/webp">
           <img src="assets/img/vitoria-caroline-palestra.jpg" alt="Vitória Caroline, criadora do método Do Medo ao Play, palestrando" width="1122" height="1402" loading="lazy" decoding="async">
         </picture>
-        <h2 class="vivi-assinatura" id="autoridade-title">
-          <strong class="vivi-nome">Vitória Caroline</strong>
-          <span class="vivi-cargo">criadora do método Do Medo ao Play</span>
-        </h2>
-        <!-- Mesma lógica da assinatura, só que no pé da foto: os números
-             fecham a foto, estáticos nela — presos junto com o resto da foto
-             enquanto o card sobe por cima. Só o texto grande se move.
-             Formato de fato da Apple ("2x mais" no AirPods): número grande e
-             legenda curta embaixo, sem ícone nem linha divisória. -->
-        <ul class="credential-list vivi-credenciais">
-          <li class="credential-item credential-item-edu">
-          <span class="credential-text"><span class="credential-figure big-fact-num" data-count="13">13</span> anos como educadora</span>
-          </li>
-          <li class="credential-item credential-item-camera">
-          <span class="credential-text"><span class="credential-figure big-fact-num" data-count="8">8</span> anos como criadora de conteúdo</span>
-          </li>
-          <li class="credential-item credential-item-voice">
-          <span class="credential-text"><span class="credential-figure big-fact-num" data-count="4">4</span> anos de especialização em comunicação e oratória</span>
-          </li>
-          <li class="credential-item credential-item-business">
-          <span class="credential-text"><span class="credential-figure">CEO</span> de uma marca de sucesso e de uma consultoria de negócios</span>
-          </li>
-        </ul>
+        <!-- Três andares por cima da foto, como a Apple escreve sobre uma foto:
+             o nome no alto, o texto no meio (já na foto, aparece de leve quando
+             ela entra na tela, sem subir junto com a rolagem) e os números no pé. -->
+        <div class="vivi-camada">
+          <h2 class="vivi-assinatura" id="autoridade-title">
+            <strong class="vivi-nome">Vitória Caroline</strong>
+            <span class="vivi-cargo">criadora do método Do Medo ao Play</span>
+          </h2>
+          <div class="vivi-meio">
+            <article class="vivi-card">
+              <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional. Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas.</p>
+              <p>Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
+            </article>
+          </div>
+          <!-- Mesma lógica da assinatura, só que no pé da foto: os números
+               fecham a foto, estáticos nela — presos junto com o resto da foto.
+               Formato de fato da Apple ("2x mais" no AirPods): número grande e
+               legenda curta embaixo, sem ícone nem linha divisória. -->
+          <ul class="credential-list vivi-credenciais">
+            <li class="credential-item credential-item-edu">
+            <span class="credential-text"><span class="credential-figure big-fact-num" data-count="13">13</span> anos como educadora</span>
+            </li>
+            <li class="credential-item credential-item-camera">
+            <span class="credential-text"><span class="credential-figure big-fact-num" data-count="8">8</span> anos como criadora de conteúdo</span>
+            </li>
+            <li class="credential-item credential-item-voice">
+            <span class="credential-text"><span class="credential-figure big-fact-num" data-count="4">4</span> anos de especialização em comunicação e oratória</span>
+            </li>
+            <li class="credential-item credential-item-business">
+            <span class="credential-text"><span class="credential-figure">CEO</span> de uma marca de sucesso e de uma consultoria de negócios</span>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="container vivi-trilho">
-        <article class="vivi-card">
-          <p>Vitória Caroline ensina há 13 anos, entre aulas individuais, projetos educacionais e formação profissional. Há 8 anos produz conteúdo profissionalmente para a internet, passando por diferentes formatos, parcerias e trabalhos para marcas.</p>
-          <p>Nos últimos 4 anos, especializou-se em comunicação e oratória. Hoje, sua forma de se comunicar é uma das competências pelas quais mais é reconhecida e já foi determinante para convites, trabalhos e para a própria criação do Do Medo ao Play.</p>
-        </article>
-      </div>
+      <!-- Só rolagem: é o tempo em que a foto fica parada na tela pra leitura. -->
+      <div class="vivi-segura" aria-hidden="true"></div>
     </div>
   </section>
 
@@ -875,6 +881,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=17"></script>
+<script src="js/main.js?v=18"></script>
 </body>
 </html>

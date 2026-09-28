@@ -701,184 +701,43 @@ function wireEscadaShowcase() {
   setTimeout(() => goToIndex(0, false), 50);
 }
 
-// O card da Vitória (.vivi-trilho) sobe por cima da foto enquanto ela fica
-// presa na tela (position: sticky). Só o CSS (margem negativa) fazia ele
-// começar a subir desde o primeiro pixel de rolagem da seção. A Vitória
-// definiu "metade" como um ponto visual, não uma fração da rolagem presa:
-// o instante em que a tela mostra metade do depoimento anterior (Afiliada
-// TikTok) e metade da foto dela — ou seja, quando o topo de #vivi passa
-// pelo meio vertical da tela, ainda durante a transição normal de entrada
-// da seção, antes mesmo da foto ficar presa. Daí em diante o card sobe até
-// a posição final de descanso (mesmo ponto de sempre: foto totalmente presa
-// mais o percurso de rolagem presa).
+// O texto da Vitória já está dentro da foto (entre o nome e os números):
+// quando a foto entra na tela, ele aparece de leve — esmaece e sobe uns
+// poucos pixels, como a Apple faz com texto sobre foto — e termina de
+// aparecer no instante em que a foto para na tela. Nada acompanha a
+// rolagem depois disso.
 function wireViviCard() {
-  // .vivi-pin (não #vivi) é quem trava o "position: sticky" da foto — a
-  // seção #vivi por si só é mais alta (sobra um respiro no pé antes de
-  // #modulos entrar por cima, ver CSS) — por isso a matemática do quanto a
-  // foto fica presa usa .vivi-pin como referência, não a seção inteira.
-  const vivi = document.querySelector(".vivi-pin");
-  const trilho = document.querySelector(".vivi-trilho");
+  const pin = document.querySelector(".vivi-pin");
   const card = document.querySelector(".vivi-card");
-  const assinatura = document.querySelector(".vivi-assinatura");
-  const credenciais = document.querySelector(".vivi-credenciais");
-  if (!vivi || !trilho || !card || prefersReducedMotion) return;
-
-  // "position: sticky" no card não funciona aqui: testado à exaustão (até
-  // com um <div> novo, sem nenhum CSS do projeto) e, neste navegador, um
-  // segundo elemento sticky dentro do mesmo contêiner de uma foto que já é
-  // sticky (.vivi-foto) nunca gruda — só o primeiro elemento sticky de cada
-  // contêiner funciona. Por isso o "grudar no meio" é feito à mão aqui: o
-  // JS calcula, a cada rolagem, o quanto precisa empurrar o card pra baixo
-  // pra cancelar exatamente o quanto ele subiria sozinho, e o resultado
-  // visual é idêntico a um sticky de verdade.
-  let limiar = 0;
-  let fim = 1;
-  let inicioSegura = 0;
-  let alturaCard = 0;
-  let topoCard = 0;
-
-  function medir() {
-    // Sem isso, uma vez travada (ver abaixo), a próxima medida já enxergaria
-    // a altura JÁ travada como se fosse a "natural" do card, e nunca mais
-    // destravaria — mesmo numa tela depois maior (girar o celular, abrir o
-    // teclado e fechar de novo).
-    card.style.maxHeight = "";
-    const viviTop = vivi.getBoundingClientRect().top + window.scrollY;
-    const pinado = Math.max(1, vivi.offsetHeight - alturaDaTela());
-    limiar = viviTop - alturaDaTela() / 2;
-    fim = viviTop + pinado;
-    alturaCard = card.offsetHeight;
-    // Posição de descanso "de verdade" do card (sem nenhum transform), na
-    // página inteira: onde ele cairia se não fizéssemos nada.
-    const topoNaturalDoc = trilho.getBoundingClientRect().top + window.scrollY;
-    // O nome "Vitória Caroline" e as credenciais no pé da foto ficam
-    // estáticos o tempo todo (parte da própria foto presa) — o card não
-    // pode cobrir nenhum dos dois. O alvo é o meio do espaço que sobra
-    // entre onde o nome termina e onde as credenciais começam, calculado
-    // pela posição real dos dois (não um número fixo), pra se ajustar
-    // sozinho se a altura de qualquer um dos três mudar.
-    const fimNome = assinatura
-      ? parseFloat(getComputedStyle(assinatura).top) + assinatura.offsetHeight
-      : alturaDaTela() * 0.15;
-    const inicioCredenciais = credenciais
-      ? alturaDaTela() - credenciais.offsetHeight
-      : alturaDaTela() * 0.85;
-    const espaco = Math.max(0, inicioCredenciais - fimNome);
-    // Em telas baixas (iPhone SE, alguns Android compactos), o card com o
-    // texto inteiro é mais alto que esse espaço — ele nunca pode vazar e
-    // cobrir o nome ou as credenciais, então trava a altura no que cabe e
-    // deixa o texto rolar por dentro dele (só nesses aparelhos: em qualquer
-    // tela com espaço de sobra isso nunca liga).
-    const alturaMax = Math.max(80, espaco - 4);
-    if (alturaCard > alturaMax) {
-      card.style.maxHeight = alturaMax + "px";
-      card.classList.add("vivi-card--rola");
-      alturaCard = alturaMax;
-    } else {
-      card.classList.remove("vivi-card--rola");
-    }
-    const alvoNaTela = fimNome + Math.max(0, (espaco - alturaCard) / 2);
-    inicioSegura = topoNaturalDoc - alvoNaTela;
-    topoCard = topoNaturalDoc;
-    aplica();
-  }
+  if (!pin || !card || prefersReducedMotion) return;
 
   function aplica() {
-    const y = window.scrollY;
-    // Lido antes de escrever qualquer estilo neste quadro (sem forçar layout).
-    const cr = credenciais ? credenciais.getBoundingClientRect() : null;
-    const escondido = alturaCard + 60;
-    const r1 = Math.max(1, inicioSegura - limiar);
-    // Raio da freada (acima) e da largada (abaixo): sem isso, as duas
-    // emendas (escondido→subindo e presa→solta) trocam de velocidade seca,
-    // de um frame pro outro — dava exatamente a travadinha reportada
-    // ("sobe, para" e, mais adiante, "trava antes de descer").
-    const r2 = Math.max(1, alturaDaTela() * 0.25);
-    let empurrao;
-    let opacidade;
-    if (y <= limiar) {
-      empurrao = escondido;
-      opacidade = 0;
-    } else if (y < inicioSegura) {
-      // Curva suave (Hermite), não uma rampa reta: começa com a MESMA
-      // velocidade de quando estava escondido (zero — parado) e termina
-      // com a MESMA velocidade de quando fica presa (acompanhando a
-      // rolagem 1 por 1) — as duas pontas emendam sem trocar de marcha de
-      // repente, só o meio acelera e desacelera.
-      const t = clamp((y - limiar) / r1);
-      empurrao = escondido * (2 * t * t * t - 3 * t * t + 1) + r1 * (t * t * t - t * t);
-      opacidade = t;
-    } else if (y < fim) {
-      // Segurando: sobe junto com a rolagem até "fim" (a foto solta, a
-      // seção acaba) — acompanha 1 por 1, por isso fica visualmente parada.
-      empurrao = y - inicioSegura;
-      opacidade = 1;
-    } else if (y < fim + r2) {
-      // Soltando: mesma ideia da entrada, ao contrário — começa com a
-      // velocidade de "presa" (parada) e termina na velocidade de "solta
-      // de vez" (rolagem normal, acompanhando por baixo do resto da
-      // página), sem o salto seco de uma pra outra.
-      const t = clamp((y - fim) / r2);
-      const presa = fim - inicioSegura;
-      empurrao = presa + r2 * (t - t * t * t + .5 * t * t * t * t);
-      opacidade = 1;
-    } else {
-      // Solta de vez: o mesmo deslocamento fixo do fim da freada acima,
-      // daqui pra frente só rolagem normal (nenhuma conta nova por rolagem).
-      empurrao = (fim - inicioSegura) + .5 * r2;
-      opacidade = 1;
-    }
-    card.style.transform = "translateY(" + empurrao.toFixed(1) + "px)";
-    // A opacidade acompanha a mesma conta do transform, não o observador
-    // genérico de ".reveal" (wireScrollReveal): aquele mede a posição
-    // natural do card no documento, sem contar o transform que o empurra
-    // pra cima — o card ficava de verdade invisível (opacity: 0) por boa
-    // parte da subida, só "aparecendo" de repente perto do fim. Aqui os
-    // dois (posição e opacidade) vêm exatamente da mesma variável.
-    card.style.opacity = opacidade;
-    // Enquanto o card sobe passando por cima das credenciais, elas saem de
-    // cena e voltam assim que ele passa: sem isso os dois textos se
-    // misturavam através do vidro do card durante a subida.
-    if (cr) {
-      const topo = topoCard - y + empurrao;
-      const cobre = Math.min(topo + alturaCard, cr.bottom) - Math.max(topo, cr.top);
-      credenciais.style.opacity = (1 - clamp(cobre / 40)).toFixed(3);
-    }
+    const topo = pin.getBoundingClientRect().top;
+    // 0 quando a foto ainda cobre menos da metade da tela; 1 quando ela para.
+    const p = clamp(1 - topo / (alturaDaTela() * .5));
+    card.style.opacity = p.toFixed(3);
+    card.style.transform = "translate3d(0, " + ((1 - p) * 24).toFixed(1) + "px, 0)";
   }
 
   let ticking = false;
-  window.addEventListener("scroll", () => {
+  const agenda = () => {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(() => { aplica(); ticking = false; });
-  }, { passive: true });
-
-  let medeQueued = false;
-  const queueMedida = () => {
-    if (medeQueued) return;
-    medeQueued = true;
-    requestAnimationFrame(() => { medeQueued = false; medir(); });
   };
-  window.addEventListener("resize", queueMedida, { passive: true });
-  window.addEventListener("load", queueMedida);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueMedida);
-
-  medir();
+  window.addEventListener("scroll", agenda, { passive: true });
+  window.addEventListener("resize", agenda, { passive: true });
+  aplica();
 }
 
 function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
-  // .vivi-card fica de fora: tem o próprio fade, sincronizado com a
-  // subida (ver wireViviCard) — o observador genérico mede a posição
-  // natural dela no documento, sem contar o transform que a empurra pra
-  // cima, e ela ficava opacity:0 (de verdade invisível, não só discreta)
-  // por boa parte da subida.
   const targets = [...document.querySelectorAll(
     ".section .container > *, .accordion-item"
   )].filter((el) => !el.matches(
-    ".accordion, .vivi-card"
+    ".accordion"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 
