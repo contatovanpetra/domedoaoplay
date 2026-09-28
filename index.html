@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=22">
+<link rel="stylesheet" href="css/style.css?v=24">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -127,10 +127,7 @@
            imagem e encontra o convite lá embaixo. -->
       <div class="hero-cta-foto">
       <div class="hero-actions" id="hero-actions-el">
-        <a href="#" data-checkout-link class="btn-play">
-          <span class="btn-play-disc" aria-hidden="true"><span class="botao-gravar"><i></i></span></span>
-          <strong>Quero entrar em cena</strong>
-        </a>
+        <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
         <p class="hero-numeros" data-confirmar="assim que tiver o total de horas de formação, dá pra voltar a incluir aqui (ex.: '8 módulos · 33 aulas · X horas · certificado')">8 módulos · 33 aulas · certificado</p>
       </div>
       </div>
@@ -333,7 +330,7 @@
     </div>
     <div class="container metodo-fecho">
       <p class="metodo-frase">Um nível de cada vez. <span class="text-orange">Até dar o play.</span></p>
-      <a href="#" data-checkout-link class="btn btn-primary btn-azul btn-large">Quero entrar em cena</a>
+      <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
     </div>
   </section>
 
@@ -431,23 +428,21 @@
         </h2>
         <!-- Mesma lógica da assinatura, só que no pé da foto: os números
              fecham a foto, estáticos nela — presos junto com o resto da foto
-             enquanto o card sobe por cima. Só o texto grande se move. -->
+             enquanto o card sobe por cima. Só o texto grande se move.
+             Formato de fato da Apple ("2x mais" no AirPods): número grande e
+             legenda curta embaixo, sem ícone nem linha divisória. -->
         <ul class="credential-list vivi-credenciais">
           <li class="credential-item credential-item-edu">
-          <span class="credential-icon" aria-hidden="true"></span>
           <span class="credential-text"><span class="credential-figure big-fact-num" data-count="13">13</span> anos como educadora</span>
           </li>
           <li class="credential-item credential-item-camera">
-          <span class="credential-icon" aria-hidden="true"></span>
           <span class="credential-text"><span class="credential-figure big-fact-num" data-count="8">8</span> anos como criadora de conteúdo</span>
           </li>
           <li class="credential-item credential-item-voice">
-          <span class="credential-icon" aria-hidden="true"></span>
           <span class="credential-text"><span class="credential-figure big-fact-num" data-count="4">4</span> anos de especialização em comunicação e oratória</span>
           </li>
           <li class="credential-item credential-item-business">
-          <span class="credential-icon" aria-hidden="true"></span>
-          <span class="credential-text">CEO de uma marca de sucesso e de uma consultoria de negócios</span>
+          <span class="credential-text"><span class="credential-figure">CEO</span> de uma marca de sucesso e de uma consultoria de negócios</span>
           </li>
         </ul>
       </div>
@@ -657,9 +652,12 @@
   <!-- ===== OFERTA ===== -->
   <section class="section offer-section" id="oferta" aria-labelledby="oferta-title">
     <div class="container narrow">
+      <!-- Formato do Apple One: o título fica fora do card; dentro dele, tudo
+           alinhado à esquerda, de cima pra baixo na ordem em que se decide
+           (o que é, quanto custa, o que vem junto, o botão). -->
+      <h2 id="oferta-title" class="section-title center" data-confirmar="a Vitória avisou que este card ainda não está finalizado e o texto não é definitivo — revisar título, lista e preço antes de publicar">Comece pelo nível em que você está hoje.</h2>
       <div class="offer-card">
-        <p class="eyebrow eyebrow-center">DO MEDO AO PLAY</p>
-        <h2 id="oferta-title" class="section-title center" data-confirmar="a Vitória avisou que este card ainda não está finalizado e o texto não é definitivo — revisar título, lista e preço antes de publicar">Comece pelo nível em que você está hoje.</h2>
+        <p class="eyebrow">DO MEDO AO PLAY</p>
 
         <div class="price-box">
           <span class="price-now">R$ 197</span>
@@ -776,7 +774,7 @@
       <div class="final-cta-copy">
         <h2 id="final-cta-title" class="section-title">Sua versão que aparece já existe.</h2>
         <p class="final-frase">Atravesse o medo.</p>
-        <a href="#" data-checkout-link class="btn btn-primary btn-azul btn-large">Apareça</a>
+        <a href="#" data-checkout-link class="btn btn-primary btn-large">Apareça</a>
         <p class="hero-microcopy">R$ 197 · compra única · sem mensalidade</p>
       </div>
     </div>
