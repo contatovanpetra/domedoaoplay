@@ -709,20 +709,44 @@ function wireViviCard() {
   function aplica() {
     const y = window.scrollY;
     const escondido = alturaCard + 60;
+    const r1 = Math.max(1, inicioSegura - limiar);
+    // Raio da freada (acima) e da largada (abaixo): sem isso, as duas
+    // emendas (escondido→subindo e presa→solta) trocam de velocidade seca,
+    // de um frame pro outro — dava exatamente a travadinha reportada
+    // ("sobe, para" e, mais adiante, "trava antes de descer").
+    const r2 = Math.max(1, alturaDaTela() * 0.25);
     let empurrao;
     let opacidade;
     if (y <= limiar) {
       empurrao = escondido;
       opacidade = 0;
     } else if (y < inicioSegura) {
-      const p = clamp((y - limiar) / Math.max(1, inicioSegura - limiar));
-      empurrao = (1 - p) * escondido;
-      opacidade = p;
-    } else {
+      // Curva suave (Hermite), não uma rampa reta: começa com a MESMA
+      // velocidade de quando estava escondido (zero — parado) e termina
+      // com a MESMA velocidade de quando fica presa (acompanhando a
+      // rolagem 1 por 1) — as duas pontas emendam sem trocar de marcha de
+      // repente, só o meio acelera e desacelera.
+      const t = clamp((y - limiar) / r1);
+      empurrao = escondido * (2 * t * t * t - 3 * t * t + 1) + r1 * (t * t * t - t * t);
+      opacidade = t;
+    } else if (y < fim) {
       // Segurando: sobe junto com a rolagem até "fim" (a foto solta, a
-      // seção acaba) e então já não sobe mais — o resto da página que
-      // continua rolando por cima.
-      empurrao = Math.min(y, fim) - inicioSegura;
+      // seção acaba) — acompanha 1 por 1, por isso fica visualmente parada.
+      empurrao = y - inicioSegura;
+      opacidade = 1;
+    } else if (y < fim + r2) {
+      // Soltando: mesma ideia da entrada, ao contrário — começa com a
+      // velocidade de "presa" (parada) e termina na velocidade de "solta
+      // de vez" (rolagem normal, acompanhando por baixo do resto da
+      // página), sem o salto seco de uma pra outra.
+      const t = clamp((y - fim) / r2);
+      const presa = fim - inicioSegura;
+      empurrao = presa + r2 * (t - t * t * t + .5 * t * t * t * t);
+      opacidade = 1;
+    } else {
+      // Solta de vez: o mesmo deslocamento fixo do fim da freada acima,
+      // daqui pra frente só rolagem normal (nenhuma conta nova por rolagem).
+      empurrao = (fim - inicioSegura) + .5 * r2;
       opacidade = 1;
     }
     card.style.transform = "translateY(" + empurrao.toFixed(1) + "px)";
