@@ -445,6 +445,34 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   box-shadow: 0 0 10px -2px rgba(248, 161, 50, .55);
 }
 
+/* Computador: em vez da faixa na altura toda (que não parecia uma barra de
+   progresso), uma barrinha curta que desce pela borda direita conforme a
+   página avança, como a barra de rolagem de qualquer site. Laranja da marca,
+   pra aparecer tanto no azul-escuro quanto nas seções azul-claras. Clicar ou
+   arrastar continua rolando a página (wireReadProgressBar, main.js). */
+@media (min-width: 900px) and (pointer: fine) {
+  .read-progress {
+    --thumb: 72px;
+    width: 14px;
+    background: none;
+  }
+  .read-progress::before { left: -6px; right: 0; }
+  .read-progress::after {
+    inset: auto;
+    top: 8px;
+    right: 4px;
+    width: 5px;
+    height: var(--thumb);
+    border-radius: 3px;
+    transform: translateY(calc(var(--read, 0) * (100vh - var(--thumb) - 16px)));
+    transform: translateY(calc(var(--read, 0) * (100dvh - var(--thumb) - 16px)));
+    background: var(--orange-light);
+    box-shadow: 0 0 0 1px rgba(11, 23, 40, .25), 0 2px 8px rgba(0, 0, 0, .3);
+    transition: width .15s ease, right .15s ease;
+  }
+  .read-progress:hover::after { width: 7px; right: 3px; }
+}
+
 /* Ritmo da página: seções alternadas ganham uma faixa de azul aço que entra e
    sai em degradê, então existe variação de tom sem nenhuma linha de corte. */
 .section-tone { position: relative; }
@@ -1289,34 +1317,6 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   color: var(--cor-corpo);
 }
 
-/* Botões de navegação, vidro fosco */
-.escada-nav-btn {
-  position: absolute;
-  top: calc(50% - 1.2rem);
-  transform: translateY(-50%);
-  z-index: 10;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: rgba(14, 29, 49, .88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, .2);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all .25s ease;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, .5);
-}
-.escada-nav-prev { left: 16px; }
-.escada-nav-next { right: 16px; }
-.escada-nav-btn:hover {
-  background: rgba(255, 255, 255, .2);
-  border-color: rgba(255, 255, 255, .4);
-  transform: translateY(-50%) scale(1.08);
-}
 /* Controle único: play/pause + 7 bolinhas numeradas, cada uma com um anel
    que preenche em vermelho (REC) enquanto aquele nível fica em foco (tipo stories);
    ao completar, avança sozinha pro próximo. Pausar congela o preenchimento. */
@@ -1416,9 +1416,6 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   .escada-card-title { font-size: 1.0625rem; margin-bottom: .25rem; }
   .escada-tag { margin-bottom: .2rem; }
   .escada-card-body p { font-size: .8125rem; line-height: 1.4; }
-  .escada-nav-btn {
-    display: none;
-  }
   .escada-progresso {
     gap: .3rem;
   }
@@ -2048,29 +2045,6 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 @media (prefers-reduced-motion: reduce) { .depo-som::after { animation: none; opacity: 0; } }
 .depo-video:hover .depo-som, .depo-video:focus-visible .depo-som { transform: scale(1.08); background: rgba(6, 14, 28, .75); }
 .depo-video-mudo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.depo-video.tem-video .depo-vazio { display: none; }
-.depo-play {
-  display: grid;
-  place-items: center;
-  width: clamp(2.2rem, 8vw, 4rem);
-  height: clamp(2.2rem, 8vw, 4rem);
-  border-radius: 50%;
-  border: 1px solid rgba(245, 245, 245, .5);
-  color: var(--white);
-  transition: opacity .3s ease;
-}
-.depo-play svg { width: 42%; height: 42%; margin-left: 3px; }
-.depo-vazio {
-  /* No alto do vídeo: embaixo ele ficava por trás do nome e do cargo. */
-  position: absolute;
-  top: .8rem;
-  left: 0;
-  right: 0;
-  padding: 0 .3rem;
-  text-align: center;
-  font-size: var(--t-rotulo);
-  color: var(--text-muted);
-}
 /* Nome e cargo dentro do próprio vídeo, como legenda por cima dele (mesma
    ideia da escada de exposição) — não junto com o resultado, que fica
    fora, embaixo do card. Só aparece no vídeo do meio, como já acontecia
@@ -2503,19 +2477,14 @@ html.abertura-on { overflow: hidden; }
   --lado: var(--aparelho-w);
 }
 @media (min-width: 700px) and (orientation: landscape) {
+  /* Computador: o celular deitado com o mesmo peso visual que o de pé tem
+     no celular (lá ele ocupa ~28% da altura da tela). Com 260px de largura
+     ele sumia no meio do túnel de uma tela de 1440px. */
   .intro-scene2 {
-    --aparelho-w: min(28vh, 260px, 40vw);
-    --aparelho-w: min(28svh, 260px, 40vw);
+    --aparelho-w: min(46vh, 440px, 36vw);
+    --aparelho-w: min(46svh, 440px, 36vw);
     --aparelho-h: calc(var(--aparelho-w) * .485);
     --lado: var(--aparelho-h);
-  }
-  /* A ilha vai pra borda esquerda (a estreita, agora em pé), não mais pro alto. */
-  .burst-ilha {
-    top: 50%;
-    left: calc(var(--lado) * .065);
-    width: calc(var(--lado) * .088);
-    height: calc(var(--lado) * .3);
-    transform: translateY(-50%);
   }
 }
 .intro-scene2.is-on { opacity: 1; visibility: visible; }
@@ -2624,6 +2593,27 @@ html.abertura-on { overflow: hidden; }
   border-radius: 50%;
 }
 .burst-gravar i { width: 82%; height: 82%; border-radius: 50%; background: #ff3b30; }
+/* Deitado, como o app de câmera do iPhone na horizontal: a ilha na borda
+   estreita da esquerda e o botão de gravar no meio da borda direita. Fica
+   depois das regras de base (antes, a regra da ilha deitada vinha antes da
+   de base e perdia: a ilha continuava no alto, como num celular em pé). */
+@media (min-width: 700px) and (orientation: landscape) {
+  .burst-ilha {
+    top: 50%;
+    left: calc(var(--lado) * .065);
+    width: calc(var(--lado) * .088);
+    height: calc(var(--lado) * .3);
+    transform: translateY(-50%);
+  }
+  .burst-gravar {
+    left: auto;
+    right: calc(var(--lado) * .07);
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+  .burst-tempo { top: calc(var(--lado) * .07); }
+}
 /* O contorno que forma o celular (desenhado pelo GSAP, traço de ponta a ponta).
    Dois SVGs prontos, um por orientação (ver comentário no index.html) — só um
    deles fica visível de cada vez, decidido pela mesma media query do resto
@@ -2674,6 +2664,16 @@ html.abertura-on { overflow: hidden; }
 }
 .burst-title span { display: inline-block; opacity: 0; }
 .burst-title .text-orange { font-size: 1.35em; }
+/* Computador (celular deitado): depois das regras de base, pra valer. */
+@media (min-width: 700px) and (orientation: landscape) {
+  /* Mais longe do celular: ele entra girado em 3D e a borda de cima sobe
+     um pouco, encostando na frase. E um degrau maior, pra ler de longe. */
+  .burst-pre {
+    bottom: calc(50% + var(--aparelho-h) / 2 + clamp(2rem, 7vh, 4rem));
+    font-size: clamp(2rem, 2.6vw, 2.75rem);
+  }
+  .burst-title { top: calc(50% + var(--aparelho-h) / 2 + clamp(1.4rem, 4.5vh, 2.6rem)); }
+}
 
 /* O botão no fim da foto do herói, por cima dela (acima do degradê do pé). */
 .hero-cta-foto {
@@ -3252,3 +3252,37 @@ html.abertura-on { overflow: hidden; }
   .depo-modal, .depo-modal-caixa { transition: none; }
 }
 
+
+/* =========================================================
+   Computador (set/2026): tamanhos medidos em apple.com/br (iPhone 17 Pro,
+   Apple Watch Ultra 4, AirPods Pro, Fitness+) e spotify.com (Premium,
+   Advertising, Newsroom) em 1280, 1440 e 1920px de largura.
+   - Conteúdo: a Apple usa 1120px no 1280 e 1260px do 1440 pra cima; aqui
+     parava em 1112px e sobrava muito vazio nas telas grandes.
+   - Botão principal: 56px de altura na Apple Fitness+ (17px), 48px no
+     Spotify; o nosso tinha 47px com um título de 67px em cima.
+   - Frases de impacto: a Apple chega a 96px (AirPods Pro); o Spotify cresce
+     o título do topo com a tela (96 / 128 / 144px).
+   Celular e tablet não mudam nada aqui.
+   ========================================================= */
+@media (min-width: 1069px) {
+  /* Botões grandes (topo, depois da escada, final): 56px, como o da Apple
+     Fitness+ e o do card da oferta. */
+  .btn-large { min-height: 56px; padding: .95em 2.3em .85em; font-size: 1.125rem; font-weight: 700; min-width: 15rem; }
+  /* Título do topo acompanha a tela: 67px no 1280, 73px no 1440, 84px no 1920. */
+  .hero-headline { --hero-resto: clamp(2rem, 2.4vw, 2.5rem); }
+  .hero-copy { max-width: min(760px, 48vw); }
+  /* Cartões da Escada: de 230px pra 280–340px (os de galeria da Apple no
+     computador têm 372px). */
+  .escada-card { flex-basis: clamp(260px, 21vw, 340px); }
+}
+@media (min-width: 1400px) {
+  /* 1260px de conteúdo, como a Apple do 1440 pra cima. */
+  :root { --container-w: 1308px; }
+}
+@media (min-width: 1600px) {
+  :root { --t-manchete: 6rem; }           /* 96px, o maior da Apple */
+  .statement-title { font-size: var(--t-manchete); }
+  #depoimentos .container { --depo-w: min(360px, calc((min(100vw, var(--container-w)) - 48px - 56px) / 3), max(240px, calc((100svh - 330px) * .5625))); }
+  .beneficio { --card-h: min(560px, calc(100svh - 180px)); }
+}

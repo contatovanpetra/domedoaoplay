@@ -349,7 +349,11 @@ function wireReadProgressBar() {
 
   function rolaPara(clientY) {
     const r = bar.getBoundingClientRect();
-    const fracao = clamp((clientY - r.top) / Math.max(1, r.height));
+    // No computador a barra é uma barrinha curta (--thumb, ver CSS): o
+    // meio dela acompanha o mouse. No celular é a faixa inteira (0).
+    const thumb = parseFloat(getComputedStyle(bar).getPropertyValue("--thumb")) || 0;
+    const margem = thumb ? 8 : 0;
+    const fracao = clamp((clientY - r.top - margem - thumb / 2) / Math.max(1, r.height - thumb - 2 * margem));
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     window.scrollTo(0, fracao * maxScroll);
   }
