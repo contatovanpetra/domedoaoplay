@@ -536,11 +536,42 @@ function wireDepoimentos() {
       palco.scrollTo({ left: alvo.offsetLeft - cards[0].offsetLeft, behavior: prefersReducedMotion ? "auto" : "smooth" });
     });
   });
+  // Os vídeos rodam sozinhos, sem som, quando a seção aparece (fazem parte
+  // do visual, como os da Apple); o ícone de som desligado no canto convida
+  // a tocar. Tocar abre o vídeo grande, do começo e com som; ao fechar, o
+  // do cartão continua rodando mudo.
+  const inline = [];
+  cards.forEach((card) => {
+    const caixa = card.querySelector(".depo-video");
+    const src = card.dataset.video;
+    if (!caixa || !src) return;
+    const v = document.createElement("video");
+    v.className = "depo-video-mudo";
+    v.src = src;
+    v.muted = true;
+    v.defaultMuted = true;
+    v.loop = true;
+    v.playsInline = true;
+    v.setAttribute("playsinline", "");
+    v.setAttribute("muted", "");
+    v.preload = "metadata";
+    v.setAttribute("aria-hidden", "true");
+    caixa.insertBefore(v, caixa.firstChild);
+    caixa.classList.add("tem-video");
+    inline.push(v);
+  });
+  if (inline.length && !prefersReducedMotion && "IntersectionObserver" in window) {
+    const secao = document.getElementById("depoimentos") || palco;
+    new IntersectionObserver((entries) => {
+      const visivel = entries[entries.length - 1].isIntersecting;
+      inline.forEach((v) => { if (visivel) { const t = v.play(); if (t && t.catch) t.catch(() => {}); } else v.pause(); });
+    }, { threshold: 0.15 }).observe(secao);
+  }
   cards.forEach((card) => {
     const video = card.querySelector(".depo-video");
     if (!video) return;
     const nome = card.querySelector(".depo-nome");
-    video.setAttribute("aria-label", "Assistir ao depoimento" + (nome ? " de " + nome.textContent.trim() : ""));
+    video.setAttribute("aria-label", "Assistir com som ao depoimento" + (nome ? " de " + nome.textContent.trim() : ""));
     video.addEventListener("click", () => abre(card));
     video.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abre(card); }
@@ -593,10 +624,11 @@ function wireDepoimentos() {
       v.src = src;
       v.controls = true;
       v.autoplay = true;
+      v.muted = false;
       v.playsInline = true;
       alvo.appendChild(v);
     } else {
-      card.querySelectorAll(".depo-play, .depo-legenda").forEach((el) => alvo.appendChild(el.cloneNode(true)));
+      card.querySelectorAll(".depo-legenda").forEach((el) => alvo.appendChild(el.cloneNode(true)));
     }
     modal.querySelector(".depo-modal-fundo").addEventListener("click", fecha);
     modal.querySelector(".depo-modal-fechar").addEventListener("click", fecha);
@@ -686,6 +718,18 @@ function wireEscadaShowcase() {
     window.scrollTo({ top: alvo, behavior: "smooth" });
   }
 
+  // A fila vai de uma borda à outra da tela; os cartões começam (e o último
+  // termina) na borda do conteúdo — a mesma do título "A Escada de Exposição".
+  const tituloEscada = document.getElementById("metodo-title");
+  let margemEscada = 24;
+  function medeMargem() {
+    const ref = tituloEscada || palco;
+    margemEscada = Math.max(16, Math.round(ref.getBoundingClientRect().left - vitrine.getBoundingClientRect().left));
+    track.style.paddingLeft = margemEscada + "px";
+    track.style.paddingRight = margemEscada + "px";
+  }
+  medeMargem();
+
   function goToIndex(idx, suave = true) {
     activeIndex = ((idx % cards.length) + cards.length) % cards.length;
     progressoAoPausar = 0;
@@ -698,11 +742,17 @@ function wireEscadaShowcase() {
       preencheAnel(i, 0);
     });
 
-    // Centraliza o cartão ativo no palco.
+    // Como as galerias da Apple (medido no Apple Watch Ultra 4): o cartão
+    // para no começo — na mesma borda esquerda do título da seção —, não no
+    // meio; e quando chega nos últimos, a fila encosta no fim (o último
+    // cartão termina na mesma distância da borda direita) e o anterior fica
+    // cortado na borda esquerda da tela.
     const activeCard = cards[activeIndex];
-    const offset = activeCard.offsetLeft - (vitrine.clientWidth - activeCard.offsetWidth) / 2;
+    const ultimo = cards[cards.length - 1];
+    const maximo = Math.max(0, ultimo.offsetLeft + ultimo.offsetWidth + margemEscada - vitrine.clientWidth);
+    const offset = Math.min(maximo, Math.max(0, activeCard.offsetLeft - margemEscada));
     track.style.transition = suave ? "transform .55s cubic-bezier(.16, 1, .3, 1)" : "none";
-    track.style.transform = "translate3d(-" + Math.max(0, offset).toFixed(2) + "px, 0, 0)";
+    track.style.transform = "translate3d(-" + offset.toFixed(2) + "px, 0, 0)";
 
     iniciarProgresso(false);
   }
@@ -774,7 +824,7 @@ function wireEscadaShowcase() {
   let resizeTimer = 0;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => goToIndex(activeIndex, false), 100);
+    resizeTimer = setTimeout(() => { medeMargem(); goToIndex(activeIndex, false); }, 100);
   }, { passive: true });
 
   // A rodinha anda sempre que qualquer pedaço da escada estiver na tela —
@@ -798,7 +848,7 @@ function wireEscadaShowcase() {
     naTela = true;
   }
 
-  setTimeout(() => goToIndex(0, false), 50);
+  setTimeout(() => { medeMargem(); goToIndex(0, false); }, 50);
 }
 
 // O texto da Vitória já está dentro da foto (entre o nome e os números):

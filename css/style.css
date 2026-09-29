@@ -307,7 +307,7 @@ ul { padding: 0; margin: 0; list-style: none; }
 }
 /* Logo recortada (sem a margem vazia do arquivo): 40px de altura = 102px de largura. */
 .logo-mark { display: block; height: 40px; width: auto; }
-.logo-footer .logo-mark { height: 40px; }
+.logo-footer .logo-mark { height: 40px; width: auto; }
 
 /* O menu fixo cobria o começo da seção ao clicar num link do menu. */
 html { scroll-padding-top: var(--header-h, 85px); }
@@ -1186,11 +1186,12 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 #metodo { position: relative; }
 
 /* Palco / Showcase */
+/* De uma borda à outra da tela, como as galerias da Apple: o recuo dos
+   cartões (a borda do conteúdo) quem põe é o JS (ver wireEscadaShowcase). */
 .escada-palco-wrap {
   position: relative;
-  max-width: 1200px;
-  margin: clamp(2rem, 4vw, 3rem) auto 0;
-  padding: 0 clamp(16px, 4vw, 48px);
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding: 0;
 }
 .escada-vitrine {
   overflow: hidden;
@@ -1299,8 +1300,8 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   transition: all .25s ease;
   box-shadow: 0 8px 26px rgba(0, 0, 0, .5);
 }
-.escada-nav-prev { left: 0; }
-.escada-nav-next { right: 0; }
+.escada-nav-prev { left: 16px; }
+.escada-nav-next { right: 16px; }
 .escada-nav-btn:hover {
   background: rgba(255, 255, 255, .2);
   border-color: rgba(255, 255, 255, .4);
@@ -1927,6 +1928,28 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 /* Área de toque maior que o pontinho desenhado. */
 .depo-ponto::after { content: ""; position: absolute; inset: -12px -4px; }
 @media (min-width: 900px) { .depo-pontos { display: none; } }
+/* Ícone de som desligado no canto do vídeo: os vídeos rodam sozinhos e
+   mudos; o ícone é o convite pra tocar e ouvir. */
+.depo-som {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(6, 14, 28, .55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  transition: transform .25s ease, background-color .25s ease;
+}
+.depo-som svg { width: 18px; height: 18px; }
+.depo-video:hover .depo-som, .depo-video:focus-visible .depo-som { transform: scale(1.08); background: rgba(6, 14, 28, .75); }
+.depo-video-mudo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.depo-video.tem-video .depo-vazio { display: none; }
 .depo-play {
   display: grid;
   place-items: center;
@@ -2028,7 +2051,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   line-height: 1.2;
   color: #fff;
 }
-.offer-logo { display: block; width: 132px; height: auto; margin: 0 0 .85rem; }
+.offer-logo { display: block; width: 108px; height: auto; margin: 0 0 .8rem; }
 .price-box { display: flex; flex-direction: column; align-items: flex-start; gap: .2rem; }
 .price-now {
   font-family: var(--font-head);
@@ -2092,7 +2115,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   #oferta .section-title { margin-bottom: 1rem; }
   .offer-card { padding-top: 3.2rem; }
   .offer-topo { margin-bottom: .8rem; }
-  .offer-logo { width: 116px; margin-bottom: .6rem; }
+  .offer-logo { width: 100px; margin-bottom: .55rem; }
   .price-now { font-size: 2.6rem; }
   .offer-inclui { padding-top: .8rem; }
   .offer-lista { gap: .4rem; }
@@ -2104,7 +2127,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   #oferta .section-title { margin-bottom: .9rem; }
   .offer-card { padding: 3rem 1.1rem 1rem; }
   .offer-topo { margin-bottom: .8rem; }
-  .offer-logo { width: 112px; margin-bottom: .55rem; }
+  .offer-logo { width: 96px; margin-bottom: .5rem; }
   .price-now { font-size: 2.4rem; }
   .offer-inclui { padding-top: .8rem; }
   .offer-inclui-rotulo { margin-bottom: .45rem; }
@@ -2187,14 +2210,14 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
    celular). */
 .final-cta { padding-top: 56px; }
 .final-logo {
-  --logo-w: min(420px, 72vw, 50svh);
+  --logo-w: min(360px, 62vw, 44svh);
   position: relative;
   width: var(--logo-w);
   aspect-ratio: 1000 / 1196;
   margin: 0 auto;
   z-index: 0;
 }
-.final-logo-img { position: relative; z-index: 1; display: block; width: 100%; height: auto; }
+.final-logo-img { position: relative; z-index: 1; display: block; width: 100%; height: auto; filter: brightness(.62) saturate(.9); }
 .final-logo-brilho {
   position: absolute;
   inset: 4% 2% 14%;
@@ -2202,7 +2225,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   border-radius: 46% 46% 30% 30%;
   background: conic-gradient(from 0deg, #4682B4, #90BED9, #9E7BFF, #D77713, #205D8D, #4682B4);
   filter: blur(56px);
-  opacity: .55;
+  opacity: .3;
   animation: logo-gira 12s linear infinite;
 }
 .final-logo-luz {
@@ -2222,7 +2245,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   bottom: -20%;
   left: -60%;
   width: 60%;
-  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, .5) 50%, transparent 100%);
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, .28) 50%, transparent 100%);
   transform: translateX(0) skewX(-12deg);
   animation: logo-luz 6s cubic-bezier(.45, 0, .25, 1) infinite;
 }
@@ -2245,7 +2268,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 }
 /* O título sobe e entra na parte de baixo da logo (lá, 60% da altura do vídeo). */
 .final-cta .final-cta-grid { position: relative; z-index: 4; margin-top: calc(var(--logo-w, 520px) * -1.196 * .3); }
-.final-cta .container { --logo-w: min(420px, 72vw, 50svh); }
+.final-cta .container { --logo-w: min(360px, 62vw, 44svh); }
 /* Título em duas linhas no computador, como o do Spotify (uma frase larga). */
 @media (min-width: 700px) { .final-cta-copy { max-width: 980px; } }
 .final-cta-copy .section-title { text-shadow: 0 2px 24px rgba(11, 23, 40, .6); }

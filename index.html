@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=70">
+<link rel="stylesheet" href="css/style.css?v=71">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -348,10 +348,10 @@
            No computador, os três lado a lado. Um toque no vídeo abre ele
            grande. Pra colocar o vídeo de verdade: data-video no <figure>,
            ex.: <figure class="depo-card" data-video="assets/video/depoimento-1.mp4">. -->
-      <div class="depo-palco" role="region" tabindex="0" aria-label="Depoimentos em vídeo. Deslize para o lado para ver os outros; toque num vídeo para assistir." data-confirmar="depoimentos a gravar com os alunos que vão testar antes do lançamento">
+      <div class="depo-palco" role="region" tabindex="0" aria-label="Depoimentos em vídeo. Os vídeos rodam sem som; toque num vídeo para assistir com som. Deslize para o lado para ver os outros." data-confirmar="depoimentos a gravar com os alunos que vão testar antes do lançamento">
         <figure class="depo-card">
           <div class="depo-video" role="button" tabindex="0">
-            <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+            <span class="depo-som" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 1</span>
             <div class="depo-legenda">
               <strong class="depo-nome">Paloma Gonçalves</strong>
@@ -364,7 +364,7 @@
         </figure>
         <figure class="depo-card">
           <div class="depo-video" role="button" tabindex="0">
-            <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+            <span class="depo-som" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 2</span>
             <div class="depo-legenda">
               <strong class="depo-nome">Vitória Catarina</strong>
@@ -377,7 +377,7 @@
         </figure>
         <figure class="depo-card">
           <div class="depo-video" role="button" tabindex="0">
-            <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
+            <span class="depo-som" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 3</span>
             <div class="depo-legenda">
               <strong class="depo-nome">Henrique Policastro</strong>
@@ -804,7 +804,7 @@
 <footer class="site-footer">
   <div class="container footer-inner">
     <a href="#topo" class="logo logo-footer" aria-label="Do Medo ao Play, voltar ao início">
-      <img class="logo-mark" src="assets/img/logo.svg" alt="Do Medo ao Play" width="102" height="40" loading="lazy">
+      <img class="logo-mark" src="assets/img/logo-branco.webp" alt="Do Medo ao Play" width="408" height="159" loading="lazy">
     </a>
     <div class="footer-meta">
       <nav class="footer-legal" aria-label="Informações legais">
@@ -891,6 +891,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=35"></script>
+<script src="js/main.js?v=36"></script>
 </body>
 </html>
