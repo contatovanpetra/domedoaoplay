@@ -989,9 +989,9 @@ function wireScrollReveal() {
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
   // terminava de aparecer (a tela piscava no antes/depois).
   const targets = [...document.querySelectorAll(
-    ".section .container > *, .accordion-item"
+    ".section .container > *, .accordion-item, .situacoes-item"
   )].filter((el) => !el.matches(
-    ".accordion, .beneficios"
+    ".accordion, .beneficios, .situacoes"
   ));
   // Sem IntersectionObserver, nada é escondido.
   if (!("IntersectionObserver" in window)) return;

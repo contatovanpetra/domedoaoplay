@@ -126,7 +126,7 @@
      sistema e troca quando elas chegam (font-display: swap), sem pular. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=105">
+<link rel="stylesheet" href="css/style.css?v=106">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
@@ -219,8 +219,39 @@
   <section class="section" id="reconhecimento" aria-labelledby="reconhecimento-title">
     <div class="container">
       <div class="statement-panel">
-        <h2 id="reconhecimento-title" class="statement-title">Você trava. <span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></h2>
+        <h2 id="reconhecimento-title" class="statement-title">Você trava.</h2>
       </div>
+    </div>
+  </section>
+
+  <!-- As situações de quem trava e a virada ("Dá pra sair disso"), logo depois
+       da frase. Formato das listas da Apple (AirPods Pro: ícone em cima e a
+       frase com o começo em negrito) com o laranja da marca no ícone.
+       Fica FORA de #reconhecimento de propósito: aquela seção é a pista da
+       foto do herói (ajustaRunwayHero mede a altura dela), e aqui o texto
+       entra só depois de a foto terminar de se dissolver, no azul liso.
+       Frases dos cards de 23/set, trazidas de volta a pedido do sócio (30/set). -->
+  <section class="section" id="situacoes" aria-labelledby="reconhecimento-title">
+    <div class="container">
+      <ul class="situacoes">
+        <li class="situacoes-item">
+          <svg class="situacoes-icone" viewBox="0 0 36 36" aria-hidden="true"><path d="M4 11a3 3 0 0 1 3-3h13a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z"/><path d="M23 14.5l7-4v13l-7-4"/><circle class="situacoes-acento" cx="9.5" cy="13" r="2" fill="currentColor" stroke="none"/></svg>
+          <p><strong>Trava quando grava.</strong> A câmera liga e o que você diria numa conversa simplesmente some.</p>
+        </li>
+        <li class="situacoes-item">
+          <svg class="situacoes-icone" viewBox="0 0 36 36" aria-hidden="true"><path d="M6 7h24a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H14l-7 5v-5H6a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/><path class="situacoes-acento" d="M12 14v4M16 12v8M20 13.5v5M24 15v2"/></svg>
+          <p><strong>Acha que fala mal.</strong> Assiste ao que gravou e só vê defeito, mesmo falando bem ao vivo.</p>
+        </li>
+        <li class="situacoes-item">
+          <svg class="situacoes-icone" viewBox="0 0 36 36" aria-hidden="true"><path d="M3 18s5.5-9 15-9 15 9 15 9-5.5 9-15 9S3 18 3 18z"/><circle cx="18" cy="18" r="4.5"/><circle class="situacoes-acento" cx="18" cy="18" r="1.8" fill="currentColor" stroke="none"/></svg>
+          <p><strong>Não gosta do que vê.</strong> Revê o próprio vídeo depois e pensa que não leva jeito pra isso.</p>
+        </li>
+        <li class="situacoes-item">
+          <svg class="situacoes-icone" viewBox="0 0 36 36" aria-hidden="true"><path d="M4 30h7v-6h7v-6h7v-6h7"/><circle class="situacoes-acento" cx="7.5" cy="26.5" r="2" fill="currentColor" stroke="none"/></svg>
+          <p><strong>Não sabe por onde começar.</strong> Nunca teve prática de falar sozinho pra uma lente e não sabe nem o primeiro passo.</p>
+        </li>
+      </ul>
+      <p class="statement-title situacoes-fecho"><span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></p>
     </div>
   </section>
 
@@ -774,7 +805,9 @@
           <span class="offer-etiqueta">Acesso vitalício</span>
           <img class="offer-logo" src="assets/img/logo-azul-escuro.webp" alt="Do Medo ao Play" width="520" height="203" loading="lazy" decoding="async">
           <div class="price-box">
-            <span class="price-now">R$ 197</span>
+            <!-- Pedido do sócio (30/set): parcela em destaque, à vista embaixo. -->
+            <span class="price-parcelas"><span class="price-vezes">10x de</span> <span class="price-now">R$ 23,68</span></span>
+            <span class="price-avista">ou <strong>R$ 197</strong> à vista</span>
             <span class="price-note">Pagamento único · sem mensalidades</span>
           </div>
         </div>
@@ -1001,6 +1034,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=55"></script>
+<script src="js/main.js?v=56"></script>
 </body>
 </html>

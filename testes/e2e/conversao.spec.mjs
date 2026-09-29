@@ -143,7 +143,8 @@ test("nenhuma camada cobre os botões de compra (o ponto do toque é o próprio 
 test("preço, módulos, aulas e garantia são os mesmos na página e nos Termos", async ({ page }) => {
   await abre(page);
   const pagina = await page.evaluate(() => ({
-    preco: document.querySelector("#oferta").textContent.match(/R\$\s?([\d.,]+)/)[1],
+    // O preço à vista (o destaque do card é a parcela: 10x de R$ 23,68).
+    preco: document.querySelector("#oferta .price-avista").textContent.match(/R\$\s?([\d.,]+)/)[1],
     aulasPorModulo: [...document.querySelectorAll("#accordion-modulos .accordion-item")].map((m) => m.querySelectorAll(".aula-num").length),
     contagemDita: [...document.querySelectorAll("#accordion-modulos .module-count")].map((c) => parseInt(c.textContent, 10)),
     titulo: document.getElementById("modulos-title").textContent,

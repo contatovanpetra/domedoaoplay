@@ -108,7 +108,7 @@ test("dados estruturados: JSON válido e só o que está escrito na página", as
   expect(curso.url).toBe(m.canonicals[0]);
   // O preço e a quantidade de módulos/aulas vêm da página: se um mudar, o outro tem que mudar junto.
   const pagina = await page.evaluate(() => ({
-    preco: document.querySelector("#oferta .price-now").textContent.replace(/\D/g, ""),
+    preco: document.querySelector("#oferta .price-avista strong").textContent.replace(/\D/g, ""),
     titulo: document.getElementById("modulos-title").textContent,
   }));
   expect(curso.offers.price).toBe(pagina.preco);
