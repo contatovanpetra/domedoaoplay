@@ -53,7 +53,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=84">
+<link rel="stylesheet" href="css/style.css?v=87">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -87,6 +87,9 @@
   <div class="container header-inner">
     <a href="#topo" class="logo" aria-label="Do Medo ao Play, voltar ao início">
       <img class="logo-mark" src="assets/img/logo.svg" alt="Do Medo ao Play" width="102" height="40">
+      <!-- Versão com o nome em azul-escuro: aparece no lugar da branca quando o
+           menu passa pelas seções azul-claras (computador, ver .on-light). -->
+      <img class="logo-mark logo-mark--escura" src="assets/img/logo-escuro.svg" alt="" aria-hidden="true" width="102" height="40">
     </a>
 
     <a href="#" data-checkout-link class="btn btn-primary header-cta">Quero entrar em cena</a>
@@ -932,6 +935,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=40"></script>
+<script src="js/main.js?v=41"></script>
 </body>
 </html>

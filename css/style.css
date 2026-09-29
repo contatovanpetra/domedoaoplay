@@ -280,6 +280,7 @@ ul { padding: 0; margin: 0; list-style: none; }
 /* Menu sem cor nenhuma atrás. A logo leva só uma sombra suave nas letras, pra
    continuar legível quando passa sobre uma parte clara da página. */
 .site-header .logo-mark { filter: drop-shadow(0 1px 6px rgba(3, 10, 29, .6)); }
+.site-header .logo-mark--escura { display: none; filter: none; }
 .site-header.is-on { transform: translateY(0); opacity: 1; visibility: visible; transition: transform .5s ease, opacity .4s ease, visibility 0s; }
 /* Depois do topo, o menu sobe e some quando a pessoa desce (o texto não passa
    mais por baixo da logo e do botão) e volta assim que ela sobe. Continua sem
@@ -3285,4 +3286,63 @@ html.abertura-on { overflow: hidden; }
   .statement-title { font-size: var(--t-manchete); }
   #depoimentos .container { --depo-w: min(360px, calc((min(100vw, var(--container-w)) - 48px - 56px) / 3), max(240px, calc((100svh - 330px) * .5625))); }
   .beneficio { --card-h: min(560px, calc(100svh - 180px)); }
+}
+
+/* ---------- Computador: rodada de correções de 29/set ----------
+   Pedidos da Vitória, só em tela de computador. */
+@media (min-width: 900px) and (pointer: fine) {
+  /* Texto não selecionável (os títulos e mensagens da página não são pra
+     copiar). Também evita que arrastar a barrinha de progresso selecione a
+     página inteira, que era o que mostrava o cursor de texto e deixava a
+     rolagem pesada (o navegador redesenhava a seleção a cada movimento). */
+  body { -webkit-user-select: none; user-select: none; }
+  .read-progress { cursor: grab; }
+  html.arrastando-barra, html.arrastando-barra * { cursor: grabbing !important; }
+}
+@media (min-width: 900px) {
+  /* Menu: transparente no topo (não cobre a foto); ao rolar, azul-escuro
+     meio transparente; sobre as seções azul-claras (módulos e benefícios),
+     azul-claro meio transparente com a logo em azul-escuro; e volta ao
+     azul-escuro quando sai delas. */
+  /* O tema do menu segue a MESMA troca de cor da página (html.fundo-claro,
+     wireCorDoFundo): antes ele trocava pela seção que estava embaixo dele
+     e, perto das emendas, ficava azul-claro com a página já azul-escura (ou
+     o contrário) — o erro que aparecia "às vezes". */
+  .site-header.com-fundo,
+  .site-header.on-light { background: rgba(11, 23, 40, .8); }
+  html.fundo-claro .site-header.com-fundo { background: rgba(144, 190, 217, .82); }
+  html.fundo-claro .site-header.com-fundo .logo-mark:not(.logo-mark--escura) { display: none; }
+  html.fundo-claro .site-header.com-fundo .logo-mark--escura { display: block; }
+  /* Fim da foto da Vitória: "8 módulos" subia 56px por cima dela com uma
+     sombra — como a seção é transparente (a cor da página é que muda), a
+     sombra ficava solta no meio da foto, logo embaixo dos números. */
+  #modulos { margin-top: 0; box-shadow: none; }
+  /* A fumaça da foto da Vitória no lugar certo: no pé da foto, atrás dos
+     números (13, 8, 4, CEO), se desfazendo no azul da página — sem a linha
+     seca onde a foto acabava. Abaixo da camada de texto (z-index 0). */
+  .vivi-foto::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 34%;
+    z-index: 0;
+    background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .62) 55%, var(--bg) 100%);
+    pointer-events: none;
+  }
+  /* Garantia no mesmo azul-escuro das Perguntas (sem a faixa um tom acima). */
+  .section-tone--guarantee::before { background: none; }
+}
+@media (min-width: 1069px) {
+  /* Botões grandes crescem junto com o título do topo (73px no 1440, 84px no
+     1920), na proporção título/botão da Apple Fitness+ (64px / 56px): 58px
+     no 1280, 60px no 1440 e 66px no 1920. */
+  .btn-large { min-height: clamp(58px, 4.2vw, 66px); font-size: clamp(1.1875rem, 1.35vw, 1.3125rem); padding-left: 2.4em; padding-right: 2.4em; }
+  /* Depoimentos alinhados à esquerda, na mesma borda dos outros títulos
+     (antes o bloco ficava centralizado e mais estreito). */
+  #depoimentos .container {
+    --depo-w: min(400px, calc((min(100vw, var(--container-w)) - 48px - 56px) / 3), max(240px, calc((100svh - 330px) * .5625)));
+    max-width: var(--container-w);
+  }
 }

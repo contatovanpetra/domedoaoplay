@@ -363,7 +363,11 @@ function wireReadProgressBar() {
     // Só o botão principal do mouse (ou toque/caneta) — sem isso, um clique
     // com o botão direito também arrastava a página.
     if (e.button !== undefined && e.button !== 0) return;
+    // Sem isso o navegador começava a selecionar o texto da página junto
+    // com o arrasto (cursor de texto e rolagem pesada).
+    e.preventDefault();
     arrastando = true;
+    document.documentElement.classList.add("arrastando-barra");
     bar.setPointerCapture(e.pointerId);
     rolaPara(e.clientY);
   });
@@ -373,6 +377,7 @@ function wireReadProgressBar() {
   });
   const solta = (e) => {
     arrastando = false;
+    document.documentElement.classList.remove("arrastando-barra");
     if (bar.hasPointerCapture(e.pointerId)) bar.releasePointerCapture(e.pointerId);
   };
   bar.addEventListener("pointerup", solta);
