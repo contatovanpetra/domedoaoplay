@@ -1266,6 +1266,12 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
   overflow: hidden;
   background: #020817;
 }
+/* Enquanto a abertura toca, as fotos da escada (duas telas abaixo, "lazy")
+   não baixam: o navegador já as pedia por estarem perto, disputando a
+   conexão com o vídeo do túnel. O quadro tem proporção fixa, então nada se
+   mexe; elas chegam assim que a abertura acaba, bem antes de alguém rolar
+   até lá. */
+html.abertura-on .escada-card-media img { display: none; }
 .escada-card-media img {
   display: block;
   width: 100%;
