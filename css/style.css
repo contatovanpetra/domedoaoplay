@@ -2189,6 +2189,8 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
   text-align: center;
 }
 .offer-selos span { white-space: nowrap; }
+/* Garantia e acesso na primeira linha; o pagamento seguro sempre na de baixo. */
+.offer-selos .selo-linha { flex-basis: 100%; }
 @media (min-width: 700px) {
   #oferta.offer-section { padding: 56px 0 48px; }
   .offer-card { max-width: 420px; padding: 3.6rem 1.5rem 1.4rem; }
