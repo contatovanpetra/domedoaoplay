@@ -31,7 +31,11 @@
 .apoio-main h1 {
   margin: 0;
   font-family: var(--font-head);
-  font-weight: 800;
+  /* Semi-negrito, como nas páginas legais da Apple (600, medido em
+     apple.com/legal/privacy/br e nos Termos do iTunes em set/2026): em 800,
+     o título claro sobre o fundo escuro pesava demais pra uma página de
+     leitura. */
+  font-weight: 700;
   font-size: 2rem;
   line-height: 1.1;
   letter-spacing: -.03em;
@@ -41,14 +45,16 @@
 .apoio-main h2 {
   margin: 2.6rem 0 .8rem;
   font-family: var(--font-head);
-  font-weight: 800;
+  font-weight: 700;
   font-size: var(--t-subtitulo);
   line-height: 1.25;
   color: var(--white);
   text-wrap: balance;
 }
 .apoio-main p,
-.apoio-main li { font-size: var(--t-corpo); line-height: 1.65; color: var(--cor-corpo); }
+.apoio-main li { font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
+/* Entrelinha de 1,5 (a Apple usa 1,47 no texto das páginas legais): com
+   1,65 as linhas ficavam soltas e o texto parecia maior do que é. */
 .apoio-main p { margin: 0 0 1em; }
 .apoio-main ul { margin: 0 0 1em; padding-left: 1.2rem; }
 .apoio-main li + li { margin-top: .5em; }
@@ -65,6 +71,8 @@
 }
 @media (min-width: 1069px) {
   .apoio-main h1 { font-size: 3rem; }
+  /* Abertura em 21px no computador, como a da Apple (era 24px). */
+  .apoio-main .apoio-intro { font-size: 1.3125rem; }
 }
 /* Informação que ainda falta preencher: aparece destacada até ser trocada. */
 .apoio-pendente { padding: 0 .3em; border-radius: 4px; background: rgba(215, 119, 19, .18); color: var(--white); }
