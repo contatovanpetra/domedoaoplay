@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireViviCard();
   wireCountUp();
   wireScrollEffects();
+  wireFotoHero();
   wireReadProgressBar();
   wireScrollCue();
   wireIntroStage();
@@ -169,6 +170,44 @@ function ajustaRunwayHero() {
   hero.style.minHeight = (tela + alturaRecon) + "px";
   reconhecimento.style.marginTop = "-" + alturaRecon + "px";
 }
+// Celular e tablet em pé: o bloco de texto do topo fica no azul-noite liso,
+// nunca em cima da foto. A foto desce só o bastante pra o que aparece nela
+// (o brilho do arco começa a 31% da altura da imagem) começar 40px abaixo do
+// último elemento do bloco — título, apoio, botão e a linha de números.
+const FOTO_HERO_W = 941, FOTO_HERO_H = 1672, FOTO_HERO_INICIO = 0.31;
+function ajustaFotoHero() {
+  const foto = document.querySelector(".hero-foto-deitada");
+  const copy = document.querySelector(".hero-copy");
+  const hero = REAL_HERO;
+  if (!foto || !copy || !hero) return;
+  if (!window.matchMedia("(max-width: 899.98px) and (orientation: portrait)").matches) {
+    foto.style.backgroundPosition = "";
+    return;
+  }
+  const topoHero = hero.getBoundingClientRect().top + window.scrollY;
+  let fim = copy.getBoundingClientRect().bottom + window.scrollY;
+  const acoes = document.getElementById("hero-actions-el");
+  // Em pé (celular e tablet) o botão vem logo depois do texto: entra na conta.
+  if (acoes) fim = Math.max(fim, acoes.getBoundingClientRect().bottom + window.scrollY);
+  fim -= topoHero;
+  const esc = Math.max(foto.offsetWidth / FOTO_HERO_W, foto.offsetHeight / FOTO_HERO_H);
+  const desce = Math.max(0, Math.round(fim + 40 - FOTO_HERO_INICIO * FOTO_HERO_H * esc));
+  foto.style.backgroundPosition = "60% " + desce + "px";
+}
+// A fonte do título chega depois do primeiro desenho (e muda a altura do
+// bloco): refaz a conta sempre que o bloco de texto do topo muda de tamanho.
+function wireFotoHero() {
+  const bloco = document.querySelector(".hero-primeira-tela");
+  if (!bloco) return;
+  ajustaFotoHero();
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(() => ajustaFotoHero());
+    ro.observe(bloco);
+    const copy = document.querySelector(".hero-copy");
+    if (copy) ro.observe(copy);
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaFotoHero);
+}
 function wireScrollEffects() {
   const root = document.documentElement;
   const header = document.querySelector(".site-header");
@@ -199,6 +238,7 @@ function wireScrollEffects() {
     sincronizaHeaderH();
     // Refaz a altura da pista do herói antes de medi-la (ver função acima).
     ajustaRunwayHero();
+    ajustaFotoHero();
     if (hero) {
       heroTop = hero.getBoundingClientRect().top + window.scrollY;
       heroAltura = hero.offsetHeight;
@@ -816,11 +856,11 @@ function wireScrollReveal() {
         }
       });
     },
-    // Margem positiva embaixo: o elemento "conta" como visível bem antes de
-    // entrar de fato na tela (ainda na metade da seção anterior), não só
-    // quando a rolagem já chega nele — pra revelação (e a subida do card da
-    // Vitória, que usa esse mesmo mecanismo) começar cedo, não em cima da hora.
-    { threshold: 0.12, rootMargin: "0px 0px 45% 0px" }
+    // Como nas páginas da Apple (medido no iPhone e no AirPods Pro): o
+    // elemento aparece e sobe 30px quando o alto dele passa de 88% da altura
+    // da tela — a pessoa vê a entrada acontecer. Antes a margem era de 45%
+    // pra baixo e a animação terminava antes de o elemento aparecer.
+    { threshold: 0, rootMargin: "0px 0px -12% 0px" }
   );
 
   targets.forEach((el) => observer.observe(el));
@@ -1232,60 +1272,20 @@ function wireHeaderReveal() {
   const header = document.querySelector(".site-header");
   if (!header) return;
   quandoAberturaAcabar(() => header.classList.add("is-on"));
-
-  // Dentro da seção Vitória Caroline, o card e as credenciais são pra ficar
-  // sempre visíveis, sem nada cobrindo (ver wireViviCard) — mas o menu volta
-  // a aparecer assim que a pessoa rola um pouco pra cima, em qualquer seção,
-  // e aqui ele podia vir cobrir o topo do card. Enquanto a rolagem estiver
-  // dentro de #vivi, o menu fica sempre recolhido, não importa a direção.
-  const vivi = document.getElementById("vivi");
-  let viviTop = 0;
-  let viviBottom = -1;
-  function medeVivi() {
-    if (!vivi) return;
-    viviTop = vivi.getBoundingClientRect().top + window.scrollY;
-    viviBottom = viviTop + vivi.offsetHeight;
-  }
-  medeVivi();
-  window.addEventListener("resize", medeVivi, { passive: true });
-  if ("ResizeObserver" in window && vivi) new ResizeObserver(medeVivi).observe(vivi);
-
-  let ultimoY = window.scrollY;
-  let andado = 0;
+  // Como a barra do produto nas páginas da Apple (iPad Pro, AirPods Pro,
+  // Fitness+): o menu fica sempre visível, descendo e subindo — nunca some.
+  // No topo ele é transparente (flutua sobre o céu escuro da foto); assim
+  // que a pessoa rola, ganha o fundo azul-noite translúcido (ver
+  // .site-header.com-fundo no CSS), pra o texto não passar por trás da logo.
   let pedido = false;
   const confere = () => {
     pedido = false;
-    const y = window.scrollY;
-    if (y <= (header.offsetHeight || 70)) {
-      header.classList.remove("is-recolhido");
-      ultimoY = y;
-      return;
-    }
-    if (vivi && y >= viviTop && y < viviBottom) {
-      header.classList.add("is-recolhido");
-      ultimoY = y;
-      return;
-    }
-    const d = y - ultimoY;
-    ultimoY = y;
-    // O "quique" do iPhone no fim e no começo da página não conta.
-    const fim = document.documentElement.scrollHeight - window.innerHeight;
-    if (y < 0 || y > fim) return;
-    // Soma o quanto andou na mesma direção (trocou de direção, zera): só
-    // esconde depois de 24px descendo e só mostra depois de 48px subindo.
-    // Com 8px por quadro, qualquer tremida do dedo ou a rolagem que
-    // desliza sozinha no celular fazia o menu sumir e voltar sem parar.
-    if (d === 0) return;
-    if ((d > 0) !== (andado > 0)) andado = 0;
-    andado += d;
-    // Com o foco no menu (navegando pelo teclado), ele não some.
-    if (andado > 24 && !header.contains(document.activeElement)) header.classList.add("is-recolhido");
-    else if (andado < -48) header.classList.remove("is-recolhido");
+    header.classList.toggle("com-fundo", window.scrollY > 8);
   };
+  confere();
   window.addEventListener("scroll", () => {
     if (!pedido) { pedido = true; requestAnimationFrame(confere); }
   }, { passive: true });
-  header.addEventListener("focusin", () => header.classList.remove("is-recolhido"));
 }
 
 // "Falar bem na câmera vira venda...": o texto fica parado no meio da tela

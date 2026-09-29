@@ -32,7 +32,9 @@
      os títulos crescem, em saltos (28 → 40 → 56px). Todo texto da página
      usa um destes. */
   --t-display: 2rem;          /* título do herói: 32px */
-  --t-manchete: 2rem;         /* frase de efeito que ocupa a seção: 32px */
+  /* Só dois níveis de título, como na Apple: frase de impacto (40 / 64 /
+     80px, a mesma do "Você trava") e título de seção (28 / 48 / 56px). */
+  --t-manchete: 2.5rem;       /* frase de impacto: 40px */
   --t-titulo: 1.75rem;        /* título de seção: 28px */
   --t-subtitulo: 1.3125rem;   /* título de card grande, frase de fecho: 21px */
   --t-card: 1.1875rem;        /* título de card pequeno: 19px */
@@ -42,6 +44,10 @@
   --t-rotulo: .75rem;         /* rótulos em maiúsculas, rodapé: 12px */
   /* Texto corrido claro (o cinza antigo deixava a leitura cansada). */
   --cor-corpo: #D8E0E8;
+  /* Texto de apoio no padrão das páginas da Apple: o parágrafo em cinza e
+     só as frases principais em branco e seminegrito (<strong>), pra quem
+     passa o olho ler o essencial. Cinza com contraste ~8:1 sobre o azul-noite. */
+  --cor-apoio: #A7B6C6;
 
   --font-head: 'Quicksand', sans-serif;
   --font-body: 'Nunito Sans', sans-serif;
@@ -62,15 +68,15 @@
 @media (min-width: 700px) {
   :root {
     --t-display: 3rem;        /* 48px */
-    --t-manchete: 3rem;       /* 48px */
-    --t-titulo: 2.5rem;       /* 40px */
+    --t-manchete: 4rem;       /* 64px */
+    --t-titulo: 3rem;         /* 48px (títulos de seção da Apple no tablet) */
     --t-lead: 1.3125rem;      /* 21px */
   }
 }
 @media (min-width: 1069px) {
   :root {
     --t-display: 3.5rem;      /* 56px */
-    --t-manchete: 4rem;       /* 64px */
+    --t-manchete: 5rem;       /* 80px */
     --t-titulo: 3.5rem;       /* 56px */
     --t-subtitulo: 1.5rem;    /* 24px */
     --t-lead: 1.5rem;         /* 24px */
@@ -224,7 +230,7 @@ ul { padding: 0; margin: 0; list-style: none; }
    centralizado dentro do túnel. */
 /* Um tamanho só pra todo botão de compra (herói, escada, oferta, fim): 17px,
    ~53px de altura em qualquer tela. Antes eram 5 tamanhos diferentes. */
-.btn-large { padding: 1.05em 2em .85em; font-size: var(--t-corpo); min-width: 13.5rem; }
+.btn-large { padding: .85em 2em .7em; font-size: var(--t-corpo); min-width: 13.5rem; }
 .btn-block { display: flex; width: 100%; margin-top: 1.5rem; }
 
 /* ---------- Header ---------- */
@@ -261,6 +267,9 @@ ul { padding: 0; margin: 0; list-style: none; }
    wireHeaderTema em main.js): em vez de trocar a cor da logo, ganha um
    fundo escuro translúcido só nesse momento — mais simples e sem precisar
    de uma segunda versão da logo. */
+/* Depois do topo: fundo azul-noite quase opaco, sempre (sem desfoque:
+   ligar e desligar o desfoque numa barra fixa pesava no iPhone). */
+.site-header.com-fundo { background: rgba(11, 23, 40, .9); }
 .site-header.on-light {
   /* Sem desfoque (backdrop-filter): ligar e desligar o desfoque de uma barra
      fixa no meio da rolagem pesava no iPhone e dava as travadas no menu. */
@@ -577,7 +586,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    dar destaque sem depender só do tamanho. */
 #aplicacao-title {
   color: var(--blue-light);
-  font-size: var(--t-manchete);
+  font-size: var(--t-titulo);
   text-shadow: 0 2px 28px rgba(70, 130, 180, .35);
 }
 #modulos, #beneficios {
@@ -591,20 +600,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    (item fechado ou aberto, par ou ímpar) — nada de alternar entre claro e
    escuro: só uma opacidade maior pro aberto se destacar dos outros (isso
    e a borda laranja da esquerda, que já existia). */
-/* Vidro (material da Apple): reflexo em degradê, brilho fino na borda de
-   cima e desfoque do que está atrás — as luzes suaves do fundo da seção
-   (ver #modulos.section-tone::before) aparecem borradas através dele. */
+/* Cards lisos, como os da Apple (medido no iPhone, iPad, AirPods e
+   Fitness+): um tom só, sem borda, sem sombra e sem efeito de vidro. Aqui,
+   branco translúcido sobre o azul claro da seção. */
 #modulos .accordion-item,
 .beneficio {
-  background: linear-gradient(150deg, rgba(255, 255, 255, .6) 0%, rgba(255, 255, 255, .26) 100%);
-  border: 1px solid rgba(255, 255, 255, .65);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .9),
-    inset 0 -1px 0 rgba(255, 255, 255, .2),
-    0 2px 6px -2px rgba(11, 40, 70, .12),
-    0 14px 34px -18px rgba(11, 40, 70, .4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  backdrop-filter: blur(18px) saturate(1.5);
+  background: rgba(255, 255, 255, .5);
+  border: 0;
+  box-shadow: none;
 }
 #modulos #accordion-modulos .accordion-item.open {
   /* Havia uma regra de :nth-child(even) com o mesmo peso e vindo depois
@@ -613,7 +616,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      prioridade sobre a regra de cima sem depender da ordem. Mesma
      transparência de vidro do fechado (não mais um branco quase opaco):
      só a borda laranja da esquerda e o selo já diferenciam o aberto. */
-  background: linear-gradient(150deg, rgba(255, 255, 255, .72) 0%, rgba(255, 255, 255, .36) 100%);
+  background: rgba(255, 255, 255, .72);
 }
 #accordion-modulos .accordion-icon { color: var(--blue-deep); }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
@@ -636,12 +639,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    ocupa exatamente a tela, no topo) — com opacidade 1 ela é idêntica pixel
    a pixel ao fundo fixo, então quando a foto solta e sobe não há emenda. */
 .page-bg, .hero-fim {
+  /* Fundo liso, de uma cor só, como nas páginas da Apple (antes tinha
+     manchas de luz azul que se repetiam em cada tela). */
   background: var(--bg);
-  background-image:
-    radial-gradient(55% 45% at 15% 8%, rgba(70, 130, 180, 0.20), transparent 62%),
-    radial-gradient(48% 42% at 88% 22%, rgba(70, 130, 180, 0.15), transparent 60%),
-    radial-gradient(50% 46% at 20% 92%, rgba(70, 130, 180, 0.14), transparent 62%),
-    radial-gradient(38% 34% at 82% 88%, rgba(215, 119, 19, 0.05), transparent 60%);
 }
 
 /* ---------- Profundidade dos cards ----------
@@ -787,7 +787,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .hero-lead-list p { margin: 0; }
 .hero-lead-list p + p { margin-top: .75em; }
 /* O primeiro parágrafo é o apoio direto do título; o segundo fica mais discreto. */
-.hero-lead-list p:first-child { color: var(--text); }
+.hero-lead-list p:first-child { color: var(--cor-apoio); }
+/* Nas seções escuras, o parágrafo de apoio fica em cinza pra o destaque
+   em branco aparecer (padrão Apple). Nas seções claras (módulos,
+   benefícios, bônus) o texto já é azul-escuro e o destaque vem do peso. */
+html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone--guarantee .section-lead { color: var(--cor-apoio); }
+/* Destaque dentro dos textos (padrão Apple): branco e seminegrito. Vale
+   pra qualquer parágrafo da página sobre o fundo escuro. */
+.hero-lead strong, .section-lead strong, .texto-corrido strong, .vivi-card strong, .bonus-item-texto p strong, .guarantee-block strong { color: var(--white); font-weight: 600; }
 /* "7 módulos · 32 aulas · X horas de formação" embaixo do botão. */
 .hero-numeros { margin: .9rem 0 0; font-size: var(--t-pequeno); letter-spacing: .02em; color: var(--text-muted); }
 .hero-actions { margin-top: 1.6rem; }
@@ -911,7 +918,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 1;
   display: flex;
   flex-direction: column;
-  padding: clamp(1rem, 4vh, 1.75rem) 0 clamp(1.4rem, 4vh, 2rem);
+  /* O menu fica sempre visível agora (ver wireHeaderReveal): o nome desce
+     a altura dele pra não ficar por baixo. */
+  padding: calc(var(--header-h, 68px) + clamp(.75rem, 3vh, 1.5rem)) 0 clamp(1.4rem, 4vh, 2rem);
 }
 .vivi-meio {
   flex: 1;
@@ -966,9 +975,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Nome e cargo escritos no alto da foto, como uma assinatura. */
 .vivi-assinatura {
-  /* Perto do topo de verdade da foto: o menu fica sempre recolhido
-     enquanto a rolagem está dentro de #vivi (ver wireHeaderReveal em
-     main.js), então nunca cobre o nome. */
+  /* Logo abaixo do menu (ver .vivi-camada). */
   flex: none;
   margin: 0;
   padding: 0 clamp(24px, 5vw, 96px);
@@ -1119,7 +1126,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    fundo: o respiro entre as duas é o padding de baixo de #reconhecimento. O texto de abertura fica centralizado,
    numa coluna de ~690px, como o parágrafo sob as frases da Apple. */
 #metodo { padding-top: 0; }
-#metodo .texto-corrido { max-width: 690px; text-align: center; }
+/* Título e texto à esquerda, na borda do conteúdo (padrão Apple). */
+#metodo .texto-corrido { max-width: 690px; margin-left: 0; text-align: left; }
 #metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; color: var(--text-muted); text-wrap: balance; }
 /* Celular: texto de 16px (era 19px, 5 linhas) — abre a seção sem pesar mais
    que os cartões. */
@@ -1595,7 +1603,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 #faq .accordion-panel p { font-size: var(--t-corpo); line-height: 1.5; color: var(--text-muted); }
 #faq .accordion-trigger { color: var(--white); }
 @media (max-width: 699.98px) {
-  #faq.section { padding: 56px 0; }
+  #faq.section { padding: 88px 0; }
 }
 /* Miniatura decorativa acima do acordeão: ecoa a trilha de #metodo,
    reforçando que os 7 módulos são progressão, não uma lista solta. */
@@ -1670,27 +1678,28 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
    que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
 .beneficio h3 {
-  margin: 0 0 .5rem;
+  margin: 0 0 .8rem;
   font-size: clamp(.9375rem, 11.4cqi, var(--t-subtitulo));
   line-height: 1.15;
   color: var(--white);
 }
-.beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
+.beneficio p { margin: 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--cor-corpo); }
+/* Tablet e computador: 17px, o texto dos cartões da Apple nessas telas.
+   No celular fica em 14px, o texto dos cartões da Apple no iPhone (os
+   cards são dois lado a lado). */
+@media (min-width: 700px) { .beneficio p { font-size: var(--t-corpo); } }
 @media (min-width: 700px) and (max-width: 999.98px) { .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 370px) {
   /* Abaixo de ~362px nem o tamanho mínimo do título comporta a palavra
      mais longa inteira: aí ela pode hifenizar em vez de vazar. */
   .beneficio h3 { hyphens: auto; overflow-wrap: anywhere; }
 }
-/* Celular: um card por linha, na largura toda, com o título em 21px e o
-   texto em 17px — os mesmos tamanhos dos bônus logo abaixo. Em 2 x 2 o
-   título descia pra 16px e o texto pra 14px e os cards pareciam menores
-   que o resto da seção. Um embaixo do outro, a setinha lateral não aponta
-   pra nada: sai. */
+/* Celular: dois lado a lado (2 x 2), como a Vitória aprovou. */
 @media (max-width: 699.98px) {
-  .beneficios { grid-template-columns: 1fr; gap: .6rem; margin-bottom: 3rem; }
-  .beneficio { padding: 1.1rem 1.25rem 1.2rem; }
-  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { display: none; }
+  .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin-bottom: 3rem; }
+  /* Card sem fundo pede menos respiro lateral: sobra largura pro título crescer. */
+  .beneficio { padding: 1rem .65rem 1.1rem; }
+  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { width: 18px; height: 18px; }
 }
 
 
@@ -1707,32 +1716,46 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    que se recebe) e o "+2" bem grande, em degradê laranja, com "bônus
    exclusivos" ao lado. Sem o fio que separava dos cards de cima (a Apple
    não separa assim dentro da mesma seção). */
+/* "E você ainda ganha +2 bônus exclusivos" no formato dos números grandes
+   da Apple (AirPods Pro: "Remove até / 2x mais / ruídos…"; iPad Pro:
+   "1.000 nits" colorido): um fio fino em cima, o rótulo pequeno, e o número
+   com a palavra na mesma linha, grandes — alinhado à esquerda, na mesma
+   borda dos bônus logo abaixo (não centralizado). O "+2" leva a cor de
+   destaque da marca, como os números coloridos da tela do iPad. */
 .bonus-rotulo {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  flex-wrap: wrap;
-  column-gap: .3em;
-  row-gap: .35rem;
-  margin: clamp(3.5rem, 8vw, 5.5rem) auto 0;
-  max-width: 980px;
-  text-align: center;
+  display: block;
+  margin: clamp(3.5rem, 8vw, 5.5rem) 0 0;
+  text-align: left;
   font-family: var(--font-head);
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.02;
   color: var(--white);
 }
+.bonus-rotulo::before {
+  content: "";
+  display: block;
+  width: min(100%, 320px);
+  height: 1px;
+  margin-bottom: 1.1rem;
+  background: currentColor;
+  opacity: .28;
+}
 .bonus-ganha {
-  flex-basis: 100%;
-  font-size: var(--t-lead);
-  font-weight: 700;
-  letter-spacing: -.005em;
+  display: block;
+  margin-bottom: .35rem;
+  font-family: var(--font-body);
+  font-size: var(--t-corpo);
+  font-weight: 600;
+  line-height: 1.3;
   color: var(--cor-corpo);
 }
+.bonus-num, .bonus-txt {
+  font-size: 3rem;
+  letter-spacing: -.03em;
+}
+@media (min-width: 700px) { .bonus-num, .bonus-txt { font-size: 4rem; } }
+@media (min-width: 1069px) { .bonus-num, .bonus-txt { font-size: 5rem; } }
 .bonus-num {
-  font-size: clamp(4.5rem, 12vw, 7rem);
-  letter-spacing: -.045em;
-  line-height: .9;
   background: linear-gradient(180deg, var(--orange) 0%, var(--orange-button) 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -1740,15 +1763,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Um respiro pro degradê não cortar o pé do "2". */
   padding-bottom: .04em;
 }
-.bonus-txt {
-  font-size: var(--t-titulo);
-  letter-spacing: -.015em;
-}
 .bonus-lista {
   display: grid;
   gap: clamp(2rem, 6vw, 4.5rem);
-  max-width: 980px;
-  margin: clamp(2rem, 4vw, 3rem) auto 0;
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
 }
 .bonus-item {
   display: grid;
@@ -1793,7 +1811,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 /* Sem card: o texto fica direto sobre o azul da seção (como os títulos e
    corpo de texto em volta), não mais numa caixa escura própria. */
-.bonus-item-texto h3 { margin: 0 0 .7rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
+.bonus-item-texto h3 { margin: 0 0 .85rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
 .bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
 .bonus-item-texto p + p { margin-top: .8em; }
 /* Celular: como a Apple faz no celular — a imagem em cima e o texto
@@ -1862,14 +1880,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     /* Em notebook de tela baixa (768/720px de altura) os vídeos de 300px
        + legenda passavam da tela: a largura também respeita a altura, pra
        título, vídeos e legendas caberem juntos (piso de 240px). */
-    --depo-w: min(300px, calc((100% - 56px) / 3), max(240px, calc((100svh - 330px) * .5625)));
-    justify-content: center;
+    --depo-w: inherit;
+    justify-content: flex-start;
     gap: 28px;
     margin: 2rem 0 0;
     padding: 0;
     overflow: visible;
   }
   #depoimentos { padding-bottom: clamp(40px, 7vh, 128px); }
+  /* O bloco (título + vídeos) tem a largura exata dos três vídeos: o
+     título à esquerda começa na mesma borda do primeiro vídeo. */
+  #depoimentos .container {
+    --depo-w: min(300px, calc((min(100vw, var(--container-w)) - 48px - 56px) / 3), max(240px, calc((100svh - 330px) * .5625)));
+    max-width: calc(3 * var(--depo-w) + 56px);
+  }
 }
 .depo-video {
   position: relative;
@@ -1967,93 +1991,88 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    começar, então o fundo simples (sem custom aqui, herda o da página)
    já emenda liso. */
 .offer-section { padding-top: 96px; }
-/* Card da oferta — medido nos cartões de plano do Spotify Premium e no
-   bloco de compra da Apple Store (e nos planos do Apple One):
-   - card claro (azul bem clarinho) sobre o fundo escuro: é o único bloco
-     claro da tela, então o olho vai direto nele; e texto escuro sobre fundo
-     claro se lê mais rápido que o contrário (o preço e a lista estão aqui);
-   - três blocos colados, sem nada solto: (1) etiqueta, produto, preço e
-     condição; (2) o que vem junto; (3) o botão e os selos;
-   - cada item: o nome em seminegrito e o detalhe em cinza logo embaixo
-     (como os planos do Spotify e os cartões do Fitness+), sem ícone, check,
-     marcador nem fio entre as linhas;
-   - sem borda, sem brilho; uma sombra bem suave só pra descolar do fundo. */
+/* Card da oferta no azul claro da marca (#90BED9), no padrão do bloco de
+   compra da Apple (Store, Fitness+):
+   - o preço é o maior elemento do card, em azul-noite (laranja sobre esse
+     azul não teria contraste pra leitura); acima dele, só o rótulo
+     pequeno e o nome do produto;
+   - o que vem junto é uma lista com um item por linha e um fio fino entre
+     eles — o nome em seminegrito e o detalhe menor logo embaixo — em vez
+     de doze pedaços de texto soltos com o mesmo peso;
+   - um botão só, laranja (a cor dos botões da página inteira), e os selos
+     em uma linha pequena embaixo, cada um inteiro;
+   - cantos de 28px, sem borda e sem sombra (os cards da Apple);
+   - computador e tablet deitado: duas colunas (preço e botão à esquerda,
+     a lista à direita), a seção cabe numa tela; celular: um embaixo do outro. */
+#oferta .container { max-width: 980px; }
 .offer-card {
   --oc-texto: #0B1728;
-  --oc-corpo: #3A5570;
-  --oc-fio: rgba(11, 23, 40, .12);
-  max-width: 540px;
+  --oc-corpo: #1B3046;
+  --oc-fio: rgba(11, 23, 40, .18);
+  display: grid;
+  grid-template-areas: "topo" "inclui" "cta" "selos";
+  max-width: 560px;
   margin: 0 auto;
-  background: #EEF5FA;
+  background: var(--blue-light);
   border: 0;
-  border-radius: 22px;
-  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, .7);
-  padding: clamp(1.6rem, 5vw, 2.5rem);
+  border-radius: 28px;
+  box-shadow: none;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
   text-align: left;
   color: var(--oc-texto);
 }
-#oferta .section-title { margin-bottom: 2rem; }
-.offer-topo { margin-bottom: 1.4rem; }
-/* Etiqueta no alto, como o "R$ 0 por 1 mês" do Spotify. */
+.offer-topo { grid-area: topo; margin-bottom: 1.25rem; }
+.offer-inclui { grid-area: inclui; }
+.offer-card .btn-block { grid-area: cta; margin-top: 1.4rem; }
+.offer-selos { grid-area: selos; }
+#oferta .section-title { margin-bottom: 1.5rem; }
 .offer-etiqueta {
-  display: inline-block;
-  margin-bottom: .9rem;
-  padding: .35em .8em .3em;
-  border-radius: 999px;
-  background: var(--orange-button);
-  color: #fff;
+  display: block;
+  margin-bottom: .35rem;
   font-family: var(--font-body);
-  font-weight: 700;
-  font-size: .8125rem;
-  line-height: 1.2;
-  letter-spacing: .01em;
+  font-weight: 600;
+  font-size: var(--t-pequeno);
+  line-height: 1.3;
+  color: var(--blue-deep);
 }
 .offer-produto {
-  margin: 0 0 .15rem;
+  margin: 0 0 .5rem;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(1.3125rem, 2vw, 1.5rem);
+  font-size: var(--t-subtitulo);
   line-height: 1.2;
   color: var(--oc-texto);
 }
-.price-box {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: .25rem;
-}
+.price-box { display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; }
 .price-now {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 2.75rem;
-  line-height: 1.05;
-  letter-spacing: -.02em;
-  /* Laranja escuro do botão: no fundo claro o laranja claro não teria
-     contraste suficiente pra leitura. */
-  color: var(--orange-button);
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--oc-texto);
 }
-@media (min-width: 1069px) { .price-now { font-size: 3.25rem; } }
-.price-note { font-size: var(--t-corpo); color: var(--oc-corpo); }
+@media (min-width: 1069px) { .price-now { font-size: 3.5rem; } }
+.price-note { font-size: var(--t-pequeno); line-height: 1.4; color: var(--oc-corpo); }
 .offer-inclui-rotulo {
-  margin: 0 0 .9rem;
-  padding-top: 1.3rem;
+  margin: 0;
+  padding: 1rem 0 .55rem;
   border-top: 1px solid var(--oc-fio);
   font-family: var(--font-body);
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--t-pequeno);
-  color: var(--oc-corpo);
+  color: var(--blue-deep);
 }
-.offer-lista {
-  display: grid;
-  gap: .85rem;
-  margin: 0 0 1.6rem;
-}
+.offer-lista { display: grid; margin: 0; }
 .offer-lista li {
   display: flex;
   flex-direction: column;
   gap: .1rem;
+  padding: .7rem 0;
+  border-top: 1px solid var(--oc-fio);
   text-wrap: pretty;
 }
+.offer-lista li:last-child { border-bottom: 1px solid var(--oc-fio); }
 .offer-lista li strong {
   font-family: var(--font-body);
   font-weight: 700;
@@ -2061,56 +2080,54 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   line-height: 1.3;
   color: var(--oc-texto);
 }
-.offer-lista li span {
-  font-size: var(--t-pequeno);
-  line-height: 1.35;
-  color: var(--oc-corpo);
-}
-.offer-card .btn-block { margin-top: 0; }
-/* Garantia, pagamento e acesso: uma linha pequena logo abaixo do botão,
-   como as notas sob os planos do Spotify e da Apple. */
+.offer-lista li span { font-size: var(--t-pequeno); line-height: 1.35; color: var(--oc-corpo); }
+/* Selos: cada um inteiro (não quebra no meio), separados por um ponto. */
 .offer-selos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: 1rem;
+  row-gap: .1rem;
   margin: .8rem 0 0;
-  text-align: center;
   font-size: .8125rem;
   line-height: 1.45;
   color: var(--oc-corpo);
-  text-wrap: balance;
 }
-/* Computador: a seção inteira numa tela. */
-@media (min-width: 700px) {
-  #oferta.offer-section { padding: 44px 0 40px; }
-  #oferta .section-title { margin-bottom: 1.25rem; }
-  .offer-card { padding: 1.9rem 2.4rem 1.5rem; }
-  .offer-topo { margin-bottom: 1.1rem; }
-  .offer-etiqueta { margin-bottom: .7rem; }
-  .offer-inclui-rotulo { padding-top: 1rem; margin-bottom: .7rem; }
-  .offer-lista { gap: .65rem; margin-bottom: 1.3rem; }
+.offer-selos span { white-space: nowrap; }
+/* Computador e tablet deitado: duas colunas, a seção cabe numa tela. */
+@media (min-width: 900px) {
+  #oferta.offer-section { padding: 56px 0 48px; }
+  .offer-card {
+    max-width: 920px;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "topo inclui" "cta inclui" "selos inclui";
+    column-gap: 3rem;
+    padding: 2.5rem 2.75rem;
+  }
+  .offer-topo { margin-bottom: 0; align-self: end; }
+  .offer-card .btn-block { margin-top: 1.75rem; }
+  .offer-selos { justify-content: flex-start; align-self: start; }
+  .offer-inclui-rotulo { border-top: 0; padding-top: 0; }
 }
-@media (min-width: 700px) and (max-height: 860px) {
-  #oferta.offer-section { padding: 20px 0 18px; }
-  #oferta .section-title { margin-bottom: .8rem; }
-  .offer-card { padding: 1.25rem 2.25rem 1rem; }
-  .price-now { font-size: 2.6rem; }
-  .offer-lista { gap: .45rem; margin-bottom: 1rem; }
+@media (min-width: 900px) and (max-height: 820px) {
+  #oferta.offer-section { padding: 28px 0 24px; }
+  .offer-card { padding: 2rem 2.5rem; }
+  .offer-lista li { padding: .55rem 0; }
 }
 /* Celular: a seção inteira (título + card + botão + selos) numa tela só,
    mesmo com as barras do Safari aparecendo (~700px úteis num iPhone). */
 @media (max-width: 699.98px) {
   #oferta.offer-section { padding: 28px 0 28px; }
   #oferta .section-title { margin-bottom: .9rem; }
-  .offer-card { padding: 1.2rem 1.25rem 1rem; }
-  .offer-topo { margin-bottom: 1rem; }
-  .offer-etiqueta { margin-bottom: .6rem; font-size: .75rem; }
-  .offer-produto { font-size: 1.125rem; }
-  .price-now { font-size: 2.25rem; }
-  .price-note { font-size: .9375rem; }
-  .offer-inclui-rotulo { padding-top: .9rem; margin-bottom: .6rem; font-size: .875rem; }
-  .offer-lista { gap: .6rem; margin-bottom: 1rem; }
-  /* 16px e 14px (eram 15 e 13): mais fáceis de ler pra quem usa óculos. */
-  .offer-lista li strong { font-size: 1rem; }
-  .offer-lista li span { font-size: .875rem; }
-  .offer-selos { margin-top: .55rem; font-size: .8125rem; }
+  .offer-card { padding: 1.15rem 1.25rem .9rem; border-radius: 24px; }
+  .offer-topo { margin-bottom: .8rem; }
+  .offer-produto { margin-bottom: .3rem; font-size: 1.125rem; }
+  .price-now { font-size: 2.5rem; }
+  .offer-inclui-rotulo { padding: .7rem 0 .3rem; }
+  .offer-lista li { padding: .42rem 0; }
+  .offer-card .btn-block { margin-top: 1rem; }
+  .offer-selos { margin-top: .55rem; column-gap: .8rem; }
 }
 
 /* ---------- Guarantee ---------- */
@@ -2545,8 +2562,8 @@ html.abertura-on { overflow: hidden; }
    leitura em vez de chamar atenção pra si. */
 .reveal {
   opacity: 0;
-  transform: translate3d(0, 28px, 0);
-  transition: opacity .9s cubic-bezier(.25, .1, .25, 1), transform .9s cubic-bezier(.25, .1, .25, 1);
+  transform: translate3d(0, 30px, 0);
+  transition: opacity .7s cubic-bezier(0, 0, .3, 1), transform .7s cubic-bezier(0, 0, .3, 1);
 }
 .reveal.is-visible { opacity: 1; transform: none; }
 
@@ -2608,17 +2625,19 @@ html.abertura-on { overflow: hidden; }
   .hero-h1-abre { font-size: 1.75em; }
   .hero-lead, .hero-lead-list { font-size: var(--t-corpo); line-height: 1.42; }
   .hero-lead-list { margin-top: .7rem; }
-  /* Pra esse texto maior não cobrir os ícones nem o rosto da Vitória, a
-     foto desce um pouco nos celulares mais baixos (o alto que sobra é o
-     mesmo azul-noite do céu da foto; o que sai é só um pedaço da cintura,
-     embaixo). Nos celulares altos (iPhone Pro Max) já sobra espaço: 0.
-     Ver a regra logo abaixo (só em pé: deitado o layout é outro). */
+  /* O texto não pode ficar em cima da foto: no celular e no tablet em pé a
+     foto desce o necessário pra começar 40px abaixo do bloco de texto (ver
+     ajustaFotoHero em main.js). */
 
   /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
      ficar solto no meio da foto. */
+  /* O botão vem logo depois do texto, no azul-noite (como no tablet e nas
+     páginas da Apple no iPhone): no pé da foto ele caía em cima do rosto
+     da Vitória nos celulares mais baixos. A foto começa depois dele (ver
+     ajustaFotoHero em main.js). */
   .hero-cta-foto {
     position: static;
-    margin-top: auto;
+    margin-top: 1.25rem;
     padding: 0 24px;
     justify-content: center;
   }
@@ -2634,20 +2653,11 @@ html.abertura-on { overflow: hidden; }
   .hero-microcopy { margin-top: .3rem; }
 }
 
-@media (max-width: 699.98px) and (orientation: portrait) {
-  .hero-foto-deitada { background-position: 60% max(0px, calc(350px - 38svh)); }
-}
 /* Tablet em pé: mesma coluna centralizada do celular, título um degrau
    menor que o do computador pra o bloco não descer até os ícones da foto. */
 @media (min-width: 700px) and (max-width: 899.98px) {
   .hero-headline { --hero-resto: 1.75rem; font-size: var(--hero-resto); }
   .hero-lead, .hero-lead-list { font-size: 1.1875rem; }
-}
-/* Tablet em pé: com o título e o texto maiores (28px e 19px, perto dos
-   subtítulos das páginas da Apple no iPad), a foto desce um pouco pra os
-   ícones continuarem abaixo do botão. */
-@media (min-width: 700px) and (max-width: 899.98px) and (orientation: portrait) {
-  .hero-foto-deitada { background-position: 60% 12%; }
 }
 /* Notebook de 1024px (e tablet deitado): "Domine a câmera." em 67px
    encostava nos ícones da foto. Um degrau menor aqui. */
@@ -2664,10 +2674,6 @@ html.abertura-on { overflow: hidden; }
 @media (max-width: 699.98px) and (max-height: 600px) {
   .hero-headline { --hero-resto: min(1.125rem, 4.6vw) !important; font-size: var(--hero-resto) !important; }
   .hero-lead, .hero-lead-list { font-size: .875rem !important; line-height: 1.38 !important; }
-}
-/* Em pé nesse celular a foto desce menos: mais que isso o rosto chegava no botão. */
-@media (max-width: 699.98px) and (max-height: 600px) and (orientation: portrait) {
-  .hero-foto-deitada { background-position: 60% 40px; }
 }
 
 /* Tela deitada a partir de 700px (tablet deitado, notebook, monitor): a foto
@@ -2759,7 +2765,7 @@ html.abertura-on { overflow: hidden; }
      botão cabe numa linha a partir de 360px (respiro do card: ver o bloco da
      oferta). Abaixo disso (320px) ele quebra em duas linhas, sem vazar. */
   .btn-block { padding-left: 1.1em; padding-right: 1.1em; white-space: normal; text-align: center; }
-  .section { padding: 64px 0; }
+  .section { padding: 88px 0; }
   .accordion { margin-top: 1.4rem; gap: .6rem; }
   .accordion-trigger { padding: 1rem 1.1rem; }
   /* Título longo ("Conteúdo e estrutura") empurrava o "· 4 aulas" pra linha
@@ -2790,7 +2796,7 @@ html.abertura-on { overflow: hidden; }
   .modulos-trail { margin-top: 1.25rem; }
 /* Garantia mais compacta pra caber numa tela só de celular (o selo em si já
    encolhe sozinho, de forma fluida — ver .guarantee-badge). */
-  .section-tone--guarantee.section { padding: 48px 0; }
+  .section-tone--guarantee.section { padding: 88px 0; }
   .section-tone--guarantee .section-lead { margin-top: .5rem; }
   /* Menor no celular pra a primeira linha do título caber inteira ao lado do ícone. */
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
