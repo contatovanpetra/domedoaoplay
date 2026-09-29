@@ -1097,6 +1097,11 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
      degrau a degrau." em vez de deixar "degrau." sozinho embaixo. */
   display: block;
   text-wrap: balance;
+  /* O degradê só pinta até o fim da linha (entrelinha 1,05): o pé do "g"
+     de "degrau" ficava cortado. O respiro embaixo estende a pintura, e a
+     margem negativa devolve o espaço, sem mexer no layout. */
+  padding-bottom: .14em;
+  margin-bottom: -.14em;
 }
 /* O botão de gravar do iPhone (aro branco e a bolinha vermelha), usado no
    botão do herói. */
@@ -2821,6 +2826,59 @@ html.abertura-on { overflow: hidden; }
   .eyebrow { margin-bottom: .55rem; }
   .hero-actions { margin-top: 1rem; }
   .hero-microcopy { margin-top: .3rem; }
+}
+
+/* Celular em pé: a foto vem primeiro, como na Apple Fitness+ e no Spotify
+   Premium (medidos no relatório de tipografia, set/2026). A Vitória aparece
+   logo abaixo do menu, do rosto até o peito; o título fica por cima do pé
+   da foto, num degradê escuro, e o botão logo embaixo. O parágrafo de apoio
+   sai da primeira tela: fica logo no começo da segunda, já no fundo liso. */
+@media (max-width: 699.98px) and (min-height: 481px) {
+  /* A foto rola junto com o texto (como na Apple Fitness+), em vez de ficar
+     presa atrás: presa, o título passava por cima do rosto ao rolar. */
+  .cinema-stage { position: relative; }
+  .hero-foto-deitada {
+    inset: 0 0 auto 0;
+    height: calc(100svh - var(--hero-base, 150px));
+    /* Um pouco maior que a tela (pela largura, pra nunca sobrar borda): ela
+       fica maior e sobe, com menos céu vazio em cima. */
+    background-size: 110% auto;
+    background-position: 55% 90%;
+  }
+  /* O degradê desce além do pé da foto e continua liso até o fim da tela:
+     sem ele sobrava uma emenda reta onde a foto terminava. */
+  .hero-foto-deitada::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(-1 * var(--hero-base, 150px) - 40px);
+    height: calc(46% + var(--hero-base, 150px) + 40px);
+    background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .8) 28%, var(--bg) 46%, var(--bg) 100%);
+  }
+  /* Só o bastante pra logo e o botão do menu lerem sobre a foto. */
+  .hero-scrim { display: none; }
+  .site-header:not(.com-fundo) { background: linear-gradient(180deg, rgba(3, 10, 29, .55), rgba(3, 10, 29, 0)); }
+  .hero-primeira-tela {
+    padding: 0 0 28px;
+    justify-content: flex-end;
+  }
+  /* O parágrafo sai do fluxo e desce pro começo da segunda tela (a medida
+     é a própria primeira tela, .hero-primeira-tela). */
+  .hero .hero-inner { position: static; }
+  .hero-lead-list {
+    position: absolute;
+    top: calc(100% + 32px);
+    left: 24px;
+    right: 24px;
+    margin: 0 auto;
+    max-width: 34rem;
+  }
+  .hero-cta-foto { margin-top: 1.1rem; }
+  .hero-primeira-tela .scroll-cue { display: none; }
+}
+@media (max-width: 699.98px) and (min-height: 481px) and (max-height: 700px) {
+  :root { --hero-base: 120px; }
 }
 
 /* Tablet em pé: mesma coluna centralizada do celular, título um degrau

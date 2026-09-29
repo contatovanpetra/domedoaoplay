@@ -183,7 +183,9 @@ function ajustaFotoHero() {
   const copy = document.querySelector(".hero-copy");
   const hero = REAL_HERO;
   if (!foto || !copy || !hero) return;
-  if (!window.matchMedia("(max-width: 899.98px) and (orientation: portrait)").matches) {
+  // No celular (até 699px) a foto fica no alto e o texto por cima do pé
+  // dela (ver CSS): a conta de descer a foto só vale pro tablet em pé.
+  if (!window.matchMedia("(min-width: 700px) and (max-width: 899.98px) and (orientation: portrait)").matches) {
     foto.style.backgroundPosition = "";
     return;
   }
