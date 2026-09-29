@@ -60,7 +60,10 @@ function wireCorDaTransicao() {
   const fundo = document.querySelector(".page-bg");
   const beneficios = document.querySelector("#beneficios");
   const oferta = document.querySelector("#oferta");
-  if (!fundo || !beneficios || !oferta || prefersReducedMotion) return;
+  // Sem trava de "reduzir movimento" aqui: é só a cor mudando com a
+  // rolagem, sem nada se mexendo (e o ponto de início do degradê do CSS
+  // também sai daqui).
+  if (!fundo || !beneficios || !oferta) return;
 
   const AZUL_CLARO = [144, 190, 217]; // --blue-light
   const ESCURO = [11, 23, 40]; // --bg
@@ -84,7 +87,17 @@ function wireCorDaTransicao() {
     // (a maior parte de benefícios) pra a transição ficar mesmo fluida.
     zonaAntes = beneficios.getBoundingClientRect().top + window.scrollY;
     const altura = beneficios.offsetHeight;
-    zonaInicio = zonaAntes + altura * 0.55;
+    // O escurecimento só começa no meio do segundo bônus (o e-book): os
+    // bônus ficam no azul claro, com destaque, em vez de já escurecendo.
+    // O mesmo ponto vai pro degradê do CSS (--fade-inicio), pra os dois
+    // andarem juntos.
+    const ebook = beneficios.querySelector(".bonus-item--invertido");
+    const inicioPx = ebook
+      ? ebook.getBoundingClientRect().top + window.scrollY - zonaAntes + ebook.offsetHeight * 0.5
+      : altura * 0.55;
+    const fracao = Math.min(.95, Math.max(.3, inicioPx / altura));
+    beneficios.style.setProperty("--fade-inicio", (fracao * 100).toFixed(2) + "%");
+    zonaInicio = zonaAntes + altura * fracao;
     zonaFim = zonaAntes + altura;
   }
 
@@ -622,9 +635,9 @@ function wireEscadaShowcase() {
   if (!vitrine || !track || !cards.length) return;
 
   const DURACAO_MS = 3000; // tempo que cada nível fica em foco antes de avançar sozinho
-  const fecho = document.querySelector(".metodo-fecho");
-  let mexeuNaEscada = false;  // tocou num número, seta ou cartão: nada de rolar sozinho
-  let jaConvidou = false;     // o empurrãozinho pro botão acontece uma vez só
+  const proxima = document.getElementById("aplicacao");
+  let ultimaEscolha = -Infinity; // quando a pessoa escolheu um nível por último
+  let jaConvidou = false;        // a descida pra próxima seção: uma vez por visita à escada
   const CIRCUNFERENCIA = 97.39; // 2 * PI * 15.5 (raio do anel no SVG)
   let activeIndex = 0;
   let tocando = true;
@@ -649,10 +662,10 @@ function wireEscadaShowcase() {
     const fracao = Math.min(1, (t - inicioProgresso) / DURACAO_MS);
     preencheAnel(activeIndex, fracao);
     if (fracao >= 1) {
-      goToIndex((activeIndex + 1) % cards.length);
-      // Chegou sozinho no nível 7: a página desce de leve até o fecho ("Um
-      // nível de cada vez. Até dar o play." e o botão), convidando a seguir.
+      // O nível 7 acabou de tocar inteiro: a página desce sozinha, de leve,
+      // até a próxima seção ("Falar bem na câmera...").
       if (activeIndex === cards.length - 1) convidaPraSeguir();
+      goToIndex((activeIndex + 1) % cards.length);
       return;
     }
     progressoAoPausar = fracao;
@@ -666,35 +679,19 @@ function wireEscadaShowcase() {
     rafId = requestAnimationFrame(passoProgresso);
   }
 
-  // Rolagem leve (1,2s, começa e termina devagar) até o fecho ficar no meio
-  // da tela. Só se a pessoa não mexeu na escada, só uma vez, e para na hora
-  // se ela tocar na tela, rolar ou apertar uma tecla.
+  // Descida até a próxima seção, com a rolagem suave do próprio navegador
+  // (a do iPhone, não um passo a passo em JS — esse o Safari às vezes
+  // ignorava). Não acontece se a pessoa escolheu um nível nos últimos 5s
+  // (ela está explorando), nem com "reduzir movimento" ligado.
   function convidaPraSeguir() {
-    if (jaConvidou || mexeuNaEscada || !fecho || prefersReducedMotion) return;
-    jaConvidou = true;
-    const r = fecho.getBoundingClientRect();
-    const tela = alturaDaTela();
+    if (jaConvidou || !proxima || prefersReducedMotion) return;
+    if (performance.now() - ultimaEscolha < 5000) return;
     const inicio = window.scrollY;
-    // O fecho (frase + botão) vai pro meio da tela.
-    const alvo = inicio + r.top + r.height / 2 - tela * .5;
+    // Onde o texto da próxima seção fica parado no meio da tela.
+    const alvo = proxima.getBoundingClientRect().top + inicio + (parseFloat(getComputedStyle(proxima).paddingTop) || 0);
     if (alvo - inicio < 24) return;
-    const DUR = 1200;
-    let t0 = 0;
-    let parou = false;
-    const para = () => { parou = true; };
-    const opcoes = { passive: true, once: true };
-    window.addEventListener("wheel", para, opcoes);
-    window.addEventListener("touchstart", para, opcoes);
-    window.addEventListener("keydown", para, { once: true });
-    const passo = (t) => {
-      if (parou) return;
-      if (!t0) t0 = t;
-      const k = Math.min(1, (t - t0) / DUR);
-      const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      window.scrollTo(0, inicio + (alvo - inicio) * e);
-      if (k < 1) requestAnimationFrame(passo);
-    };
-    requestAnimationFrame(passo);
+    jaConvidou = true;
+    window.scrollTo({ top: alvo, behavior: "smooth" });
   }
 
   function goToIndex(idx, suave = true) {
@@ -722,7 +719,7 @@ function wireEscadaShowcase() {
   // número, uma seta, um cartão, o pausar ou o arrasto de lado). Um dedo que
   // só passa por cima dos cartões rolando a página NÃO conta — antes contava,
   // e era por isso que a página nunca descia no nível 7 no celular.
-  const marcaEscolha = () => { mexeuNaEscada = true; };
+  const marcaEscolha = () => { ultimaEscolha = performance.now(); };
 
   nums.forEach((num, i) => {
     num.addEventListener("click", () => { marcaEscolha(); goToIndex(i); });
@@ -796,7 +793,7 @@ function wireEscadaShowcase() {
       const e = entries[entries.length - 1];
       if (e.intersectionRatio >= .5) {
         naTela = true;
-        if (saiuDeVez) { saiuDeVez = false; goToIndex(0, false); }
+        if (saiuDeVez) { saiuDeVez = false; jaConvidou = false; goToIndex(0, false); }
         else if (tocando) iniciarProgresso(true);
       } else {
         naTela = false;
@@ -890,36 +887,47 @@ function wireCountUp() {
 
   // O número começa zerado. Antes ele aparecia pronto ("4"), caía pra 0 quando a
   // contagem começava e subia de novo: dava uma piscada.
-  targets.forEach((el) => { el.textContent = "0" + (el.dataset.suffix || ""); });
+  const zera = (el) => { el.textContent = "0" + (el.dataset.suffix || ""); };
+  targets.forEach(zera);
+  const rodando = new Map();
 
   function animate(el) {
     const end = parseInt(el.dataset.count, 10);
     if (Number.isNaN(end)) return;
     const suffix = el.dataset.suffix || "";
-    const duration = 700;
+    const duration = 1200;
     const start = performance.now();
-
     function step(now) {
       const progress = Math.min(1, (now - start) / duration);
       const eased = 1 - Math.pow(1 - progress, 3);
       el.textContent = Math.round(eased * end) + suffix;
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) rodando.set(el, requestAnimationFrame(step));
+      else rodando.delete(el);
     }
-    requestAnimationFrame(step);
+    rodando.set(el, requestAnimationFrame(step));
   }
 
+  // Conta de novo toda vez que os números entram na tela (antes contava uma
+  // vez só: quem passava e voltava achava que a animação tinha parado). Ao
+  // sair da tela por completo, voltam pro zero, prontos pra próxima vez.
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          animate(entry.target);
-          observer.unobserve(entry.target);
+        const el = entry.target;
+        if (entry.intersectionRatio >= .6) {
+          if (!rodando.has(el) && el.dataset.contou !== "1") {
+            el.dataset.contou = "1";
+            animate(el);
+          }
+        } else if (!entry.isIntersecting) {
+          if (rodando.has(el)) { cancelAnimationFrame(rodando.get(el)); rodando.delete(el); }
+          el.dataset.contou = "";
+          zera(el);
         }
       });
     },
-    { threshold: 0.4 }
+    { threshold: [0, .6] }
   );
-
   targets.forEach((el) => observer.observe(el));
 }
 

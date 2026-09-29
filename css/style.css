@@ -477,7 +477,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background:
     radial-gradient(34% 12% at 82% 14%, rgba(255, 255, 255, .45), transparent 70%),
     radial-gradient(36% 12% at 14% 22%, rgba(70, 130, 180, .4), transparent 70%),
-    linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) 55%, transparent 100%);
+    linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) var(--fade-inicio, 55%), transparent 100%);
 }
 /* Respiro maior no pé, antes da oferta — só um pouco mais (a transição
    precisa de alguma distância de rolagem pra acontecer, mas não de uma
@@ -914,9 +914,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     pointer-events: none;
   }
   .vivi-foto .credential-figure { font-size: 1.75rem; }
-  /* Os números descem mais perto do pé da tela (o bloco de texto desce
-     junto, colado neles). */
-  .vivi-camada { padding-bottom: max(.75rem, env(safe-area-inset-bottom)); }
+  /* Os números ficam no pé de verdade da foto: a camada de texto tem a
+     altura da foto (tela grande, 100lvh) — com a tela pequena (100svh) eles
+     paravam ~80px acima do fim da foto quando a barra do Safari recolhia
+     (o que acontece enquanto se rola por aqui). */
+  .vivi-camada { height: 100lvh; padding-bottom: calc(env(safe-area-inset-bottom) + .9rem); }
   .vivi-foto .credential-item { font-size: .8125rem; }
   .vivi-foto .credential-list { row-gap: .8rem; }
 }
@@ -1002,6 +1004,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   letter-spacing: -.02em;
   color: var(--white);
 }
+/* Na foto da Vitória: os números (13, 8, 4, CEO) no azul claro da marca,
+   o mesmo do "Criadora do método Do Medo ao Play" logo acima. */
+.vivi-foto .credential-figure { color: var(--blue-light); }
 @media (min-width: 900px) {
   /* Uma linha só, no pé da foto (sobre a blusa, longe do rosto), pra não
      roubar altura do card que sobe pela coluna da esquerda. */
