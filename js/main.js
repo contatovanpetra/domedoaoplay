@@ -1244,8 +1244,8 @@ function wireIntroStage() {
   // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
   // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
   const VIDEOS = {
-    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.webp" },
-    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.webp" },
+    celular: { src: "assets/video/tunel-celular.mp4?v=2", poster: "assets/video/tunel-celular-poster.webp" },
+    computador: { src: "assets/video/tunel-desktop.mp4?v=2", poster: "assets/video/tunel-desktop-poster.webp" },
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
   const porta = tl.labels.cresce + CRESCE;
@@ -1255,35 +1255,20 @@ function wireIntroStage() {
   // o vídeo inteiro de 12s pedia um ritmo de 4x no fim, que o celular não
   // acompanha enquanto desenha a página (o vídeo engasgava antes da porta).
   let comecou = false;
-  let semVideo = false;
   let esperaVideo = 0;
 
-  // O túnel começa devagar e vai acelerando por igual até a porta de luz. O
-  // ritmo final é o que faz ele chegar lá quando a tela da câmera termina de
-  // crescer (a luz do vídeo emenda no clarão); fica perto de 2,2x, o mesmo pico
-  // da abertura longa, que o vídeo sempre acompanhou.
-  const RITMO_INICIAL = 1;
-  let ritmoFinal = 2;
-  let ritmo = null;
-  function ajustaRitmo() {
-    video.defaultPlaybackRate = RITMO_INICIAL;
-    video.playbackRate = RITMO_INICIAL;
-    // Subindo por igual, o ritmo médio é a média entre o inicial e o final.
-    if (isFinite(video.duration) && video.duration > 0) {
-      ritmoFinal = gsap.utils.clamp(1, 4, 2 * (video.duration / porta) - RITMO_INICIAL);
-    }
-  }
-  function aceleraTunel() {
-    const r = { v: RITMO_INICIAL };
-    video.playbackRate = RITMO_INICIAL;
-    ritmo = gsap.to(r, {
-      v: ritmoFinal,
-      duration: porta,
-      ease: "none",
-      // Muda o ritmo do vídeo em passos pequenos, não a cada quadro.
-      onUpdate: () => { if (Math.abs(video.playbackRate - r.v) >= .04) video.playbackRate = r.v; },
-    });
-  }
+  // O túnel começa devagar e vai acelerando por igual até a porta de luz,
+  // aonde chega quando a tela da câmera termina de crescer (a luz do vídeo
+  // emenda no clarão). A aceleração já vem gravada no próprio arquivo, que
+  // dura exatamente até a porta (6,7 s): o vídeo toca no ritmo normal, do
+  // começo ao fim, sem ninguém mexer nele. Antes o JS mudava o ritmo
+  // (playbackRate) aos pouquinhos enquanto ele tocava; no iPhone, mudar o
+  // ritmo de um vídeo que ainda está chegando pode fazer o Safari recomeçar
+  // do último quadro-chave, e o arquivo antigo só tinha um no começo: o túnel
+  // voltava pro início logo depois de "E se, em vez de travar…" (a primeira
+  // mudança caía aos 1,6 s) e voltava a andar, como se a página recarregasse. O arquivo novo também
+  // tem um quadro-chave a cada meio segundo e nenhum quadro "B" (os que
+  // dependem do quadro seguinte), o que deixa a decodificação mais leve.
   function comeca() {
     // Liberada antes de começar (trava de segurança, aba escondida): sem
     // isto, o vídeo chegava depois e dava play na abertura já cancelada —
@@ -1292,16 +1277,15 @@ function wireIntroStage() {
     if (comecou || aberturaAcabou) return;
     comecou = true;
     clearTimeout(esperaVideo);
-    if (video.paused || video.readyState < 2) {
+    // Já andando (o aviso de "tocando" pode chegar atrasado): segue com ele.
+    const andando = video.currentTime > 0 || (!video.paused && video.readyState >= 2);
+    if (!andando) {
       // O vídeo não veio a tempo (rede lenta, modo de economia do celular):
       // fica a imagem do começo do túnel, que se aproxima devagar.
-      semVideo = true;
       video.pause();
       video.removeAttribute("src");
       video.load();
       gsap.fromTo(video, { scale: 1 }, { scale: 1.3, duration: porta, ease: "power1.in" });
-    } else {
-      aceleraTunel();
     }
     tl.play();
     // Trava de segurança: a página nunca fica presa atrás da abertura.
@@ -1315,15 +1299,11 @@ function wireIntroStage() {
     if (adiantou || aberturaAcabou) return;
     adiantou = true;
     const t = tl.labels.atravessa;
-    if (ritmo) ritmo.kill();
     if (tl.time() < t) tl.seek(t);
     tl.timeScale(2.2);
-    // O vídeo NÃO pula pra frente junto: pular (currentTime) num vídeo que
-    // ainda está baixando fazia ele travar e voltar pro começo do túnel —
-    // parecia que a abertura recarregava bem na hora do celular, sempre
-    // que a pessoa encostava na tela. Ele só corre mais rápido de onde está;
-    // o clarão do fim cobre a chegada na porta.
-    if (!semVideo) video.playbackRate = Math.min(2.5, ritmoFinal * 2.2);
+    // O vídeo não pula pra frente nem acelera junto: pular (currentTime) ou
+    // mudar o ritmo de um vídeo tocando pode fazer o iPhone voltar pro
+    // começo do túnel. Ele segue de onde está; o clarão do fim cobre a chegada na porta.
     if (!comecou) {
       comecou = true;
       clearTimeout(esperaVideo);
@@ -1353,7 +1333,6 @@ function wireIntroStage() {
     poster.onload = abreVeu;
     poster.src = VIDEOS[modo].poster;
   }
-  video.addEventListener("loadedmetadata", ajustaRitmo);
   video.addEventListener("playing", comeca, { once: true });
   video.src = VIDEOS[modo].src;
   const tocando = video.play();

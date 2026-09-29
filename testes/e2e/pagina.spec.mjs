@@ -1,6 +1,7 @@
 // A landing como uma pessoa usa: abrir, esperar a abertura, rolar tudo, tocar
 // nos botões. Cada teste falha se a coisa que ele confere estiver quebrada.
 import { test, expect } from "@playwright/test";
+import fs from "node:fs";
 import { vigia, semProblemas, abre, percorre } from "./ajuda.mjs";
 
 const HOTMART = /^https:\/\/pay\.hotmart\.com\//;
@@ -154,4 +155,32 @@ test("parâmetros de anúncio estranhos não quebram a página", async ({ page }
     expect(href).toMatch(HOTMART);
     semProblemas(problemas);
   }
+});
+
+test("abertura: o túnel toca do começo ao fim sem voltar e sem mudar de ritmo", async ({ page }) => {
+  // O Chromium dos testes não toca H.264 (o formato do túnel): sem isto, o
+  // vídeo nunca tocava aqui e a abertura seguia só com a imagem. Uma cópia
+  // pequena em VP9, com o mesmo tempo, faz o vídeo tocar de verdade.
+  // No iPhone, mudar o ritmo (playbackRate) do vídeo tocando fazia o túnel
+  // voltar pro começo logo depois de "E se, em vez de travar…".
+  const amostra = fs.readFileSync(new URL("../amostras/tunel-vp9.webm", import.meta.url));
+  await page.route(/tunel-(celular|desktop)\.mp4/, (r) => r.fulfill({ status: 200, contentType: "video/webm", body: amostra }));
+  await page.addInitScript(() => {
+    window.__ritmos = []; window.__quadros = [];
+    const d = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "playbackRate");
+    Object.defineProperty(HTMLMediaElement.prototype, "playbackRate", { get() { return d.get.call(this); }, set(v) { window.__ritmos.push(v); d.set.call(this, v); } });
+    document.addEventListener("DOMContentLoaded", () => {
+      const v = document.getElementById("tunnel-video");
+      if (!v || !v.requestVideoFrameCallback) return;
+      const cb = (_, m) => { window.__quadros.push(m.mediaTime); if (v.isConnected) v.requestVideoFrameCallback(cb); };
+      v.requestVideoFrameCallback(cb);
+    });
+  });
+  await abre(page);
+  const { ritmos, quadros } = await page.evaluate(() => ({ ritmos: window.__ritmos, quadros: window.__quadros }));
+  expect(quadros.length, "o vídeo precisa ter tocado").toBeGreaterThan(100);
+  const voltas = quadros.filter((q, i) => i > 0 && q < quadros[i - 1] - 0.001);
+  expect(voltas, "quadros que voltaram no tempo").toEqual([]);
+  expect(Math.max(...quadros), "o túnel chega na porta de luz").toBeGreaterThan(6.4);
+  expect(ritmos, "mudanças de ritmo do vídeo").toEqual([]);
 });
