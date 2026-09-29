@@ -198,12 +198,19 @@ function wireScrollEffects() {
   // mais um pouco conforme rola — começar abaixo de 100% deixava uma faixa
   // do fundo escuro visível nas bordas em telas largas.
   const zoomFoto = hero ? hero.querySelector(".hero3d-zoom") : null;
+  // Camada com o mesmo fundo da página por cima da foto: vai de 0 a 1 ao
+  // longo da segunda tela da pista, e a foto se dissolve no fundo (como a
+  // abertura do iPad Pro na Apple) em vez de terminar numa borda reta.
+  const fimFoto = hero ? hero.querySelector(".hero-fim") : null;
   const bar = document.querySelector(".read-progress");
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
 
   let heroTop = 0;
   let heroAltura = 0;
+  let pistaFoto = 0;
+  let fotoSolta = false;
+  const telaBaixa = window.matchMedia("(max-height: 480px)");
   let maxScroll = 0;
   let ticking = false;
 
@@ -214,6 +221,7 @@ function wireScrollEffects() {
     if (hero) {
       heroTop = hero.getBoundingClientRect().top + window.scrollY;
       heroAltura = hero.offsetHeight;
+      pistaFoto = Math.max(1, heroAltura - alturaDaTela());
     }
     maxScroll = root.scrollHeight - window.innerHeight;
     update();
@@ -244,6 +252,26 @@ function wireScrollEffects() {
     // A trilha de leitura fica parada enquanto a abertura toca.
     const introActive = root.classList.contains("abertura-on");
     if (bar) bar.style.setProperty("--read", introActive || maxScroll <= 0 ? "0" : clamp(y / maxScroll).toFixed(4));
+    // Fora do "cinema" também (movimento reduzido): é só opacidade, sem
+    // movimento nenhum, e sem ela a foto terminaria numa borda reta.
+    // Tela baixa (celular deitado): o herói vira seção normal, sem pista
+    // pra foto se dissolver (ver CSS, max-height: 480px) — nada a fazer.
+    if (fimFoto && heroAltura && telaBaixa.matches) {
+      if (fotoSolta) { fotoSolta = false; stage.style.visibility = ""; }
+    } else if (fimFoto && heroAltura) {
+      // Começa a dissolver quando o botão do herói já está saindo pelo
+      // alto (35% da pista) e termina quando a frase entra por baixo.
+      const f = clamp(((y - heroTop) / pistaFoto - .35) / .6);
+      fimFoto.style.opacity = (f * f * (3 - 2 * f)).toFixed(3);
+      // Quando a foto solta e começa a subir, ela já é só fundo: esconde o
+      // palco pra aparecer a .page-bg fixa por trás. Subindo, o degradê da
+      // camada sairia do lugar em relação ao fundo fixo e marcaria uma faixa.
+      const solta = y >= heroTop + pistaFoto - 1;
+      if (solta !== fotoSolta) {
+        fotoSolta = solta;
+        stage.style.visibility = solta ? "hidden" : "";
+      }
+    }
     if (!cinema || !heroAltura) return;
 
     // Camadas de GPU da animação só existem enquanto o herói está na tela. Mantidas

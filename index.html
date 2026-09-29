@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=34">
+<link rel="stylesheet" href="css/style.css?v=35">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -106,6 +106,9 @@
           <div class="hero-foto-deitada" role="img" aria-label="Vitória Caroline, criadora do método Do Medo ao Play, olhando para os ícones das redes sociais"></div>
         </div>
       </div>
+      <!-- Mesmo fundo da .page-bg por cima da foto: a opacidade sobe com a
+           rolagem (wireScrollEffects) e a foto se dissolve no fundo da página. -->
+      <div class="hero-fim" aria-hidden="true"></div>
     </div>
 
     <!-- Texto, botão e seta ficam num grupo à parte, preso só na primeira
@@ -140,23 +143,26 @@
 
 
   <!-- ===== RECONHECIMENTO ===== -->
-  <!-- O mesmo painel de declaração da versão anterior (título com o play ao
-       lado), agora com o texto de reconhecimento embaixo. -->
+  <!-- Formato das frases de destaque da Apple (iPad Pro "M5. Acelere e crie
+       sem freios.", MacBook Air "Chip M5. Faz do Air um vendaval."): rótulo
+       pequeno em cima e a frase grande, que abre a seção seguinte em vez de
+       ficar solta. A foto do herói se dissolve no fundo da página enquanto a
+       frase sobe (ver .hero-fim), então a frase, o texto e os cartões da
+       escada ficam num fundo só, sem corte. -->
   <section class="section" id="reconhecimento" aria-labelledby="reconhecimento-title">
     <div class="container">
       <div class="statement-panel">
-        <div class="statement-head">
-          <span class="botao-gravar" aria-hidden="true"><i></i></span>
-          <h2 id="reconhecimento-title" class="statement-title" data-confirmar="rascunho pra validar com a Vitória: título direto (não pergunta), servindo de ponte pra Escada de Exposição logo em seguida">Você trava. Dá pra sair disso, degrau a degrau.</h2>
-        </div>
+        <p class="statement-eyebrow">A Escada de Exposição</p>
+        <h2 id="reconhecimento-title" class="statement-title" data-confirmar="rascunho pra validar com a Vitória: título direto (não pergunta), servindo de ponte pra Escada de Exposição logo em seguida">Você trava. <span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></h2>
       </div>
     </div>
   </section>
 
   <!-- ===== MÉTODO / ESCADA DE EXPOSIÇÃO ===== -->
-  <section class="section" id="metodo" aria-labelledby="metodo-title">
+  <!-- O título da seção é a frase logo acima (#reconhecimento): aqui começa
+       direto no texto, colado nela, como a continuação da mesma ideia. -->
+  <section class="section" id="metodo" aria-label="A Escada de Exposição">
     <div class="container">
-      <h2 id="metodo-title" class="section-title center">A Escada de Exposição</h2>
       <div class="texto-corrido">
         <p>No Do Medo ao Play, teoria, técnica e prática andam juntas: a cada módulo você aprende uma técnica nova de comunicação e de gravação e já aplica numa gravação um pouco mais exposta que a anterior.</p>
       </div>
@@ -867,6 +873,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=20"></script>
+<script src="js/main.js?v=21"></script>
 </body>
 </html>

@@ -643,6 +643,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   position: fixed;
   inset: 0;
   z-index: -1;
+}
+/* .hero-fim: a mesma pintura, por cima da foto presa do herói (que também
+   ocupa exatamente a tela, no topo) — com opacidade 1 ela é idêntica pixel
+   a pixel ao fundo fixo, então quando a foto solta e sobe não há emenda. */
+.page-bg, .hero-fim {
   background: var(--bg);
   background-image:
     radial-gradient(55% 45% at 15% 8%, rgba(70, 130, 180, 0.20), transparent 62%),
@@ -709,6 +714,24 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   z-index: 1;
   margin-top: -100vh;
   margin-top: -100svh;
+  /* Quase uma tela inteira de pista: é nela que a foto se dissolve (ver
+     .hero-fim). A frase fica no pé, então só entra na tela quando a foto já
+     virou fundo — nunca por cima do rosto ou do corpo da Vitória — e o texto
+     da escada vem logo embaixo, colado. */
+  min-height: 80vh;
+  min-height: 80svh;
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+}
+#reconhecimento > .container { width: 100%; }
+.hero-fim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
 }
 /* Sem degradê no pé da foto: ela termina normal, e a divisão pra seção
    seguinte é só o fim natural da pista (ver ajustaRunwayHero() em main.js). */
@@ -982,17 +1005,49 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    Formato das seções de destaque da Apple: painel próprio, título grande com
    ícone ao lado, duas colunas separadas por um fio e, em cada linha, o rótulo
    pequeno por cima da frase. Sem foto: aqui quem pesa é a frase. */
-/* Sem caixa em volta: título grande, texto numa coluna de leitura. */
-.statement-panel { margin-top: 0; }
-.statement-head {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(.7rem, 2vw, 1.1rem);
-  margin-bottom: 1.1rem;
+/* Frase de destaque medida nas páginas da Apple (iPad Pro, MacBook Air,
+   AirPods Pro, Fitness+): rótulo pequeno em cima (21px/17px, seminegrito),
+   frase grande centralizada (80px no computador, 40px no celular, entrelinha
+   ~1,05, letras um pouco mais juntas) e nenhum ícone do lado. Duas frases:
+   a primeira na cor do texto, a segunda em degradê azul→laranja — o mesmo
+   caminho de cor dos 7 níveis da escada logo abaixo (como o "Faz do Air um
+   vendaval." em outra cor, no MacBook Air). */
+.statement-panel { margin: 0 auto; max-width: 1000px; text-align: center; }
+.statement-eyebrow {
+  margin: 0 0 .5rem;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(1.0625rem, 1.5vw, 1.3125rem);
+  line-height: 1.2;
+  color: var(--blue-light);
+}
+.statement-title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: -.025em;
+  margin: 0;
+  color: var(--white);
+  text-align: center;
+}
+/* Celular: acompanha a largura (40px no de 390px, 32px no de 320px), pra
+   frase caber em 3 linhas também nas telas estreitas. */
+@media (max-width: 699.98px) {
+  .statement-title { font-size: clamp(2rem, 10.3vw, 2.5rem); }
+}
+.statement-grad {
+  background: linear-gradient(90deg, var(--blue-light), var(--orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Linha própria, com as quebras equilibradas: "Dá pra sair disso, /
+     degrau a degrau." em vez de deixar "degrau." sozinho embaixo. */
+  display: block;
+  text-wrap: balance;
 }
 /* O botão de gravar do iPhone (aro branco e a bolinha vermelha), usado no
-   lugar do "play": em "Você sente..." e no botão do herói. */
+   botão do herói. */
 .botao-gravar {
   --tam: 2.4rem;
   display: inline-grid;
@@ -1004,31 +1059,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   border: calc(var(--tam) * .085) solid #fff;
 }
 .botao-gravar i { width: 76%; height: 76%; border-radius: 50%; background: #ff3b30; }
-.statement-head .botao-gravar { --tam: clamp(2.4rem, 4.6vw, 3.2rem); }
-.statement-title {
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: var(--t-titulo);
-  line-height: 1.08;
-  letter-spacing: -.035em;
-  margin: 0;
-  color: var(--white);
-  text-align: left;
-}
 /* Texto corrido das seções de declaração (reconhecimento, escada, aplicação):
    coluna de leitura no meio da página, texto alinhado à esquerda. */
 .texto-corrido { max-width: 640px; margin: clamp(1.6rem, 3vw, 2.2rem) auto 0; }
 .texto-corrido p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
 .texto-corrido p + p { margin-top: 1.1em; }
-/* Abertura da escada: bloco centralizado na seção e texto justificado, pra
-   fechar nas duas margens embaixo do título centralizado. Maior que o
-   texto-corrido padrão (era pequeno demais pra abrir a seção) e mais
-   largo, pra caber em duas linhas bem cheias em vez de três curtinhas. */
-#metodo .texto-corrido { max-width: 1000px; text-align: justify; text-align-last: center; }
-#metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; }
-/* Celular: coluna estreita + 19px justificado abria buracos entre as palavras;
-   centralizado, igual às outras aberturas de seção. */
-@media (max-width: 699.98px) { #metodo .texto-corrido { text-align: center; } }
+/* Abertura da escada: logo embaixo da frase de destaque, como o parágrafo
+   do "M5. Acelere e crie sem freios." no iPad Pro — centralizado, numa
+   coluna de ~690px, no cinza mais claro, pra frase continuar mandando. */
+#metodo { padding-top: clamp(1.5rem, 3vw, 2.25rem); }
+#metodo .texto-corrido { max-width: 690px; margin-top: 0; text-align: center; }
+#metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; color: var(--text-muted); }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 
 /* Respiro maior depois do botão "Quero entrar em cena": o padding padrão da
@@ -2513,9 +2554,6 @@ html.abertura-on { overflow: hidden; }
    encolhe sozinho, de forma fluida — ver .guarantee-badge). */
   .section-tone--guarantee.section { padding: 48px 0; }
   .section-tone--guarantee .section-lead { margin-top: .5rem; }
-  /* Painel de declaração mais compacto no celular. */
-  .statement-panel { padding: 1.5rem .9rem 1.3rem; }
-  .statement-head { gap: .6rem; }
   /* Menor no celular pra a primeira linha do título caber inteira ao lado do ícone. */
   /* A trilha conectada (linha + nó) agora é a mesma em qualquer tela: o
      celular só ganha nós e texto um pouco menores pra caber melhor. */
@@ -2526,7 +2564,10 @@ html.abertura-on { overflow: hidden; }
    uma seção normal, do tamanho do conteúdo, sem a pista de rolagem nem a foto
    presa — e a seção seguinte não sobe mais por cima dela. */
 @media (max-height: 480px) {
-  .hero { min-height: auto; }
+  /* Foto e texto na mesma célula da grade: o herói fica com a altura do
+     maior dos dois, e a foto não vaza por baixo da seção seguinte. */
+  .hero { min-height: auto; display: grid; }
+  .cinema-stage, .hero-primeira-tela { grid-area: 1 / 1; }
   .cinema-stage {
     position: relative;
     top: 0;
@@ -2542,12 +2583,13 @@ html.abertura-on { overflow: hidden; }
        texto de trás dele. */
     padding-top: calc(var(--header-h, 71px) + 6px);
     padding-bottom: 36px;
-    margin-top: calc(-100vh - 140px);
+    margin-top: 0;
   }
   .hero-headline { font-size: 1.6rem; }
   .hero-lead-list { margin-top: .5rem; font-size: .88rem; line-height: 1.4; }
   .hero-actions { margin-top: .6rem; }
-  #reconhecimento { margin-top: 0; }
+  #reconhecimento { margin-top: 0; min-height: 0; padding: 72px 0 0; }
+  .hero-fim { display: none; }
 }
 /* Celular deitado: o título comprido encostava nos ícones das redes. */
 @media (max-height: 480px) and (min-width: 700px) {
