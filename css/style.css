@@ -584,14 +584,12 @@ html.fundo-claro #modulos, html.fundo-claro #beneficios {
 /* Cards lisos, como os da Apple (medido no iPhone, iPad, AirPods e
    Fitness+): um tom só, sem borda, sem sombra e sem efeito de vidro. Aqui,
    branco translúcido sobre o azul claro da seção. */
-#modulos .accordion-item,
-.beneficio {
+#modulos .accordion-item {
   background: var(--card-bg);
   border: 0;
   box-shadow: none;
 }
 #modulos .accordion-item.reveal { transition: opacity .7s cubic-bezier(0, 0, .3, 1), transform .7s cubic-bezier(0, 0, .3, 1), background-color .7s cubic-bezier(.4, 0, .2, 1); }
-.beneficio { transition: background-color .7s cubic-bezier(.4, 0, .2, 1); }
 #modulos #accordion-modulos .accordion-item.open {
   /* Havia uma regra de :nth-child(even) com o mesmo peso e vindo depois
      no arquivo, que vencia nos módulos pares — removida (era o motivo dos
@@ -1617,86 +1615,167 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 .modulos-trail-dot.is-ativo { fill: var(--orange); }
 
 
-/* ---------- Quadradinhos de benefícios ----------
-   Quatro quadradinhos (2 x 2 no celular), transparentes: título e uma linha.
-   Card quadrado, como os outros da página, e flutua no mouse. */
+/* ---------- Os 4 cartões em pilha (como o Spotify Premium) ----------
+   Medido em spotify.com/br-pt/premium, "Novas formas de descobrir música":
+   cartões de cor chapada, cantos de 20-24px, um por vez. Cada um sobe, para
+   no meio da tela (position: sticky) e o próximo sobe por cima; o de baixo
+   encolhe até 92% enquanto é coberto (JS, wireBeneficiosPilha). Quando o
+   último chega, a pilha inteira segue com a página. Celular: cartão em pé
+   (358 x 500 no Spotify: desenho em cima, título de 32px embaixo). Tablet e
+   computador: cartão largo (desenho à esquerda, ~57%, texto à direita). */
 .beneficios {
-  --beneficios-gap: clamp(.8rem, 2vw, 1.2rem);
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--beneficios-gap);
-  margin: 2.6rem 0 4.4rem;
+  --pilha-gap: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pilha-gap);
+  margin: 2.6rem 0 0;
 }
-/* Setinha ligando o 1º card ao 2º, e o 3º ao 4º: tanto faz o grid estar em
-   4 colunas (computador) ou 2 (tablet/celular) — nas duas, o par 1-2 e o
-   par 3-4 sempre ficam lado a lado na mesma linha, então a seta sempre
-   aponta pro card certo. Fica meio a meio no vão entre os dois cards. */
-/* O vidro (backdrop-filter) põe cada card numa camada própria: sem subir o
-   1º e o 3º pra frente, a setinha deles ficava por baixo do card vizinho. */
-.beneficio:nth-child(1), .beneficio:nth-child(3) { z-index: 2; }
-.beneficio:nth-child(1)::after,
-.beneficio:nth-child(3)::after {
+.beneficio {
+  --card-h: min(480px, calc(100svh - 150px));
+  --card-cor: #205D8D;
+  position: sticky;
+  /* No meio da parte da tela que sobra abaixo do menu fixo. */
+  top: max(calc(var(--header-h, 68px) + 12px), calc(50svh + var(--header-h, 68px) / 2 - var(--card-h) / 2));
+  height: var(--card-h);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--card-cor);
+  color: #fff;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+.beneficio--formacao { --card-cor: #205D8D; }
+.beneficio--escada { --card-cor: #9A4906; }
+.beneficio--acompanhamento { --card-cor: #14456B; }
+.beneficio--certificado { --card-cor: #0B1728; }
+.beneficio-arte {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+/* Luz suave atrás do desenho, pra não ficar um bloco chapado sem vida. */
+.beneficio-arte::before {
   content: "";
   position: absolute;
-  top: 50%;
-  right: calc(var(--beneficios-gap) * -.5);
-  transform: translate(50%, -50%);
-  z-index: 2;
-  /* Pequena, do tamanho de um selo — só o bastante pra encostar nos dois
-     cards e ler como conexão, sem virar um enfeite grande chamando atenção
-     sozinho. Sem anel escuro em volta (chamava mais atenção que a própria
-     seta): só uma sombra leve, igual ao resto dos elementos da página. */
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background-color: var(--orange-button);
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h13M13 6l6 6-6 6'/%3E%3C/svg%3E"),
-    linear-gradient(135deg, var(--orange-light), var(--orange-button));
-  background-repeat: no-repeat, no-repeat;
-  background-size: 100% 100%, 50%;
-  background-position: center, center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
+  inset: -20%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, .16), transparent 70%);
+  pointer-events: none;
 }
-/* Fundo azul claro (tom leve, o mesmo do resto da página), sem traço
-   laranja e sem ícone: só o card tingido, o título e a linha de apoio. */
-.beneficio {
-  container-type: inline-size;
+.beneficio-texto { flex: 0 0 auto; padding: 0 20px 24px; }
+/* Branco sempre: a seção troca os textos pra escuro no fundo claro, mas
+   aqui o fundo é o do próprio cartão. */
+html .beneficio h3 {
+  margin: 0 0 .5rem;
+  font-family: var(--font-head);
+  font-size: var(--t-titulo);
+  font-weight: 700;
+  line-height: 1.1;
+  color: #fff;
+}
+html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; color: rgba(255, 255, 255, .86); }
+
+/* 1. Formação completa: os números grandes e a trilha dos 8 módulos. */
+.arte-numeros { position: relative; display: flex; gap: clamp(1.5rem, 6vw, 3.5rem); align-items: flex-end; }
+.arte-num { display: grid; justify-items: center; font-family: var(--font-body); font-size: var(--t-pequeno); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: rgba(255, 255, 255, .8); }
+.arte-num b { font-family: var(--font-head); font-size: clamp(4.5rem, 22vw, 8.5rem); line-height: .9; font-weight: 700; letter-spacing: -.03em; color: #fff; }
+.arte-num + .arte-num b { color: var(--blue-light); }
+.arte-trilha { position: absolute; left: 50%; bottom: 14%; display: flex; gap: 6px; transform: translateX(-50%); }
+.arte-trilha i { width: clamp(18px, 5vw, 34px); height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .25); }
+.arte-trilha i:nth-child(-n+3) { background: var(--orange); }
+
+/* 2. Escada de Exposição: as fotos dos 7 níveis subindo em degraus. */
+.arte-degraus {
+  --deg-w: min(9vw, 44px);
   position: relative;
-  padding: clamp(1.2rem, 2vw, 1.5rem);
-  /* Claro, mas bem mais vidro que o card do acordeão (ver
-     #modulos .accordion-item): não pode ficar um bloco branco opaco, só
-     uma sugestão de card sobre o azul da seção. Cantos arredondados iguais
-     aos dos cards de módulo, logo acima na mesma seção clara — os dois
-     lado a lado com cantos diferentes (um reto, um redondo) lia como
-     inconsistência, não como estilo. */
-  border-radius: 14px;
+  display: flex;
+  align-items: flex-end;
+  gap: calc(var(--deg-w) * .16);
 }
-/* O título cresce com a largura do próprio card: 10.5cqi é o maior tamanho em
-   que "Acompanhamento" (a palavra mais longa) ainda cabe inteira numa linha. */
-.beneficio h3 {
-  margin: 0 0 .8rem;
-  font-size: clamp(.9375rem, 11.4cqi, var(--t-subtitulo));
-  line-height: 1.15;
-  color: var(--white);
+.arte-degraus img {
+  width: var(--deg-w);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .6);
 }
-.beneficio p { margin: 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--cor-corpo); }
-/* Tablet e computador: 17px, o texto dos cartões da Apple nessas telas.
-   No celular fica em 14px, o texto dos cartões da Apple no iPhone (os
-   cards são dois lado a lado). */
-@media (min-width: 700px) { .beneficio p { font-size: var(--t-corpo); } }
-@media (min-width: 700px) and (max-width: 999.98px) { .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 370px) {
-  /* Abaixo de ~362px nem o tamanho mínimo do título comporta a palavra
-     mais longa inteira: aí ela pode hifenizar em vez de vazar. */
-  .beneficio h3 { hyphens: auto; overflow-wrap: anywhere; }
+/* Cada foto meio degrau acima da anterior (em px da própria foto: margem
+   em % seria da largura do cartão e a escada saía pra fora no computador). */
+.arte-degraus img:nth-child(2) { margin-bottom: calc(var(--deg-w) * .5); }
+.arte-degraus img:nth-child(3) { margin-bottom: calc(var(--deg-w) * 1); }
+.arte-degraus img:nth-child(4) { margin-bottom: calc(var(--deg-w) * 1.5); }
+.arte-degraus img:nth-child(5) { margin-bottom: calc(var(--deg-w) * 2); }
+.arte-degraus img:nth-child(6) { margin-bottom: calc(var(--deg-w) * 2.5); }
+.arte-degraus img:nth-child(7) { margin-bottom: calc(var(--deg-w) * 3); outline: 2px solid #fff; outline-offset: 2px; }
+
+/* 3. Acompanhamento: uma conversa (balões sem texto, como os rabiscos dos
+   cartões do Spotify). */
+.arte-conversa { position: relative; display: flex; flex-direction: column; gap: 10px; width: min(78%, 340px); }
+.balao { display: flex; flex-direction: column; gap: 7px; width: 72%; padding: 12px 14px; border-radius: 16px 16px 16px 4px; background: rgba(255, 255, 255, .95); box-shadow: 0 8px 20px -12px rgba(0, 0, 0, .6); }
+.balao--nos { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--blue-light); }
+.balao--curto { width: 52%; }
+.balao i { display: block; height: 7px; border-radius: 4px; background: rgba(11, 23, 40, .22); }
+.balao i:last-child:not(:first-child) { width: 60%; }
+
+/* 4. Certificado: a folha com a logo e o selo. */
+.arte-certificado {
+  position: relative;
+  width: min(74%, 330px);
+  aspect-ratio: 1.414;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8%;
+  padding: 8%;
+  border-radius: 6px;
+  background: #F6F3EC;
+  box-shadow: 0 24px 48px -20px rgba(0, 0, 0, .8), inset 0 0 0 6px #F6F3EC, inset 0 0 0 7px rgba(182, 91, 8, .45);
+  transform: rotate(-4deg);
 }
-/* Celular: dois lado a lado (2 x 2), como a Vitória aprovou. */
-@media (max-width: 699.98px) {
-  .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin-bottom: 3rem; }
-  /* Card sem fundo pede menos respiro lateral: sobra largura pro título crescer. */
-  .beneficio { padding: 1rem .65rem 1.1rem; }
-  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { width: 18px; height: 18px; }
+.arte-certificado > img { width: 42%; height: auto; }
+.arte-certificado .linha { display: block; width: 70%; height: 6px; border-radius: 3px; background: rgba(11, 23, 40, .16); }
+.arte-certificado .linha--grande { width: 82%; height: 9px; background: rgba(11, 23, 40, .3); }
+.arte-certificado .linha--curta { width: 44%; }
+.arte-certificado .selo {
+  position: absolute;
+  right: -6%;
+  bottom: -10%;
+  width: 26%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #E88A2A, var(--orange-button));
+  box-shadow: 0 10px 20px -8px rgba(0, 0, 0, .6);
+}
+.arte-certificado .selo img { width: 58%; height: auto; }
+
+/* Tablet e computador: cartão largo, desenho à esquerda e texto à direita
+   (no Spotify: 1120 x 509, desenho com ~57% da largura). */
+@media (min-width: 700px) {
+  .beneficios { --pilha-gap: 32px; }
+  .beneficio { --card-h: min(360px, calc(100svh - 160px)); flex-direction: row; border-radius: 24px; }
+  .beneficio-arte { flex: 0 0 55%; }
+  .beneficio-texto { flex: 1 1 auto; align-self: center; padding: 0 clamp(1.5rem, 4vw, 3.5rem) 0 clamp(.5rem, 2vw, 1.5rem); }
+  html .beneficio h3 { font-size: clamp(1.75rem, 3vw, 2.25rem); margin-bottom: .75rem; }
+  .arte-num b { font-size: clamp(5rem, 11vw, 8.5rem); }
+  .arte-degraus { --deg-w: min(5.2vw, 50px); }
+}
+@media (min-width: 1000px) {
+  .beneficio { --card-h: min(460px, calc(100svh - 160px)); }
+  .arte-degraus { --deg-w: min(4.6vw, 64px); }
+}
+/* Tela baixa (celular deitado): o cartão não pode ser mais alto que a tela. */
+@media (max-height: 520px) {
+  .beneficio { --card-h: calc(100svh - var(--header-h, 68px) - 24px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .beneficio { will-change: auto; }
 }
 
 
@@ -1715,7 +1794,8 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
    não separa assim dentro da mesma seção). */
 /* "E você ainda ganha +2 bônus exclusivos" no formato dos números grandes
    da Apple (AirPods Pro: "Remove até / 2x mais / ruídos…"; iPad Pro:
-   "1.000 nits" colorido): um fio fino em cima, o rótulo pequeno, e o número
+   "1.000 nits" colorido): sem fio separando dos cards de cima (a Vitória
+   pediu pra tirar a divisão), o rótulo pequeno, e o número
    com a palavra na mesma linha, grandes — alinhado à esquerda, na mesma
    borda dos bônus logo abaixo (não centralizado). O "+2" leva a cor de
    destaque da marca, como os números coloridos da tela do iPad. */
@@ -1727,15 +1807,6 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   font-weight: 700;
   line-height: 1.02;
   color: var(--white);
-}
-.bonus-rotulo::before {
-  content: "";
-  display: block;
-  width: min(100%, 320px);
-  height: 1px;
-  margin-bottom: 1.1rem;
-  background: currentColor;
-  opacity: .28;
 }
 .bonus-ganha {
   display: block;
@@ -2063,13 +2134,6 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 }
 .price-note { font-size: var(--t-pequeno); line-height: 1.4; color: var(--oc-corpo); }
 .offer-inclui { border-top: 1px solid var(--oc-fio); padding-top: 1.1rem; }
-.offer-inclui-rotulo {
-  margin: 0 0 .6rem;
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: var(--t-pequeno);
-  color: var(--blue-deep);
-}
 /* Pontinhos, como a lista do Spotify: sem fio entre os itens. */
 .offer-lista { display: grid; gap: .55rem; margin: 0; padding-left: 1.15rem; list-style: disc; }
 .offer-lista li { display: list-item; padding: 0; border: 0; text-wrap: pretty; }
@@ -2083,6 +2147,10 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   color: var(--oc-texto);
 }
 .offer-lista li span { display: block; font-size: var(--t-pequeno); line-height: 1.35; color: var(--oc-corpo); }
+/* "no WhatsApp" só no computador: no card estreito do celular e do tablet
+   a linha quebrava e o item descia na tela. */
+.offer-lista li strong .so-computador { display: none; font: inherit; color: inherit; }
+@media (min-width: 1000px) { .offer-lista li strong .so-computador { display: inline; } }
 /* Botão grande na largura toda (o do Spotify: 48px, pílula, texto em
    negrito). Aqui 56px, o maior botão da página: é a compra. */
 .offer-card .btn-block {
@@ -2130,7 +2198,6 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   .offer-logo { width: 96px; margin-bottom: .5rem; }
   .price-now { font-size: 2.4rem; }
   .offer-inclui { padding-top: .8rem; }
-  .offer-inclui-rotulo { margin-bottom: .45rem; }
   .offer-lista { gap: .4rem; }
   .offer-lista li strong { font-size: 1rem; }
   .offer-card .btn-block { margin-top: 1.1rem; }
@@ -2654,10 +2721,10 @@ html.abertura-on { overflow: hidden; }
    Crescem de leve e a sombra abre um pouco: sem subir, sem balançar. Só em
    quem usa mouse; no toque o card não fica "levantado" depois do dedo. */
 @media (hover: hover) and (pointer: fine) {
-  .bonus-item-foto, .beneficio, .depo-video {
+  .bonus-item-foto, .depo-video {
     transition: opacity .9s cubic-bezier(.25, .1, .25, 1), transform .45s cubic-bezier(0, 0, .5, 1), box-shadow .45s cubic-bezier(0, 0, .5, 1), background-color .7s cubic-bezier(.4, 0, .2, 1);
   }
-  :is(.bonus-item-foto, .beneficio, .depo-video):hover {
+  :is(.bonus-item-foto, .depo-video):hover {
     transform: scale(1.015);
     box-shadow: 0 18px 44px -20px rgba(0, 0, 0, .7);
   }
@@ -3010,6 +3077,7 @@ html.abertura-on { overflow: hidden; }
   .section-tone--guarantee .section-lead { margin-top: 0; }
   #faq .accordion { margin-top: 2rem; }
   .beneficios { margin-top: 2rem; }
+  #beneficios .bonus-rotulo { margin-top: 3.5rem; }
   /* Bolinhas da escada e setas dos depoimentos: o desenho continua pequeno,
      mas a área que o dedo alcança chega perto dos 44px recomendados. */
   .escada-num, .escada-play-pause { width: 30px; height: 30px; }
@@ -3040,12 +3108,14 @@ html.abertura-on { overflow: hidden; }
   transition: opacity .3s ease;
 }
 .depo-modal.is-aberto { opacity: 1; }
+/* A página continua aparecendo atrás, só embaçada e um pouco mais escura:
+   com o fundo quase preto dava a sensação de ter saído da página. */
 .depo-modal-fundo {
   position: absolute;
   inset: 0;
-  background: rgba(3, 9, 18, .78);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  background: rgba(3, 9, 18, .42);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
 }
 .depo-modal-caixa {
   position: relative;

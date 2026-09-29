@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireGuardaLugar();
   wireReviewMode();
   wireCorDoFundo();
+  wireBeneficiosPilha();
 });
 
 // Onde começa a passagem do azul claro dos benefícios pro escuro da oferta.
@@ -883,6 +884,45 @@ function wireViviCard() {
   aplica();
 }
 
+// Os 4 cartões de "As aulas são só uma parte do que você leva" em pilha,
+// como no Spotify Premium: cada cartão fica preso no meio da tela (sticky,
+// no CSS) e, enquanto o próximo sobe por cima dele, encolhe de 100% até 92%
+// — o mesmo que o Spotify faz (medido: 1 → 0,92 no trecho de um cartão +
+// o vão). Só a escala é calculada aqui; a subida é a rolagem normal.
+function wireBeneficiosPilha() {
+  const cards = [...document.querySelectorAll(".beneficios .beneficio")];
+  if (cards.length < 2 || prefersReducedMotion) return;
+  const escalas = cards.map(() => 1);
+  let ticking = false;
+  function aplica() {
+    ticking = false;
+    const gap = parseFloat(getComputedStyle(cards[0].parentElement).rowGap) || 24;
+    // Do fim pro começo: cada um usa a escala já atualizada do próximo.
+    for (let i = cards.length - 2; i >= 0; i--) {
+      const card = cards[i];
+      const topo = parseFloat(getComputedStyle(card).top) || 0;
+      const trecho = card.offsetHeight + gap;
+      // O topo do próximo sem a escala dele (quando ele mesmo já está
+      // encolhendo, o retângulo medido fica um pouco mais baixo).
+      const prox = cards[i + 1];
+      const r = prox.getBoundingClientRect();
+      const e = escalas[i + 1];
+      const falta = r.top - (r.height / e - r.height) / 2 - topo;
+      const p = Math.min(1, Math.max(0, 1 - falta / trecho));
+      escalas[i] = 1 - .08 * p;
+      card.style.transform = p > 0 ? "scale(" + escalas[i].toFixed(4) + ")" : "";
+    }
+  }
+  const agenda = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(aplica);
+  };
+  window.addEventListener("scroll", agenda, { passive: true });
+  window.addEventListener("resize", agenda, { passive: true });
+  aplica();
+}
+
 function wireScrollReveal() {
   // Listas com cascata própria revelam item a item; o contêiner delas fica de fora.
   // Animar contêiner e filhos juntos fazia os cards "pularem" quando o de fora
@@ -890,7 +930,7 @@ function wireScrollReveal() {
   const targets = [...document.querySelectorAll(
     ".section .container > *, .accordion-item"
   )].filter((el) => !el.matches(
-    ".accordion"
+    ".accordion, .beneficios"
   ));
   targets.forEach((el) => el.classList.add("reveal"));
 
