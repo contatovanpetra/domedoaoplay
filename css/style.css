@@ -1006,21 +1006,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    ícone ao lado, duas colunas separadas por um fio e, em cada linha, o rótulo
    pequeno por cima da frase. Sem foto: aqui quem pesa é a frase. */
 /* Frase de destaque medida nas páginas da Apple (iPad Pro, MacBook Air,
-   AirPods Pro, Fitness+): rótulo pequeno em cima (21px/17px, seminegrito),
-   frase grande centralizada (80px no computador, 40px no celular, entrelinha
+   AirPods Pro, Fitness+): frase grande centralizada (80px no computador, 40px no celular, entrelinha
    ~1,05, letras um pouco mais juntas) e nenhum ícone do lado. Duas frases:
    a primeira na cor do texto, a segunda em degradê azul→laranja — o mesmo
    caminho de cor dos 7 níveis da escada logo abaixo (como o "Faz do Air um
    vendaval." em outra cor, no MacBook Air). */
 .statement-panel { margin: 0 auto; max-width: 1000px; text-align: center; }
-.statement-eyebrow {
-  margin: 0 0 .5rem;
-  font-family: var(--font-head);
-  font-weight: 700;
-  font-size: clamp(1.0625rem, 1.5vw, 1.3125rem);
-  line-height: 1.2;
-  color: var(--blue-light);
-}
 .statement-title {
   font-family: var(--font-head);
   font-weight: 700;
@@ -1064,12 +1055,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .texto-corrido { max-width: 640px; margin: clamp(1.6rem, 3vw, 2.2rem) auto 0; }
 .texto-corrido p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
 .texto-corrido p + p { margin-top: 1.1em; }
-/* Abertura da escada: logo embaixo da frase de destaque, como o parágrafo
-   do "M5. Acelere e crie sem freios." no iPad Pro — centralizado, numa
-   coluna de ~690px, no cinza mais claro, pra frase continuar mandando. */
-#metodo { padding-top: clamp(1.5rem, 3vw, 2.25rem); }
-#metodo .texto-corrido { max-width: 690px; margin-top: 0; text-align: center; }
-#metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; color: var(--text-muted); }
+/* A escada começa logo depois da frase-ponte (#reconhecimento), no mesmo
+   fundo: um respiro de seção menor que o padrão, pra ler como a sequência
+   dela, mas com o título próprio. O texto de abertura fica centralizado,
+   numa coluna de ~690px, como o parágrafo sob as frases da Apple. */
+#metodo { padding-top: clamp(4.5rem, 8vw, 7rem); }
+#metodo .texto-corrido { max-width: 690px; text-align: center; }
+#metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; color: var(--text-muted); text-wrap: balance; }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 
 /* Respiro maior depois do botão "Quero entrar em cena": o padding padrão da

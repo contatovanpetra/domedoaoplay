@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=35">
+<link rel="stylesheet" href="css/style.css?v=36">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -143,28 +143,24 @@
 
 
   <!-- ===== RECONHECIMENTO ===== -->
-  <!-- Formato das frases de destaque da Apple (iPad Pro "M5. Acelere e crie
-       sem freios.", MacBook Air "Chip M5. Faz do Air um vendaval."): rótulo
-       pequeno em cima e a frase grande, que abre a seção seguinte em vez de
-       ficar solta. A foto do herói se dissolve no fundo da página enquanto a
-       frase sobe (ver .hero-fim), então a frase, o texto e os cartões da
-       escada ficam num fundo só, sem corte. -->
+  <!-- Seção de identificação e ponte pra Escada: uma frase só, no formato
+       das frases de destaque da Apple (iPad Pro, MacBook Air). A foto do
+       herói se dissolve no fundo da página enquanto ela sobe (ver .hero-fim),
+       e a escada começa logo embaixo, no mesmo fundo, com o título dela. -->
   <section class="section" id="reconhecimento" aria-labelledby="reconhecimento-title">
     <div class="container">
       <div class="statement-panel">
-        <p class="statement-eyebrow">A Escada de Exposição</p>
         <h2 id="reconhecimento-title" class="statement-title" data-confirmar="rascunho pra validar com a Vitória: título direto (não pergunta), servindo de ponte pra Escada de Exposição logo em seguida">Você trava. <span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></h2>
       </div>
     </div>
   </section>
 
   <!-- ===== MÉTODO / ESCADA DE EXPOSIÇÃO ===== -->
-  <!-- O título da seção é a frase logo acima (#reconhecimento): aqui começa
-       direto no texto, colado nela, como a continuação da mesma ideia. -->
-  <section class="section" id="metodo" aria-label="A Escada de Exposição">
+  <section class="section" id="metodo" aria-labelledby="metodo-title">
     <div class="container">
+      <h2 id="metodo-title" class="section-title center">A Escada de Exposição</h2>
       <div class="texto-corrido">
-        <p>No Do Medo ao Play, teoria, técnica e prática andam juntas: a cada módulo você aprende uma técnica nova de comunicação e de gravação e já aplica numa gravação um pouco mais exposta que a anterior.</p>
+        <p data-confirmar="versão mais curta pra validar com a Vitória (antes: 'No Do Medo ao Play, teoria, técnica e prática andam juntas: a cada módulo você aprende uma técnica nova de comunicação e de gravação e já aplica numa gravação um pouco mais exposta que a anterior.')">No Do Medo ao Play, teoria, técnica e prática andam juntas. Cada módulo traz uma técnica nova de comunicação e gravação, e você já aplica num vídeo um pouco mais exposto que o anterior.</p>
       </div>
     </div>
 
