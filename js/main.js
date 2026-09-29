@@ -1237,6 +1237,9 @@ function wireIntroStage() {
     .to(burstScreen, { opacity: 1, duration: .35, ease: "power2.out" }, "celular+=.85")
     .to(burstCamera, { opacity: 1, duration: .3 }, "celular+=1.15")
     .to(faixas, { opacity: 1, duration: .5, ease: "power2.inOut" }, "celular+=1.2")
+    // A porta de luz chega aqui: a sombra do celular some junto (no laranja
+    // ela virava uma caixa escura em volta dele).
+    .to(burstAparelho, { "--sombra": 0, duration: .6, ease: "power1.out" }, "celular+=1.2")
     // FASE 4 — o resto da pergunta, já com o celular montado na tela.
     .to(burstTitleSpans, { opacity: 1, y: 0, duration: .3, stagger: .1, ease: "back.out(1.7)" }, "celular+=1.7")
     .call(aperta, null, "celular+=2")
@@ -1265,8 +1268,8 @@ function wireIntroStage() {
   // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
   // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
   const VIDEOS = {
-    celular: { src: "assets/video/tunel-celular.mp4?v=3", poster: "assets/video/tunel-celular-poster.webp" },
-    computador: { src: "assets/video/tunel-desktop.mp4?v=3", poster: "assets/video/tunel-desktop-poster.webp" },
+    celular: { src: "assets/video/tunel-celular.mp4?v=4", poster: "assets/video/tunel-celular-poster.webp" },
+    computador: { src: "assets/video/tunel-desktop.mp4?v=4", poster: "assets/video/tunel-desktop-poster.webp" },
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
   const porta = tl.labels.cresce + CRESCE;
@@ -1279,21 +1282,19 @@ function wireIntroStage() {
   let semVideo = false;
   let esperaVideo = 0;
 
-  // O túnel começa devagar e vai acelerando por igual até a porta de luz,
-  // aonde chega quando a tela da câmera termina de crescer (a luz do vídeo
-  // emenda no clarão). A aceleração já vem gravada no próprio arquivo, que
-  // dura exatamente até a porta (5,35 s): o vídeo toca no ritmo normal, do
-  // começo ao fim, sem ninguém mexer nele. Antes o JS mudava o ritmo
+  // O túnel vai acelerando por igual até a porta de luz, aonde chega um
+  // pouco antes da tela da câmera terminar de crescer, e fica na luz até o
+  // clarão. A aceleração vem gravada no próprio arquivo (1,5x no começo até
+  // 1,8x na porta, 4,4 s; a Vitória pediu só o túnel mais rápido, 29/set, o
+  // resto da abertura segue no mesmo tempo): o vídeo toca no ritmo normal,
+  // do começo ao fim, sem ninguém mexer nele. Antes o JS mudava o ritmo
   // (playbackRate) aos pouquinhos enquanto ele tocava; no iPhone, mudar o
   // ritmo de um vídeo que ainda está chegando pode fazer o Safari recomeçar
   // do último quadro-chave, e o arquivo antigo só tinha um no começo: o túnel
   // voltava pro início logo depois de "E se, em vez de travar…" (a primeira
-  // mudança caía aos 1,6 s) e voltava a andar, como se a página recarregasse. O arquivo novo também
-  // tem um quadro-chave a cada meio segundo e nenhum quadro "B" (os que
-  // dependem do quadro seguinte), o que deixa a decodificação mais leve.
-  // A pedido da Vitória (29/set), o túnel ficou mais rápido desde o começo:
-  // 1,25x no início até ~1,47x na porta (antes 1x até 1,17x), gravado no
-  // arquivo do mesmo jeito.
+  // mudança caía aos 1,6 s) e voltava a andar, como se a página recarregasse.
+  // O arquivo novo tem um quadro-chave a cada meio segundo e nenhum quadro
+  // "B" (os que dependem do quadro seguinte): decodificação mais leve.
   // A animação não espera o vídeo: começa logo depois do pôster (a imagem do
   // túnel) aparecer, e o vídeo entra quando chegar. O pôster é o primeiro
   // quadro do vídeo, então ele entrar um pouco depois não dá salto nenhum.
