@@ -1813,10 +1813,6 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 }
 @media (min-width: 700px) { .bonus-num, .bonus-txt { font-size: 4rem; } }
 @media (min-width: 1069px) { .bonus-num, .bonus-txt { font-size: 5rem; } }
-/* "bônus exclusivos" sempre em branco (pedido da Vitória, 29/set), também no
-   azul claro da seção: lá a variável --white vira azul-noite, por isso a cor
-   vai escrita direto. */
-.bonus-txt { color: #FFFFFF; }
 .bonus-num {
   background: linear-gradient(180deg, var(--orange) 0%, var(--orange-button) 100%);
   -webkit-background-clip: text;
