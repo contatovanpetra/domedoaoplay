@@ -595,8 +595,7 @@ function wireEscadaShowcase() {
   let inicioProgresso = 0;
   let progressoAoPausar = 0; // 0..1, guardado ao pausar pra retomar do mesmo ponto
   let rafId = 0;
-  let naTela = false;         // só conta com a escada de fato na tela
-  let saiuDeVez = true;       // chegou de fora dela: recomeça do nível 1
+  let naTela = false;         // só conta com algum pedaço da escada na tela
 
   function anelDe(i) {
     return nums[i] && nums[i].querySelector(".escada-num-ring-fill");
@@ -736,22 +735,23 @@ function wireEscadaShowcase() {
     resizeTimer = setTimeout(() => goToIndex(activeIndex, false), 100);
   }, { passive: true });
 
-  // Conta só com a escada na tela (metade dela visível). Chegando de fora
-  // dela, a pessoa sempre vê a partir do nível 1; saindo só um pouco e
-  // voltando, continua de onde estava.
+  // A rodinha anda sempre que qualquer pedaço da escada estiver na tela —
+  // rolando a página ela NÃO para nem volta pro começo (antes pausava com
+  // metade da escada fora da tela e voltava pro nível 1 quando ela saía,
+  // e rolando parecia que "segurava" ou "rebobinava"). Só pausa com a escada
+  // inteira fora da tela, e na volta continua de onde estava.
   if ("IntersectionObserver" in window) {
     new IntersectionObserver((entries) => {
       const e = entries[entries.length - 1];
-      if (e.intersectionRatio >= .5) {
+      if (e.isIntersecting) {
         naTela = true;
-        if (saiuDeVez) { saiuDeVez = false; jaConvidou = false; goToIndex(0, false); }
-        else if (tocando) iniciarProgresso(true);
+        if (tocando) iniciarProgresso(true);
       } else {
         naTela = false;
-        if (!e.isIntersecting) saiuDeVez = true;
         pararProgresso();
+        jaConvidou = false;
       }
-    }, { threshold: [0, .5] }).observe(palco);
+    }, { threshold: 0 }).observe(palco);
   } else {
     naTela = true;
   }

@@ -756,6 +756,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   text-wrap: balance;
 }
 .hero-h1-abre { display: block; }
+/* Hierarquia de manchete da Apple: a frase curta enorme (lida num relance)
+   e o resto como subtítulo, bem menor, logo embaixo. O tamanho do h1 é o do
+   subtítulo; a frase de abertura é um múltiplo dele. */
+.hero-headline { font-size: var(--hero-resto, 2rem); }
+.hero-h1-abre { font-size: 2.1em; line-height: 1; letter-spacing: -.03em; white-space: nowrap; }
+.hero-h1-resto { display: block; margin-top: .45em; line-height: 1.18; letter-spacing: -.015em; }
 .hero-inner {
   position: relative;
   z-index: 4;
@@ -1692,30 +1698,43 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    claro da seção, o laranja de texto normal (--orange-light) quase não
    aparecia — o laranja mais escuro do botão (--orange-button) tem mais
    contraste aqui, reforçado com negrito (a letra fina sumia ainda mais). */
-/* "+ 2 bônus exclusivos" como um fato da Apple (o "2x mais" do AirPods
-   Pro): o número grande na cor da marca e as palavras como título ao lado,
-   na mesma linha de base — em vez de uma etiqueta pequena em caixa-alta,
-   que passava batida. Um fio fino em cima separa dos 4 cards. */
+/* "+2 bônus exclusivos" como um ganho, não como mais um item: a frase
+   "E você ainda ganha" em cima (o bônus como presente, que valoriza mais o
+   que se recebe) e o "+2" bem grande, em degradê laranja, com "bônus
+   exclusivos" ao lado. Sem o fio que separava dos cards de cima (a Apple
+   não separa assim dentro da mesma seção). */
 .bonus-rotulo {
   display: flex;
   align-items: baseline;
   justify-content: center;
   flex-wrap: wrap;
-  column-gap: .35em;
-  margin: clamp(3rem, 7vw, 4.5rem) auto 0;
-  padding-top: clamp(2rem, 5vw, 3rem);
+  column-gap: .3em;
+  row-gap: .35rem;
+  margin: clamp(3.5rem, 8vw, 5.5rem) auto 0;
   max-width: 980px;
-  border-top: 1px solid var(--border);
   text-align: center;
   font-family: var(--font-head);
   font-weight: 700;
   line-height: 1;
   color: var(--white);
 }
+.bonus-ganha {
+  flex-basis: 100%;
+  font-size: var(--t-lead);
+  font-weight: 700;
+  letter-spacing: -.005em;
+  color: var(--cor-corpo);
+}
 .bonus-num {
-  font-size: clamp(3rem, 7vw, 4.5rem);
-  letter-spacing: -.03em;
-  color: var(--orange-button);
+  font-size: clamp(4.5rem, 12vw, 7rem);
+  letter-spacing: -.045em;
+  line-height: .9;
+  background: linear-gradient(180deg, var(--orange) 0%, var(--orange-button) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Um respiro pro degradê não cortar o pé do "2". */
+  padding-bottom: .04em;
 }
 .bonus-txt {
   font-size: var(--t-titulo);
@@ -2537,7 +2556,8 @@ html.abertura-on { overflow: hidden; }
      degrau acima dos títulos de seção (28px), como o título do herói nas
      páginas da Apple. O apoio desce pra 15px e fica mais discreto, pra o
      bloco inteiro continuar acima do rosto da Vitória na foto. */
-  .hero-headline { font-size: min(var(--t-display), 7.9vw); }
+  .hero-headline { --hero-resto: min(1.375rem, 5.4vw); font-size: var(--hero-resto); }
+  .hero-h1-abre { font-size: 1.8em; }
   .hero-lead, .hero-lead-list { font-size: .9375rem; line-height: 1.4; }
   .hero-lead-list { margin-top: .6rem; }
   /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
@@ -2566,11 +2586,11 @@ html.abertura-on { overflow: hidden; }
 /* Tablet em pé: mesma coluna centralizada do celular, título um degrau
    menor que o do computador pra o bloco não descer até os ícones da foto. */
 @media (min-width: 700px) and (max-width: 899.98px) {
-  .hero-headline { font-size: 2.25rem; }
+  .hero-headline { --hero-resto: 1.625rem; font-size: var(--hero-resto); }
   .hero-lead, .hero-lead-list { font-size: .9375rem; }
 }
 @media (max-width: 699.98px) and (max-height: 760px) {
-  .hero-headline { font-size: min(1.75rem, 7.2vw); }
+  .hero-headline { --hero-resto: min(1.25rem, 5vw); font-size: var(--hero-resto); }
   .hero-lead, .hero-lead-list { font-size: .8125rem; line-height: 1.4; margin-top: .5rem; }
 }
 
@@ -2727,7 +2747,7 @@ html.abertura-on { overflow: hidden; }
     padding-bottom: 36px;
     margin-top: 0;
   }
-  .hero-headline { font-size: 1.6rem; }
+  .hero-headline { --hero-resto: 1.1rem; font-size: var(--hero-resto); }
   .hero-lead-list { margin-top: .5rem; font-size: .88rem; line-height: 1.4; }
   .hero-actions { margin-top: .6rem; }
   #reconhecimento { margin-top: 0; min-height: 0; padding: 72px 0 0; }

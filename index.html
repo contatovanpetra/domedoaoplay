@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=59">
+<link rel="stylesheet" href="css/style.css?v=60">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -119,7 +119,7 @@
       <div class="hero-scrim" aria-hidden="true"></div>
       <div class="container hero-inner">
         <div class="hero-copy">
-          <h1 class="hero-headline" id="hero-headline" data-confirmar="rascunho pra validar com a Vitória: título mais curto e direto (duas frases em vez de uma só composta), inspirado no jeito da Apple de escrever manchete"><span class="hero-h1-abre">Domine a câmera.</span> Transforme cada vídeo em <span class="text-orange">vendas, clientes e parcerias</span>.</h1>
+          <h1 class="hero-headline" id="hero-headline" data-confirmar="rascunho pra validar com a Vitória: título mais curto e direto (duas frases em vez de uma só composta), inspirado no jeito da Apple de escrever manchete"><span class="hero-h1-abre">Domine a câmera.</span> <span class="hero-h1-resto">Transforme cada vídeo em <span class="text-orange">vendas, clientes e parcerias</span>.</span></h1>
           <div class="hero-lead hero-lead-list" id="hero-lead">
             <p>A formação mais completa de comunicação diante da câmera para quem vende, divulga o próprio trabalho, cria conteúdo ou atua como afiliado. São 8 módulos e 30 aulas até você gravar e publicar sozinho.</p>
           </div>
@@ -623,7 +623,7 @@
       <!-- Logo depois dos 4 cards, na mesma seção: o "+ 2" como um número
            grande, no formato dos fatos da Apple ("2x mais" no AirPods Pro),
            e os bônus em seguida. -->
-      <p class="bonus-rotulo" id="bonus"><span class="bonus-num">+ 2</span> <span class="bonus-txt">bônus exclusivos</span></p>
+      <p class="bonus-rotulo" id="bonus"><span class="bonus-ganha" data-confirmar="frase nova pra validar com a Vitória: enquadra os bônus como ganho (&quot;você ganha&quot;), não como item da lista">E você ainda ganha</span> <span class="bonus-num">+2</span> <span class="bonus-txt">bônus exclusivos</span></p>
       <!-- Um bônus por linha: texto de um lado e foto do outro, alternando
            (no segundo a foto vem à esquerda). Igual no celular e no computador. -->
       <div class="bonus-lista">
@@ -876,6 +876,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=32"></script>
+<script src="js/main.js?v=33"></script>
 </body>
 </html>
