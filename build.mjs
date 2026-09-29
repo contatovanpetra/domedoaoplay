@@ -16,7 +16,8 @@ const RAIZ = new URL(".", import.meta.url).pathname;
 const SAIDA = join(RAIZ, "dist");
 const FORA = new Set([
   "dist", "node_modules", ".git", "testes", "hospedagem", "pacote",
-  "package.json", "package-lock.json", "build.mjs", "vercel.json",
+  "package.json", "package-lock.json", "build.mjs", "vercel.json", "playwright.config.mjs",
+  "test-results", "playwright-report",
   ".gitignore", ".vercelignore",
 ]);
 

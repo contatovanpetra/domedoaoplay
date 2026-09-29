@@ -2440,6 +2440,10 @@ html.abertura-on { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   #hero-headline, #hero-lead, #hero-actions-el, #hero-scrollcue { opacity: 1; }
 }
+/* O main.js não chegou em 5 s (rede caindo, arquivo bloqueado): o <head>
+   marca "sem-main" e o topo aparece sem a animação, em vez de ficar sem
+   título e sem botão. */
+html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-actions-el, html.sem-main #hero-scrollcue { opacity: 1 !important; }
 
 /* ---------- CENA 2 da abertura: a câmera se desenha e se acomoda ---------- */
 .intro-scene2 {

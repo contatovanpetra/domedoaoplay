@@ -8,8 +8,9 @@ DO MEDO AO PLAY — COMO PUBLICAR
 3. Ative o SSL (https) do domínio no painel da hospedagem. Se a Hostinger
    oferecer CDN, pode ativar: o site funciona igual com ou sem.
 4. Antes de divulgar:
-   - Link do checkout da Hotmart: em js/main.js, logo no começo do arquivo,
-     troque https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI pelo link real.
+   - Link do checkout da Hotmart: nos 4 arquivos .html (index, privacidade,
+     termos e suporte), troque https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI
+     pelo link real (use "localizar e substituir" em todos: são 8 botões).
    - Domínio: em index.html, troque COLOQUE-SEU-DOMINIO-AQUI (2 vezes, nas
      linhas og:url e og:image) pelo domínio real, com https://.
    - Pixels e rastreamento (Meta, Google): colar no <head> do index.html.

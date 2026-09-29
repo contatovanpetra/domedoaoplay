@@ -2,13 +2,18 @@
 // Do Medo ao Play — Landing Page (funil de vendas Hotmart)
 // =========================================================
 
-// 1) COLE AQUI o link de checkout do Hotmart antes de publicar.
-//    Todos os botões marcados com [data-checkout-link] vão usar essa URL.
-const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI";
+// 1) O link de checkout da Hotmart fica no próprio HTML, no href de cada botão
+//    marcado com [data-checkout-link] (index.html e as 3 páginas de apoio:
+//    troque COLOQUE-SEU-CODIGO-AQUI pelo código real em todos). Assim o botão
+//    leva ao checkout mesmo se este arquivo não carregar (rede caindo no meio
+//    do carregamento); aqui ele só acrescenta os parâmetros de rastreio.
+const CHECKOUT_PROVISORIO = "COLOQUE-SEU-CODIGO-AQUI";
 
 // 2) O GSAP (em js/vendor) toca a abertura. Sem ele (falha de rede, bloqueio
 //    de script), a abertura é pulada e a página abre direto: nada fica preso.
 const hasGSAP = typeof gsap !== "undefined";
+// Avisa o <head> que este arquivo chegou (ver "sem-main" no index.html).
+window.mainPronto = true;
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // A abertura monta uma réplica do menu e do herói dentro da câmera. As
@@ -24,31 +29,31 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo(0, 0);
   }
   REAL_HERO = document.querySelector(".hero");
-  wireCheckoutLinks();
-  wireLinksVazios();
-  wireAncoras();
-  wireAccordions();
-  wireModulosTrilha();
-  wireScrollReveal();
-  wireDepoimentos();
-  wireEscadaShowcase();
-  wireViviCard();
-  wireCountUp();
-  wireScrollEffects();
-  wireReadProgressBar();
-  wireScrollCue();
-  wireIntroStage();
-  wireManterLugar();
-  wireHeaderReveal();
-  wireHeaderTema();
-  wireAplicacaoSome();
-  playHeroIntro();
-  wireVoltar();
-  wireGuardaLugar();
-  wireReviewMode();
-  wireCorDoFundo();
-  wireBeneficiosPilha();
-  wirePausaForaDaTela();
+  // Cada parte da página liga sozinha: um erro numa delas (um recurso que o
+  // navegador não tem, um elemento que mudou) aparece no console e não
+  // impede as outras. Antes, um erro no meio da lista parava tudo o que vinha
+  // depois: o título e o botão do topo ficavam invisíveis e a abertura podia
+  // ficar presa na tela.
+  const partes = [
+    wireCheckoutLinks, wireLinksVazios, wireAncoras, wireAccordions,
+    wireModulosTrilha, wireScrollReveal, wireDepoimentos, wireEscadaShowcase,
+    wireViviCard, wireCountUp, wireScrollEffects, wireReadProgressBar,
+    wireScrollCue, wireIntroStage, wireManterLugar, wireHeaderReveal,
+    wireHeaderTema, wireAplicacaoSome, playHeroIntro, wireVoltar,
+    wireGuardaLugar, wireReviewMode, wireCorDoFundo, wireBeneficiosPilha,
+    wirePausaForaDaTela, wireReconexao,
+  ];
+  partes.forEach((liga) => {
+    try {
+      liga();
+    } catch (erro) {
+      console.error("Do Medo ao Play: falha ao ligar " + liga.name + " (o resto da página continua funcionando).", erro);
+      // Se foi a abertura, a página não pode ficar presa atrás dela.
+      if (liga === wireIntroStage && typeof window.liberaAbertura === "function") window.liberaAbertura();
+      // Se foi a entrada do topo, o título e o botão aparecem sem animação.
+      if (liga === playHeroIntro) mostraTopoSemAnimacao();
+    }
+  });
 });
 
 // As animações que repetem sem parar (bônus flutuando, o pulso do som dos
@@ -377,15 +382,16 @@ function wireReadProgressBar() {
 // Repassa pro checkout os parâmetros de rastreio com que a pessoa chegou na página
 // (utm_source, src, sck...). Sem isso, quem vem de um anúncio ou da bio chega na
 // Hotmart sem origem e a venda aparece sem rastreio no Hotmart Analytics.
-function checkoutHref() {
+function checkoutHref(base) {
   try {
-    const url = new URL(HOTMART_CHECKOUT_URL);
+    const url = new URL(base);
     new URLSearchParams(window.location.search).forEach((value, key) => {
       if (!url.searchParams.has(key)) url.searchParams.set(key, value);
     });
     return url.toString();
   } catch {
-    return HOTMART_CHECKOUT_URL;
+    // Endereço do botão inválido: mantém o que está no HTML.
+    return base;
   }
 }
 
@@ -425,15 +431,24 @@ function wireAncoras() {
 }
 
 function wireCheckoutLinks() {
-  if (HOTMART_CHECKOUT_URL.includes("COLOQUE")) {
-    console.warn("Do Medo ao Play: o link de checkout ainda é o provisório. Troque HOTMART_CHECKOUT_URL em js/main.js antes de publicar.");
+  const links = [...document.querySelectorAll("[data-checkout-link]")];
+  if (links.some((link) => (link.getAttribute("href") || "").includes(CHECKOUT_PROVISORIO))) {
+    console.warn("Do Medo ao Play: o link de checkout ainda é o provisório. Troque " + CHECKOUT_PROVISORIO + " pelo código da Hotmart nos botões (index.html e páginas de apoio).");
   }
-  const href = checkoutHref();
-  const links = document.querySelectorAll("[data-checkout-link]");
   links.forEach((link) => {
-    link.setAttribute("href", href);
+    link.setAttribute("href", checkoutHref(link.getAttribute("href")));
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener");
+  });
+  // Clique duplo (ou dois toques seguidos) abria duas abas do checkout: o
+  // segundo clique dentro de 1 s é ignorado. Um clique normal não muda nada.
+  let ultimoClique = -Infinity;
+  links.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const agora = performance.now();
+      if (agora - ultimoClique < 1000) { e.preventDefault(); return; }
+      ultimoClique = agora;
+    });
   });
 }
 
@@ -585,6 +600,14 @@ function wireDepoimentos() {
   // não tem, abre o mesmo espaço reservado do cartão, só que grande.
   let modal = null;
   let focoAntes = null;
+  let abertoEm = 0;
+  // Clique no fundo ou no ×: o segundo clique de um clique duplo no vídeo
+  // caía no fundo que acabou de aparecer e fechava o vídeo na mesma hora.
+  // Nos primeiros 400 ms depois de abrir, o clique não fecha (o Esc fecha).
+  function fechaPeloClique() {
+    if (performance.now() - abertoEm < 400) return;
+    fecha();
+  }
   function fecha() {
     if (!modal) return;
     const m = modal;
@@ -632,8 +655,9 @@ function wireDepoimentos() {
     } else {
       card.querySelectorAll(".depo-legenda").forEach((el) => alvo.appendChild(el.cloneNode(true)));
     }
-    modal.querySelector(".depo-modal-fundo").addEventListener("click", fecha);
-    modal.querySelector(".depo-modal-fechar").addEventListener("click", fecha);
+    abertoEm = performance.now();
+    modal.querySelector(".depo-modal-fundo").addEventListener("click", fechaPeloClique);
+    modal.querySelector(".depo-modal-fechar").addEventListener("click", fechaPeloClique);
     document.body.appendChild(modal);
     document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", teclaModal);
@@ -933,13 +957,11 @@ function wireScrollReveal() {
   )].filter((el) => !el.matches(
     ".accordion, .beneficios"
   ));
-  targets.forEach((el) => el.classList.add("reveal"));
+  // Sem IntersectionObserver, nada é escondido.
+  if (!("IntersectionObserver" in window)) return;
 
-  if (!("IntersectionObserver" in window)) {
-    targets.forEach((el) => el.classList.add("is-visible"));
-    return;
-  }
-
+  // O observador é criado ANTES de esconder os blocos: se ele falhar, os
+  // blocos continuam visíveis (antes ficavam escondidos pra sempre).
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -956,6 +978,7 @@ function wireScrollReveal() {
     { threshold: 0, rootMargin: "0px 0px -12% 0px" }
   );
 
+  targets.forEach((el) => el.classList.add("reveal"));
   targets.forEach((el) => observer.observe(el));
 }
 
@@ -1486,6 +1509,28 @@ function wireVoltar() {
         history.back();
       }
     } catch { /* segue pelo link */ }
+  });
+}
+
+function mostraTopoSemAnimacao() {
+  ["hero-headline", "hero-lead", "hero-actions-el", "hero-scrollcue"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.opacity = 1;
+  });
+}
+
+// Imagem que falhou porque a internet caiu (metrô, elevador) não é pedida de
+// novo sozinha pelo navegador: ficava quebrada mesmo com a conexão de volta.
+// Quando a conexão volta, as que falharam são pedidas outra vez.
+function wireReconexao() {
+  window.addEventListener("online", () => {
+    document.querySelectorAll("img").forEach((img) => {
+      if (!img.complete || img.naturalWidth > 0) return;
+      const picture = img.parentElement && img.parentElement.tagName === "PICTURE" ? img.parentElement : null;
+      if (picture) picture.querySelectorAll("source").forEach((s) => { s.srcset = s.getAttribute("srcset"); });
+      if (img.hasAttribute("srcset")) img.srcset = img.getAttribute("srcset");
+      img.src = img.getAttribute("src");
+    });
   });
 }
 

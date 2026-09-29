@@ -8,6 +8,7 @@
 //   k6 run testes/carga-k6.js                         # fumaça: 1 usuário, 30 s
 //   k6 run -e PERFIL=carga testes/carga-k6.js         # sobe até 30 usuários ao mesmo tempo
 //   k6 run -e PERFIL=pico -e ALVO=100 testes/carga-k6.js   # pico curto até ALVO usuários
+//   k6 run -e PERFIL=campanha -e ALVO=100 testes/carga-k6.js  # poucos → pico → mantém → cai
 //   k6 run -e BASE_URL=https://seu-dominio.com.br testes/carga-k6.js
 //
 // Aprovação (thresholds): menos de 1% de erro, HTML com p95 abaixo de 800 ms e
@@ -29,6 +30,15 @@ const perfis = {
     { duration: "20s", target: 30 },
     { duration: "40s", target: 30 },
     { duration: "10s", target: 0 },
+  ],
+  // Campanha começando a entregar: poucos visitantes, pico repentino, pico
+  // mantido, queda e volta ao normal (para ver se o site se recupera).
+  campanha: [
+    { duration: "30s", target: 5 },
+    { duration: "15s", target: ALVO },
+    { duration: "60s", target: ALVO },
+    { duration: "15s", target: 5 },
+    { duration: "30s", target: 5 },
   ],
   pico: [
     { duration: "10s", target: ALVO },
@@ -54,9 +64,9 @@ const arquivosMs = new Trend("arquivos_ms", true);
 // Quando o ?v= mudar no index.html, o teste continua valendo: o servidor
 // entrega o mesmo arquivo com qualquer ?v=.
 const PRIMEIRA_TELA = [
-  "/css/style.css?v=carga",
+  "/css/style.css?v=99",
   "/js/vendor/gsap.min.js?v=3.12.5",
-  "/js/main.js?v=carga",
+  "/js/main.js?v=48",
   "/assets/img/vivi-hero-mobile.webp",
   "/assets/video/tunel-celular-poster.webp",
   "/assets/fonts/manrope-v20-latin.woff2",
