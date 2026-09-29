@@ -35,11 +35,11 @@
 <!-- GSAP/ScrollTrigger ficam local (js/vendor), não em CDN externo: a abertura
      depende deles pra rodar, e um bloqueio de rede/proxy no ambiente de quem
      visualiza (preview, sandbox etc.) não pode derrubar a animação inteira. -->
-<!-- Anton no título da primeira tela (manchete), Quicksand 600/700 nos títulos de seção e Nunito Sans 400/600 no texto e nos botões.
+<!-- Quicksand 600/700 em todos os títulos (inclusive o da primeira tela) e Nunito Sans 400/600 no texto e nos botões.
      Carregado sem bloquear a primeira pintura: antes a página inteira esperava o
      servidor de fontes do Google (de 0,3 a 1,4 s num celular em 4G). -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anton&family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
 
 <!-- A foto do herói é o LCP da página (o que mais demora a pintar): pedida
      cedo, sem esperar o CSS descobrir o background-image (só depois de
@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=41">
+<link rel="stylesheet" href="css/style.css?v=48">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -119,7 +119,7 @@
       <div class="hero-scrim" aria-hidden="true"></div>
       <div class="container hero-inner">
         <div class="hero-copy">
-          <h1 class="hero-headline" id="hero-headline" data-confirmar="rascunho pra validar com a Vitória: título mais curto e direto (duas frases em vez de uma só composta), inspirado no jeito da Apple de escrever manchete">Domine a câmera. Transforme cada vídeo em <span class="text-orange">vendas, clientes e parcerias</span>.</h1>
+          <h1 class="hero-headline" id="hero-headline" data-confirmar="rascunho pra validar com a Vitória: título mais curto e direto (duas frases em vez de uma só composta), inspirado no jeito da Apple de escrever manchete"><span class="hero-h1-abre">Domine a câmera.</span> Transforme cada vídeo em <span class="text-orange">vendas, clientes e parcerias</span>.</h1>
           <div class="hero-lead hero-lead-list" id="hero-lead">
             <p>A formação mais completa de comunicação diante da câmera para quem vende, divulga o próprio trabalho, cria conteúdo ou atua como afiliado. São 8 módulos e 30 aulas até você gravar e publicar sozinho.</p>
           </div>
@@ -317,7 +317,7 @@
       </div>
     </div>
     <div class="container metodo-fecho">
-      <p class="metodo-frase">Um nível de cada vez. <span class="text-orange">Até dar o play.</span></p>
+      <p class="metodo-frase"><span class="metodo-frase-linha">Um nível de cada vez.</span> <span class="metodo-frase-linha text-orange">Até dar o play.</span></p>
       <a href="#" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
     </div>
   </section>
@@ -615,9 +615,10 @@
           <p>Ao concluir a formação, você recebe o certificado do Do Medo ao Play.</p>
         </div>
       </div>
-      <!-- Logo depois dos 4 cards, na mesma seção: o "+ 2 bônus" pequeno e
-           fino, e os bônus em seguida. -->
-      <p class="bonus-rotulo" id="bonus">+ 2 bônus exclusivos</p>
+      <!-- Logo depois dos 4 cards, na mesma seção: o "+ 2" como um número
+           grande, no formato dos fatos da Apple ("2x mais" no AirPods Pro),
+           e os bônus em seguida. -->
+      <p class="bonus-rotulo" id="bonus"><span class="bonus-num">+ 2</span> <span class="bonus-txt">bônus exclusivos</span></p>
       <!-- Um bônus por linha: texto de um lado e foto do outro, alternando
            (no segundo a foto vem à esquerda). Igual no celular e no computador. -->
       <div class="bonus-lista">
@@ -661,11 +662,11 @@
 
         <p class="offer-inclui-rotulo">Você recebe agora</p>
         <ul class="offer-lista">
-          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>8 módulos estruturados (30 aulas práticas) do zero ao avançado</span></li>
-          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>A Escada de Exposição: os 7 níveis práticos de gravação</span></li>
-          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>Acompanhamento exclusivo no WhatsApp com a Vitória e equipe</span></li>
-          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>Bônus: Assistente de IA 24h + Guia Completo de Equipamentos</span></li>
-          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>Certificado oficial de conclusão Do Medo ao Play</span></li>
+          <li>8 módulos estruturados (30 aulas práticas) do zero ao avançado</li>
+          <li>A Escada de Exposição: os 7 níveis práticos de gravação</li>
+          <li>Acompanhamento exclusivo no WhatsApp com a Vitória e equipe</li>
+          <li>Bônus: Assistente de IA 24h + Guia Completo de Equipamentos</li>
+          <li>Certificado oficial de conclusão Do Medo ao Play</li>
         </ul>
 
         <a href="#" data-checkout-link class="btn btn-primary btn-large btn-block">Quero entrar em cena</a>

@@ -31,7 +31,7 @@
      corpo 17px, nota 14px e rótulo 12px são os mesmos em qualquer tela; só
      os títulos crescem, em saltos (28 → 40 → 56px). Todo texto da página
      usa um destes. */
-  --t-display: 2rem;          /* título do herói: 32px (Anton, condensada) */
+  --t-display: 2rem;          /* título do herói: 32px */
   --t-manchete: 2rem;         /* frase de efeito que ocupa a seção: 32px */
   --t-titulo: 1.75rem;        /* título de seção: 28px */
   --t-subtitulo: 1.3125rem;   /* título de card grande, frase de fecho: 21px */
@@ -717,20 +717,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      medida de linha são calculados pra ela cair em 3 ou 4 linhas cheias (umas
      30 letras por linha). Com a escala de título e 22ch ele virava 5 ou 6
      linhas curtas, que leem como um paredão. */
-  /* Manchete: fonte condensada e pesada (Anton), fora do manual, pedida pelo
-     usuário pra primeira tela ter a força das páginas de venda de referência.
-     Condensada cabe mais palavra por linha, então a frase inteira ocupa 3
-     linhas em vez de 5 e o bloco vira uma massa só. O resto da página segue
-     com Quicksand. */
-  font-family: "Anton", var(--font-head);
-  font-weight: 400;
+  /* Mesma família dos outros títulos da página (Quicksand, a do manual):
+     a condensada (Anton) era a única fonte diferente do site inteiro. Como
+     nas manchetes da Apple, duas frases — a primeira sozinha na linha dela
+     (.hero-h1-abre), a segunda com o resultado em laranja. */
+  font-family: var(--font-head);
+  font-weight: 700;
   font-size: var(--t-display);
-  line-height: 1.05;
-  letter-spacing: -.01em;
+  line-height: 1.08;
+  letter-spacing: -.022em;
   color: var(--white);
   max-width: 34ch;
   text-wrap: balance;
 }
+.hero-h1-abre { display: block; }
 .hero-inner {
   position: relative;
   z-index: 4;
@@ -833,6 +833,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   height: 100svh;
   overflow: hidden;
 }
+/* Celular: a foto ocupa a tela inteira mesmo com as barras do Safari
+   recolhidas (100lvh, a tela "grande") — com 100svh sobrava uma faixa do
+   fundo embaixo dela. Os textos ficam na área que aparece sempre (100svh,
+   ver .vivi-camada), então nada vai pra baixo da barra quando ela volta. */
+@media (max-width: 899.98px) {
+  .vivi-foto { height: 100lvh; }
+}
 .vivi-foto picture { display: block; width: 100%; height: 100%; }
 /* Sem nenhum gradiente por cima (pedido explícito da Vitória): é só a foto
    crua dela, sem mistura de cor nenhuma — o nome, o card e as credenciais
@@ -850,7 +857,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    nunca cobre o nome nem os números, em nenhum tamanho de tela. */
 .vivi-camada {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  height: 100svh;
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -917,14 +928,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
    título da seção. */
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.45; color: #fff; text-shadow: 0 1px 2px rgba(3, 10, 29, .7), 0 0 22px rgba(3, 10, 29, .55); }
+/* Celular: 16px, um degrau abaixo do corpo (17px) — em 14px o texto ficava
+   pequeno demais perto do nome e dos números. */
 @media (max-width: 699.98px) {
-  .vivi-card > p:not(.eyebrow) { font-size: var(--t-pequeno); line-height: 1.42; }
+  .vivi-card > p:not(.eyebrow) { font-size: 1rem; line-height: 1.45; }
 }
 /* Celular baixo (iPhone SE, Android 360x740 e menores): o texto inteiro do
    card tem que caber entre o nome e as credenciais sem rolar por dentro —
    aí ele desce um degrau da escala (14px). */
 @media (max-width: 699.98px) and (max-height: 760px) {
-  .vivi-card > p:not(.eyebrow) { font-size: .8125rem; }
+  .vivi-card > p:not(.eyebrow) { font-size: .875rem; line-height: 1.42; }
 }
 .vivi-card > p:not(.eyebrow) + p { margin-top: .9em; }
 /* Números no pé da foto, como uma segunda "assinatura" fechando-a (a
@@ -1043,6 +1056,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 #metodo { padding-top: 0; }
 #metodo .texto-corrido { max-width: 690px; text-align: center; }
 #metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; color: var(--text-muted); text-wrap: balance; }
+/* Celular: texto de 16px (era 19px, 5 linhas) — abre a seção sem pesar mais
+   que os cartões. */
+@media (max-width: 699.98px) {
+  #metodo .texto-corrido { margin-top: 1rem; }
+  #metodo .texto-corrido p { font-size: 1rem; line-height: 1.45; }
+  .escada-palco-wrap { margin-top: 1.25rem; }
+  .escada-vitrine { padding: .5rem 0 1rem; }
+  .escada-progresso { margin-top: .8rem; }
+  .metodo-frase { font-size: 1.5rem; }
+}
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 
 /* Respiro maior depois do botão "Quero entrar em cena": o padding padrão da
@@ -1073,6 +1096,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   text-wrap: balance;
 }
 @media (min-width: 1069px) { .metodo-frase { font-size: 1.75rem; } }
+/* Uma frase por linha: "Um nível de cada vez." em cima e "Até dar o
+   play." embaixo, em laranja — cada uma inteira na sua linha, nunca
+   quebrada no meio (era o "estranho" de antes: "Um nível de cada / vez."). */
+.metodo-frase-linha { display: block; white-space: nowrap; }
 
 
 
@@ -1292,11 +1319,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .escada-num.is-active .escada-num-label { color: var(--white); }
 
 @media (max-width: 699.98px) {
+  /* Celular: cartões do tamanho dos cartões de galeria da Apple no celular
+     (texto de 14px, título de 17px), pra título, texto, cartão e controle
+     caberem juntos numa tela. */
   .escada-card {
-    flex: 0 0 68vw;
-    max-width: 240px;
+    flex: 0 0 56vw;
+    max-width: 210px;
   }
-  .escada-card-body { padding: .95rem 1rem 1.1rem; }
+  .escada-card-body { padding: .8rem .9rem .95rem; }
+  .escada-card-title { font-size: 1.0625rem; margin-bottom: .25rem; }
+  .escada-tag { margin-bottom: .2rem; }
+  .escada-card-body p { font-size: .8125rem; line-height: 1.4; }
   .escada-nav-btn {
     display: none;
   }
@@ -1596,21 +1629,40 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    claro da seção, o laranja de texto normal (--orange-light) quase não
    aparecia — o laranja mais escuro do botão (--orange-button) tem mais
    contraste aqui, reforçado com negrito (a letra fina sumia ainda mais). */
+/* "+ 2 bônus exclusivos" como um fato da Apple (o "2x mais" do AirPods
+   Pro): o número grande na cor da marca e as palavras como título ao lado,
+   na mesma linha de base — em vez de uma etiqueta pequena em caixa-alta,
+   que passava batida. Um fio fino em cima separa dos 4 cards. */
 .bonus-rotulo {
-  margin: clamp(2.4rem, 6vw, 3.6rem) 0 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  column-gap: .35em;
+  margin: clamp(3rem, 7vw, 4.5rem) auto 0;
+  padding-top: clamp(2rem, 5vw, 3rem);
+  max-width: 980px;
+  border-top: 1px solid var(--border);
   text-align: center;
-  font-family: var(--font-body);
+  font-family: var(--font-head);
   font-weight: 700;
-  font-size: var(--t-rotulo);
-  letter-spacing: .16em;
-  text-transform: uppercase;
+  line-height: 1;
+  color: var(--white);
+}
+.bonus-num {
+  font-size: clamp(3rem, 7vw, 4.5rem);
+  letter-spacing: -.03em;
   color: var(--orange-button);
+}
+.bonus-txt {
+  font-size: var(--t-titulo);
+  letter-spacing: -.015em;
 }
 .bonus-lista {
   display: grid;
   gap: clamp(2rem, 6vw, 4.5rem);
   max-width: 980px;
-  margin: clamp(1.2rem, 3vw, 2rem) auto 0;
+  margin: clamp(2rem, 4vw, 3rem) auto 0;
 }
 .bonus-item {
   display: grid;
@@ -1784,7 +1836,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   place-items: center;
   aspect-ratio: 9 / 16;
   background: linear-gradient(160deg, #13253C, #0B1728 70%);
-  border: 1px solid var(--border);
+  /* Cantos arredondados como os cartões de galeria da Apple (e os cartões
+     da escada, 20px): o quadrado com borda era o único canto reto da página. */
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .06);
 }
 .depo-play {
   display: grid;
@@ -1832,8 +1888,18 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .depo-card.is-ativo .depo-legenda { opacity: 1; }
 .depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 700; color: var(--white); }
 .depo-cargo { font-size: var(--t-pequeno); color: var(--text-muted); }
-.depo-card figcaption { margin-top: .7rem; }
-.depo-card figcaption .depo-resultado { margin: 0; font-size: var(--t-corpo); line-height: 1.4; color: var(--text); }
+.depo-card figcaption { margin-top: .75rem; }
+/* O resultado é legenda do vídeo, não título: no tamanho do texto dos
+   cartões de galeria da Apple (14px no celular, 17px no computador), em
+   cinza claro, com o número/resultado em laranja. Com 17px branco ele
+   pesava mais que o próprio nome dentro do vídeo. */
+.depo-card figcaption .depo-resultado { margin: 0; font-size: var(--t-corpo); line-height: 1.4; color: var(--cor-corpo); text-wrap: pretty; }
+@media (max-width: 699.98px) {
+  .depo-nome { font-size: .9375rem; }
+  .depo-cargo { font-size: .75rem; }
+  .depo-legenda { padding: 1.4rem .8rem .7rem; }
+  .depo-card figcaption .depo-resultado { font-size: .875rem; line-height: 1.43; }
+}
 
 
 /* ---------- Offer ---------- */
@@ -1843,14 +1909,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    começar, então o fundo simples (sem custom aqui, herda o da página)
    já emenda liso. */
 .offer-section { padding-top: 96px; }
-/* Card de plano medido na Apple (Apple One, Apple Music, iCloud+, Apple TV)
-   e no Google One: um bloco sólido, um tom acima do fundo, sem borda, sem
-   sombra e sem brilho — cantos de 20px. Dentro, na ordem em que se decide:
-   o nome do plano (24px, seminegrito, sem caixa-alta espaçada), o preço
-   grande na cor da marca, a condição em cinza, um fio fino, a lista com
-   checks finos (o "✓" do Apple Music) e o botão. O que dava cara de "feito
-   por IA": a borda, as duas etiquetas em CAIXA-ALTA espaçada laranja e o
-   card inteiro competindo em cor com o preço. */
+/* Card de plano medido na Apple (Apple One, iCloud+, Apple TV) e no Google
+   One: um bloco sólido, um tom acima do fundo, sem borda, sem sombra e sem
+   brilho — cantos de 20px. Dentro, na ordem em que se decide: o nome do
+   plano (21–24px, seminegrito, sem caixa-alta espaçada), o preço grande na
+   cor da marca, a condição em cinza, e o que vem junto como linhas de texto
+   separadas por fios finos (como as tabelas de preço da Apple) — sem
+   ícone, check ou marcador nenhum. */
 .offer-card {
   max-width: 560px;
   margin: 0 auto;
@@ -1888,10 +1953,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 @media (min-width: 1069px) { .price-now { font-size: 3rem; } }
 .price-note { font-size: var(--t-corpo); color: var(--text-muted); }
-/* Fio fino separando "quanto custa" de "o que vem junto" (Apple One,
-   Apple Music). O rótulo é uma linha simples em seminegrito, sem etiqueta. */
+/* Fio fino separando "quanto custa" de "o que vem junto" (Apple One). O
+   rótulo é uma linha simples em seminegrito, sem etiqueta. */
 .offer-inclui-rotulo {
-  margin: 0 0 1rem;
+  margin: 0 0 .9rem;
   padding-top: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, .12);
   font-family: var(--font-body);
@@ -1900,29 +1965,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--white);
 }
 .offer-lista {
-  display: grid;
-  gap: .9rem;
   margin: 0 0 2rem;
 }
 .offer-lista li {
-  display: flex;
-  align-items: flex-start;
-  gap: .65rem;
+  padding: .8rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .1);
   text-wrap: pretty;
   font-size: var(--t-corpo);
   line-height: 1.4;
   color: var(--cor-corpo);
 }
-.offer-check {
-  flex: none;
-  width: 1em;
-  height: 1em;
-  margin-top: .2em;
-  fill: none;
-  stroke: var(--orange-light);
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.offer-lista li:first-child { padding-top: 0; }
+@media (max-width: 699.98px) {
+  .offer-lista li { padding: .7rem 0; font-size: 1rem; }
 }
 /* Garantia, pagamento e acesso: uma linha pequena e cinza logo abaixo do
    botão, como as notas sob os planos da Apple. */
@@ -2410,17 +2465,18 @@ html.abertura-on { overflow: hidden; }
     justify-content: flex-start;
     align-items: stretch;
   }
-  .hero-lead-list { margin-top: .75rem; }
   /* No celular e no tablet em pé os dois ocupam a mesma coluna: as bordas do
      título e do subtítulo batem, em vez de cada um ter uma largura. */
   .hero-headline, .hero-lead { max-width: none; }
   /* No celular o título acompanha a largura da tela: com o tamanho das telas
      grandes ele virava 6 ou 7 linhas picadas num aparelho de 320px. */
-  /* Anton é condensada: com ~29px ela já pesa mais que os títulos de seção
-     (28px, Quicksand) e a frase cabe em 3 linhas — em 32px virava 4 e
-     empurrava o botão pra cima do rosto da Vitória na foto. */
-  .hero-headline { font-size: min(var(--t-display), 7.4vw); }
-  .hero-lead, .hero-lead-list { font-size: var(--t-corpo); }
+  /* Celular: 32px no de 390px (acompanha a largura, 26px no de 320px) — um
+     degrau acima dos títulos de seção (28px), como o título do herói nas
+     páginas da Apple. O apoio desce pra 15px e fica mais discreto, pra o
+     bloco inteiro continuar acima do rosto da Vitória na foto. */
+  .hero-headline { font-size: min(var(--t-display), 7.9vw); }
+  .hero-lead, .hero-lead-list { font-size: .9375rem; line-height: 1.4; }
+  .hero-lead-list { margin-top: .6rem; }
   /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
      ficar solto no meio da foto. */
   .hero-cta-foto {
@@ -2444,8 +2500,15 @@ html.abertura-on { overflow: hidden; }
 /* Celular baixo: a foto encolhe junto com a tela e a área escura do topo
    fica menor — o texto de apoio desce um degrau (14px) pra não encostar
    nos ícones das redes. */
+/* Tablet em pé: mesma coluna centralizada do celular, título um degrau
+   menor que o do computador pra o bloco não descer até os ícones da foto. */
+@media (min-width: 700px) and (max-width: 899.98px) {
+  .hero-headline { font-size: 2.25rem; }
+  .hero-lead, .hero-lead-list { font-size: .9375rem; }
+}
 @media (max-width: 699.98px) and (max-height: 760px) {
-  .hero-lead, .hero-lead-list { font-size: var(--t-pequeno); line-height: 1.43; }
+  .hero-headline { font-size: min(1.75rem, 7.2vw); }
+  .hero-lead, .hero-lead-list { font-size: .8125rem; line-height: 1.4; margin-top: .5rem; }
 }
 
 /* Tela deitada a partir de 700px (tablet deitado, notebook, monitor): a foto
@@ -2554,6 +2617,19 @@ html.abertura-on { overflow: hidden; }
   #accordion-modulos .accordion-title-text { align-self: end; line-height: 1.2; }
   #accordion-modulos .module-count { align-self: start; }
   #accordion-modulos .module-count::before { content: none; }
+  /* Linhas compactas, na altura das listas em acordeão da Apple (~56px,
+     era 74px): selo menor, título de 16px e a contagem de aulas logo
+     abaixo, pequena. As aulas abertas em 15px. A seção inteira passa a
+     caber em torno de uma tela, em vez de quase duas. */
+  #accordion-modulos { margin-top: 1.1rem; gap: .45rem; }
+  #accordion-modulos .accordion-trigger { padding: .7rem .95rem; gap: .75rem; font-size: 1rem; }
+  #accordion-modulos .accordion-tag { width: 2rem; height: 2rem; font-size: .9375rem; }
+  #accordion-modulos .module-count { font-size: .8125rem; }
+  #accordion-modulos .accordion-panel { padding: 0 .95rem; }
+  #accordion-modulos .accordion-item.open .accordion-panel { padding-bottom: .9rem; }
+  #accordion-modulos .accordion-panel ul { gap: .4rem; }
+  #accordion-modulos li { font-size: .9375rem; }
+  .modulos-trail { margin-top: 1.25rem; }
 /* Garantia mais compacta pra caber numa tela só de celular (o selo em si já
    encolhe sozinho, de forma fluida — ver .guarantee-badge). */
   .section-tone--guarantee.section { padding: 48px 0; }
