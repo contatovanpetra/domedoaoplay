@@ -1395,8 +1395,8 @@ function wireAplicacaoSome() {
   function aplica() {
     ticking = false;
     const tela = alturaDaTela();
-    // Começa quando a cortina passa de 95% da altura da tela e termina em 55%.
-    const p = clamp((.95 - depo.getBoundingClientRect().top / tela) / .4);
+    // Começa quando a cortina passa de 95% da altura da tela e termina em 68%.
+    const p = clamp((.95 - depo.getBoundingClientRect().top / tela) / .27);
     const q = Math.round(p * 100) / 100;
     if (q === ultimo) return;
     ultimo = q;

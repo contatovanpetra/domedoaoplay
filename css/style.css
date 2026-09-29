@@ -488,7 +488,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    uma linha de 1px do fundo escuro aparecer entre elas (o "cortezinho"). */
 @media (max-width: 699.98px) {
   /* Mais respiro entre a borda de cima (o fim da foto da Vitória) e o
-     título "8 módulos. 30 aulas.". */
+     título "8 módulos. 31 aulas.". */
   #modulos { padding-top: 120px; padding-bottom: 40px; }
   /* Pé mais alto: mais rolagem pra passagem do azul claro pro escuro
      acontecer devagar (com 250px ela era curta e brusca). */
@@ -522,10 +522,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    sobem por cima dele (ver #depoimentos). Altura: a caixa presa (100vh) +
    a cortina dos depoimentos subindo por uma tela inteira (100vh) + ~50vh
    de texto parado e limpo antes de a cortina aparecer. */
+/* Mais curta (pedido da Vitória, set/2026): antes eram 250svh e a frase
+   ficava quase uma tela inteira parada; agora a cortina dos depoimentos
+   começa logo depois de ela chegar no meio da tela. */
 #aplicacao {
   position: relative;
-  min-height: 250vh;
-  min-height: 250svh;
+  min-height: 205vh;
+  min-height: 205svh;
 }
 .aplicacao-preso {
   position: sticky;
@@ -2118,8 +2121,10 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
      itens), o botão grande na largura toda e a nota pequena centralizada. */
 #oferta .container { max-width: 980px; }
 .offer-card {
-  --oc-texto: #0B1728;
-  --oc-corpo: #1B3046;
+  /* Textos e logo no mesmo azul-escuro do fundo da página (pedido da
+     Vitória); a hierarquia fica por conta do tamanho e do peso. */
+  --oc-texto: var(--bg);
+  --oc-corpo: var(--bg);
   --oc-fio: rgba(11, 23, 40, .16);
   position: relative;
   max-width: 400px;
