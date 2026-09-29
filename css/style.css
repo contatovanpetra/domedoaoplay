@@ -516,14 +516,15 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    página (era uma tela branca subindo por cima): a escada (o método), esta
    frase (o resultado) e os depoimentos (a prova) leem como um raciocínio só,
    sem o clarão de branco puro no meio de uma página escura nem a sensação
-   de "acabou aqui". A animação continua: o texto sobe e fica parado no meio
-   da tela por um trecho da rolagem (.aplicacao-preso, sticky), depois segue
-   subindo normalmente. */
+   de "acabou aqui". A animação continua: o texto sobe, fica parado no meio
+   da tela (.aplicacao-preso, sticky) e some por trás dos depoimentos, que
+   sobem por cima dele (ver #depoimentos). Altura: a caixa presa (100vh) +
+   a cortina dos depoimentos subindo por uma tela inteira (100vh) + ~50vh
+   de texto parado e limpo antes de a cortina aparecer. */
 #aplicacao {
   position: relative;
-  /* 100vh da caixa presa + ~80vh de rolagem com o texto parado no meio. */
-  min-height: 180vh;
-  min-height: 180svh;
+  min-height: 250vh;
+  min-height: 250svh;
 }
 .aplicacao-preso {
   position: sticky;
@@ -538,11 +539,25 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    extra só embaixo, empurrando o bloco pra cima da tela branca em vez de
    centralizado nela. */
 #aplicacao .section-lead { margin-bottom: 0; text-wrap: balance; }
-/* O texto preso fica no meio da tela, então sobra meia tela vazia embaixo
-   dele quando solta: os depoimentos sobem um pouco por cima desse vão (sem
-   fundo próprio, é o mesmo azul) pra distância até o título deles ficar
-   perto do respiro normal entre seções. */
-#depoimentos { margin-top: -20vh; margin-top: -20svh; }
+/* Os depoimentos sobem por cima do texto preso de #aplicacao (sobreposição
+   do tamanho da caixa presa, 100vh): quando o texto soltaria, a cortina já
+   cobriu a tela e ele fica pra trás, "por trás da tela". A cortina é a mesma
+   pintura do fundo da página, presa à tela (background-attachment: fixed),
+   então não aparece como um retângulo — e o alto dela esmaece, pra o texto
+   sumir aos poucos em vez de ser cortado por uma linha reta. */
+#depoimentos {
+  margin-top: -100vh;
+  margin-top: -100svh;
+  isolation: isolate;
+}
+#depoimentos::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 28vh);
+  mask-image: linear-gradient(180deg, transparent 0, #000 28vh);
+}
 #aplicacao .container { width: 100%; }
 /* Título mais chamativo (pedido da Vitória): azul claro da marca em vez do
    texto escuro padrão da seção, maior, e uma sombra suave na mesma cor pra
@@ -607,7 +622,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* .hero-fim: a mesma pintura, por cima da foto presa do herói (que também
    ocupa exatamente a tela, no topo) — com opacidade 1 ela é idêntica pixel
    a pixel ao fundo fixo, então quando a foto solta e sobe não há emenda. */
-.page-bg, .hero-fim {
+.page-bg, .hero-fim, #depoimentos::before {
   background: var(--bg);
   background-image:
     radial-gradient(55% 45% at 15% 8%, rgba(70, 130, 180, 0.20), transparent 62%),
@@ -615,6 +630,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     radial-gradient(50% 46% at 20% 92%, rgba(70, 130, 180, 0.14), transparent 62%),
     radial-gradient(38% 34% at 82% 88%, rgba(215, 119, 19, 0.05), transparent 60%);
 }
+/* Depois da regra acima (o "background" dela zeraria isto): a cortina dos
+   depoimentos pinta presa à tela, igual à .page-bg. */
+#depoimentos::before { background-attachment: fixed; }
 
 /* ---------- Profundidade dos cards ----------
    Sem backdrop-filter nos cards: desfocar cards grandes rolando sobre o .page-bg
@@ -682,7 +700,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   min-height: 80svh;
   display: flex;
   align-items: flex-end;
-  padding: 0;
+  /* Um pouco acima do pé da pista: mais respiro até o título da escada. */
+  padding: 0 0 clamp(1.75rem, 3.5vw, 3rem);
 }
 #reconhecimento > .container { width: 100%; }
 .hero-fim {

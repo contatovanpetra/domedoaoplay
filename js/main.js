@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
   wireManterLugar();
   wireHeaderReveal();
   wireHeaderTema();
+  wireAplicacaoSome();
   playHeroIntro();
   wireVoltar();
   wireGuardaLugar();
@@ -1304,6 +1305,36 @@ function wireHeaderReveal() {
     if (!pedido) { pedido = true; requestAnimationFrame(confere); }
   }, { passive: true });
   header.addEventListener("focusin", () => header.classList.remove("is-recolhido"));
+}
+
+// "Falar bem na câmera vira venda...": o texto fica parado no meio da tela
+// e, quando os depoimentos começam a subir por cima (ver #depoimentos no
+// CSS), vai apagando e encolhendo um pouco — como se fosse ficando pra trás
+// da tela — até sumir antes do título "Veja quem já deu o play" chegar nele.
+function wireAplicacaoSome() {
+  const texto = document.querySelector(".aplicacao-preso .container");
+  const depo = document.getElementById("depoimentos");
+  if (!texto || !depo) return;
+  let ticking = false;
+  let ultimo = -1;
+  function aplica() {
+    ticking = false;
+    const tela = alturaDaTela();
+    // Começa quando a cortina passa de 95% da altura da tela e termina em 55%.
+    const p = clamp((.95 - depo.getBoundingClientRect().top / tela) / .4);
+    const q = Math.round(p * 100) / 100;
+    if (q === ultimo) return;
+    ultimo = q;
+    texto.style.opacity = q ? (1 - q).toFixed(2) : "";
+    texto.style.transform = q && !prefersReducedMotion ? "scale(" + (1 - .06 * q).toFixed(3) + ")" : "";
+  }
+  aplica();
+  window.addEventListener("scroll", () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(aplica);
+  }, { passive: true });
+  window.addEventListener("resize", aplica, { passive: true });
 }
 
 // A logo (texto branco) some sobre as seções claras (módulos, benefícios) — mesma ideia do "LocalnavThemeChanger" da Apple, o menu fixo
