@@ -51,82 +51,30 @@ document.addEventListener("DOMContentLoaded", () => {
   wireCorDaTransicao();
 });
 
-// A cor de fundo fixa (.page-bg) escurece aos poucos enquanto a pessoa rola
-// do fim dos benefícios/e-book pra oferta — não é um degradê parado no CSS
-// (isso já existe, ver #beneficios.section-tone::before), é a cor de
-// verdade mudando com a rolagem, tipo a página da Apple Podcasts: quanto
-// mais rola pra dentro da seção escura, mais escuro o azul claro fica.
+// Onde começa a passagem do azul claro dos benefícios pro escuro da oferta.
 function wireCorDaTransicao() {
-  const fundo = document.querySelector(".page-bg");
+  // A passagem do azul claro pro escuro agora é uma pintura só, no próprio
+  // CSS (#beneficios.section-tone::before), longa e com curva suave. Aqui só
+  // se mede onde ela começa: no meio do segundo bônus (o e-book), pra os
+  // bônus ficarem no azul claro, com destaque. Antes o fundo fixo da página
+  // também mudava de cor com a rolagem, por trás — duas camadas mudando ao
+  // mesmo tempo deixavam a passagem irregular.
   const beneficios = document.querySelector("#beneficios");
-  const oferta = document.querySelector("#oferta");
-  // Sem trava de "reduzir movimento" aqui: é só a cor mudando com a
-  // rolagem, sem nada se mexendo (e o ponto de início do degradê do CSS
-  // também sai daqui).
-  if (!fundo || !beneficios || !oferta) return;
-
-  const AZUL_CLARO = [144, 190, 217]; // --blue-light
-  const ESCURO = [11, 23, 40]; // --bg
-  let zonaAntes = 0;
-  let zonaInicio = 0;
-  let zonaFim = 1;
-  let ticking = false;
-
+  if (!beneficios) return;
   function medir() {
-    // Antes daqui (Escada de Exposição, depoimentos, o começo dos próprios
-    // benefícios): fundo escuro, sempre — só #modulos/#beneficios são azuis,
-    // e eles têm fundo opaco próprio cobrindo o .page-bg o tempo todo, então
-    // nem precisam da cor certa aqui, só as seções ANTERIORES precisam
-    // (senão o azul "vazava" pelos vãos delas, que não são opacos).
-    // A faixa de verdade (esmaecendo) começa em 78% da altura de
-    // benefícios — igual ao degradê pintado no CSS — e termina exatamente
-    // no pé dela: o degradê e a cor ao vivo cobrem o mesmíssimo trecho,
-    // sem entrar seção da oferta adentro (isso é que dava aquele corte
-    // brusco: a cor viva ainda não tinha terminado quando o cartão da
-    // oferta, já escuro e opaco, aparecia por cima). Faixa bem mais alta
-    // (a maior parte de benefícios) pra a transição ficar mesmo fluida.
-    zonaAntes = beneficios.getBoundingClientRect().top + window.scrollY;
-    const altura = beneficios.offsetHeight;
-    // O escurecimento só começa no meio do segundo bônus (o e-book): os
-    // bônus ficam no azul claro, com destaque, em vez de já escurecendo.
-    // O mesmo ponto vai pro degradê do CSS (--fade-inicio), pra os dois
-    // andarem juntos.
+    const altura = beneficios.offsetHeight || 1;
+    const topo = beneficios.getBoundingClientRect().top + window.scrollY;
     const ebook = beneficios.querySelector(".bonus-item--invertido");
     const inicioPx = ebook
-      ? ebook.getBoundingClientRect().top + window.scrollY - zonaAntes + ebook.offsetHeight * 0.5
-      : altura * 0.55;
-    const fracao = Math.min(.95, Math.max(.3, inicioPx / altura));
+      ? ebook.getBoundingClientRect().top + window.scrollY - topo + ebook.offsetHeight * 0.5
+      : altura * 0.6;
+    const fracao = Math.min(.8, Math.max(.3, inicioPx / altura));
     beneficios.style.setProperty("--fade-inicio", (fracao * 100).toFixed(2) + "%");
-    zonaInicio = zonaAntes + altura * fracao;
-    zonaFim = zonaAntes + altura;
   }
-
-  function aplica() {
-    // Referência no pé da tela (era o meio): o azul já escureceu quando o
-    // título da oferta entra por baixo — antes ele aparecia em branco sobre
-    // o azul claro, difícil de ler.
-    const y = window.scrollY + window.innerHeight * 0.92;
-    if (y <= zonaAntes) {
-      fundo.style.backgroundColor = "";
-      ticking = false;
-      return;
-    }
-    const p = Math.max(0, Math.min(1, (y - zonaInicio) / Math.max(1, zonaFim - zonaInicio)));
-    const r = Math.round(AZUL_CLARO[0] + (ESCURO[0] - AZUL_CLARO[0]) * p);
-    const g = Math.round(AZUL_CLARO[1] + (ESCURO[1] - AZUL_CLARO[1]) * p);
-    const b = Math.round(AZUL_CLARO[2] + (ESCURO[2] - AZUL_CLARO[2]) * p);
-    fundo.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-    ticking = false;
-  }
-
   medir();
-  aplica();
-  window.addEventListener("resize", () => { medir(); aplica(); });
-  window.addEventListener("scroll", () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(aplica);
-  }, { passive: true });
+  window.addEventListener("resize", medir, { passive: true });
+  window.addEventListener("load", medir);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
 }
 
 // Modo revisão (classe "modo-revisao" no <html>, ligada por uma linha no <head>):
@@ -821,11 +769,14 @@ function wireViviCard() {
   const card = document.querySelector(".vivi-card");
   if (!pin || !card || prefersReducedMotion) return;
 
+  // Como a Apple conta uma cena: primeiro a foto chega sozinha (só o nome no
+  // alto e os números no pé); com a foto já parada na tela, mais um pouco de
+  // rolagem faz o texto aparecer de leve, no lugar; e só depois a página
+  // segue. Antes o texto já vinha pronto junto com a foto.
   function aplica() {
-    const topo = pin.getBoundingClientRect().top;
-    // 0 quando a foto ainda cobre menos da metade da tela; 1 quando ela para.
-    const p = clamp(1 - topo / (alturaDaTela() * .5));
-    // Só aparece de leve, já no lugar — sem subir (pedido da Vitória).
+    const tela = alturaDaTela();
+    const andou = -pin.getBoundingClientRect().top; // quanto já rolou com a foto parada
+    const p = clamp((andou - tela * .06) / (tela * .3));
     card.style.opacity = p.toFixed(3);
   }
 

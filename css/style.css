@@ -477,7 +477,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background:
     radial-gradient(34% 12% at 82% 14%, rgba(255, 255, 255, .45), transparent 70%),
     radial-gradient(36% 12% at 14% 22%, rgba(70, 130, 180, .4), transparent 70%),
-    linear-gradient(180deg, var(--blue-light) 0%, var(--blue-light) var(--fade-inicio, 55%), transparent 100%);
+    /* Do azul claro pro escuro da página numa pintura só (sem o fundo da
+       página mudando de cor ao mesmo tempo por trás, que era a segunda
+       camada que deixava a passagem irregular), longa e com curva suave —
+       começa devagar, acelera no meio e assenta no fim (como as passagens
+       de cor da Apple), em vez de uma reta curta. Começa no meio do e-book
+       (--fade-inicio, medido no JS); os últimos 8% só dissolvem o escuro
+       no fundo fixo da página, sem emenda. */
+    linear-gradient(180deg,
+      var(--blue-light) 0%,
+      var(--blue-light) var(--fade-inicio, 60%),
+      color-mix(in srgb, var(--blue-light), #0B1728 12%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .2),
+      color-mix(in srgb, var(--blue-light), #0B1728 38%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .4),
+      color-mix(in srgb, var(--blue-light), #0B1728 66%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .6),
+      color-mix(in srgb, var(--blue-light), #0B1728 88%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .8),
+      #0B1728 92%,
+      rgba(11, 23, 40, 0) 100%);
 }
 /* Respiro maior no pé, antes da oferta — só um pouco mais (a transição
    precisa de alguma distância de rolagem pra acontecer, mas não de uma
@@ -487,7 +502,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    contínua (sem nenhuma linha entre elas), então o respiro de seção padrão
    (128px + 128px) só deixava vão vazio de sobra ali no meio. */
 #modulos { padding-top: 160px; padding-bottom: 64px; }
-#beneficios { padding-top: 64px; padding-bottom: 380px; }
+#beneficios { padding-top: 64px; padding-bottom: 520px; }
 /* O azul de #beneficios sobe 2px por baixo do fim de #modulos: no iPhone,
    durante a rolagem, as duas camadas pintadas separadas às vezes deixavam
    uma linha de 1px do fundo escuro aparecer entre elas (o "cortezinho"). */
@@ -496,7 +511,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   /* Mais respiro entre a borda de cima (o fim da foto da Vitória) e o
      título "8 módulos. 30 aulas.". */
   #modulos { padding-top: 120px; padding-bottom: 40px; }
-  #beneficios { padding-top: 40px; padding-bottom: 250px; }
+  /* Pé mais alto: mais rolagem pra passagem do azul claro pro escuro
+     acontecer devagar (com 250px ela era curta e brusca). */
+  #beneficios { padding-top: 40px; padding-bottom: 380px; }
 }
 /* A emenda #metodo→#aplicacao estava curta demais: sobrava pouco respiro
    depois do botão "Quero entrar em cena" antes da frase seguinte. Esse padding é rolagem pura, antes do texto preso
@@ -848,15 +865,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 @media (max-width: 899.98px) {
   .vivi-foto { height: 100lvh; }
 }
-.vivi-foto picture {
-  display: block;
-  width: 100%;
-  height: 100%;
-  /* A borda de cima da foto esmaece no fundo da página (como a foto do
-     herói se dissolve): antes ela entrava como uma linha reta cortando a
-     tela, logo embaixo dos depoimentos. */
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 min(14vh, 120px));
-  mask-image: linear-gradient(180deg, transparent 0, #000 min(14vh, 120px));
+.vivi-foto picture { display: block; width: 100%; height: 100%; }
+/* A borda de cima da foto esmaece no fundo da página (como a foto do herói
+   se dissolve): antes ela entrava como uma linha reta cortando a tela, logo
+   embaixo dos depoimentos. Um degradê por cima (e não uma máscara na foto,
+   que pesava na rolagem do iPhone). */
+.vivi-foto::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: min(14vh, 120px);
+  z-index: 0;
+  background: linear-gradient(180deg, var(--bg), rgba(11, 23, 40, 0));
+  pointer-events: none;
 }
 /* Sem nenhum gradiente por cima (pedido explícito da Vitória): é só a foto
    crua dela, sem mistura de cor nenhuma — o nome, o card e as credenciais
@@ -888,10 +911,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   flex: 1;
   min-height: 0;
   display: flex;
-  /* Celular: o texto desce até ficar logo acima dos números, sobre a roupa
-     escura da Vitória — longe do rosto, que fica livre no alto da foto. */
+  /* Celular: o texto fica acima dos números, sobre a roupa escura da
+     Vitória — longe do rosto, que fica livre no alto da foto — com um
+     respiro maior até os números (o texto sobe um pouco). */
   align-items: flex-end;
-  padding: 1rem clamp(24px, 5vw, 96px) clamp(1.1rem, 3vh, 1.6rem);
+  padding: 1rem clamp(24px, 5vw, 96px) clamp(1.8rem, 5vh, 2.6rem);
 }
 /* Texto direto na foto, sem caixa (como a Apple escreve sobre imagem, no
    Apple TV+ e nas biografias da Liderança): nada de retângulo com borda e
@@ -905,6 +929,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   padding: 0;
   background: none;
   border: 0;
+  /* Camada própria: o texto aparece de leve só mudando a opacidade, sem o
+     navegador redesenhar as letras (e as sombras delas) a cada quadro. */
+  will-change: opacity;
 }
 /* Celular: o texto fica sobre a metade de baixo da foto (mãos, anéis,
    roupa), e só a sombra nas letras não bastava pra ler. Um escurecimento
@@ -952,11 +979,13 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .vivi-cargo::first-letter { text-transform: uppercase; }
 /* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
    título da seção. */
-.vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.45; color: #fff; text-shadow: 0 1px 2px rgba(3, 10, 29, .7), 0 0 22px rgba(3, 10, 29, .55); }
+.vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.45; color: #fff; text-shadow: 0 1px 2px rgba(3, 10, 29, .7), 0 0 16px rgba(3, 10, 29, .45); }
 /* Celular: 16px, um degrau abaixo do corpo (17px) — em 14px o texto ficava
-   pequeno demais perto do nome e dos números. */
+   pequeno demais perto do nome e dos números. Uma sombra só, curta: o
+   escurecimento da metade de baixo da foto já garante a leitura, e a
+   sombra grande em cada linha pesava na rolagem. */
 @media (max-width: 699.98px) {
-  .vivi-card > p:not(.eyebrow) { font-size: 1rem; line-height: 1.45; }
+  .vivi-card > p:not(.eyebrow) { font-size: 1rem; line-height: 1.45; text-shadow: 0 1px 2px rgba(3, 10, 29, .75); }
 }
 /* Celular baixo (iPhone SE, Android 360x740 e menores): o texto inteiro do
    card tem que caber entre o nome e as credenciais sem rolar por dentro —
