@@ -218,10 +218,19 @@ function wireScrollEffects() {
   // longo da segunda tela da pista, e a foto se dissolve no fundo (como a
   // abertura do iPad Pro na Apple) em vez de terminar numa borda reta.
   const fimFoto = hero ? hero.querySelector(".hero-fim") : null;
-  // Celular em pé: título, texto e botão ficam por cima do pé da foto presa
-  // (ver CSS). Subindo, eles passariam por cima do rosto da Vitória: somem
-  // devagar antes disso, e a foto começa a se dissolver mais cedo.
-  const heroTexto = hero ? hero.querySelector(".hero-primeira-tela") : null;
+  // Celular em pé: título e botão ficam por cima do pé da foto presa, e o
+  // parágrafo logo abaixo (ver CSS). Subindo, eles passariam por cima do
+  // rosto da Vitória: somem devagar antes disso (o parágrafo, que chega
+  // depois, some depois), e a foto começa a se dissolver mais cedo. Some o
+  // que está DENTRO do título, do parágrafo e do botão: neles mesmos quem
+  // mexe na opacidade é a entrada do herói (playHeroIntro).
+  const heroTopo = hero ? [...hero.querySelectorAll(".hero-h1-abre, .hero-h1-resto, .hero-cta-foto")] : [];
+  const heroApoio = hero ? [...hero.querySelectorAll("#hero-lead p")] : [];
+  const some = (els, o) => els.forEach((el) => {
+    el.style.opacity = o < 1 ? (o * o * (3 - 2 * o)).toFixed(3) : "";
+    // Sumido, também não recebe toque (o botão invisível não abre nada).
+    el.style.visibility = o <= 0 ? "hidden" : "";
+  });
   const celularEmPe = window.matchMedia("(max-width: 699.98px) and (min-height: 481px)");
   const bar = document.querySelector(".read-progress");
   // A classe é ligada no <head> só quando o movimento é permitido.
@@ -291,12 +300,10 @@ function wireScrollEffects() {
       const r = (y - heroTop) / pistaFoto;
       const f = celularEmPe.matches ? clamp((r - .1) / .85) : clamp((r - .35) / .6);
       fimFoto.style.opacity = (f * f * (3 - 2 * f)).toFixed(3);
-      if (heroTexto) {
-        const o = celularEmPe.matches ? 1 - clamp((y - heroTop - 20) / 220) : 1;
-        heroTexto.style.opacity = o < 1 ? (o * o * (3 - 2 * o)).toFixed(3) : "";
-        // Sumido, também não recebe toque (o botão invisível não abre nada).
-        heroTexto.style.visibility = o <= 0 ? "hidden" : "";
-      }
+      const emPe = celularEmPe.matches;
+      const tela = window.innerHeight;
+      some(heroTopo, emPe ? 1 - clamp((y - heroTop - 20) / 220) : 1);
+      some(heroApoio, emPe ? 1 - clamp((y - heroTop - .45 * tela) / (.2 * tela)) : 1);
       // Quando a foto solta e começa a subir, ela já é só fundo: esconde o
       // palco pra aparecer a .page-bg fixa por trás. Subindo, o degradê da
       // camada sairia do lugar em relação ao fundo fixo e marcaria uma faixa.

@@ -2844,13 +2844,14 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
 
 /* Celular em pé: a foto vem primeiro, como na Apple Fitness+ e no Spotify
    Premium (medidos no relatório de tipografia, set/2026). A Vitória aparece
-   logo abaixo do menu, do rosto até o peito; título, subtítulo, o parágrafo
-   de apoio e o botão ficam por cima do pé da foto, num degradê escuro, tudo
-   na primeira tela. Ao rolar, a foto fica presa atrás, com o zoom lento, e
-   se dissolve no azul enquanto "Você trava." sobe (a transição do começo,
-   pedida de volta pela Vitória em 29/set): com a foto rolando junto e o
-   parágrafo no começo da segunda tela, ele caía no mesmo azul liso da frase
-   seguinte e parecia fazer parte dela. */
+   logo abaixo do menu, do rosto até o peito; título, subtítulo e botão ficam
+   por cima do pé da foto, num degradê escuro, e o parágrafo de apoio logo
+   abaixo de "8 módulos · 31 aulas · certificado", aparecendo no primeiro
+   movimento da rolagem. Ao rolar, a foto fica presa atrás, com o zoom lento,
+   e se dissolve no azul enquanto "Você trava." sobe (a transição do começo,
+   pedida de volta pela Vitória em 29/set): com a foto rolando junto, o
+   parágrafo caía no mesmo azul liso da frase seguinte e parecia fazer parte
+   dela. */
 @media (max-width: 699.98px) and (min-height: 481px) {
   .hero-foto-deitada {
     inset: 0 0 auto 0;
@@ -2868,9 +2869,7 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
     left: 0;
     right: 0;
     bottom: calc(-1 * var(--hero-base, 150px) - 40px);
-    /* Mais alto que antes (46%): o parágrafo de apoio voltou pra primeira
-       tela e o bloco de texto sobe mais sobre a foto. */
-    height: calc(58% + var(--hero-base, 150px) + 40px);
+    height: calc(46% + var(--hero-base, 150px) + 40px);
     background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .8) 28%, var(--bg) 46%, var(--bg) 100%);
   }
   /* Só o bastante pra logo e o botão do menu lerem sobre a foto. */
@@ -2880,7 +2879,17 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
     padding: 0 0 28px;
     justify-content: flex-end;
   }
-  .hero-lead-list { max-width: 34rem; }
+  /* O parágrafo sai do fluxo e fica logo abaixo do fim da primeira tela
+     (a medida é a própria .hero-primeira-tela), perto da linha "8 módulos". */
+  .hero .hero-inner { position: static; }
+  .hero-lead-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 24px;
+    right: 24px;
+    margin: 0 auto;
+    max-width: 34rem;
+  }
   .hero-cta-foto { margin-top: 1.1rem; }
   .hero-primeira-tela .scroll-cue { display: none; }
 }
