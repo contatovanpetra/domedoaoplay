@@ -1306,14 +1306,13 @@ function wireHeaderReveal() {
   header.addEventListener("focusin", () => header.classList.remove("is-recolhido"));
 }
 
-// A logo (texto branco) some sobre as seções claras (módulos, benefícios,
-// aplicação) — mesma ideia do "LocalnavThemeChanger" da Apple, o menu fixo
+// A logo (texto branco) some sobre as seções claras (módulos, benefícios) — mesma ideia do "LocalnavThemeChanger" da Apple, o menu fixo
 // mudando de tema conforme a seção que está passando por baixo dele. Aqui,
 // em vez de trocar a cor da logo, o menu ganha um fundo escuro translúcido
 // só enquanto está sobre uma dessas seções (ver .site-header.on-light).
 function wireHeaderTema() {
   const header = document.querySelector(".site-header");
-  const alvos = [...document.querySelectorAll("#modulos, #beneficios, #aplicacao")];
+  const alvos = [...document.querySelectorAll("#modulos, #beneficios")];
   if (!header || !alvos.length) return;
   let ticking = false;
   function aplica() {
