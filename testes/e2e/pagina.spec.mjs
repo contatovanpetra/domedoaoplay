@@ -181,6 +181,6 @@ test("abertura: o túnel toca do começo ao fim sem voltar e sem mudar de ritmo"
   expect(quadros.length, "o vídeo precisa ter tocado").toBeGreaterThan(100);
   const voltas = quadros.filter((q, i) => i > 0 && q < quadros[i - 1] - 0.001);
   expect(voltas, "quadros que voltaram no tempo").toEqual([]);
-  expect(Math.max(...quadros), "o túnel chega na porta de luz").toBeGreaterThan(6.4);
+  expect(Math.max(...quadros), "o túnel chega na porta de luz").toBeGreaterThan(5);
   expect(ritmos, "mudanças de ritmo do vídeo").toEqual([]);
 });

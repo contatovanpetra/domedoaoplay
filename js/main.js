@@ -1218,7 +1218,7 @@ function wireIntroStage() {
   // 4) o resto da pergunta ("você desse o play?"), com a frase da fase 2
   //    ainda na tela, fechando a pergunta inteira;
   // 5) segura tudo montado um tempo pra dar pra ler, só então atravessa.
-  const CRESCE = 1.1; // a travessia: o iPhone crescendo junto com o túnel
+  const CRESCE = .8; // a travessia: o iPhone crescendo junto com o túnel
   tl = gsap.timeline({ paused: true });
   tl
     // FASE 1 — só o túnel: o véu abre e as faixas de luz aparecem, sem
@@ -1238,12 +1238,13 @@ function wireIntroStage() {
     .to(burstCamera, { opacity: 1, duration: .3 }, "celular+=1.15")
     .to(faixas, { opacity: 1, duration: .5, ease: "power2.inOut" }, "celular+=1.2")
     // FASE 4 — o resto da pergunta, já com o celular montado na tela.
-    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .35, stagger: .14, ease: "back.out(1.7)" }, "celular+=1.7")
-    .call(aperta, null, "celular+=2.05")
+    .to(burstTitleSpans, { opacity: 1, y: 0, duration: .3, stagger: .1, ease: "back.out(1.7)" }, "celular+=1.7")
+    .call(aperta, null, "celular+=2")
     // FASE 5 — segura tudo montado ("E se, em vez de travar... você
-    // desse o play?" inteira, celular gravando) um tempo de verdade antes
-    // de atravessar — sem isso, pisca e passa antes de dar pra ler.
-    .addLabel("atravessa", "celular+=3.6")
+    // desse o play?" inteira, celular gravando) um instante antes de
+    // atravessar. Era 1,1 s depois do "play?" entrar; a Vitória pediu a
+    // parte depois da pergunta mais curta (29/set): 0,3 s.
+    .addLabel("atravessa", "celular+=2.6")
     .to([burstPre, ...burstTitleSpans], { opacity: 0, duration: .3 }, "atravessa")
     .to(faixas, { opacity: 0, duration: .3 }, "atravessa")
     .to(burstStage, { rotationX: 0, rotationY: 0, duration: .4, ease: "power2.inOut" }, "atravessa")
@@ -1251,21 +1252,21 @@ function wireIntroStage() {
     // ATRAVESSA: o iPhone cresce junto com o túnel, até a porta de luz, e
     // explode no clarão. A réplica lá dentro chega em escala 1: a tela VIRA a
     // página, sem corte.
-    .addLabel("cresce", "atravessa+=.3")
+    .addLabel("cresce", "atravessa+=.25")
     .to(burstStage, { scale: () => 1 / escalaDaReplica(), duration: CRESCE, ease: "power3.in" }, "cresce")
     .to(burstScreen, { borderRadius: 0, duration: CRESCE, ease: "power3.in" }, "cresce")
     // O clarão acende no fim da travessia (termina junto com o crescimento).
     .to(flash, { opacity: 1, duration: .32, ease: "power2.in" }, "cresce+=" + (CRESCE - .32).toFixed(2))
     .call(libera)
-    .to(flash, { opacity: 0, duration: .7, ease: "power2.out" });
+    .to(flash, { opacity: 0, duration: .5, ease: "power2.out" });
 
   // ---- O TÚNEL ----
   // Vídeo de 7s dos arcos até a porta de luz laranja, tocando sozinho. O
   // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
   // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
   const VIDEOS = {
-    celular: { src: "assets/video/tunel-celular.mp4?v=2", poster: "assets/video/tunel-celular-poster.webp" },
-    computador: { src: "assets/video/tunel-desktop.mp4?v=2", poster: "assets/video/tunel-desktop-poster.webp" },
+    celular: { src: "assets/video/tunel-celular.mp4?v=3", poster: "assets/video/tunel-celular-poster.webp" },
+    computador: { src: "assets/video/tunel-desktop.mp4?v=3", poster: "assets/video/tunel-desktop-poster.webp" },
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
   const porta = tl.labels.cresce + CRESCE;
@@ -1281,7 +1282,7 @@ function wireIntroStage() {
   // O túnel começa devagar e vai acelerando por igual até a porta de luz,
   // aonde chega quando a tela da câmera termina de crescer (a luz do vídeo
   // emenda no clarão). A aceleração já vem gravada no próprio arquivo, que
-  // dura exatamente até a porta (6,7 s): o vídeo toca no ritmo normal, do
+  // dura exatamente até a porta (5,35 s): o vídeo toca no ritmo normal, do
   // começo ao fim, sem ninguém mexer nele. Antes o JS mudava o ritmo
   // (playbackRate) aos pouquinhos enquanto ele tocava; no iPhone, mudar o
   // ritmo de um vídeo que ainda está chegando pode fazer o Safari recomeçar
@@ -1290,6 +1291,9 @@ function wireIntroStage() {
   // mudança caía aos 1,6 s) e voltava a andar, como se a página recarregasse. O arquivo novo também
   // tem um quadro-chave a cada meio segundo e nenhum quadro "B" (os que
   // dependem do quadro seguinte), o que deixa a decodificação mais leve.
+  // A pedido da Vitória (29/set), o túnel ficou mais rápido desde o começo:
+  // 1,25x no início até ~1,47x na porta (antes 1x até 1,17x), gravado no
+  // arquivo do mesmo jeito.
   // A animação não espera o vídeo: começa logo depois do pôster (a imagem do
   // túnel) aparecer, e o vídeo entra quando chegar. O pôster é o primeiro
   // quadro do vídeo, então ele entrar um pouco depois não dá salto nenhum.
