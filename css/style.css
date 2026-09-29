@@ -1653,9 +1653,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   background-position: center, center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, .35);
 }
-@media (max-width: 699.98px) {
-  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { width: 18px; height: 18px; }
-}
 /* Fundo azul claro (tom leve, o mesmo do resto da página), sem traço
    laranja e sem ícone: só o card tingido, o título e a linha de apoio. */
 .beneficio {
@@ -1678,20 +1675,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   line-height: 1.15;
   color: var(--white);
 }
-.beneficio p { margin: 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--cor-corpo); }
-/* Tablet e computador: 17px, o texto dos cartões da Apple nessas telas
-   (14px ficava pequeno demais perto do título do card). */
-@media (min-width: 700px) { .beneficio p { font-size: var(--t-corpo); } }
+.beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
 @media (min-width: 700px) and (max-width: 999.98px) { .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 370px) {
   /* Abaixo de ~362px nem o tamanho mínimo do título comporta a palavra
      mais longa inteira: aí ela pode hifenizar em vez de vazar. */
   .beneficio h3 { hyphens: auto; overflow-wrap: anywhere; }
 }
+/* Celular: um card por linha, na largura toda, com o título em 21px e o
+   texto em 17px — os mesmos tamanhos dos bônus logo abaixo. Em 2 x 2 o
+   título descia pra 16px e o texto pra 14px e os cards pareciam menores
+   que o resto da seção. Um embaixo do outro, a setinha lateral não aponta
+   pra nada: sai. */
 @media (max-width: 699.98px) {
-  .beneficios { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; margin-bottom: 3rem; }
-  /* Card sem fundo pede menos respiro lateral: sobra largura pro título crescer. */
-  .beneficio { padding: 1rem .65rem 1.1rem; }
+  .beneficios { grid-template-columns: 1fr; gap: .6rem; margin-bottom: 3rem; }
+  .beneficio { padding: 1.1rem 1.25rem 1.2rem; }
+  .beneficio:nth-child(1)::after, .beneficio:nth-child(3)::after { display: none; }
 }
 
 
@@ -2106,11 +2105,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   .offer-produto { font-size: 1.125rem; }
   .price-now { font-size: 2.25rem; }
   .price-note { font-size: .9375rem; }
-  .offer-inclui-rotulo { padding-top: .9rem; margin-bottom: .6rem; font-size: .8125rem; }
+  .offer-inclui-rotulo { padding-top: .9rem; margin-bottom: .6rem; font-size: .875rem; }
   .offer-lista { gap: .6rem; margin-bottom: 1rem; }
-  .offer-lista li strong { font-size: .9375rem; }
-  .offer-lista li span { font-size: .8125rem; }
-  .offer-selos { margin-top: .55rem; font-size: .75rem; }
+  /* 16px e 14px (eram 15 e 13): mais fáceis de ler pra quem usa óculos. */
+  .offer-lista li strong { font-size: 1rem; }
+  .offer-lista li span { font-size: .875rem; }
+  .offer-selos { margin-top: .55rem; font-size: .8125rem; }
 }
 
 /* ---------- Guarantee ---------- */
@@ -2593,14 +2593,21 @@ html.abertura-on { overflow: hidden; }
   .hero-headline, .hero-lead { max-width: none; }
   /* No celular o título acompanha a largura da tela: com o tamanho das telas
      grandes ele virava 6 ou 7 linhas picadas num aparelho de 320px. */
-  /* Celular: 32px no de 390px (acompanha a largura, 26px no de 320px) — um
-     degrau acima dos títulos de seção (28px), como o título do herói nas
-     páginas da Apple. O apoio desce pra 15px e fica mais discreto, pra o
-     bloco inteiro continuar acima do rosto da Vitória na foto. */
-  .hero-headline { --hero-resto: min(1.375rem, 5.4vw); font-size: var(--hero-resto); }
-  .hero-h1-abre { font-size: 1.8em; }
-  .hero-lead, .hero-lead-list { font-size: .9375rem; line-height: 1.4; }
-  .hero-lead-list { margin-top: .6rem; }
+  /* Celular: "Domine a câmera." em 40px e a segunda linha em 23px no de
+     390px (acompanham a largura), como o título e o subtítulo do herói nas
+     páginas da Apple no iPhone. O texto de apoio fica em 17px, o mesmo do
+     resto da página: com 15px (13px nos celulares baixos) ficava difícil de
+     ler pra quem usa óculos. */
+  .hero-headline { --hero-resto: min(1.4375rem, 5.9vw); font-size: var(--hero-resto); }
+  .hero-h1-abre { font-size: 1.75em; }
+  .hero-lead, .hero-lead-list { font-size: var(--t-corpo); line-height: 1.42; }
+  .hero-lead-list { margin-top: .7rem; }
+  /* Pra esse texto maior não cobrir os ícones nem o rosto da Vitória, a
+     foto desce um pouco nos celulares mais baixos (o alto que sobra é o
+     mesmo azul-noite do céu da foto; o que sai é só um pedaço da cintura,
+     embaixo). Nos celulares altos (iPhone Pro Max) já sobra espaço: 0.
+     Ver a regra logo abaixo (só em pé: deitado o layout é outro). */
+
   /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
      ficar solto no meio da foto. */
   .hero-cta-foto {
@@ -2621,24 +2628,40 @@ html.abertura-on { overflow: hidden; }
   .hero-microcopy { margin-top: .3rem; }
 }
 
-/* Celular baixo: a foto encolhe junto com a tela e a área escura do topo
-   fica menor — o texto de apoio desce um degrau (14px) pra não encostar
-   nos ícones das redes. */
+@media (max-width: 699.98px) and (orientation: portrait) {
+  .hero-foto-deitada { background-position: 60% max(0px, calc(350px - 38svh)); }
+}
 /* Tablet em pé: mesma coluna centralizada do celular, título um degrau
    menor que o do computador pra o bloco não descer até os ícones da foto. */
 @media (min-width: 700px) and (max-width: 899.98px) {
-  .hero-headline { --hero-resto: 1.625rem; font-size: var(--hero-resto); }
-  .hero-lead, .hero-lead-list { font-size: 1.0625rem; }
+  .hero-headline { --hero-resto: 1.75rem; font-size: var(--hero-resto); }
+  .hero-lead, .hero-lead-list { font-size: 1.1875rem; }
+}
+/* Tablet em pé: com o título e o texto maiores (28px e 19px, perto dos
+   subtítulos das páginas da Apple no iPad), a foto desce um pouco pra os
+   ícones continuarem abaixo do botão. */
+@media (min-width: 700px) and (max-width: 899.98px) and (orientation: portrait) {
+  .hero-foto-deitada { background-position: 60% 12%; }
+}
+/* Notebook de 1024px (e tablet deitado): "Domine a câmera." em 67px
+   encostava nos ícones da foto. Um degrau menor aqui. */
+@media (min-width: 700px) and (max-width: 1099.98px) and (orientation: landscape) {
+  .hero-headline { --hero-resto: 1.75rem; font-size: var(--hero-resto); }
+}
+/* Janela quase quadrada e estreita (ex.: 900×700): os ícones ficam ainda
+   mais perto do texto, mais um degrau. */
+@media (min-width: 700px) and (max-width: 1099.98px) and (orientation: landscape) and (max-aspect-ratio: 14/10) {
+  .hero-headline { --hero-resto: 1.5rem; }
 }
 /* Celular bem baixo (iPhone SE antigo, 568px): o bloco sobe um degrau
    menor pra não encostar nos ícones da foto. */
 @media (max-width: 699.98px) and (max-height: 600px) {
   .hero-headline { --hero-resto: min(1.125rem, 4.6vw) !important; font-size: var(--hero-resto) !important; }
-  .hero-lead, .hero-lead-list { font-size: .75rem !important; line-height: 1.35 !important; }
+  .hero-lead, .hero-lead-list { font-size: .875rem !important; line-height: 1.38 !important; }
 }
-@media (max-width: 699.98px) and (max-height: 760px) {
-  .hero-headline { --hero-resto: min(1.25rem, 5vw); font-size: var(--hero-resto); }
-  .hero-lead, .hero-lead-list { font-size: .8125rem; line-height: 1.4; margin-top: .5rem; }
+/* Em pé nesse celular a foto desce menos: mais que isso o rosto chegava no botão. */
+@media (max-width: 699.98px) and (max-height: 600px) and (orientation: portrait) {
+  .hero-foto-deitada { background-position: 60% 40px; }
 }
 
 /* Tela deitada a partir de 700px (tablet deitado, notebook, monitor): a foto
