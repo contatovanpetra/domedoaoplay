@@ -47,9 +47,30 @@ for (const nome of await readdir(SAIDA)) {
   if (!nome.endsWith(".html")) continue;
   const arquivo = join(SAIDA, nome);
   const fonte = await readFile(arquivo, "utf8");
-  const limpo = fonte.replace(/<!--(?!\[if)[\s\S]*?-->\n?/g, "");
+  // As notas de revisão (data-confirmar="...") também ficam só no código: no
+  // ar elas não servem pra nada (o modo revisão vem desligado) e contavam
+  // pra qualquer visitante o que ainda é provisório.
+  const limpo = fonte.replace(/<!--(?!\[if)[\s\S]*?-->\n?/g, "").replace(/ data-confirmar="[^"]*"/g, "");
   await writeFile(arquivo, limpo);
   console.log(`${nome}: ${fonte.length} → ${limpo.length} bytes`);
+}
+
+// O script e o estilo escritos direto no HTML só rodam, pela política de
+// segurança (CSP) do vercel.json, se a impressão digital (hash) deles estiver
+// lá. A política ainda só relata (Report-Only), então nada quebra; mas se um
+// desses trechos mudar, o hash novo tem que ir pro vercel.json e pro
+// hospedagem/SEGURANCA.txt, senão a política fica desatualizada.
+{
+  const { createHash } = await import("node:crypto");
+  const politica = await readFile(join(RAIZ, "vercel.json"), "utf8");
+  for (const nome of await readdir(SAIDA)) {
+    if (!nome.endsWith(".html")) continue;
+    const html = await readFile(join(SAIDA, nome), "utf8");
+    for (const [, trecho] of html.matchAll(/<(?:script|style)>([\s\S]*?)<\/(?:script|style)>/g)) {
+      const hash = "sha256-" + createHash("sha256").update(trecho, "utf8").digest("base64");
+      if (!politica.includes(hash)) console.warn(`AVISO: ${nome} tem um trecho inline cujo hash (${hash}) não está na CSP do vercel.json`);
+    }
+  }
 }
 
 // Fora da Vercel (a pasta vai pra Hostinger ou outra hospedagem Apache/

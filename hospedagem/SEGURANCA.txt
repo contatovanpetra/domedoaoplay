@@ -1,0 +1,59 @@
+DO MEDO AO PLAY — CABEÇALHOS DE SEGURANÇA PARA A HOSPEDAGEM FINAL
+(auditoria de segurança de 29/set/2026)
+
+A hospedagem final ainda não foi decidida. Estes cabeçalhos já estão ligados
+e testados na prévia da Vercel (vercel.json). Quem configurar a hospedagem
+final deve mandar os MESMOS cabeçalhos em todas as respostas do site (o
+jeito de configurar muda de uma hospedagem pra outra: .htaccess no Apache/
+LiteSpeed, painel da hospedagem, Cloudflare, Netlify, Nginx...).
+
+Os valores exatos estão no vercel.json, no bloco "source": "/(.*)". São eles:
+
+1. Content-Security-Policy
+   frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'
+   -> Impede que outro site abra a página dentro de um quadro (clickjacking).
+      Não bloqueia pixel, tag nem script: pode ficar ligado mesmo quando o
+      gestor de tráfego colocar os pixels.
+
+2. Content-Security-Policy-Report-Only
+   (valor longo, copiar do vercel.json)
+   -> Política completa, só em modo de RELATO: não bloqueia nada, só avisa no
+      console do navegador o que ela bloquearia. Hoje não avisa nada (testado).
+   -> ATENÇÃO, GESTOR DE TRÁFEGO: quando os pixels/GTM entrarem, o console vai
+      mostrar avisos "[Report Only]" com os domínios deles. Isso é esperado e
+      não quebra nada. Antes de um dia transformar essa política em
+      obrigatória (trocar o nome para Content-Security-Policy), é preciso
+      acrescentar os domínios dos pixels e testar. Sem isso, os pixels param.
+   -> Se o script ou o estilo escritos direto no HTML mudarem, o hash deles
+      muda: o build (npm run build) avisa e o hash novo tem que ir pro
+      vercel.json e para a hospedagem.
+
+3. X-Frame-Options: DENY
+   -> Mesma proteção do item 1, para navegadores antigos.
+
+4. X-Content-Type-Options: nosniff
+   -> O navegador não "adivinha" o tipo do arquivo. Os tipos já estão certos
+      (html, css, js, avif, webp, svg, woff2, mp4 conferidos).
+
+5. Referrer-Policy: strict-origin-when-cross-origin
+   -> É o padrão dos navegadores atuais, só fica explícito. Não muda o
+      rastreio: os UTMs vão pra Hotmart no próprio link do botão.
+
+6. Permissions-Policy
+   camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), hid=(), midi=(), display-capture=(), xr-spatial-tracking=()
+   -> A página não usa câmera, microfone, localização etc.; assim nenhum
+      script de fora consegue pedir isso. Tela cheia, autoplay e as APIs de
+      anúncios (attribution-reporting, browsing-topics) ficam liberadas.
+
+7. Strict-Transport-Security (HSTS) — SÓ DEPOIS DO HTTPS FUNCIONANDO
+   max-age=31536000
+   -> Só ligar quando o domínio final estiver com o certificado (https)
+      funcionando e renovando sozinho. Sem includeSubDomains e sem preload,
+      a não ser que se confirme que todos os subdomínios têm https.
+      A Vercel já manda o dela na prévia.
+
+Também conferir na hospedagem final:
+- http:// redirecionando para https:// (na prévia: sim, 308).
+- Listagem de pastas desligada (abrir /assets/ tem que dar 403 ou 404).
+- Só a pasta dist/ publicada: nada de package.json, testes/, hospedagem/,
+  .git ou .env no ar.
