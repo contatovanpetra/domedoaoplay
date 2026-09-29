@@ -1275,6 +1275,7 @@ function wireIntroStage() {
   // o vídeo inteiro de 12s pedia um ritmo de 4x no fim, que o celular não
   // acompanha enquanto desenha a página (o vídeo engasgava antes da porta).
   let comecou = false;
+  let semVideo = false;
   let esperaVideo = 0;
 
   // O túnel começa devagar e vai acelerando por igual até a porta de luz,
@@ -1289,6 +1290,24 @@ function wireIntroStage() {
   // mudança caía aos 1,6 s) e voltava a andar, como se a página recarregasse. O arquivo novo também
   // tem um quadro-chave a cada meio segundo e nenhum quadro "B" (os que
   // dependem do quadro seguinte), o que deixa a decodificação mais leve.
+  // A animação não espera o vídeo: começa logo depois do pôster (a imagem do
+  // túnel) aparecer, e o vídeo entra quando chegar. O pôster é o primeiro
+  // quadro do vídeo, então ele entrar um pouco depois não dá salto nenhum.
+  // Antes a abertura inteira esperava o vídeo tocar: numa rede lenta a
+  // pessoa ficava olhando o túnel parado, e a frase demorava a aparecer.
+  let esperaInicio = 0;
+  let videoAndando = false;
+  // O vídeo não veio (rede lenta demais, modo de economia do celular): fica a
+  // imagem do começo do túnel, que se aproxima devagar até o fim da abertura.
+  function desisteDoVideo() {
+    if (videoAndando || semVideo || aberturaAcabou) return;
+    if (video.currentTime > 0 && !video.paused) { videoAndando = true; return; }
+    semVideo = true;
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    gsap.fromTo(video, { scale: 1 }, { scale: 1.3, duration: Math.max(.5, porta - tl.time()), ease: "power1.in" });
+  }
   function comeca() {
     // Liberada antes de começar (trava de segurança, aba escondida): sem
     // isto, o vídeo chegava depois e dava play na abertura já cancelada —
@@ -1296,20 +1315,13 @@ function wireIntroStage() {
     // página, segundos depois.
     if (comecou || aberturaAcabou) return;
     comecou = true;
-    clearTimeout(esperaVideo);
-    // Já andando (o aviso de "tocando" pode chegar atrasado): segue com ele.
-    const andando = video.currentTime > 0 || (!video.paused && video.readyState >= 2);
-    if (!andando) {
-      // O vídeo não veio a tempo (rede lenta, modo de economia do celular):
-      // fica a imagem do começo do túnel, que se aproxima devagar.
-      video.pause();
-      video.removeAttribute("src");
-      video.load();
-      gsap.fromTo(video, { scale: 1 }, { scale: 1.3, duration: porta, ease: "power1.in" });
-    }
+    clearTimeout(esperaInicio);
     tl.play();
     // Trava de segurança: a página nunca fica presa atrás da abertura.
     setTimeout(() => libera(true), (tl.duration() + 4) * 1000);
+    // Até 1,5 s de atraso o vídeo ainda entra (o clarão do fim cobre a
+    // diferença na chegada à porta); depois disso, fica a imagem.
+    if (!videoAndando && !semVideo) esperaVideo = setTimeout(desisteDoVideo, 1500);
   }
 
   // Adianta direto pra travessia (a tela da câmera crescendo até virar a
@@ -1326,6 +1338,7 @@ function wireIntroStage() {
     // começo do túnel. Ele segue de onde está; o clarão do fim cobre a chegada na porta.
     if (!comecou) {
       comecou = true;
+      clearTimeout(esperaInicio);
       clearTimeout(esperaVideo);
       setTimeout(() => libera(true), 8000);
     }
@@ -1338,28 +1351,33 @@ function wireIntroStage() {
   stage.addEventListener("click", adianta);
 
   video.poster = VIDEOS[modo].poster;
-  // Fase 1 (o véu abre e as faixas aparecem) não depende do vídeo: começa
-  // assim que o pôster está pronto (já pedido no <head>). Antes a abertura
-  // inteira esperava o vídeo começar a tocar, e numa rede lenta a pessoa via
-  // o túnel escurecido e parado por até 2,5 s. É a mesma animação da linha
-  // do tempo (tl), só adiantada; quando o tl começa, o véu já está aberto.
-  if (veil) {
-    const abreVeu = () => {
-      if (comecou || aberturaAcabou) return;
-      gsap.to(veil, { opacity: 0, duration: .5, ease: "power1.out" });
-      if (faixas) gsap.to(faixas, { opacity: .7, duration: .4, delay: .2 });
-    };
-    const poster = new Image();
-    poster.onload = abreVeu;
-    poster.src = VIDEOS[modo].poster;
-  }
-  video.addEventListener("playing", comeca, { once: true });
+  // O véu abre assim que o pôster está pronto (já pedido no <head>), e a
+  // animação começa 0,4 s depois — ou antes, se o vídeo já estiver tocando.
+  // É a mesma animação da linha do tempo (tl), só adiantada: quando o tl
+  // começa, o véu já está abrindo.
+  const posterPronto = () => {
+    if (comecou || aberturaAcabou) return;
+    if (veil) gsap.to(veil, { opacity: 0, duration: .5, ease: "power1.out" });
+    if (faixas) gsap.to(faixas, { opacity: .7, duration: .4, delay: .2 });
+    clearTimeout(esperaInicio);
+    esperaInicio = setTimeout(comeca, 400);
+  };
+  const poster = new Image();
+  poster.onload = posterPronto;
+  poster.onerror = () => { clearTimeout(esperaInicio); esperaInicio = setTimeout(comeca, 400); };
+  poster.src = VIDEOS[modo].poster;
+  video.addEventListener("playing", () => {
+    videoAndando = true;
+    clearTimeout(esperaVideo);
+    comeca();
+  }, { once: true });
   video.src = VIDEOS[modo].src;
   const tocando = video.play();
-  // Vídeo bloqueado (modo de economia do iPhone): começa na hora, com a imagem.
-  if (tocando && tocando.catch) tocando.catch(comeca);
-  // Rede lenta: não espera mais que isso pra começar.
-  esperaVideo = setTimeout(comeca, 2500);
+  // Vídeo bloqueado (modo de economia do iPhone) ou que não toca: começa na
+  // hora, com a imagem.
+  if (tocando && tocando.catch) tocando.catch(() => { desisteDoVideo(); comeca(); });
+  // Nem o pôster chegou: não espera mais que isso pra começar.
+  esperaInicio = setTimeout(comeca, 2500);
 }
 
 // Girar o celular (ou mudar a largura da janela) muda a altura das seções que

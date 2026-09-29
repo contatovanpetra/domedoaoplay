@@ -829,7 +829,6 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   font-size: var(--t-pequeno);
   color: var(--text-muted);
 }
-.hero-microcopy.center { text-align: center; }
 
 /* Foto da Vivi — sempre em tela cheia atrás do herói, texto sobreposto */
 .hero-photo-bg {
@@ -2249,11 +2248,8 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
   max-width: 520px;
   text-align: center;
 }
-.final-cta-copy .section-lead { font-size: var(--t-corpo); line-height: 1.5; }
-.final-cta-copy .section-lead + .section-lead { margin-top: .9em; }
 .final-cta-copy .hero-microcopy { margin-top: .9rem; }
-.final-cta-copy .section-title,
-.final-cta-copy .section-lead { margin-left: 0; margin-right: 0; }
+.final-cta-copy .section-title { margin-left: 0; margin-right: 0; }
 /* Frase de fechamento: o título manda (maior que o padrão de seção — é o
    último golpe da página) e "Atravesse o medo." vira só um subtítulo
    pequeno e leve, colado nele, não mais do mesmo tamanho e peso. */
@@ -2497,7 +2493,6 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
     --lado: var(--aparelho-h);
   }
 }
-.intro-scene2.is-on { opacity: 1; visibility: visible; }
 .burst-pre {
   position: absolute;
   /* Logo acima do iPhone, em qualquer tamanho de tela. */
@@ -2698,8 +2693,7 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
   text-align: center;
 }
 .hero-cta-foto .hero-actions { margin-top: 0; }
-.hero-cta-foto .hero-numeros,
-.hero-cta-foto .hero-microcopy { text-shadow: 0 1px 3px rgba(3, 10, 29, .7); }
+.hero-cta-foto .hero-numeros { text-shadow: 0 1px 3px rgba(3, 10, 29, .7); }
 /* A seta de "role" fica no pé da primeira tela, não no fim da foto. */
 .hero-primeira-tela .scroll-cue { top: calc(100vh - 64px); top: calc(100svh - 64px); bottom: auto; }
 
@@ -2729,13 +2723,6 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
    no próprio elemento: sem ele, a seta continuava na tela depois da rolagem. */
 .scroll-cue.is-hidden { opacity: 0 !important; visibility: hidden; transition: opacity .5s ease, visibility 0s linear .5s; }
 .scroll-cue.is-hidden svg { animation: none; }
-.scroll-cue span {
-  font-family: var(--font-body);
-  font-size: var(--t-rotulo);
-  font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
 .scroll-cue svg { animation: scroll-cue-bounce 1.6s ease-in-out infinite; }
 @keyframes scroll-cue-bounce {
   0%, 100% { transform: translateY(0); opacity: .5; }
@@ -2837,9 +2824,7 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
     background: linear-gradient(180deg, rgba(3, 10, 29, .5) 0%, rgba(3, 10, 29, .28) 45%, rgba(3, 10, 29, 0) 62%);
   }
   .hero-lead { margin-left: auto; margin-right: auto; margin-bottom: .3rem; }
-  .eyebrow { margin-bottom: .55rem; }
   .hero-actions { margin-top: 1rem; }
-  .hero-microcopy { margin-top: .3rem; }
 }
 
 /* Celular em pé: a foto vem primeiro, como na Apple Fitness+ e no Spotify
@@ -3001,7 +2986,6 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
   .hero-primeira-tela { padding-top: calc(var(--header-h, 85px) + 28px); }
   .hero-lead { margin-bottom: .6em; }
   .hero-actions { margin-top: 1rem; }
-  .hero-microcopy { margin-top: .4rem; }
 }
 
 /* Mesmo corte do herói (até 699.98px). Antes era 720px e, entre 700 e 720px, a página

@@ -83,7 +83,7 @@
      sistema e troca quando elas chegam (font-display: swap), sem pular. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=102">
+<link rel="stylesheet" href="css/style.css?v=103">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
@@ -905,9 +905,8 @@
   <div class="intro-scene2" id="intro-scene2" aria-hidden="true">
     <p class="burst-pre" id="burst-pre">E se, em vez de travar…</p>
     <div class="burst-stage" id="burst-stage">
-      <!-- Um iPhone gravando: a tela mostra uma réplica viva da página de
-           vendas (menu + herói), que no fim cresce até virar a própria página
-           (ver buildMiniScreen em main.js). -->
+      <!-- Um iPhone gravando: a tela (escura, sem réplica da página, ver
+           wireIntroStage em main.js) cresce no fim até virar a própria página. -->
       <div class="burst-aparelho" id="burst-aparelho">
         <div class="burst-screen" id="burst-screen"></div>
         <div class="burst-camera" id="burst-camera">
@@ -957,6 +956,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=52"></script>
+<script src="js/main.js?v=53"></script>
 </body>
 </html>
