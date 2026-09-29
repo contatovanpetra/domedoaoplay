@@ -651,9 +651,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 .cinema-stage {
   position: sticky;
   top: 0;
-  /* vh antes: iOS anterior ao 15.4 não tem svh. */
+  /* A foto ocupa a tela inteira, inclusive o que fica embaixo da barra
+     flutuante do Safari no iPhone (100lvh) — com 100svh sobrava ali uma
+     faixa azul do fundo. O texto e o botão continuam na área que aparece
+     sempre (100svh, ver .hero-primeira-tela). vh antes: iOS < 15.4. */
   height: 100vh;
-  height: 100svh;
+  height: 100lvh;
   overflow: hidden;
   isolation: isolate;
 }
@@ -894,11 +897,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    suave só nessa metade, como no Apple TV+ — o rosto, no alto, continua na
    foto crua, sem nada por cima. */
 @media (max-width: 899.98px) {
-  .vivi-camada::before {
+  /* No próprio .vivi-foto (tela grande), não na camada de texto (tela
+     pequena): senão o escurecimento parava na linha da barra do Safari e
+     marcava um corte na foto. */
+  .vivi-foto::after {
     content: "";
     position: absolute;
-    inset: 38% 0 0;
-    z-index: -1;
+    inset: 34% 0 0;
+    z-index: 0;
     background: linear-gradient(180deg, rgba(3, 10, 29, 0) 0%, rgba(3, 10, 29, .55) 38%, rgba(3, 10, 29, .82) 100%);
     pointer-events: none;
   }
@@ -1728,8 +1734,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   display: flex;
   flex-direction: column;
   justify-content: center;
+  /* Tela grande (ver .cinema-stage): embaixo da barra do Safari aparecia a
+     borda de cima da foto da Vitória, como um corte. */
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100lvh;
   padding-top: calc(var(--header-h, 85px) + 20px);
   /* Antes (24-56px) era baixo demais: a foto da seção seguinte (sem
      padding, de propósito — ver .vivi-apple) começava quase colada no

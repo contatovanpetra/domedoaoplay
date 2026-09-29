@@ -166,6 +166,21 @@ function alturaDaTela() {
   }
   return sondaTela.offsetHeight || window.innerHeight;
 }
+// A tela "grande" (100lvh): a altura com as barras do navegador recolhidas.
+// No iPhone (Safari), a barra de baixo flutua por cima da página e a tela
+// "pequena" (100svh) para acima dela — o que fica embaixo da barra aparece
+// através dela. Quem pinta a tela inteira (a foto do herói) usa esta altura,
+// senão sobrava uma faixa azul do fundo embaixo da foto.
+let sondaTelaGrande = null;
+function alturaDaTelaGrande() {
+  if (!sondaTelaGrande) {
+    sondaTelaGrande = document.createElement("div");
+    sondaTelaGrande.setAttribute("aria-hidden", "true");
+    sondaTelaGrande.style.cssText = "position:absolute;top:0;left:0;width:0;height:100vh;height:100lvh;visibility:hidden;pointer-events:none";
+    document.body.appendChild(sondaTelaGrande);
+  }
+  return sondaTelaGrande.offsetHeight || window.innerHeight;
+}
 /* A pista do herói tem exatamente a altura da primeira tela mais a altura
    real da seção de reconhecimento (que muda com o texto, a fonte e a
    largura da tela). Sem isso (um valor fixo de 100vh), numa tela onde essa
@@ -185,7 +200,8 @@ function ajustaRunwayHero() {
     return;
   }
   const alturaRecon = reconhecimento.offsetHeight;
-  const tela = alturaDaTela();
+  // A foto presa tem a altura da tela grande (ver .cinema-stage no CSS).
+  const tela = alturaDaTelaGrande();
   hero.style.minHeight = (tela + alturaRecon) + "px";
   reconhecimento.style.marginTop = "-" + alturaRecon + "px";
 }
@@ -222,7 +238,7 @@ function wireScrollEffects() {
     if (hero) {
       heroTop = hero.getBoundingClientRect().top + window.scrollY;
       heroAltura = hero.offsetHeight;
-      pistaFoto = Math.max(1, heroAltura - alturaDaTela());
+      pistaFoto = Math.max(1, heroAltura - alturaDaTelaGrande());
     }
     maxScroll = root.scrollHeight - window.innerHeight;
     update();
@@ -660,7 +676,10 @@ function wireEscadaShowcase() {
 
   if (!vitrine || !track || !cards.length) return;
 
-  const DURACAO_MS = 4500; // tempo que cada nível fica em foco antes de avançar sozinho
+  const DURACAO_MS = 3500; // tempo que cada nível fica em foco antes de avançar sozinho
+  const fecho = document.querySelector(".metodo-fecho");
+  let mexeuNaEscada = false;  // tocou num número, seta ou cartão: nada de rolar sozinho
+  let jaConvidou = false;     // o empurrãozinho pro botão acontece uma vez só
   const CIRCUNFERENCIA = 97.39; // 2 * PI * 15.5 (raio do anel no SVG)
   let activeIndex = 0;
   let tocando = true;
@@ -686,6 +705,9 @@ function wireEscadaShowcase() {
     preencheAnel(activeIndex, fracao);
     if (fracao >= 1) {
       goToIndex((activeIndex + 1) % cards.length);
+      // Chegou sozinho no nível 7: a página desce de leve até o fecho ("Um
+      // nível de cada vez. Até dar o play." e o botão), convidando a seguir.
+      if (activeIndex === cards.length - 1) convidaPraSeguir();
       return;
     }
     progressoAoPausar = fracao;
@@ -697,6 +719,37 @@ function wireEscadaShowcase() {
     const jaFeito = retomarDoPonto ? progressoAoPausar : 0;
     inicioProgresso = performance.now() - jaFeito * DURACAO_MS;
     rafId = requestAnimationFrame(passoProgresso);
+  }
+
+  // Rolagem leve (1,2s, começa e termina devagar) até o fecho ficar no meio
+  // da tela. Só se a pessoa não mexeu na escada, só uma vez, e para na hora
+  // se ela tocar na tela, rolar ou apertar uma tecla.
+  function convidaPraSeguir() {
+    if (jaConvidou || mexeuNaEscada || !fecho || prefersReducedMotion) return;
+    jaConvidou = true;
+    const r = fecho.getBoundingClientRect();
+    const tela = alturaDaTela();
+    const inicio = window.scrollY;
+    // O fecho (frase + botão) vai pro meio da tela.
+    const alvo = inicio + r.top + r.height / 2 - tela * .5;
+    if (alvo - inicio < 24) return;
+    const DUR = 1200;
+    let t0 = 0;
+    let parou = false;
+    const para = () => { parou = true; };
+    const opcoes = { passive: true, once: true };
+    window.addEventListener("wheel", para, opcoes);
+    window.addEventListener("touchstart", para, opcoes);
+    window.addEventListener("keydown", para, { once: true });
+    const passo = (t) => {
+      if (parou) return;
+      if (!t0) t0 = t;
+      const k = Math.min(1, (t - t0) / DUR);
+      const e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      window.scrollTo(0, inicio + (alvo - inicio) * e);
+      if (k < 1) requestAnimationFrame(passo);
+    };
+    requestAnimationFrame(passo);
   }
 
   function goToIndex(idx, suave = true) {
@@ -719,6 +772,11 @@ function wireEscadaShowcase() {
 
     iniciarProgresso(false);
   }
+
+  // Qualquer toque da pessoa na escada conta como "ela está explorando".
+  if (palco) palco.addEventListener("pointerdown", () => { mexeuNaEscada = true; }, { passive: true });
+  const progressoEl = document.querySelector(".escada-progresso");
+  if (progressoEl) progressoEl.addEventListener("pointerdown", () => { mexeuNaEscada = true; }, { passive: true });
 
   nums.forEach((num, i) => {
     num.addEventListener("click", () => goToIndex(i));
