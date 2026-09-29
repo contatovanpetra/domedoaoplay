@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=49">
+<link rel="stylesheet" href="css/style.css?v=52">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -337,13 +337,20 @@
        do lançamento. Nada aqui é depoimento de verdade ainda. Pra colocar o
        vídeo de cada um, é só pôr o arquivo em data-video no <figure>, por
        exemplo: <figure class="depo-card" data-video="assets/video/depoimento-1.mp4">.
-       Um toque no vídeo do meio abre ele grande, com um × pra fechar. -->
+       Um toque no vídeo abre ele grande, com um × pra fechar. -->
   <section class="section" id="depoimentos" aria-labelledby="depoimentos-title">
     <div class="container">
       <h2 id="depoimentos-title" class="section-title center">Veja quem já deu o play.</h2>
-      <div class="depo-palco" role="region" tabindex="0" aria-roledescription="carrossel" aria-label="Depoimentos em vídeo. Use as setas dos lados, arraste ou use as setas do teclado para ver os outros. Toque no vídeo do meio ou aperte Enter para assistir." data-confirmar="depoimentos a gravar com os alunos que vão testar antes do lançamento">
+      <!-- Galeria no formato das galerias da Apple no celular (AirPods Pro,
+           iPad Pro): cartões grandes lado a lado, deslizando com o dedo e
+           parando certinho em cada um, o próximo aparecendo na borda, a
+           legenda embaixo de cada vídeo e os pontinhos de página embaixo.
+           No computador, os três lado a lado. Um toque no vídeo abre ele
+           grande. Pra colocar o vídeo de verdade: data-video no <figure>,
+           ex.: <figure class="depo-card" data-video="assets/video/depoimento-1.mp4">. -->
+      <div class="depo-palco" role="region" tabindex="0" aria-label="Depoimentos em vídeo. Deslize para o lado para ver os outros; toque num vídeo para assistir." data-confirmar="depoimentos a gravar com os alunos que vão testar antes do lançamento">
         <figure class="depo-card">
-          <div class="depo-video">
+          <div class="depo-video" role="button" tabindex="0">
             <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 1</span>
             <div class="depo-legenda">
@@ -356,7 +363,7 @@
           </figcaption>
         </figure>
         <figure class="depo-card">
-          <div class="depo-video">
+          <div class="depo-video" role="button" tabindex="0">
             <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 2</span>
             <div class="depo-legenda">
@@ -369,7 +376,7 @@
           </figcaption>
         </figure>
         <figure class="depo-card">
-          <div class="depo-video">
+          <div class="depo-video" role="button" tabindex="0">
             <span class="depo-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg></span>
             <span class="depo-vazio">Vídeo do depoimento 3</span>
             <div class="depo-legenda">
@@ -381,13 +388,11 @@
             <p class="depo-resultado" data-confirmar="resumo tirado do roteiro (PDF) do depoimento: conferir com o vídeo gravado">Tinha a mentoria pronta, mas travava na hora de gravar. Depois do curso, <span class="text-orange">gravou e publicou a mentoria completa</span>.</p>
           </figcaption>
         </figure>
-        <!-- Setas dos dois lados: quem não descobre o arrasto troca de vídeo no clique. -->
-        <button type="button" class="depo-seta depo-seta--antes" aria-label="Ver o depoimento anterior">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button type="button" class="depo-seta depo-seta--depois" aria-label="Ver o próximo depoimento">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      </div>
+      <div class="depo-pontos">
+        <button type="button" class="depo-ponto is-ativo" aria-label="Ver o depoimento 1"></button>
+        <button type="button" class="depo-ponto" aria-label="Ver o depoimento 2"></button>
+        <button type="button" class="depo-ponto" aria-label="Ver o depoimento 3"></button>
       </div>
     </div>
   </section>
@@ -871,6 +876,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=27"></script>
+<script src="js/main.js?v=28"></script>
 </body>
 </html>

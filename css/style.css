@@ -487,10 +487,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Menos respiro no alto: #modulos e #beneficios são a mesma faixa azul
    contínua (sem nenhuma linha entre elas), então o respiro de seção padrão
    (128px + 128px) só deixava vão vazio de sobra ali no meio. */
-#modulos { padding-top: 128px; padding-bottom: 64px; }
+#modulos { padding-top: 160px; padding-bottom: 64px; }
 #beneficios { padding-top: 64px; padding-bottom: 380px; }
+/* O azul de #beneficios sobe 2px por baixo do fim de #modulos: no iPhone,
+   durante a rolagem, as duas camadas pintadas separadas às vezes deixavam
+   uma linha de 1px do fundo escuro aparecer entre elas (o "cortezinho"). */
+#beneficios.section-tone::before { top: -2px; }
 @media (max-width: 699.98px) {
-  #modulos { padding-top: 80px; padding-bottom: 40px; }
+  /* Mais respiro entre a borda de cima (o fim da foto da Vitória) e o
+     título "8 módulos. 30 aulas.". */
+  #modulos { padding-top: 120px; padding-bottom: 40px; }
   #beneficios { padding-top: 40px; padding-bottom: 250px; }
 }
 /* A emenda #metodo→#aplicacao estava curta demais: sobrava pouco respiro
@@ -1724,120 +1730,57 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* ---------- Depoimentos ----------
    Cabem numa tela só. Por enquanto os vídeos são espaços reservados,
    marcados no modo revisão. */
-#depoimentos { padding-block: clamp(2rem, 6vh, 4rem); overflow: hidden; }
-/* O vídeo do meio é sempre o maior; os outros dois aparecem menores dos lados
-   e vêm pro meio arrastando (ver wireDepoimentos em main.js). A altura segue a
-   tela, pra seção inteira caber de uma vez, sem rolar dentro dela. */
-/* A seção cabe numa tela só: título, vídeos e legenda, sem precisar rolar no
-   meio dela. O palco ocupa o que sobra da altura da tela. */
+#depoimentos { overflow: hidden; }
+/* A seção ocupa uma tela (a tela grande, ver .cinema-stage: embaixo da
+   barra do Safari aparecia a borda de cima da foto da Vitória). */
 #depoimentos {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* Tela grande (ver .cinema-stage): embaixo da barra do Safari aparecia a
-     borda de cima da foto da Vitória, como um corte. */
   min-height: 100vh;
   min-height: 100lvh;
   padding-top: calc(var(--header-h, 85px) + 20px);
-  /* Antes (24-56px) era baixo demais: a foto da seção seguinte (sem
-     padding, de propósito — ver .vivi-apple) começava quase colada no
-     depoimento, sem nenhum respiro comparável ao resto da página. */
   padding-bottom: clamp(56px, 11vh, 128px);
 }
-/* Bug real, não só estética das setas: dentro de um flex container em
-   coluna, a margem automática do .container (a forma normal de centralizar
-   ele) desliga o esticamento e ele encolhe pro tamanho do próprio conteúdo.
-   Como os únicos filhos do .depo-palco são posicionados em absolute (não
-   contam pra largura do conteúdo), o .container encolhia bem menos do que
-   os 1160px de sempre — e todo o carrossel (vídeos e setas) era calculado
-   em cima dessa largura errada, resultando nas setas grudadas no vídeo. */
 #depoimentos .container {
   width: min(100%, var(--container-w));
 }
+/* Galeria no formato das galerias da Apple no celular (AirPods Pro, iPad
+   Pro — cartões de 320–340px, ~80% da tela): cada vídeo grande, lado a
+   lado, deslizando com o dedo (rolagem nativa, que para certinho em cada
+   um), o próximo aparecendo na borda pra convidar a deslizar, e a legenda
+   embaixo de cada vídeo. Sem os vídeos encolhidos atrás nem as setas. */
 .depo-palco {
-  --depo-h: min(62vh, calc(100vh - 18rem), 660px);
-  --depo-h: min(62svh, calc(100svh - 18rem), 660px);
-  /* No celular estreito o do meio não passa de 62% da largura: sobra lugar pros dois dos lados aparecerem. */
-  --depo-w: min(calc(var(--depo-h) * 9 / 16), 72vw);
-  position: relative;
-  height: calc(var(--depo-w) * 16 / 9 + 6rem);
-  margin: clamp(.7rem, 2vw, 1.2rem) auto 0;
-  touch-action: pan-y;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
+  --depo-w: min(74vw, 330px);
+  display: flex;
+  gap: 14px;
+  margin: 1.5rem -24px 0;
+  padding: 0 24px 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 24px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.depo-palco.is-arrastando { cursor: grabbing; }
-/* Celular: vídeo um pouco menor no carrossel (agora ele abre grande num
-   toque, ver .depo-modal) — sobra lugar pra legenda inteira do resultado.
-   A altura do palco é medida pelo JS pela maior legenda (wireDepoimentos);
-   a de cima é só o valor de partida. */
-@media (max-width: 699.98px) {
-  .depo-palco {
-    --depo-h: min(56vh, calc(100vh - 18rem), 660px);
-    --depo-h: min(56svh, calc(100svh - 18rem), 660px);
-    --depo-w: min(calc(var(--depo-h) * 9 / 16), 64vw);
-  }
-}
-/* Setas dos dois lados: discretas (contorno fino, vidro fosco), não mais
-   um botão sólido chamativo — elegante, não genérico. Bem pra fora do
-   vídeo, perto da borda de verdade do carrossel (que agora tem a largura
-   certa — ver #depoimentos .container acima), nunca coladas nele. */
-.depo-seta {
-  position: absolute;
-  top: calc(var(--depo-w) * 8 / 9);
-  z-index: 12;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  transform: translateY(-50%);
-  border: 1px solid rgba(215, 119, 19, .55);
-  border-radius: 50%;
-  background: rgba(11, 23, 40, .55);
-  color: var(--orange-light);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .3);
-  cursor: pointer;
-  transition: background .3s ease, color .3s ease, transform .3s cubic-bezier(.25, .1, .25, 1);
-}
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .depo-seta { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
-}
-.depo-seta svg { width: 14px; height: 14px; }
-/* Distância até a borda do vídeo (metade do que sobra do palco) menos uma
-   folga fixa de 50px: a seta fica sempre fora do vídeo, com o mesmo respiro
-   em qualquer largura de tela. Uma trava (max com 8px) evita que, no celular
-   estreito (quase sem sobra), a conta fique negativa e a seta grude na tela. */
-.depo-seta--antes { left: max(-16px, calc((100% - var(--depo-w)) / 2 - 84px)); }
-.depo-seta--depois { right: max(-16px, calc((100% - var(--depo-w)) / 2 - 84px)); }
-@media (min-width: 900px) {
-  /* No computador, em vez de ficar perto do vídeo (que sobra bastante
-     espaço vazio até a borda da tela em monitores largos), a seta vai lá
-     pro canto de verdade — mesma conta do "full bleed": a distância do
-     centro do .depo-palco até a borda da janela, não até a borda do container. */
-  .depo-seta--antes { left: calc(50% - 50vw + 24px); }
-  .depo-seta--depois { right: calc(50% - 50vw + 24px); }
-}
-.depo-seta:hover { background: var(--orange-button); color: var(--white); transform: translateY(-50%) scale(1.08); }
-.depo-seta:active { transform: translateY(-50%) scale(.96); }
-@media (prefers-reduced-motion: reduce) {
-  .depo-seta:hover, .depo-seta:active { transform: translateY(-50%); }
-}
+.depo-palco::-webkit-scrollbar { display: none; }
 .depo-palco:focus-visible { outline: 2px solid var(--orange); outline-offset: 6px; }
 .depo-card {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: var(--depo-w);
-  margin: 0 0 0 calc(var(--depo-w) / -2);
-  transform-origin: 50% 40%;
-  transition: transform .6s cubic-bezier(.25, .1, .25, 1), opacity .6s cubic-bezier(.25, .1, .25, 1);
+  flex: 0 0 var(--depo-w);
+  margin: 0;
+  scroll-snap-align: start;
 }
-/* A legenda aparece só no vídeo do meio. */
-.depo-card figcaption { opacity: 0; transition: opacity .4s ease; }
-.depo-card.is-ativo figcaption { opacity: 1; }
-.depo-card.is-ativo .depo-video { cursor: pointer; }
+/* Computador: os três lado a lado, sem precisar deslizar. */
+@media (min-width: 900px) {
+  .depo-palco {
+    --depo-w: min(300px, calc((100% - 56px) / 3));
+    justify-content: center;
+    gap: 28px;
+    margin: 2rem 0 0;
+    padding: 0;
+    overflow: visible;
+  }
+}
 .depo-video {
   position: relative;
   display: grid;
@@ -1845,11 +1788,35 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   aspect-ratio: 9 / 16;
   background: linear-gradient(160deg, #13253C, #0B1728 70%);
   /* Cantos arredondados como os cartões de galeria da Apple (e os cartões
-     da escada, 20px): o quadrado com borda era o único canto reto da página. */
+     da escada, 20px). */
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, .06);
+  cursor: pointer;
 }
+.depo-video:focus-visible { outline: 2px solid var(--orange); outline-offset: 3px; }
+/* Pontinhos de página embaixo, como os da Apple: o da vez vira uma pílula. */
+.depo-pontos {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1.1rem;
+}
+.depo-ponto {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, .32);
+  cursor: pointer;
+  transition: width .3s cubic-bezier(.25, .1, .25, 1), background .3s ease;
+}
+.depo-ponto.is-ativo { width: 22px; background: rgba(255, 255, 255, .9); }
+/* Área de toque maior que o pontinho desenhado. */
+.depo-ponto::after { content: ""; position: absolute; inset: -12px -4px; }
+@media (min-width: 900px) { .depo-pontos { display: none; } }
 .depo-play {
   display: grid;
   place-items: center;
@@ -1860,10 +1827,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--white);
   transition: opacity .3s ease;
 }
-/* Discreto nos vídeos dos lados: só o do meio precisa convidar ao play. Menos
-   um botão claro competindo com as setas de navegação (laranja) na mesma
-   altura da tela. */
-.depo-card:not(.is-ativo) .depo-play { opacity: .4; }
 .depo-play svg { width: 42%; height: 42%; margin-left: 3px; }
 .depo-vazio {
   /* No alto do vídeo: embaixo ele ficava por trás do nome e do cargo. */
@@ -1890,10 +1853,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   gap: .15rem;
   padding: 1.6rem .9rem .8rem;
   background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .75) 55%, rgba(6, 14, 28, .96) 100%);
-  opacity: 0;
-  transition: opacity .4s ease;
 }
-.depo-card.is-ativo .depo-legenda { opacity: 1; }
 .depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 700; color: var(--white); }
 .depo-cargo { font-size: var(--t-pequeno); color: var(--text-muted); }
 .depo-card figcaption { margin-top: .75rem; }
@@ -1984,8 +1944,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   color: var(--cor-corpo);
 }
 .offer-lista li:first-child { padding-top: 0; }
+/* Celular: a seção inteira (título + card + botão + selos) numa tela só,
+   mesmo com as barras do Safari aparecendo (~700px úteis num iPhone de
+   390px). Tamanhos na proporção do Apple One no celular: nome do plano
+   ~21px, preço 32–36px, itens em linhas compactas. */
 @media (max-width: 699.98px) {
-  .offer-lista li { padding: .7rem 0; font-size: 1rem; }
+  #oferta.offer-section { padding: 28px 0 28px; }
+  #oferta .section-title { margin-bottom: .9rem; font-size: 1.5rem; }
+  .offer-card { padding: 1.15rem 1.25rem 1rem; }
+  .offer-plano { font-size: 1.1875rem; margin-bottom: .15rem; }
+  .price-box { margin-bottom: .9rem; gap: .15rem; }
+  .price-now { font-size: 2rem; }
+  .price-note { font-size: .9375rem; }
+  .offer-inclui-rotulo { padding-top: .9rem; margin-bottom: .35rem; font-size: .9375rem; }
+  .offer-lista { margin-bottom: .95rem; }
+  .offer-lista li { padding: .42rem 0; font-size: .9375rem; line-height: 1.33; }
+  .offer-card .btn-block { margin-top: 0; }
+  .offer-selos { margin-top: .55rem; font-size: .8125rem; line-height: 1.4; }
 }
 /* Garantia, pagamento e acesso: uma linha pequena e cinza logo abaixo do
    botão, como as notas sob os planos da Apple. */
@@ -2604,10 +2579,9 @@ html.abertura-on { overflow: hidden; }
    ficava com herói de desktop e o resto com layout de celular. */
 @media (max-width: 699.98px) {
   /* Área de toque de pelo menos 44px (recomendação da Apple e do Google). */
-  /* O texto longo do botão da oferta vazava do card em telas estreitas: o card
-     ganha menos respiro lateral e o botão cabe numa linha a partir de 360px.
-     Abaixo disso (320px) ele quebra em duas linhas, centralizado, sem vazar. */
-  .offer-card { padding: 2rem 1.5rem; }
+  /* O texto longo do botão da oferta vazava do card em telas estreitas: o
+     botão cabe numa linha a partir de 360px (respiro do card: ver o bloco da
+     oferta). Abaixo disso (320px) ele quebra em duas linhas, sem vazar. */
   .btn-block { padding-left: 1.1em; padding-right: 1.1em; white-space: normal; text-align: center; }
   .section { padding: 64px 0; }
   .accordion { margin-top: 1.4rem; gap: .6rem; }
@@ -2771,7 +2745,6 @@ html.abertura-on { overflow: hidden; }
   .section-tone--guarantee .section-lead { margin-top: 0; }
   #faq .accordion { margin-top: 2rem; }
   .beneficios { margin-top: 2rem; }
-  .depo-palco { margin-top: 2rem; }
   /* Bolinhas da escada e setas dos depoimentos: o desenho continua pequeno,
      mas a área que o dedo alcança chega perto dos 44px recomendados. */
   .escada-num, .escada-play-pause { width: 30px; height: 30px; }
@@ -2781,12 +2754,11 @@ html.abertura-on { overflow: hidden; }
   .escada-num, .escada-play-pause { width: 27px; height: 27px; }
   .escada-progresso { gap: .15rem; }
 }
-.escada-num::after, .escada-play-pause::after, .depo-seta::after {
+.escada-num::after, .escada-play-pause::after {
   content: "";
   position: absolute;
   inset: -7px -3px;
 }
-.depo-seta::after { inset: -5px; }
 
 /* ---------- Vídeo do depoimento aberto em destaque ----------
    Um toque no vídeo do meio abre ele grande por cima da página (não em

@@ -491,98 +491,54 @@ function wireModulosTrilha() {
   atualiza();
 }
 
-// Depoimentos em carrossel: o vídeo do meio é sempre o maior e os outros dois
-// aparecem menores dos lados. Arrastar pro lado (dedo ou mouse), tocar num dos
-// lados ou usar as setas do teclado traz outro pro meio. Com três vídeos a
-// fila dá a volta, então sempre tem um de cada lado.
+// Depoimentos em galeria (formato das galerias da Apple): vídeos grandes lado
+// a lado, deslizando com o dedo; um toque abre o vídeo em destaque.
 function wireDepoimentos() {
   const palco = document.querySelector(".depo-palco");
   if (!palco) return;
   const cards = [...palco.querySelectorAll(".depo-card")];
-  const n = cards.length;
-  if (n < 2) return;
-  let ativo = Math.floor(n / 2);
-  let arrasto = 0;        // quanto o dedo já levou, em "cards"
-  let toque = null;
-  let arrastando = false;
-  const passo = () => (cards[0].offsetWidth || 1) * .72;
+  const pontos = [...document.querySelectorAll(".depo-ponto")];
+  if (!cards.length) return;
 
-  function posicao(i) {
-    let d = i - ativo;
-    if (d > n / 2) d -= n;
-    if (d < -n / 2) d += n;
-    return d - arrasto;
-  }
-  // Altura do palco = o cartão mais alto (vídeo + legenda inteira): com uma
-  // altura fixa, a legenda mais longa era cortada pelo fim da seção.
-  function mede() {
-    palco.style.height = Math.max(...cards.map((c) => c.offsetHeight)) + "px";
-  }
-  function desenha(anima) {
-    const s = passo();
+  // Galeria de rolagem nativa (ver .depo-palco no CSS): o navegador cuida do
+  // arrasto e de parar em cada vídeo; aqui só os pontinhos acompanham e o
+  // toque no vídeo abre ele grande.
+  function indiceAtual() {
+    const base = palco.getBoundingClientRect().left;
+    let melhor = 0;
+    let menor = Infinity;
     cards.forEach((card, i) => {
-      const p = posicao(i);
-      const a = Math.min(1, Math.abs(p));
-      card.style.transition = anima ? "" : "none";
-      card.style.transform = "translate3d(" + (p * s).toFixed(1) + "px, 0, 0) scale(" + (1 - .2 * a).toFixed(3) + ")";
-      card.style.opacity = (1 - .3 * a).toFixed(3);
-      card.style.zIndex = String(10 - Math.round(Math.abs(p) * 3));
-      card.classList.toggle("is-ativo", Math.abs(p) < .5);
-      // Pro leitor de tela, só o vídeo do meio está na frente.
-      if (Math.abs(p) < .5) card.removeAttribute("aria-hidden");
-      else card.setAttribute("aria-hidden", "true");
+      const d = Math.abs(card.getBoundingClientRect().left - base - 24);
+      if (d < menor) { menor = d; melhor = i; }
     });
+    return melhor;
   }
-  function vai(novo) {
-    ativo = (novo + n) % n;
-    arrasto = 0;
-    desenha(true);
-  }
-
-  palco.addEventListener("pointerdown", (e) => {
-    toque = { x: e.clientX, y: e.clientY, id: e.pointerId };
-    arrastando = false;
+  let pedido = false;
+  palco.addEventListener("scroll", () => {
+    if (pedido) return;
+    pedido = true;
+    requestAnimationFrame(() => {
+      pedido = false;
+      const i = indiceAtual();
+      pontos.forEach((p, k) => p.classList.toggle("is-ativo", k === i));
+    });
+  }, { passive: true });
+  pontos.forEach((ponto, i) => {
+    ponto.addEventListener("click", () => {
+      const alvo = cards[i];
+      if (!alvo) return;
+      palco.scrollTo({ left: alvo.offsetLeft - cards[0].offsetLeft, behavior: prefersReducedMotion ? "auto" : "smooth" });
+    });
   });
-  palco.addEventListener("pointermove", (e) => {
-    if (!toque || e.pointerId !== toque.id) return;
-    const dx = e.clientX - toque.x;
-    const dy = e.clientY - toque.y;
-    // Só vira arrasto de lado quando o gesto é mais pro lado que pra baixo:
-    // rolar a página por cima dos vídeos continua funcionando.
-    if (!arrastando && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) {
-      arrastando = true;
-      palco.classList.add("is-arrastando");
-      try { palco.setPointerCapture(e.pointerId); } catch { /* segue sem captura */ }
-    }
-    if (arrastando) {
-      arrasto = Math.max(-1.2, Math.min(1.2, -dx / passo()));
-      desenha(false);
-    }
-  });
-  const solta = (e) => {
-    if (!toque || (e && e.pointerId !== toque.id)) return;
-    if (arrastando) {
-      palco.classList.remove("is-arrastando");
-      if (arrasto > .2) vai(ativo + 1);
-      else if (arrasto < -.2) vai(ativo - 1);
-      else vai(ativo);
-    } else if (e && e.type === "pointerup") {
-      // Toque num vídeo do lado: ele vem pro meio.
-      // Toque num vídeo do lado: ele vem pro meio. No do meio: abre grande.
-      const card = e.target.closest && e.target.closest(".depo-card");
-      const i = cards.indexOf(card);
-      if (i >= 0 && i !== ativo) vai(i);
-      else if (i === ativo) abre(card);
-    }
-    toque = null;
-    arrastando = false;
-  };
-  palco.addEventListener("pointerup", solta);
-  palco.addEventListener("pointercancel", solta);
-  palco.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowRight") { e.preventDefault(); vai(ativo + 1); }
-    if (e.key === "ArrowLeft") { e.preventDefault(); vai(ativo - 1); }
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abre(cards[ativo]); }
+  cards.forEach((card) => {
+    const video = card.querySelector(".depo-video");
+    if (!video) return;
+    const nome = card.querySelector(".depo-nome");
+    video.setAttribute("aria-label", "Assistir ao depoimento" + (nome ? " de " + nome.textContent.trim() : ""));
+    video.addEventListener("click", () => abre(card));
+    video.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abre(card); }
+    });
   });
 
   // ---- Vídeo aberto em destaque (maior, com × pra fechar) ----
@@ -646,17 +602,6 @@ function wireDepoimentos() {
     });
     modal.querySelector(".depo-modal-fechar").focus({ preventScroll: true });
   }
-  // As setas dos dois lados: quem não descobre o arrasto troca de vídeo no clique.
-  palco.querySelectorAll(".depo-seta").forEach((seta) => {
-    seta.addEventListener("click", (e) => {
-      e.preventDefault();
-      vai(ativo + (seta.classList.contains("depo-seta--antes") ? -1 : 1));
-    });
-  });
-  window.addEventListener("resize", () => { mede(); desenha(false); }, { passive: true });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(mede);
-  mede();
-  desenha(false);
 }
 
 // A Escada de Exposição: palco de vitrine com o cartão ativo em foco, e
@@ -676,7 +621,7 @@ function wireEscadaShowcase() {
 
   if (!vitrine || !track || !cards.length) return;
 
-  const DURACAO_MS = 3500; // tempo que cada nível fica em foco antes de avançar sozinho
+  const DURACAO_MS = 3000; // tempo que cada nível fica em foco antes de avançar sozinho
   const fecho = document.querySelector(".metodo-fecho");
   let mexeuNaEscada = false;  // tocou num número, seta ou cartão: nada de rolar sozinho
   let jaConvidou = false;     // o empurrãozinho pro botão acontece uma vez só
@@ -773,13 +718,14 @@ function wireEscadaShowcase() {
     iniciarProgresso(false);
   }
 
-  // Qualquer toque da pessoa na escada conta como "ela está explorando".
-  if (palco) palco.addEventListener("pointerdown", () => { mexeuNaEscada = true; }, { passive: true });
-  const progressoEl = document.querySelector(".escada-progresso");
-  if (progressoEl) progressoEl.addEventListener("pointerdown", () => { mexeuNaEscada = true; }, { passive: true });
+  // Só conta como "ela está explorando" quem de fato escolhe um nível (um
+  // número, uma seta, um cartão, o pausar ou o arrasto de lado). Um dedo que
+  // só passa por cima dos cartões rolando a página NÃO conta — antes contava,
+  // e era por isso que a página nunca descia no nível 7 no celular.
+  const marcaEscolha = () => { mexeuNaEscada = true; };
 
   nums.forEach((num, i) => {
-    num.addEventListener("click", () => goToIndex(i));
+    num.addEventListener("click", () => { marcaEscolha(); goToIndex(i); });
     num.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") {
         e.preventDefault();
@@ -793,18 +739,19 @@ function wireEscadaShowcase() {
     });
   });
 
-  if (prevBtn) prevBtn.addEventListener("click", () => goToIndex(activeIndex - 1));
-  if (nextBtn) nextBtn.addEventListener("click", () => goToIndex(activeIndex + 1));
+  if (prevBtn) prevBtn.addEventListener("click", () => { marcaEscolha(); goToIndex(activeIndex - 1); });
+  if (nextBtn) nextBtn.addEventListener("click", () => { marcaEscolha(); goToIndex(activeIndex + 1); });
 
   // Clicar num cartão lateral também traz ele pro foco.
   cards.forEach((card, i) => {
     card.addEventListener("click", () => {
-      if (i !== activeIndex) goToIndex(i);
+      if (i !== activeIndex) { marcaEscolha(); goToIndex(i); }
     });
   });
 
   if (playPauseBtn) {
     playPauseBtn.addEventListener("click", () => {
+      marcaEscolha();
       tocando = !tocando;
       playPauseBtn.setAttribute("aria-pressed", tocando ? "false" : "true");
       playPauseBtn.setAttribute("aria-label", tocando ? "Pausar avanço automático" : "Retomar avanço automático");
@@ -826,6 +773,7 @@ function wireEscadaShowcase() {
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
     if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
+      marcaEscolha();
       if (dx < 0) goToIndex(activeIndex + 1);
       else goToIndex(activeIndex - 1);
     }
