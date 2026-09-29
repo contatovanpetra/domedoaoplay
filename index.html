@@ -52,6 +52,12 @@
      vercel.json manda o navegador guardar css/ e js/ por 1 ano sem perguntar.
      Imagens e vídeos ficam 1 dia; ao trocar uma foto mantendo o nome (as fotos
      reais da escada, por exemplo), suba o ?v= dela também. -->
+<!-- As fontes (no próprio site) são pedidas já aqui, mas com prioridade baixa:
+     sem isso, elas saíam na frente da foto do herói (prioridade máxima de
+     fonte) e dividiam a banda com ela no 4G. O texto aparece na fonte do
+     sistema e troca quando elas chegam (font-display: swap), sem pular. -->
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
 <link rel="stylesheet" href="css/style.css?v=94">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
