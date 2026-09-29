@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=38">
+<link rel="stylesheet" href="css/style.css?v=41">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -646,12 +646,13 @@
   <!-- ===== OFERTA ===== -->
   <section class="section offer-section" id="oferta" aria-labelledby="oferta-title">
     <div class="container narrow">
-      <!-- Formato do Apple One: o título fica fora do card; dentro dele, tudo
-           alinhado à esquerda, de cima pra baixo na ordem em que se decide
-           (o que é, quanto custa, o que vem junto, o botão). -->
+      <!-- Card medido nos planos da Apple (Apple One, Apple Music, iCloud+) e
+           do Google One: bloco sólido sem borda nem sombra, nome do plano,
+           preço grande na cor da marca, um fio fino, a lista com checks finos
+           e o botão. O título fica fora do card. -->
       <h2 id="oferta-title" class="section-title center" data-confirmar="título da oferta: o card já segue o modelo que a Vitória mandou; confirmar se este título continua">Comece pelo nível em que você está hoje.</h2>
       <div class="offer-card">
-        <p class="eyebrow">Acesso vitalício</p>
+        <p class="offer-plano">Acesso vitalício</p>
 
         <div class="price-box">
           <span class="price-now">R$ 197</span>
@@ -660,15 +661,15 @@
 
         <p class="offer-inclui-rotulo">Você recebe agora</p>
         <ul class="offer-lista">
-          <li>8 módulos estruturados (30 aulas práticas) do zero ao avançado</li>
-          <li>A Escada de Exposição: os 7 níveis práticos de gravação</li>
-          <li>Acompanhamento exclusivo no WhatsApp com a Vitória e equipe</li>
-          <li>Bônus: Assistente de IA 24h + Guia Completo de Equipamentos</li>
-          <li>Certificado oficial de conclusão Do Medo ao Play</li>
+          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>8 módulos estruturados (30 aulas práticas) do zero ao avançado</span></li>
+          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>A Escada de Exposição: os 7 níveis práticos de gravação</span></li>
+          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>Acompanhamento exclusivo no WhatsApp com a Vitória e equipe</span></li>
+          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>Bônus: Assistente de IA 24h + Guia Completo de Equipamentos</span></li>
+          <li><svg class="offer-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 8.5l3 3 6-7"/></svg><span>Certificado oficial de conclusão Do Medo ao Play</span></li>
         </ul>
 
         <a href="#" data-checkout-link class="btn btn-primary btn-large btn-block">Quero entrar em cena</a>
-        <p class="hero-microcopy center" data-confirmar="link de checkout da Hotmart (os botões ainda levam a um link provisório)">Garantia de 7 dias · Pagamento seguro via Hotmart · Acesso imediato</p>
+        <p class="offer-selos" data-confirmar="link de checkout da Hotmart (os botões ainda levam a um link provisório)">Garantia de 7 dias · Pagamento seguro via Hotmart · Acesso imediato</p>
       </div>
     </div>
   </section>
@@ -869,6 +870,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=23"></script>
+<script src="js/main.js?v=25"></script>
 </body>
 </html>

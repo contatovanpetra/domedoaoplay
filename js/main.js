@@ -816,8 +816,8 @@ function wireViviCard() {
     const topo = pin.getBoundingClientRect().top;
     // 0 quando a foto ainda cobre menos da metade da tela; 1 quando ela para.
     const p = clamp(1 - topo / (alturaDaTela() * .5));
+    // Só aparece de leve, já no lugar — sem subir (pedido da Vitória).
     card.style.opacity = p.toFixed(3);
-    card.style.transform = "translate3d(0, " + ((1 - p) * 24).toFixed(1) + "px, 0)";
   }
 
   let ticking = false;
