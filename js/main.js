@@ -49,33 +49,35 @@ document.addEventListener("DOMContentLoaded", () => {
   wireVoltar();
   wireGuardaLugar();
   wireReviewMode();
-  wireCorDaTransicao();
+  wireCorDoFundo();
 });
 
 // Onde começa a passagem do azul claro dos benefícios pro escuro da oferta.
-function wireCorDaTransicao() {
-  // A passagem do azul claro pro escuro agora é uma pintura só, no próprio
-  // CSS (#beneficios.section-tone::before), longa e com curva suave. Aqui só
-  // se mede onde ela começa: no meio do segundo bônus (o e-book), pra os
-  // bônus ficarem no azul claro, com destaque. Antes o fundo fixo da página
-  // também mudava de cor com a rolagem, por trás — duas camadas mudando ao
-  // mesmo tempo deixavam a passagem irregular.
-  const beneficios = document.querySelector("#beneficios");
-  if (!beneficios) return;
-  function medir() {
-    const altura = beneficios.offsetHeight || 1;
-    const topo = beneficios.getBoundingClientRect().top + window.scrollY;
-    const ebook = beneficios.querySelector(".bonus-item--invertido");
-    const inicioPx = ebook
-      ? ebook.getBoundingClientRect().top + window.scrollY - topo + ebook.offsetHeight * 0.5
-      : altura * 0.6;
-    const fracao = Math.min(.8, Math.max(.3, inicioPx / altura));
-    beneficios.style.setProperty("--fade-inicio", (fracao * 100).toFixed(2) + "%");
-  }
-  medir();
-  window.addEventListener("resize", medir, { passive: true });
-  window.addEventListener("load", medir);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+// Troca de cor do fundo como a do Spotify (medida em spotify.com/br-pt/premium):
+// a seção que manda é a última cujo topo já passou de 40% da altura da tela;
+// se ela for #modulos ou #beneficios, o fundo da página inteira vira azul
+// claro (classe "fundo-claro" no <html>, a cor muda por transição em CSS);
+// se não, volta ao azul-noite. A cor dos textos dessas seções muda junto.
+function wireCorDoFundo() {
+  const claras = ["modulos", "beneficios"];
+  const secoes = [...document.querySelectorAll("main > section, main > div > section")].filter((s) => s.id || s.classList.contains("section"));
+  if (!secoes.length) return;
+  const root = document.documentElement;
+  let pedido = false;
+  const confere = () => {
+    pedido = false;
+    const linha = window.innerHeight * 0.4;
+    let atual = null;
+    for (const s of secoes) {
+      if (s.getBoundingClientRect().top <= linha) atual = s; else break;
+    }
+    root.classList.toggle("fundo-claro", !!atual && claras.includes(atual.id));
+  };
+  confere();
+  window.addEventListener("scroll", () => {
+    if (!pedido) { pedido = true; requestAnimationFrame(confere); }
+  }, { passive: true });
+  window.addEventListener("resize", confere, { passive: true });
 }
 
 // Modo revisão (classe "modo-revisao" no <html>, ligada por uma linha no <head>):

@@ -466,43 +466,10 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    texto (--white/--text/--cor-corpo/--text-muted/--border) são reescritos
    pra escuro aqui embaixo — título, corpo e borda de tudo que tem dentro
    leem essas variáveis, sem precisar caçar seletor por seletor. */
-#modulos.section-tone::before {
-  /* Luzes suaves por trás dos cards de vidro (sem elas o vidro não tem o
-     que desfocar e vira um retângulo branco chapado). Somem antes da borda
-     de baixo: a emenda com #beneficios continua sem costura. */
-  background:
-    radial-gradient(38% 22% at 14% 30%, rgba(255, 255, 255, .5), transparent 70%),
-    radial-gradient(42% 26% at 88% 58%, rgba(70, 130, 180, .45), transparent 70%),
-    radial-gradient(30% 18% at 30% 80%, rgba(215, 119, 19, .16), transparent 70%),
-    var(--blue-light);
-}
-/* Benefícios: o alto continua liso e reto (emenda com #modulos, mesma cor,
-   sem nenhuma costura ali) mas o pé esmaece pra transparente — não pro
-   escuro direto: quem pinta o escuro por trás, ao vivo, é o .page-bg fixo
-   (ver wireCorDaTransicao em main.js), que vai escurecendo aos poucos
-   conforme a rolagem avança, tipo a página da Apple Podcasts (a cor muda
-   com o tanto que se rola, não é só um degradê parado). */
-#beneficios.section-tone::before {
-  background:
-    radial-gradient(34% 12% at 82% 14%, rgba(255, 255, 255, .45), transparent 70%),
-    radial-gradient(36% 12% at 14% 22%, rgba(70, 130, 180, .4), transparent 70%),
-    /* Do azul claro pro escuro da página numa pintura só (sem o fundo da
-       página mudando de cor ao mesmo tempo por trás, que era a segunda
-       camada que deixava a passagem irregular), longa e com curva suave —
-       começa devagar, acelera no meio e assenta no fim (como as passagens
-       de cor da Apple), em vez de uma reta curta. Começa no meio do e-book
-       (--fade-inicio, medido no JS); os últimos 8% só dissolvem o escuro
-       no fundo fixo da página, sem emenda. */
-    linear-gradient(180deg,
-      var(--blue-light) 0%,
-      var(--blue-light) var(--fade-inicio, 60%),
-      color-mix(in srgb, var(--blue-light), #0B1728 12%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .2),
-      color-mix(in srgb, var(--blue-light), #0B1728 38%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .4),
-      color-mix(in srgb, var(--blue-light), #0B1728 66%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .6),
-      color-mix(in srgb, var(--blue-light), #0B1728 88%) calc(var(--fade-inicio, 60%) + (92% - var(--fade-inicio, 60%)) * .8),
-      #0B1728 92%,
-      rgba(11, 23, 40, 0) 100%);
-}
+/* Sem pintura própria (antes: um degradê longo, que parecia fumaça): o
+   azul claro é o fundo da página inteira, que troca de cor de uma vez
+   quando a seção chega (ver wireCorDoFundo em main.js e .page-bg). */
+#modulos.section-tone::before, #beneficios.section-tone::before { background: none; }
 /* Respiro maior no pé, antes da oferta — só um pouco mais (a transição
    precisa de alguma distância de rolagem pra acontecer, mas não de uma
    folga enorme): estava grudado no último bônus (o e-book), sem espaço
@@ -511,18 +478,17 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    contínua (sem nenhuma linha entre elas), então o respiro de seção padrão
    (128px + 128px) só deixava vão vazio de sobra ali no meio. */
 #modulos { padding-top: 160px; padding-bottom: 64px; }
-#beneficios { padding-top: 64px; padding-bottom: 520px; }
+#beneficios { padding-top: 64px; padding-bottom: 160px; }
 /* O azul de #beneficios sobe 2px por baixo do fim de #modulos: no iPhone,
    durante a rolagem, as duas camadas pintadas separadas às vezes deixavam
    uma linha de 1px do fundo escuro aparecer entre elas (o "cortezinho"). */
-#beneficios.section-tone::before { top: -2px; }
 @media (max-width: 699.98px) {
   /* Mais respiro entre a borda de cima (o fim da foto da Vitória) e o
      título "8 módulos. 30 aulas.". */
   #modulos { padding-top: 120px; padding-bottom: 40px; }
   /* Pé mais alto: mais rolagem pra passagem do azul claro pro escuro
      acontecer devagar (com 250px ela era curta e brusca). */
-  #beneficios { padding-top: 40px; padding-bottom: 380px; }
+  #beneficios { padding-top: 40px; padding-bottom: 96px; }
 }
 /* A emenda #metodo→#aplicacao estava curta demais: sobrava pouco respiro
    depois do botão "Quero entrar em cena" antes da frase seguinte. Esse padding é rolagem pura, antes do texto preso
@@ -589,12 +555,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   font-size: var(--t-titulo);
   text-shadow: 0 2px 28px rgba(70, 130, 180, .35);
 }
+/* Com o fundo claro ligado, os textos dessas seções passam pra escuro;
+   sem ele (a seção ainda entrando, ou já saindo), ficam claros — a cor dos
+   textos muda junto com a do fundo, como no Spotify, e nada fica ilegível. */
 #modulos, #beneficios {
+  --tom-forte: var(--blue-light);
+  --card-bg: rgba(255, 255, 255, .07);
+}
+html.fundo-claro #modulos, html.fundo-claro #beneficios {
   --white: #0B1728;
   --text: #0B1728;
   --cor-corpo: #1B3046;
   --text-muted: #3D5872;
   --border: rgba(11, 23, 40, .16);
+  --tom-forte: var(--blue-deep);
+  --card-bg: rgba(255, 255, 255, .5);
+}
+:is(#modulos, #beneficios) :is(h2, h3, p, span, li, strong, .accordion-trigger, .accordion-icon) {
+  transition: color .7s cubic-bezier(.4, 0, .2, 1), background-color .7s cubic-bezier(.4, 0, .2, 1), border-color .7s cubic-bezier(.4, 0, .2, 1);
+}
+:is(#modulos, #beneficios) .reveal {
+  transition: opacity .7s cubic-bezier(0, 0, .3, 1), transform .7s cubic-bezier(0, 0, .3, 1), color .7s cubic-bezier(.4, 0, .2, 1);
 }
 /* Os cards do acordeão são todos no formato claro e todos com a mesma cor
    (item fechado ou aberto, par ou ímpar) — nada de alternar entre claro e
@@ -605,10 +586,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    branco translúcido sobre o azul claro da seção. */
 #modulos .accordion-item,
 .beneficio {
-  background: rgba(255, 255, 255, .5);
+  background: var(--card-bg);
   border: 0;
   box-shadow: none;
 }
+#modulos .accordion-item.reveal { transition: opacity .7s cubic-bezier(0, 0, .3, 1), transform .7s cubic-bezier(0, 0, .3, 1), background-color .7s cubic-bezier(.4, 0, .2, 1); }
+.beneficio { transition: background-color .7s cubic-bezier(.4, 0, .2, 1); }
 #modulos #accordion-modulos .accordion-item.open {
   /* Havia uma regra de :nth-child(even) com o mesmo peso e vindo depois
      no arquivo, que vencia nos módulos pares — removida (era o motivo dos
@@ -616,9 +599,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      prioridade sobre a regra de cima sem depender da ordem. Mesma
      transparência de vidro do fechado (não mais um branco quase opaco):
      só a borda laranja da esquerda e o selo já diferenciam o aberto. */
-  background: rgba(255, 255, 255, .72);
+  background: var(--card-bg);
 }
-#accordion-modulos .accordion-icon { color: var(--blue-deep); }
+#accordion-modulos .accordion-icon { color: var(--tom-forte); }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
    no meio (.20 em vez de .16) — sem nenhum card, é a pausa antes do CTA
    final ganhando uma leve elevação tonal sólida em vez de textura repetida. */
@@ -643,6 +626,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
      manchas de luz azul que se repetiam em cada tela). */
   background: var(--bg);
 }
+/* Troca de cor como a do Spotify (medida em spotify.com/br-pt/premium): um
+   fundo só pra página inteira, que muda de cor de uma vez, na tela toda,
+   quando a seção seguinte passa de ~40% da altura da tela — lá, do verde
+   pro preto em ~0,7s, com a curva suave no começo e no fim. Aqui, do
+   azul-noite pro azul claro da marca quando chegam os módulos, e de volta
+   quando chega a oferta (ver wireCorDoFundo em main.js). */
+.page-bg { transition: background-color .7s cubic-bezier(.4, 0, .2, 1); }
+html.fundo-claro .page-bg { background-color: var(--blue-light); }
+/* O título da oferta entra enquanto o fundo ainda está azul claro: troca
+   de cor junto com ele. */
+#oferta .section-title { transition: color .7s cubic-bezier(.4, 0, .2, 1), opacity .7s cubic-bezier(0, 0, .3, 1), transform .7s cubic-bezier(0, 0, .3, 1); }
+html.fundo-claro #oferta .section-title { color: #0B1728; }
+@media (prefers-reduced-motion: reduce) { .page-bg { transition: none; } }
 
 /* ---------- Profundidade dos cards ----------
    Sem backdrop-filter nos cards: desfocar cards grandes rolando sobre o .page-bg
@@ -1498,7 +1494,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   border-radius: 50%;
   border: 1px solid var(--border);
   background: rgba(70, 130, 180, .18);
-  color: var(--blue-deep);
+  color: var(--tom-forte, var(--blue-deep));
   font-family: var(--font-head);
   font-size: var(--t-corpo);
   font-weight: 700;
@@ -1535,7 +1531,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 .accordion-item.open .accordion-icon { transform: rotate(45deg); }
 /* Só em #modulos o laranja fica reservado exclusivamente ao estado ativo
    (selo + ícone); o de #faq mantém o laranja fixo já existente. */
-#accordion-modulos .accordion-icon { color: var(--blue-light); }
+#accordion-modulos .accordion-icon { color: var(--tom-forte); }
 #accordion-modulos .accordion-item.open .accordion-icon { color: var(--orange); }
 /* Truque de grid-template-rows (0fr → 1fr) em vez de max-height: anima só
    propriedades leves pro navegador, sem o JS precisar medir scrollHeight
@@ -1991,143 +1987,131 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
    começar, então o fundo simples (sem custom aqui, herda o da página)
    já emenda liso. */
 .offer-section { padding-top: 96px; }
-/* Card da oferta no azul claro da marca (#90BED9), no padrão do bloco de
-   compra da Apple (Store, Fitness+):
-   - o preço é o maior elemento do card, em azul-noite (laranja sobre esse
-     azul não teria contraste pra leitura); acima dele, só o rótulo
-     pequeno e o nome do produto;
-   - o que vem junto é uma lista com um item por linha e um fio fino entre
-     eles — o nome em seminegrito e o detalhe menor logo embaixo — em vez
-     de doze pedaços de texto soltos com o mesmo peso;
-   - um botão só, laranja (a cor dos botões da página inteira), e os selos
-     em uma linha pequena embaixo, cada um inteiro;
-   - cantos de 28px, sem borda e sem sombra (os cards da Apple);
-   - computador e tablet deitado: duas colunas (preço e botão à esquerda,
-     a lista à direita), a seção cabe numa tela; celular: um embaixo do outro. */
+/* Card da oferta no formato dos cartões de plano do Spotify Premium
+   (medido em spotify.com/br-pt/premium, celular e computador):
+   - uma coluna só, estreita (o card do Spotify tem 353px no computador),
+     cantos de 10px, sem borda e sem sombra; aqui no azul claro da marca;
+   - etiqueta presa no canto de cima à esquerda (lá "R$ 0 por 1 mês", em
+     verde, canto 6px só em cima à esquerda e embaixo à direita);
+   - a marca no lugar do "Premium" (aqui a logo em preto), o destaque
+     grande (lá o nome do plano em 32px; aqui o preço) e a condição em
+     14px, um fio fino, a lista com pontinhos (16px, sem fio entre os
+     itens), o botão grande na largura toda e a nota pequena centralizada. */
 #oferta .container { max-width: 980px; }
 .offer-card {
   --oc-texto: #0B1728;
   --oc-corpo: #1B3046;
-  --oc-fio: rgba(11, 23, 40, .18);
-  display: grid;
-  grid-template-areas: "topo" "inclui" "cta" "selos";
-  max-width: 560px;
+  --oc-fio: rgba(11, 23, 40, .16);
+  position: relative;
+  max-width: 400px;
   margin: 0 auto;
   background: var(--blue-light);
   border: 0;
-  border-radius: 28px;
+  border-radius: 10px;
   box-shadow: none;
-  padding: clamp(1.5rem, 5vw, 2.5rem);
+  padding: 3.4rem 1.25rem 1.25rem;
   text-align: left;
   color: var(--oc-texto);
 }
-.offer-topo { grid-area: topo; margin-bottom: 1.25rem; }
-.offer-inclui { grid-area: inclui; }
-.offer-card .btn-block { grid-area: cta; margin-top: 1.4rem; }
-.offer-selos { grid-area: selos; }
 #oferta .section-title { margin-bottom: 1.5rem; }
+.offer-topo { margin-bottom: 1.1rem; }
 .offer-etiqueta {
-  display: block;
-  margin-bottom: .35rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: .45rem 1rem;
+  border-radius: 10px 0 6px 0;
+  background: var(--orange-button);
   font-family: var(--font-body);
-  font-weight: 600;
-  font-size: var(--t-pequeno);
-  line-height: 1.3;
-  color: var(--blue-deep);
-}
-.offer-produto {
-  margin: 0 0 .5rem;
-  font-family: var(--font-head);
   font-weight: 700;
-  font-size: var(--t-subtitulo);
+  font-size: var(--t-pequeno);
   line-height: 1.2;
-  color: var(--oc-texto);
+  color: #fff;
 }
-.price-box { display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; }
+.offer-logo { display: block; width: 132px; height: auto; margin: 0 0 .85rem; }
+.price-box { display: flex; flex-direction: column; align-items: flex-start; gap: .2rem; }
 .price-now {
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: 3rem;
-  line-height: 1;
-  letter-spacing: -.03em;
+  font-size: 2.75rem;
+  line-height: 1.05;
+  letter-spacing: -.02em;
   color: var(--oc-texto);
 }
-@media (min-width: 1069px) { .price-now { font-size: 3.5rem; } }
 .price-note { font-size: var(--t-pequeno); line-height: 1.4; color: var(--oc-corpo); }
+.offer-inclui { border-top: 1px solid var(--oc-fio); padding-top: 1.1rem; }
 .offer-inclui-rotulo {
-  margin: 0;
-  padding: 1rem 0 .55rem;
-  border-top: 1px solid var(--oc-fio);
+  margin: 0 0 .6rem;
   font-family: var(--font-body);
-  font-weight: 600;
+  font-weight: 700;
   font-size: var(--t-pequeno);
   color: var(--blue-deep);
 }
-.offer-lista { display: grid; margin: 0; }
-.offer-lista li {
-  display: flex;
-  flex-direction: column;
-  gap: .1rem;
-  padding: .7rem 0;
-  border-top: 1px solid var(--oc-fio);
-  text-wrap: pretty;
-}
-.offer-lista li:last-child { border-bottom: 1px solid var(--oc-fio); }
+/* Pontinhos, como a lista do Spotify: sem fio entre os itens. */
+.offer-lista { display: grid; gap: .55rem; margin: 0; padding-left: 1.15rem; list-style: disc; }
+.offer-lista li { display: list-item; padding: 0; border: 0; text-wrap: pretty; }
+.offer-lista li::marker { color: var(--oc-texto); font-size: 1em; }
 .offer-lista li strong {
+  display: block;
   font-family: var(--font-body);
   font-weight: 700;
   font-size: var(--t-corpo);
-  line-height: 1.3;
+  line-height: 1.35;
   color: var(--oc-texto);
 }
-.offer-lista li span { font-size: var(--t-pequeno); line-height: 1.35; color: var(--oc-corpo); }
-/* Selos: cada um inteiro (não quebra no meio), separados por um ponto. */
+.offer-lista li span { display: block; font-size: var(--t-pequeno); line-height: 1.35; color: var(--oc-corpo); }
+/* Botão grande na largura toda (o do Spotify: 48px, pílula, texto em
+   negrito). Aqui 56px, o maior botão da página: é a compra. */
+.offer-card .btn-block {
+  width: 100%;
+  min-height: 56px;
+  margin-top: 1.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
 .offer-selos {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  column-gap: 1rem;
+  column-gap: .9rem;
   row-gap: .1rem;
-  margin: .8rem 0 0;
+  margin: .85rem 0 0;
   font-size: .8125rem;
   line-height: 1.45;
   color: var(--oc-corpo);
+  text-align: center;
 }
 .offer-selos span { white-space: nowrap; }
-/* Computador e tablet deitado: duas colunas, a seção cabe numa tela. */
-@media (min-width: 900px) {
+@media (min-width: 700px) {
   #oferta.offer-section { padding: 56px 0 48px; }
-  .offer-card {
-    max-width: 920px;
-    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas: "topo inclui" "cta inclui" "selos inclui";
-    column-gap: 3rem;
-    padding: 2.5rem 2.75rem;
-  }
-  .offer-topo { margin-bottom: 0; align-self: end; }
-  .offer-card .btn-block { margin-top: 1.75rem; }
-  .offer-selos { justify-content: flex-start; align-self: start; }
-  .offer-inclui-rotulo { border-top: 0; padding-top: 0; }
+  .offer-card { max-width: 420px; padding: 3.6rem 1.5rem 1.4rem; }
+  .price-now { font-size: 3rem; }
 }
-@media (min-width: 900px) and (max-height: 820px) {
-  #oferta.offer-section { padding: 28px 0 24px; }
-  .offer-card { padding: 2rem 2.5rem; }
-  .offer-lista li { padding: .55rem 0; }
+@media (min-width: 700px) and (max-height: 860px) {
+  #oferta.offer-section { padding: 24px 0 20px; }
+  #oferta .section-title { margin-bottom: 1rem; }
+  .offer-card { padding-top: 3.2rem; }
+  .offer-topo { margin-bottom: .8rem; }
+  .offer-logo { width: 116px; margin-bottom: .6rem; }
+  .price-now { font-size: 2.6rem; }
+  .offer-inclui { padding-top: .8rem; }
+  .offer-lista { gap: .4rem; }
+  .offer-card .btn-block { margin-top: 1.1rem; }
 }
-/* Celular: a seção inteira (título + card + botão + selos) numa tela só,
-   mesmo com as barras do Safari aparecendo (~700px úteis num iPhone). */
+/* Celular: a seção inteira (título + card + botão + selos) numa tela só. */
 @media (max-width: 699.98px) {
   #oferta.offer-section { padding: 28px 0 28px; }
   #oferta .section-title { margin-bottom: .9rem; }
-  .offer-card { padding: 1.15rem 1.25rem .9rem; border-radius: 24px; }
+  .offer-card { padding: 3rem 1.1rem 1rem; }
   .offer-topo { margin-bottom: .8rem; }
-  .offer-produto { margin-bottom: .3rem; font-size: 1.125rem; }
-  .price-now { font-size: 2.5rem; }
-  .offer-inclui-rotulo { padding: .7rem 0 .3rem; }
-  .offer-lista li { padding: .42rem 0; }
-  .offer-card .btn-block { margin-top: 1rem; }
-  .offer-selos { margin-top: .55rem; column-gap: .8rem; }
+  .offer-logo { width: 112px; margin-bottom: .55rem; }
+  .price-now { font-size: 2.4rem; }
+  .offer-inclui { padding-top: .8rem; }
+  .offer-inclui-rotulo { margin-bottom: .45rem; }
+  .offer-lista { gap: .4rem; }
+  .offer-lista li strong { font-size: 1rem; }
+  .offer-card .btn-block { margin-top: 1.1rem; }
+  .offer-selos { margin-top: .6rem; column-gap: .8rem; }
 }
 
 /* ---------- Guarantee ---------- */
@@ -2163,7 +2147,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
    pacote que a pessoa recebe ao entrar. */
 
 /* ---------- Final CTA ---------- */
-.final-cta { position: relative; text-align: center; padding: 110px 0; overflow: hidden; }
+.final-cta { position: relative; text-align: center; padding: 110px 0; overflow: hidden; isolation: isolate; }
 .final-cta .container { position: relative; z-index: 1; }
 /* Sem símbolo nem imagem nenhuma aqui (testamos e não ficou bom): só o
    texto e o botão, centralizados, soltos sobre a .page-bg fixa. */
@@ -2191,6 +2175,82 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   font-size: var(--t-lead);
   line-height: 1.3;
   color: var(--orange-light);
+}
+
+/* Logo gigante no alto da seção final, como "O mundo está ouvindo aqui."
+   do Spotify: lá, um vídeo de 10s em loop com a logo parada e uma luz
+   passando pelas bordas, que muda de roxo pra rosa, azul e azul-claro e
+   volta. Aqui o arco 3D da marca parado, com um brilho colorido girando
+   por trás (as cores da marca, 12s por volta) e uma luz passando pela
+   superfície dele. O pé da logo se dissolve no fundo e o título entra por
+   cima dessa parte, como lá. Só transform e opacidade animam (leve no
+   celular). */
+.final-cta { padding-top: 56px; }
+.final-logo {
+  --logo-w: min(420px, 72vw, 50svh);
+  position: relative;
+  width: var(--logo-w);
+  aspect-ratio: 1000 / 1196;
+  margin: 0 auto;
+  z-index: 0;
+}
+.final-logo-img { position: relative; z-index: 1; display: block; width: 100%; height: auto; }
+.final-logo-brilho {
+  position: absolute;
+  inset: 4% 2% 14%;
+  z-index: 0;
+  border-radius: 46% 46% 30% 30%;
+  background: conic-gradient(from 0deg, #4682B4, #90BED9, #9E7BFF, #D77713, #205D8D, #4682B4);
+  filter: blur(56px);
+  opacity: .55;
+  animation: logo-gira 12s linear infinite;
+}
+.final-logo-luz {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  -webkit-mask: url("../assets/img/arco-3d-560.webp") center / 100% 100% no-repeat;
+  mask: url("../assets/img/arco-3d-560.webp") center / 100% 100% no-repeat;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+.final-logo-luz::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -60%;
+  width: 60%;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, .5) 50%, transparent 100%);
+  transform: translateX(0) skewX(-12deg);
+  animation: logo-luz 6s cubic-bezier(.45, 0, .25, 1) infinite;
+}
+/* O pé da logo se dissolve no fundo da seção (o título entra por cima). */
+.final-logo::after {
+  content: "";
+  position: absolute;
+  left: -20%;
+  right: -20%;
+  bottom: -2px;
+  height: 46%;
+  z-index: 3;
+  background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .82) 62%, var(--bg) 100%);
+  pointer-events: none;
+}
+@keyframes logo-gira { to { transform: rotate(360deg); } }
+@keyframes logo-luz {
+  0%, 18% { transform: translateX(0) skewX(-12deg); }
+  62%, 100% { transform: translateX(360%) skewX(-12deg); }
+}
+/* O título sobe e entra na parte de baixo da logo (lá, 60% da altura do vídeo). */
+.final-cta .final-cta-grid { position: relative; z-index: 4; margin-top: calc(var(--logo-w, 520px) * -1.196 * .3); }
+.final-cta .container { --logo-w: min(420px, 72vw, 50svh); }
+/* Título em duas linhas no computador, como o do Spotify (uma frase larga). */
+@media (min-width: 700px) { .final-cta-copy { max-width: 980px; } }
+.final-cta-copy .section-title { text-shadow: 0 2px 24px rgba(11, 23, 40, .6); }
+@media (prefers-reduced-motion: reduce) {
+  .final-logo-brilho, .final-logo-luz::before { animation: none; }
 }
 
 /* ---------- Footer ---------- */
@@ -2572,7 +2632,7 @@ html.abertura-on { overflow: hidden; }
    quem usa mouse; no toque o card não fica "levantado" depois do dedo. */
 @media (hover: hover) and (pointer: fine) {
   .bonus-item-foto, .beneficio, .depo-video {
-    transition: opacity .9s cubic-bezier(.25, .1, .25, 1), transform .45s cubic-bezier(0, 0, .5, 1), box-shadow .45s cubic-bezier(0, 0, .5, 1);
+    transition: opacity .9s cubic-bezier(.25, .1, .25, 1), transform .45s cubic-bezier(0, 0, .5, 1), box-shadow .45s cubic-bezier(0, 0, .5, 1), background-color .7s cubic-bezier(.4, 0, .2, 1);
   }
   :is(.bonus-item-foto, .beneficio, .depo-video):hover {
     transform: scale(1.015);

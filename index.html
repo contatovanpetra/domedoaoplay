@@ -51,7 +51,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=69">
+<link rel="stylesheet" href="css/style.css?v=70">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -653,14 +653,15 @@
   <section class="section offer-section" id="oferta" aria-labelledby="oferta-title">
     <div class="container narrow">
       <h2 id="oferta-title" class="section-title center" data-confirmar="título novo da oferta, mais persuasivo (última chamada) — validar com a Vitória. Antes: 'Comece pelo nível em que você está hoje.' Outras opções: 'Seu próximo vídeo pode ser o primeiro sem medo.' / 'O medo não vai embora sozinho. O método leva você até o play.'">Chegou a sua vez de dar o play.</h2>
-      <!-- Card no azul claro da marca, no padrão do bloco de compra da Apple:
-           o preço é o maior elemento, a lista é um item por linha com fio
-           fino entre eles, e um botão só. No computador, duas colunas (preço
-           e botão / o que vem junto); no celular, um embaixo do outro. -->
+      <!-- Card no formato dos cartões de plano do Spotify Premium (medidos em
+           spotify.com/br-pt/premium): etiqueta presa no canto de cima, a logo
+           no lugar do nome do plano, o preço grande, um fio só, a lista com
+           pontinhos, o botão grande na largura toda e a nota pequena embaixo.
+           Fundo no azul claro da marca. -->
       <div class="offer-card" data-confirmar="card da oferta redesenhado: itens separados em nome + detalhe (mesmas palavras, sem os parênteses e os dois-pontos) e o nome do produto no alto — validar com a Vitória">
         <div class="offer-topo">
           <span class="offer-etiqueta">Acesso vitalício</span>
-          <p class="offer-produto">Do Medo ao Play</p>
+          <img class="offer-logo" src="assets/img/logo-preto.webp" alt="Do Medo ao Play" width="520" height="203" loading="lazy" decoding="async">
           <div class="price-box">
             <span class="price-now">R$ 197</span>
             <span class="price-note">Pagamento único · sem mensalidades</span>
@@ -774,7 +775,17 @@
   </section>
 
   <!-- ===== CTA FINAL ===== -->
+  <!-- No formato de "O mundo está ouvindo aqui." (spotify.com/br-pt/premium):
+       a logo gigante no alto da seção, com uma luz que percorre as bordas e
+       muda de cor num ciclo lento (lá é um vídeo de 10s em loop; aqui a
+       mesma ideia com o arco 3D da marca, em CSS), o título por cima da parte
+       de baixo dela, e a frase, o botão e o preço logo abaixo. -->
   <section class="section final-cta" aria-labelledby="final-cta-title">
+    <div class="final-logo" aria-hidden="true">
+      <div class="final-logo-brilho"></div>
+      <img class="final-logo-img" src="assets/img/arco-3d.webp" srcset="assets/img/arco-3d-560.webp 560w, assets/img/arco-3d.webp 1000w" sizes="(max-width: 699.98px) 72vw, 520px" width="1000" height="1196" alt="" loading="lazy" decoding="async">
+      <div class="final-logo-luz"></div>
+    </div>
     <div class="container final-cta-grid">
       <div class="final-cta-copy">
         <h2 id="final-cta-title" class="section-title">Sua versão que aparece já existe.</h2>
@@ -880,6 +891,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=34"></script>
+<script src="js/main.js?v=35"></script>
 </body>
 </html>
