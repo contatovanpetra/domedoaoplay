@@ -2376,6 +2376,9 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 .footer-sep { color: var(--text-muted); opacity: .45; }
 .footer-legal a:hover { color: var(--white); opacity: 1; }
 .footer-copy { text-align: right; font-size: var(--t-rotulo); color: var(--text-muted); margin: 0; }
+/* Identificação da empresa (Decreto 7.962/2013), colada no ©. */
+.footer-empresa { margin-top: -.35rem; }
+.footer-empresa span:not(.footer-sep) { white-space: nowrap; }
 @media (max-width: 699.98px) {
   .footer-inner { flex-direction: column; text-align: center; }
   .footer-meta { align-items: center; }
