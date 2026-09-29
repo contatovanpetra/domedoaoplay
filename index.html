@@ -72,8 +72,11 @@
      mas atrás da foto do herói (14 KB, chega logo depois dela).
      E a trava "sem-main": se o main.js não chegar em 5 s (rede caindo no meio
      do carregamento), o título e o botão do topo aparecem sem animação, em
-     vez de ficarem invisíveis (ver html.sem-main no CSS). -->
-<script>(function(){var d=document.documentElement;setTimeout(function(){if(!window.mainPronto)d.classList.add("sem-main")},5000);var av=window.CSS&&CSS.supports&&CSS.supports("background-image",'image-set(url("a.avif") type("image/avif"))'),h=document.createElement("link");h.rel="preload";h.as="image";h.fetchPriority="high";h.href="assets/img/vivi-hero-"+(matchMedia("(min-width: 700px) and (orientation: landscape)").matches?"desktop":"mobile")+(av?".avif":".webp");document.head.appendChild(h);if(av)d.classList.add("avif");if("IntersectionObserver"in window)d.classList.add("pausa-fora");if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");var pl=document.createElement("link");pl.rel="preload";pl.as="image";pl.fetchPriority="low";pl.href=matchMedia("(max-aspect-ratio: 1/1)").matches?"assets/video/tunel-celular-poster.webp":"assets/video/tunel-desktop-poster.webp";document.head.appendChild(pl);if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
+     vez de ficarem invisíveis (ver html.sem-main no CSS). E, enquanto o
+     main.js não chega, um clique num botão de compra já leva os parâmetros do
+     anúncio (utm_...) pra Hotmart: antes, quem tocava cedo numa rede lenta
+     chegava no checkout sem origem. -->
+<script>(function(){var d=document.documentElement;setTimeout(function(){if(!window.mainPronto)d.classList.add("sem-main")},5000);var comUtm=function(e){if(window.mainPronto||!location.search)return;var a=e.target&&e.target.closest&&e.target.closest("[data-checkout-link]");if(!a)return;try{var u=new URL(a.href);new URLSearchParams(location.search).forEach(function(v,k){if(!u.searchParams.has(k))u.searchParams.set(k,v)});a.href=u.toString()}catch(x){}};document.addEventListener("click",comUtm,true);document.addEventListener("auxclick",comUtm,true);var av=window.CSS&&CSS.supports&&CSS.supports("background-image",'image-set(url("a.avif") type("image/avif"))'),h=document.createElement("link");h.rel="preload";h.as="image";h.fetchPriority="high";h.href="assets/img/vivi-hero-"+(matchMedia("(min-width: 700px) and (orientation: landscape)").matches?"desktop":"mobile")+(av?".avif":".webp");document.head.appendChild(h);if(av)d.classList.add("avif");if("IntersectionObserver"in window)d.classList.add("pausa-fora");if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");var pl=document.createElement("link");pl.rel="preload";pl.as="image";pl.fetchPriority="low";pl.href=matchMedia("(max-aspect-ratio: 1/1)").matches?"assets/video/tunel-celular-poster.webp":"assets/video/tunel-desktop-poster.webp";document.head.appendChild(pl);if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
 <!-- As fontes (no próprio site) são pedidas já aqui, mas com prioridade baixa:
      sem isso, elas saíam na frente da foto do herói (prioridade máxima de
      fonte) e dividiam a banda com ela no 4G. O texto aparece na fonte do
@@ -701,7 +704,7 @@
         </article>
         <article class="bonus-item bonus-item--invertido">
           <div class="bonus-item-texto">
-            <h3>Ebook de equipamentos</h3>
+            <h3 data-confirmar="nome do bônus padronizado com a capa do ebook (Guia de Equipamentos), aprovado pela Vitória em 29/set">Guia de Equipamentos</h3>
             <p><strong>Um guia com os equipamentos certos pra cada momento</strong> (iniciante, intermediária e avançada), sem a ideia de que você precisa de um estúdio pra começar.</p>
           </div>
           <div class="bonus-item-foto">
@@ -736,7 +739,7 @@
           <li><strong>8 módulos estruturados</strong></li>
           <li><strong>A Escada de Exposição</strong><span>os 7 níveis práticos de gravação</span></li>
           <li><strong>Acompanhamento exclusivo<span class="so-computador"> no WhatsApp</span></strong><span>com a Vitória e equipe</span></li>
-          <li><strong>2 bônus: Assistente de IA</strong><span>+ Guia Completo de Equipamentos</span></li>
+          <li data-confirmar="nome do bônus padronizado (Guia de Equipamentos)"><strong>2 bônus: Assistente de IA</strong><span>+ Guia de Equipamentos</span></li>
           <li><strong>Certificado oficial de conclusão</strong></li>
         </ul>
         </div>
@@ -954,6 +957,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=48"></script>
+<script src="js/main.js?v=49"></script>
 </body>
 </html>

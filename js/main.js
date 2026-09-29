@@ -379,13 +379,28 @@ function wireReadProgressBar() {
   bar.addEventListener("pointercancel", solta);
 }
 
-// Repassa pro checkout os parâmetros de rastreio com que a pessoa chegou na página
+// Repassa pro checkout os parâmetros de rastreio com que a pessoa chegou
 // (utm_source, src, sck...). Sem isso, quem vem de um anúncio ou da bio chega na
 // Hotmart sem origem e a venda aparece sem rastreio no Hotmart Analytics.
-function checkoutHref(base) {
+// Os parâmetros ficam guardados na aba (sessionStorage) durante a visita: quem
+// chega do anúncio, abre os Termos ou a Política e compra de lá (ou volta pela
+// logo, que leva a index.html sem parâmetros) chegava na Hotmart sem origem.
+// Os do endereço atual valem mais; os guardados só completam o que faltar.
+const CHAVE_PARAMETROS = "dmap-parametros";
+function parametrosDaVisita() {
+  const atuais = new URLSearchParams(window.location.search);
+  let guardados = new URLSearchParams();
+  try {
+    if ([...atuais.keys()].length) sessionStorage.setItem(CHAVE_PARAMETROS, atuais.toString());
+    guardados = new URLSearchParams(sessionStorage.getItem(CHAVE_PARAMETROS) || "");
+  } catch { /* sem armazenamento (navegação privada restrita): vale só o endereço atual */ }
+  guardados.forEach((value, key) => { if (!atuais.has(key)) atuais.set(key, value); });
+  return atuais;
+}
+function checkoutHref(base, parametros) {
   try {
     const url = new URL(base);
-    new URLSearchParams(window.location.search).forEach((value, key) => {
+    parametros.forEach((value, key) => {
       if (!url.searchParams.has(key)) url.searchParams.set(key, value);
     });
     return url.toString();
@@ -435,8 +450,9 @@ function wireCheckoutLinks() {
   if (links.some((link) => (link.getAttribute("href") || "").includes(CHECKOUT_PROVISORIO))) {
     console.warn("Do Medo ao Play: o link de checkout ainda é o provisório. Troque " + CHECKOUT_PROVISORIO + " pelo código da Hotmart nos botões (index.html e páginas de apoio).");
   }
+  const parametros = parametrosDaVisita();
   links.forEach((link) => {
-    link.setAttribute("href", checkoutHref(link.getAttribute("href")));
+    link.setAttribute("href", checkoutHref(link.getAttribute("href"), parametros));
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener");
   });
