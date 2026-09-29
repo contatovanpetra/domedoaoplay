@@ -1,0 +1,11 @@
+# Nunca versionar credenciais nem arquivos locais.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.vercel
+node_modules/
+.DS_Store
+Thumbs.db
+*.log

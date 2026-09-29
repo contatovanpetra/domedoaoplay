@@ -62,7 +62,6 @@
 
   /* Profundidade: sombras em camadas (perto+escura / longe+difusa), pensadas pra fundo escuro */
   --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, .5), 0 8px 20px -10px rgba(0, 0, 0, .4);
-  --shadow-md: 0 4px 14px -4px rgba(0, 0, 0, .55), 0 16px 36px -18px rgba(0, 0, 0, .5);
   --shadow-lg: 0 8px 22px -6px rgba(0, 0, 0, .6), 0 30px 60px -24px rgba(0, 0, 0, .55);
 }
 /* Tablet (700px+) e computador (1069px+, o mesmo corte da Apple): só os
@@ -282,13 +281,8 @@ ul { padding: 0; margin: 0; list-style: none; }
 .site-header .logo-mark { filter: drop-shadow(0 1px 6px rgba(3, 10, 29, .6)); }
 .site-header .logo-mark--escura { display: none; filter: none; }
 .site-header.is-on { transform: translateY(0); opacity: 1; visibility: visible; transition: transform .5s ease, opacity .4s ease, visibility 0s; }
-/* Depois do topo, o menu sobe e some quando a pessoa desce (o texto não passa
-   mais por baixo da logo e do botão) e volta assim que ela sobe. Continua sem
-   cor nenhuma atrás. Ver wireHeaderReveal em main.js. */
-.site-header.is-on.is-recolhido { transform: translateY(-100%); opacity: 0; visibility: hidden; transition: transform .35s ease, opacity .3s ease, visibility 0s linear .35s; }
 @media (prefers-reduced-motion: reduce) {
   .site-header { transform: none; opacity: 1; visibility: visible; transition: none; }
-  .site-header.is-on.is-recolhido { transition: none; }
 }
 .header-inner {
   display: flex;
@@ -342,25 +336,6 @@ html { scroll-padding-top: var(--header-h, 85px); }
 .section-title, .statement-title, .escada-card-title, .beneficio h3, .bonus-item h3, .accordion-trigger > span:first-child, .vivi-cargo { text-wrap: balance; }
 
 /* ---------- Eyebrow / Section titles ---------- */
-/* Indicador "gravando", não pílula genérica: liga direto com o tema do curso (câmera). */
-/* Pesquisa em páginas de referência (Stripe, Linear, Superhuman, Framer,
-   Apple): nenhuma usa selo em pílula com borda e fundo pra marcar seção —
-   é textinho pequeno e discreto, sem caixa nenhuma. A pílula que a gente
-   tinha era o oposto disso: o mesmo enfeite de template genérico que
-   aparece em qualquer página de curso. */
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: var(--t-rotulo);
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--orange);
-  margin-bottom: clamp(.75rem, 1.6vw, 1.25rem);
-}
-.eyebrow-center { display: flex; width: fit-content; margin-left: auto; margin-right: auto; }
-
 .section-title {
   font-size: var(--t-titulo);
   line-height: 1.1;
@@ -635,7 +610,6 @@ html.fundo-claro #modulos, html.fundo-claro #beneficios {
      só a borda laranja da esquerda e o selo já diferenciam o aberto. */
   background: var(--card-bg);
 }
-#accordion-modulos .accordion-icon { color: var(--tom-forte); }
 /* Tier "faixa lisa sem card" da garantia: mesma faixa, um pouco mais opaca
    no meio (.20 em vez de .16) — sem nenhum card, é a pausa antes do CTA
    final ganhando uma leve elevação tonal sólida em vez de textura repetida. */
@@ -1139,19 +1113,6 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   padding-bottom: .14em;
   margin-bottom: -.14em;
 }
-/* O botão de gravar do iPhone (aro branco e a bolinha vermelha), usado no
-   botão do herói. */
-.botao-gravar {
-  --tam: 2.4rem;
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  width: var(--tam);
-  height: var(--tam);
-  border-radius: 50%;
-  border: calc(var(--tam) * .085) solid #fff;
-}
-.botao-gravar i { width: 76%; height: 76%; border-radius: 50%; background: #ff3b30; }
 /* Texto corrido das seções de declaração (reconhecimento, escada, aplicação):
    coluna de leitura no meio da página, texto alinhado à esquerda. */
 .texto-corrido { max-width: 640px; margin: clamp(1.6rem, 3vw, 2.2rem) auto 0; }
@@ -2815,16 +2776,11 @@ html.abertura-on { overflow: hidden; }
   .hero-h1-abre { font-size: 1.75em; }
   .hero-lead, .hero-lead-list { font-size: var(--t-corpo); line-height: 1.42; }
   .hero-lead-list { margin-top: .7rem; }
-  /* O texto não pode ficar em cima da foto: no celular e no tablet em pé a
-     foto desce o necessário pra começar 40px abaixo do bloco de texto (ver
-     ajustaFotoHero em main.js). */
-
   /* O botão entra logo abaixo do subtítulo, como no computador, em vez de
      ficar solto no meio da foto. */
   /* O botão vem logo depois do texto, no azul-noite (como no tablet e nas
      páginas da Apple no iPhone): no pé da foto ele caía em cima do rosto
-     da Vitória nos celulares mais baixos. A foto começa depois dele (ver
-     ajustaFotoHero em main.js). */
+     da Vitória nos celulares mais baixos. */
   .hero-cta-foto {
     position: static;
     margin-top: 1.25rem;
@@ -3128,7 +3084,7 @@ html.abertura-on { overflow: hidden; }
   white-space: normal;
 }
 /* Em blocos alinhados à esquerda, a etiqueta também fica à esquerda. */
-.modo-revisao :is(.etapa, .beneficio, .bonus-item, .accordion-panel ul, .accordion-panel p)[data-confirmar]::after {
+.modo-revisao :is(.beneficio, .bonus-item, .accordion-panel ul, .accordion-panel p)[data-confirmar]::after {
   margin-left: 0;
 }
 .modo-revisao .credential-item[data-confirmar]::after { flex-basis: 100%; margin-left: 0; }

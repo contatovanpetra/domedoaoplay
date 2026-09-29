@@ -14,7 +14,6 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 // A abertura monta uma réplica do menu e do herói dentro da câmera. As
 // referências reais são guardadas logo no começo, antes da réplica existir.
 let REAL_HERO = null;
-let REAL_HEADER = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   // Páginas de apoio (política, termos, suporte): sempre abrem no topo. Sem
@@ -25,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo(0, 0);
   }
   REAL_HERO = document.querySelector(".hero");
-  REAL_HEADER = document.querySelector(".site-header");
   wireCheckoutLinks();
   wireLinksVazios();
   wireAncoras();
@@ -37,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
   wireViviCard();
   wireCountUp();
   wireScrollEffects();
-  wireFotoHero();
   wireReadProgressBar();
   wireScrollCue();
   wireIntroStage();
@@ -173,48 +170,6 @@ function ajustaRunwayHero() {
   hero.style.minHeight = (tela + alturaRecon) + "px";
   reconhecimento.style.marginTop = "-" + alturaRecon + "px";
 }
-// Celular e tablet em pé: o bloco de texto do topo fica no azul-noite liso,
-// nunca em cima da foto. A foto desce só o bastante pra o que aparece nela
-// (o brilho do arco começa a 31% da altura da imagem) começar 40px abaixo do
-// último elemento do bloco — título, apoio, botão e a linha de números.
-const FOTO_HERO_W = 941, FOTO_HERO_H = 1672, FOTO_HERO_INICIO = 0.31;
-function ajustaFotoHero() {
-  const foto = document.querySelector(".hero-foto-deitada");
-  const copy = document.querySelector(".hero-copy");
-  const hero = REAL_HERO;
-  if (!foto || !copy || !hero) return;
-  // No celular (até 699px) a foto fica no alto e o texto por cima do pé
-  // dela (ver CSS): a conta de descer a foto só vale pro tablet em pé.
-  // Desde set/2026 o tablet em pé também usa o formato do celular (a foto no
-  // alto, ver CSS), então a conta de descer a foto não vale em tela nenhuma.
-  if (true) {
-    foto.style.backgroundPosition = "";
-    return;
-  }
-  const topoHero = hero.getBoundingClientRect().top + window.scrollY;
-  let fim = copy.getBoundingClientRect().bottom + window.scrollY;
-  const acoes = document.getElementById("hero-actions-el");
-  // Em pé (celular e tablet) o botão vem logo depois do texto: entra na conta.
-  if (acoes) fim = Math.max(fim, acoes.getBoundingClientRect().bottom + window.scrollY);
-  fim -= topoHero;
-  const esc = Math.max(foto.offsetWidth / FOTO_HERO_W, foto.offsetHeight / FOTO_HERO_H);
-  const desce = Math.max(0, Math.round(fim + 40 - FOTO_HERO_INICIO * FOTO_HERO_H * esc));
-  foto.style.backgroundPosition = "60% " + desce + "px";
-}
-// A fonte do título chega depois do primeiro desenho (e muda a altura do
-// bloco): refaz a conta sempre que o bloco de texto do topo muda de tamanho.
-function wireFotoHero() {
-  const bloco = document.querySelector(".hero-primeira-tela");
-  if (!bloco) return;
-  ajustaFotoHero();
-  if ("ResizeObserver" in window) {
-    const ro = new ResizeObserver(() => ajustaFotoHero());
-    ro.observe(bloco);
-    const copy = document.querySelector(".hero-copy");
-    if (copy) ro.observe(copy);
-  }
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaFotoHero);
-}
 function wireScrollEffects() {
   const root = document.documentElement;
   const header = document.querySelector(".site-header");
@@ -245,7 +200,6 @@ function wireScrollEffects() {
     sincronizaHeaderH();
     // Refaz a altura da pista do herói antes de medi-la (ver função acima).
     ajustaRunwayHero();
-    ajustaFotoHero();
     if (hero) {
       heroTop = hero.getBoundingClientRect().top + window.scrollY;
       heroAltura = hero.offsetHeight;
