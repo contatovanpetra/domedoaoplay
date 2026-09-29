@@ -55,6 +55,27 @@ for (const nome of await readdir(SAIDA)) {
   console.log(`${nome}: ${fonte.length} → ${limpo.length} bytes`);
 }
 
+// Domínio: o canonical, o og:url/og:image, os dados estruturados, o
+// robots.txt e o sitemap.xml precisam do endereço completo. No código fica
+// COLOQUE-SEU-DOMINIO-AQUI; aqui ele vira o domínio de verdade:
+//   DOMINIO=seudominio.com.br npm run build   (pasta pra hospedagem final)
+// Na Vercel (prévia), sem DOMINIO, entra o endereço da própria prévia, que
+// fica fora do Google pelo X-Robots-Tag do vercel.json.
+{
+  const dominio = (process.env.DOMINIO || (process.env.VERCEL ? process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL : "") || "")
+    .replace(/^https?:\/\//, "").replace(/\/+$/, "");
+  if (dominio) {
+    for (const nome of await readdir(SAIDA)) {
+      if (!/\.(html|txt|xml)$/.test(nome)) continue;
+      const arquivo = join(SAIDA, nome);
+      await writeFile(arquivo, (await readFile(arquivo, "utf8")).replaceAll("COLOQUE-SEU-DOMINIO-AQUI", dominio));
+    }
+    console.log(`domínio: ${dominio}`);
+  } else {
+    console.log("domínio: provisório (COLOQUE-SEU-DOMINIO-AQUI). Para a pasta final: DOMINIO=seudominio.com.br npm run build");
+  }
+}
+
 // O script e o estilo escritos direto no HTML só rodam, pela política de
 // segurança (CSP) do vercel.json, se a impressão digital (hash) deles estiver
 // lá. A política ainda só relata (Report-Only), então nada quebra; mas se um

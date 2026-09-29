@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Só a URL oficial da landing (a mesma do canonical). As páginas de apoio
+     são noindex e não entram. Sem lastmod: só vale com a data real de uma
+     mudança importante. O domínio é trocado no build (build.mjs). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://COLOQUE-SEU-DOMINIO-AQUI/</loc>
+  </url>
+</urlset>

@@ -1,0 +1,7 @@
+# Do Medo ao Play. Tudo liberado para os buscadores (CSS, JS e imagens
+# também: o Google precisa deles pra ver a página como ela é). As páginas de
+# apoio ficam fora da busca pelo noindex delas, não por aqui.
+User-agent: *
+Allow: /
+
+Sitemap: https://COLOQUE-SEU-DOMINIO-AQUI/sitemap.xml

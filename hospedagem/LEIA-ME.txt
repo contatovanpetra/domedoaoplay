@@ -11,8 +11,12 @@ DO MEDO AO PLAY — COMO PUBLICAR
    - Link do checkout da Hotmart: nos 4 arquivos .html (index, privacidade,
      termos e suporte), troque https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI
      pelo link real (use "localizar e substituir" em todos: são 8 botões).
-   - Domínio: em index.html, troque COLOQUE-SEU-DOMINIO-AQUI (2 vezes, nas
-     linhas og:url e og:image) pelo domínio real, com https://.
+   - Domínio: o ideal é a pasta já vir gerada com ele (DOMINIO=seudominio.com.br
+     npm run build). Se vier com COLOQUE-SEU-DOMINIO-AQUI, troque pelo domínio
+     real (só o nome, sem https://, ex.: domedoaoplay.com.br) em TODOS os
+     arquivos: os 4 .html, robots.txt e sitemap.xml ("localizar e substituir"
+     em todos). Ele aparece no endereço oficial pro Google (canonical), na
+     prévia do WhatsApp/Instagram e no sitemap.
    - Pixels e rastreamento (Meta, Google): colar no <head> do index.html.
 5. Depois de subir, abra o site no celular e no computador e teste o botão
    "Quero entrar em cena".

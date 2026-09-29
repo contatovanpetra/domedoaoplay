@@ -7,12 +7,12 @@ import { join } from "node:path";
 const DIST = new URL("../dist/", import.meta.url).pathname;
 const REGRAS = [
   [/COLOQUE-SEU-CODIGO-AQUI/g, "link do checkout da Hotmart ainda é o provisório (a Hotmart mostra \"Offer not found\")"],
-  [/COLOQUE-SEU-DOMINIO-AQUI/g, "domínio ainda é o provisório (og:url / og:image, prévia do WhatsApp e Instagram)"],
+  [/COLOQUE-SEU-DOMINIO-AQUI/g, "domínio ainda é o provisório (canonical, og:url/og:image, dados estruturados, robots.txt, sitemap.xml): gere com DOMINIO=seudominio.com.br npm run build"],
   [/class="apoio-pendente"/g, "informação ainda a preencher nas páginas de apoio (e-mail, etc.)"],
 ];
 
 const pendencias = [];
-for (const nome of (await readdir(DIST)).filter((n) => n.endsWith(".html"))) {
+for (const nome of (await readdir(DIST)).filter((n) => /\.(html|txt|xml)$/.test(n))) {
   const texto = await readFile(join(DIST, nome), "utf8");
   for (const [regra, descricao] of REGRAS) {
     const n = (texto.match(regra) || []).length;
