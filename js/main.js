@@ -102,7 +102,10 @@ function wireCorDaTransicao() {
   }
 
   function aplica() {
-    const y = window.scrollY + window.innerHeight * 0.5;
+    // Referência no pé da tela (era o meio): o azul já escureceu quando o
+    // título da oferta entra por baixo — antes ele aparecia em branco sobre
+    // o azul claro, difícil de ler.
+    const y = window.scrollY + window.innerHeight * 0.92;
     if (y <= zonaAntes) {
       fundo.style.backgroundColor = "";
       ticking = false;
