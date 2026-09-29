@@ -39,29 +39,22 @@
      As duas fontes ficam no próprio site (assets/fonts, @font-face no topo do
      style.css), sem depender do servidor do Google e sem conexões a mais. -->
 
-<!-- A foto do herói é o LCP da página (o que mais demora a pintar): pedida
-     cedo, sem esperar o CSS descobrir o background-image (só depois de
-     casar seletor, calcular estilo etc.). Duas versões, uma por formato de
-     tela — cada visitante baixa só a que vai realmente usar (ver
-     .hero-foto-deitada no CSS: mesma condição dos dois lados). Em AVIF, o
-     mesmo formato que o CSS escolhe (image-set); quem não abre AVIF pula o
-     preload e baixa o WebP pelo CSS. -->
-<link rel="preload" as="image" href="assets/img/vivi-hero-desktop.avif" type="image/avif" media="(min-width: 700px) and (orientation: landscape)" fetchpriority="high">
-<link rel="preload" as="image" href="assets/img/vivi-hero-mobile.avif" type="image/avif" media="(max-width: 699.98px), (orientation: portrait)" fetchpriority="high">
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      (e nas 3 páginas de apoio) toda vez que style.css ou main.js mudar: o
      vercel.json manda o navegador guardar css/ e js/ por 1 ano sem perguntar.
      Imagens e vídeos ficam 1 dia; ao trocar uma foto mantendo o nome (as fotos
      reais da escada, por exemplo), suba o ?v= dela também. -->
-<!-- As fontes (no próprio site) são pedidas já aqui, mas com prioridade baixa:
-     sem isso, elas saíam na frente da foto do herói (prioridade máxima de
-     fonte) e dividiam a banda com ela no 4G. O texto aparece na fonte do
-     sistema e troca quando elas chegam (font-display: swap), sem pular. -->
-<link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
-<link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=95">
-<noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
+<!-- A foto do herói é o LCP da página: pedida já aqui, antes do CSS (um
+     script depois do <link> do CSS só roda quando o CSS termina de chegar, e
+     era o caso deste). Uma versão por formato de tela, com a mesma regra do
+     CSS (.hero-foto-deitada): (min-width: 700px) and (orientation:
+     landscape) usa a de computador. E o mesmo formato que o CSS escolhe:
+     AVIF só onde o navegador entende image-set() com type(), senão WebP.
+     Assim o iPhone com iOS 16 (que abre AVIF mas não entende type()) baixa
+     só o WebP, e não os dois como acontecia com o preload fixo em AVIF. A
+     decisão fica na classe "avif" do <html>, que o CSS segue: preload e CSS
+     escolhem sempre o mesmo arquivo. -->
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
      toda chegada, inclusive recarregando (não importa o quanto já tinha
@@ -77,7 +70,15 @@
      só era pedido depois do main.js (1,2 s no Lighthouse). Mesmo arquivo e
      mesma regra de tela que wireIntroStage usa. Prioridade baixa: sai cedo,
      mas atrás da foto do herói (14 KB, chega logo depois dela). -->
-<script>(function(){var d=document.documentElement;if("IntersectionObserver"in window)d.classList.add("pausa-fora");if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");var pl=document.createElement("link");pl.rel="preload";pl.as="image";pl.fetchPriority="low";pl.href=matchMedia("(max-aspect-ratio: 1/1)").matches?"assets/video/tunel-celular-poster.webp":"assets/video/tunel-desktop-poster.webp";document.head.appendChild(pl);if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
+<script>(function(){var d=document.documentElement;var av=window.CSS&&CSS.supports&&CSS.supports("background-image",'image-set(url("a.avif") type("image/avif"))'),h=document.createElement("link");h.rel="preload";h.as="image";h.fetchPriority="high";h.href="assets/img/vivi-hero-"+(matchMedia("(min-width: 700px) and (orientation: landscape)").matches?"desktop":"mobile")+(av?".avif":".webp");document.head.appendChild(h);if(av)d.classList.add("avif");if("IntersectionObserver"in window)d.classList.add("pausa-fora");if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");var pl=document.createElement("link");pl.rel="preload";pl.as="image";pl.fetchPriority="low";pl.href=matchMedia("(max-aspect-ratio: 1/1)").matches?"assets/video/tunel-celular-poster.webp":"assets/video/tunel-desktop-poster.webp";document.head.appendChild(pl);if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
+<!-- As fontes (no próprio site) são pedidas já aqui, mas com prioridade baixa:
+     sem isso, elas saíam na frente da foto do herói (prioridade máxima de
+     fonte) e dividiam a banda com ela no 4G. O texto aparece na fonte do
+     sistema e troca quando elas chegam (font-display: swap), sem pular. -->
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
+<link rel="stylesheet" href="css/style.css?v=97">
+<noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
      durante uma revisão, basta descomentar a linha abaixo.
@@ -950,6 +951,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=46"></script>
+<script src="js/main.js?v=47"></script>
 </body>
 </html>

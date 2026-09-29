@@ -15,7 +15,7 @@ import { transform } from "esbuild";
 const RAIZ = new URL(".", import.meta.url).pathname;
 const SAIDA = join(RAIZ, "dist");
 const FORA = new Set([
-  "dist", "node_modules", ".git", "testes",
+  "dist", "node_modules", ".git", "testes", "hospedagem", "pacote",
   "package.json", "package-lock.json", "build.mjs", "vercel.json",
   ".gitignore", ".vercelignore",
 ]);
@@ -39,3 +39,22 @@ async function minifica(caminho, loader) {
 await minifica("css/style.css", "css");
 await minifica("css/legal.css", "css");
 await minifica("js/main.js", "js");
+
+// HTML sem os comentários (<!-- ... -->): eles explicam o código pra quem
+// edita e iam junto pra todo visitante. O conteúdo e as tags ficam iguais.
+for (const nome of await readdir(SAIDA)) {
+  if (!nome.endsWith(".html")) continue;
+  const arquivo = join(SAIDA, nome);
+  const fonte = await readFile(arquivo, "utf8");
+  const limpo = fonte.replace(/<!--(?!\[if)[\s\S]*?-->\n?/g, "");
+  await writeFile(arquivo, limpo);
+  console.log(`${nome}: ${fonte.length} → ${limpo.length} bytes`);
+}
+
+// Fora da Vercel (a pasta vai pra Hostinger ou outra hospedagem Apache/
+// LiteSpeed): as regras de cache, compressão e https vão num .htaccess.
+// Na Vercel isso vem do vercel.json e o .htaccess não é publicado.
+if (!process.env.VERCEL) {
+  await cp(join(RAIZ, "hospedagem", "htaccess"), join(SAIDA, ".htaccess"));
+  console.log(".htaccess: criado");
+}

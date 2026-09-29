@@ -1299,6 +1299,21 @@ function wireIntroStage() {
   stage.addEventListener("click", adianta);
 
   video.poster = VIDEOS[modo].poster;
+  // Fase 1 (o véu abre e as faixas aparecem) não depende do vídeo: começa
+  // assim que o pôster está pronto (já pedido no <head>). Antes a abertura
+  // inteira esperava o vídeo começar a tocar, e numa rede lenta a pessoa via
+  // o túnel escurecido e parado por até 2,5 s. É a mesma animação da linha
+  // do tempo (tl), só adiantada; quando o tl começa, o véu já está aberto.
+  if (veil) {
+    const abreVeu = () => {
+      if (comecou || aberturaAcabou) return;
+      gsap.to(veil, { opacity: 0, duration: .5, ease: "power1.out" });
+      if (faixas) gsap.to(faixas, { opacity: .7, duration: .4, delay: .2 });
+    };
+    const poster = new Image();
+    poster.onload = abreVeu;
+    poster.src = VIDEOS[modo].poster;
+  }
   video.addEventListener("loadedmetadata", ajustaRitmo);
   video.addEventListener("playing", comeca, { once: true });
   video.src = VIDEOS[modo].src;

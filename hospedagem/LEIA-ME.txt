@@ -1,0 +1,21 @@
+DO MEDO AO PLAY — COMO PUBLICAR
+
+1. Envie TODO o conteúdo da pasta "site" para a raiz do domínio
+   (na Hostinger: public_html). Inclui o arquivo .htaccess, que fica
+   oculto em alguns computadores: confira que ele foi junto.
+2. Não é preciso instalar nada nem rodar nenhum programa: é um site
+   estático (HTML, CSS, JS, imagens e vídeos).
+3. Ative o SSL (https) do domínio no painel da hospedagem. Se a Hostinger
+   oferecer CDN, pode ativar: o site funciona igual com ou sem.
+4. Antes de divulgar:
+   - Link do checkout da Hotmart: em js/main.js, logo no começo do arquivo,
+     troque https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI pelo link real.
+   - Domínio: em index.html, troque COLOQUE-SEU-DOMINIO-AQUI (2 vezes, nas
+     linhas og:url e og:image) pelo domínio real, com https://.
+   - Pixels e rastreamento (Meta, Google): colar no <head> do index.html.
+5. Depois de subir, abra o site no celular e no computador e teste o botão
+   "Quero entrar em cena".
+
+Se algum arquivo for trocado depois (CSS ou JS), o número ?v= que aparece
+no index.html e nas páginas de apoio precisa subir junto, senão quem já
+visitou continua vendo a versão antiga.
