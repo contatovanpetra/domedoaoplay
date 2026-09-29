@@ -35,11 +35,13 @@
 <!-- GSAP/ScrollTrigger ficam local (js/vendor), não em CDN externo: a abertura
      depende deles pra rodar, e um bloqueio de rede/proxy no ambiente de quem
      visualiza (preview, sandbox etc.) não pode derrubar a animação inteira. -->
-<!-- Quicksand 600/700 em todos os títulos (inclusive o da primeira tela) e Nunito Sans 400/600 no texto e nos botões.
+<!-- Manrope 800 em todos os títulos (inclusive o da primeira tela) e Nunito Sans 400/600 no texto e nos botões.
+     A Quicksand (arredondada) ficou só na logo, que é imagem: nos títulos ela lia
+     "casual" perto de Apple, Spotify, Stripe e Linear (relatório de tipografia, set/2026).
      Carregado sem bloquear a primeira pintura: antes a página inteira esperava o
      servidor de fontes do Google (de 0,3 a 1,4 s num celular em 4G). -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
 
 <!-- A foto do herói é o LCP da página (o que mais demora a pintar): pedida
      cedo, sem esperar o CSS descobrir o background-image (só depois de
@@ -51,7 +53,7 @@
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=76">
+<link rel="stylesheet" href="css/style.css?v=78">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em

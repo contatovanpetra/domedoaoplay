@@ -49,7 +49,9 @@
      passa o olho ler o essencial. Cinza com contraste ~8:1 sobre o azul-noite. */
   --cor-apoio: #A7B6C6;
 
-  --font-head: 'Quicksand', sans-serif;
+  /* Títulos em Manrope 800 (aprovada pela Vitória em set/2026 no lugar da
+     Quicksand): geométrica como a marca, mas com cantos retos e traço cheio. */
+  --font-head: 'Manrope', 'Helvetica Neue', Arial, sans-serif;
   --font-body: 'Nunito Sans', sans-serif;
 
   /* Canto redondo é linguagem de CTA e de bônus. Card (comparação, qualificação,
@@ -123,7 +125,7 @@ img { max-width: 100%; display: block; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.15;
   margin: 0 0 .5em;
   color: var(--white);
@@ -184,7 +186,7 @@ ul { padding: 0; margin: 0; list-style: none; }
   align-items: center;
   justify-content: center;
   gap: .5em;
-  /* Manual: botões em Nunito Sans (texto), não em Quicksand (títulos). */
+  /* Manual: botões em Nunito Sans (texto), não na fonte dos títulos. */
   font-family: var(--font-body);
   font-weight: 600;
   /* Porta de túnel: cantos de cima bem redondos, topo reto e base quase reta.
@@ -349,7 +351,7 @@ html { scroll-padding-top: var(--header-h, 85px); }
   display: inline-flex;
   align-items: center;
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   font-size: var(--t-rotulo);
   letter-spacing: .14em;
   text-transform: uppercase;
@@ -380,6 +382,8 @@ html { scroll-padding-top: var(--header-h, 85px); }
   color: var(--orange-light);
   font-weight: 700;
 }
+/* Dentro de um título o laranja acompanha o peso do título (800 na Manrope). */
+:is(h1, h2, h3, .hero-headline, .metodo-frase, .statement-title, .burst-title) .text-orange { font-weight: inherit; }
 
 /* ---------- Ícones SVG ----------
    Nada de emoji ou caractere como ícone: tudo SVG, que escala com o texto e
@@ -731,17 +735,17 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
 .hero-headline {
   margin: 0;
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   /* O título é a frase que explica o curso, não duas palavras: o tamanho e a
      medida de linha são calculados pra ela cair em 3 ou 4 linhas cheias (umas
      30 letras por linha). Com a escala de título e 22ch ele virava 5 ou 6
      linhas curtas, que leem como um paredão. */
-  /* Mesma família dos outros títulos da página (Quicksand, a do manual):
+  /* Mesma família dos outros títulos da página (Manrope):
      a condensada (Anton) era a única fonte diferente do site inteiro. Como
      nas manchetes da Apple, duas frases — a primeira sozinha na linha dela
      (.hero-h1-abre), a segunda com o resultado em laranja. */
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   font-size: var(--t-display);
   line-height: 1.08;
   letter-spacing: -.022em;
@@ -977,7 +981,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   flex-direction: column;
   text-shadow: 0 1px 3px rgba(3, 10, 29, .65), 0 2px 18px rgba(3, 10, 29, .5);
 }
-.vivi-nome { font-family: var(--font-head); font-weight: 700; font-size: var(--t-titulo); line-height: 1.05; letter-spacing: -.015em; color: var(--white); }
+.vivi-nome { font-family: var(--font-head); font-weight: 800; font-size: var(--t-titulo); line-height: 1.05; letter-spacing: -.015em; color: var(--white); }
 .vivi-nome { display: block; }
 /* Cargo como nas biografias da Apple ("Tim Cook / Executive Chair"): logo
    abaixo do nome, em peso normal e tamanho de subtítulo — sem caixa-alta
@@ -1043,7 +1047,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   display: block;
   margin-bottom: .2rem;
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   font-size: var(--t-manchete);
   line-height: 1;
   letter-spacing: -.02em;
@@ -1073,7 +1077,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 .statement-panel { margin: 0 auto; max-width: 1000px; text-align: center; }
 .statement-title {
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   /* 40px no celular, 64px no tablet em pé, 80px do tablet deitado em
      diante — a escala das frases de destaque da Apple. */
   font-size: clamp(2.5rem, 7.8vw, 5rem);
@@ -1163,7 +1167,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 .metodo-frase {
   margin: 0;
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   /* Frase de fecho: 21px no celular, 28px no computador (degraus da Apple). */
   font-size: var(--t-subtitulo);
   line-height: 1.2;
@@ -1264,7 +1268,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 .escada-card-title {
   margin: 0 0 .35rem;
   font-size: var(--t-card);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
   color: var(--white);
 }
@@ -1501,7 +1505,7 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
   color: var(--tom-forte, var(--blue-deep));
   font-family: var(--font-head);
   font-size: var(--t-corpo);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1;
 }
 /* Aberto: o selo vira laranja, estendendo o mesmo princípio que já existe
@@ -1678,7 +1682,7 @@ html .beneficio h3 {
   margin: 0 0 .5rem;
   font-family: var(--font-head);
   font-size: var(--t-titulo);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.1;
   color: #fff;
 }
@@ -1687,7 +1691,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 /* 1. Formação completa: os números grandes e a trilha dos 8 módulos. */
 .arte-numeros { position: relative; display: flex; gap: clamp(1.5rem, 6vw, 3.5rem); align-items: flex-end; }
 .arte-num { display: grid; justify-items: center; font-family: var(--font-body); font-size: var(--t-pequeno); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: rgba(255, 255, 255, .8); }
-.arte-num b { font-family: var(--font-head); font-size: clamp(4.5rem, 22vw, 8.5rem); line-height: .9; font-weight: 700; letter-spacing: -.03em; color: #fff; }
+.arte-num b { font-family: var(--font-head); font-size: clamp(4.5rem, 22vw, 8.5rem); line-height: .9; font-weight: 800; letter-spacing: -.03em; color: #fff; }
 .arte-num + .arte-num b { color: var(--blue-light); }
 .arte-trilha { position: absolute; left: 50%; bottom: 14%; display: flex; gap: 6px; transform: translateX(-50%); }
 .arte-trilha i { width: clamp(18px, 5vw, 34px); height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .25); }
@@ -1809,7 +1813,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
   margin: clamp(3.5rem, 8vw, 5.5rem) 0 0;
   text-align: left;
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.02;
   color: var(--white);
 }
@@ -2079,7 +2083,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
   padding: 1.6rem .9rem .8rem;
   background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .75) 55%, rgba(6, 14, 28, .96) 100%);
 }
-.depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 700; color: var(--white); }
+.depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 800; color: var(--white); }
 .depo-cargo { font-size: var(--t-pequeno); color: var(--text-muted); }
 .depo-card figcaption { margin-top: .75rem; }
 /* O resultado é legenda do vídeo, não título: no tamanho do texto dos
@@ -2147,7 +2151,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 .price-box { display: flex; flex-direction: column; align-items: flex-start; gap: .2rem; }
 .price-now {
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 2.75rem;
   line-height: 1.05;
   letter-spacing: -.02em;
@@ -2246,7 +2250,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
   align-items: center;
   justify-content: center;
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   font-size: var(--t-pequeno);
   color: var(--white);
   margin-bottom: clamp(1.1rem, 2.4vw, 1.5rem);
@@ -2657,7 +2661,7 @@ html.abertura-on { overflow: hidden; }
   padding: 0 1.25rem;
   margin: 0;
   font-family: var(--font-head);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.05;
   font-size: clamp(2rem, 8.5vw, 3.4rem);
   color: var(--text);
