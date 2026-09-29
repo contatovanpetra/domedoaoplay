@@ -24,8 +24,6 @@
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Quando a pessoa clicar em "Quero entrar em cena", o checkout (Hotmart)
      abre numa aba nova — mas o DNS/TLS dele só começa a esquentar nesse
      clique. Preconectando cedo (o link real entra em HOTMART_CHECKOUT_URL,
@@ -38,22 +36,23 @@
 <!-- Manrope 800 em todos os títulos (inclusive o da primeira tela) e Nunito Sans 400/600 no texto e nos botões.
      A Quicksand (arredondada) ficou só na logo, que é imagem: nos títulos ela lia
      "casual" perto de Apple, Spotify, Stripe e Linear (relatório de tipografia, set/2026).
-     Carregado sem bloquear a primeira pintura: antes a página inteira esperava o
-     servidor de fontes do Google (de 0,3 a 1,4 s num celular em 4G). -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Nunito+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Nunito+Sans:wght@400;600&display=swap"></noscript>
+     As duas fontes ficam no próprio site (assets/fonts, @font-face no topo do
+     style.css), sem depender do servidor do Google e sem conexões a mais. -->
 
 <!-- A foto do herói é o LCP da página (o que mais demora a pintar): pedida
      cedo, sem esperar o CSS descobrir o background-image (só depois de
      casar seletor, calcular estilo etc.). Duas versões, uma por formato de
      tela — cada visitante baixa só a que vai realmente usar (ver
      .hero-foto-deitada no CSS: mesma condição dos dois lados). -->
-<link rel="preload" as="image" href="assets/img/vivi-hero-desktop.webp" type="image/webp" media="(min-width: 700px) and (orientation: landscape)">
-<link rel="preload" as="image" href="assets/img/vivi-hero-mobile.webp" type="image/webp" media="(max-width: 699.98px), (orientation: portrait)">
+<link rel="preload" as="image" href="assets/img/vivi-hero-desktop.webp" type="image/webp" media="(min-width: 700px) and (orientation: landscape)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/img/vivi-hero-mobile.webp" type="image/webp" media="(max-width: 699.98px), (orientation: portrait)" fetchpriority="high">
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
-     toda vez que style.css ou main.js mudar. -->
-<link rel="stylesheet" href="css/style.css?v=93">
+     (e nas 3 páginas de apoio) toda vez que style.css ou main.js mudar: o
+     vercel.json manda o navegador guardar css/ e js/ por 1 ano sem perguntar.
+     Imagens e vídeos ficam 1 dia; ao trocar uma foto mantendo o nome (as fotos
+     reais da escada, por exemplo), suba o ?v= dela também. -->
+<link rel="stylesheet" href="css/style.css?v=94">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -62,8 +61,14 @@
      lugar: endereço com âncora (#oferta etc.), volta de uma página do
      próprio site, ou o botão voltar do navegador. Duas travas: se o main.js
      não assumir a abertura em 5s, ou se ela passar de 20s, a página é
-     liberada. -->
-<script>(function(){var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
+     liberada.
+     Também aqui, antes da primeira pintura: "pausa-fora" (animações e a luz
+     da logo final esperam chegar perto da tela, ver wirePausaForaDaTela em
+     main.js; no main.js ela chegava tarde e a máscara de 92 KB já tinha sido
+     pedida) e o pôster do túnel, a primeira imagem que a pessoa vê: antes ele
+     só era pedido depois do main.js (1,2 s no Lighthouse). Mesmo arquivo e
+     mesma regra de tela que wireIntroStage usa. -->
+<script>(function(){var d=document.documentElement;if("IntersectionObserver"in window)d.classList.add("pausa-fora");if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");var pl=document.createElement("link");pl.rel="preload";pl.as="image";pl.href=matchMedia("(max-aspect-ratio: 1/1)").matches?"assets/video/tunel-celular-poster.webp":"assets/video/tunel-desktop-poster.webp";document.head.appendChild(pl);if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
      durante uma revisão, basta descomentar a linha abaixo.
@@ -623,13 +628,13 @@
         <div class="beneficio beneficio--escada">
           <div class="beneficio-arte" aria-hidden="true">
             <div class="arte-degraus">
-              <img src="assets/img/escada/foto-nivel-1.webp" alt="" loading="lazy" decoding="async">
-              <img src="assets/img/escada/foto-nivel-2.webp" alt="" loading="lazy" decoding="async">
-              <img src="assets/img/escada/foto-nivel-3.webp" alt="" loading="lazy" decoding="async">
-              <img src="assets/img/escada/foto-nivel-4.webp" alt="" loading="lazy" decoding="async">
-              <img src="assets/img/escada/foto-nivel-5.webp" alt="" loading="lazy" decoding="async">
-              <img src="assets/img/escada/foto-nivel-6.webp" alt="" loading="lazy" decoding="async">
-              <img src="assets/img/escada/foto-nivel-7.webp" alt="" loading="lazy" decoding="async">
+              <img src="assets/img/escada/foto-nivel-1.webp?v=2" alt="" loading="lazy" decoding="async">
+              <img src="assets/img/escada/foto-nivel-2.webp?v=2" alt="" loading="lazy" decoding="async">
+              <img src="assets/img/escada/foto-nivel-3.webp?v=2" alt="" loading="lazy" decoding="async">
+              <img src="assets/img/escada/foto-nivel-4.webp?v=2" alt="" loading="lazy" decoding="async">
+              <img src="assets/img/escada/foto-nivel-5.webp?v=2" alt="" loading="lazy" decoding="async">
+              <img src="assets/img/escada/foto-nivel-6.webp?v=2" alt="" loading="lazy" decoding="async">
+              <img src="assets/img/escada/foto-nivel-7.webp?v=2" alt="" loading="lazy" decoding="async">
             </div>
           </div>
           <div class="beneficio-texto">
@@ -935,7 +940,7 @@
   </div>
 </div>
 
-<script src="js/vendor/gsap.min.js"></script>
-<script src="js/main.js?v=45"></script>
+<script src="js/vendor/gsap.min.js?v=3.12.5"></script>
+<script src="js/main.js?v=46"></script>
 </body>
 </html>

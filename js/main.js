@@ -48,7 +48,36 @@ document.addEventListener("DOMContentLoaded", () => {
   wireReviewMode();
   wireCorDoFundo();
   wireBeneficiosPilha();
+  wirePausaForaDaTela();
 });
+
+// As animações que repetem sem parar (bônus flutuando, o pulso do som dos
+// depoimentos, o giro e o brilho da logo final, a setinha do topo) ficam
+// pausadas longe da tela. Paradas elas não custam nada; mas qualquer quadro
+// da página (rolar, o anel da escada) recalculava as cinco, mesmo fora da
+// tela (medido: 5 de cada 8 recálculos de estilo por quadro eram delas).
+// Voltam a tocar 200px antes de aparecer, então ninguém vê a pausa. A luz
+// da logo final (máscara com a imagem de 92 KB) só entra quando a seção
+// chega perto: antes ela era baixada junto com a primeira tela.
+function wirePausaForaDaTela() {
+  if (!("IntersectionObserver" in window)) return;
+  const alvos = document.querySelectorAll(".bonus-imagem, .depo-som, .final-logo, .scroll-cue");
+  if (!alvos.length) return;
+  document.documentElement.classList.add("pausa-fora");
+  const vista = new IntersectionObserver((entradas) => {
+    entradas.forEach((e) => e.target.classList.toggle("em-vista", e.isIntersecting));
+  }, { rootMargin: "200px 0px" });
+  alvos.forEach((el) => vista.observe(el));
+  const logo = document.querySelector(".final-logo");
+  if (logo) {
+    const perto = new IntersectionObserver((entradas) => {
+      if (!entradas.some((e) => e.isIntersecting)) return;
+      logo.classList.add("perto");
+      perto.disconnect();
+    }, { rootMargin: "1500px 0px" });
+    perto.observe(logo);
+  }
+}
 
 // Onde começa a passagem do azul claro dos benefícios pro escuro da oferta.
 // Troca de cor do fundo como a do Spotify (medida em spotify.com/br-pt/premium):
@@ -1176,8 +1205,8 @@ function wireIntroStage() {
   // ritmo é acertado pra ele chegar na porta quando a tela termina de crescer
   // (a luz do vídeo emenda no clarão). Tela em pé usa o vídeo vertical.
   const VIDEOS = {
-    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.jpg" },
-    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.jpg" },
+    celular: { src: "assets/video/tunel-celular.mp4", poster: "assets/video/tunel-celular-poster.webp" },
+    computador: { src: "assets/video/tunel-desktop.mp4", poster: "assets/video/tunel-desktop-poster.webp" },
   };
   const modo = window.matchMedia("(max-aspect-ratio: 1/1)").matches ? "celular" : "computador";
   const porta = tl.labels.cresce + CRESCE;

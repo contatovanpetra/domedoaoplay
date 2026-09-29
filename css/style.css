@@ -1,3 +1,15 @@
+/* Fontes no próprio site (antes vinham do Google Fonts: duas conexões a mais,
+   com DNS e TLS próprios, antes de a letra chegar; nas páginas de apoio o CSS
+   do Google ainda travava a primeira pintura). São os mesmos arquivos que o
+   Google entregava (subconjunto latino, que cobre todo o texto em português:
+   conferido caractere por caractere) e as mesmas regras de @font-face, peso
+   por peso. Licença SIL Open Font License, que permite hospedar. */
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 600; font-display: swap; src: url("../assets/fonts/manrope-v20-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 700; font-display: swap; src: url("../assets/fonts/manrope-v20-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Manrope'; font-style: normal; font-weight: 800; font-display: swap; src: url("../assets/fonts/manrope-v20-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Nunito Sans'; font-style: normal; font-weight: 400; font-stretch: 100%; font-display: swap; src: url("../assets/fonts/nunito-sans-v19-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Nunito Sans'; font-style: normal; font-weight: 600; font-stretch: 100%; font-display: swap; src: url("../assets/fonts/nunito-sans-v19-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
 /* =========================================================
    Do Medo ao Play — Landing Page
    Identidade: Direção 05 · Portal de Destravamento
@@ -2314,6 +2326,15 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 @media (prefers-reduced-motion: reduce) {
   .final-logo-brilho, .final-logo-luz::before { animation: none; }
 }
+/* Pausa longe da tela (ver wirePausaForaDaTela em main.js). A classe
+   "pausa-fora" só entra com o JavaScript funcionando: sem ele, tudo toca. */
+html.pausa-fora .bonus-imagem:not(.em-vista),
+html.pausa-fora .depo-som:not(.em-vista)::after,
+html.pausa-fora .scroll-cue:not(.em-vista) svg,
+html.pausa-fora .final-logo:not(.em-vista) .final-logo-brilho,
+html.pausa-fora .final-logo:not(.em-vista) .final-logo-luz::before { animation-play-state: paused; }
+/* A luz da logo (a máscara baixa arco-3d-560.webp) só existe perto da seção. */
+html.pausa-fora .final-logo:not(.perto) .final-logo-luz { display: none; }
 
 /* ---------- Footer ---------- */
 .site-footer {
