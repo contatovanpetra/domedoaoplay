@@ -64,7 +64,7 @@ const arquivosMs = new Trend("arquivos_ms", true);
 // Quando o ?v= mudar no index.html, o teste continua valendo: o servidor
 // entrega o mesmo arquivo com qualquer ?v=.
 const PRIMEIRA_TELA = [
-  "/css/style.css?v=99",
+  "/css/style.css?v=100",
   "/js/vendor/gsap.min.js?v=3.12.5",
   "/js/main.js?v=48",
   "/assets/img/vivi-hero-mobile.webp",

@@ -514,7 +514,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    depois do botão "Quero entrar em cena" antes da frase seguinte. Esse padding é rolagem pura, antes do texto preso
    grudar no topo (ver .aplicacao-preso) — o mesmo embaixo dá uma folga
    parecida do lado de fora antes da seção acabar de vez. */
-#aplicacao { padding-top: 104px; padding-bottom: 0; }
+#aplicacao { padding-top: 40px; padding-bottom: 0; }
 @media (min-width: 700px) {
   #aplicacao { padding-top: 176px; }
 }
@@ -734,6 +734,16 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
   padding: 0 0 clamp(128px, 14vw, 200px);
 }
 #reconhecimento > .container { width: 100%; }
+/* Celular (pedido da Vitória, 29/set): o "Você trava?" chegava tarde demais
+   depois de "A formação mais completa…" (437px de rolagem num iPhone de
+   844px). O bloco passa a ter 85% da tela em vez de uma tela inteira: a
+   frase chega ~130px antes. A pista da foto do herói acompanha sozinha
+   (ajustaRunwayHero mede esta altura); os valores abaixo de .hero e
+   margin-top são só a estimativa antes do JS, na mesma conta. */
+@media (max-width: 699.98px) {
+  .hero { min-height: 185vh; min-height: 185svh; }
+  #reconhecimento { margin-top: -85vh; margin-top: -85svh; min-height: 85vh; min-height: 85svh; }
+}
 .hero-fim {
   position: absolute;
   inset: 0;
@@ -1163,7 +1173,10 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
    ficando "grudado" no CTA. */
 #metodo { padding-bottom: 200px; }
 @media (max-width: 699.98px) {
-  #metodo { padding-bottom: 112px; }
+  /* Celular (pedido da Vitória, 29/set): do botão da escada até "Falar bem na
+     câmera…" eram 520px de rolagem; com 80px aqui e 40px no topo de
+     #aplicacao, ~96px a menos. */
+  #metodo { padding-bottom: 80px; }
 }
 /* Fecho da escada: a frase grande e o botão, centralizados embaixo do carrossel. */
 .metodo-fecho {
