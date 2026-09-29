@@ -1682,7 +1682,9 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
 html .beneficio h3 {
   margin: 0 0 .5rem;
   font-family: var(--font-head);
-  font-size: var(--t-titulo);
+  /* Diminui um pouco nas telas bem estreitas: em 320px "Acompanhamento"
+     passava 21px da largura do cartão. */
+  font-size: min(var(--t-titulo), 7.9vw);
   font-weight: 800;
   line-height: 1.1;
   color: #fff;
@@ -3083,15 +3085,15 @@ html.abertura-on { overflow: hidden; }
    O palco do herói fica fora do zoom porque a altura dele depende de vh. */
 @media (min-width: 2400px) {
   :root { --header-h: 102px; }
-  .header-inner, .hero-inner, main > .section, .site-footer { zoom: 1.2; }
+  .header-inner, .hero-inner, .hero-cta-foto, main > .section, .site-footer { zoom: 1.2; }
 }
 @media (min-width: 3000px) {
   :root { --header-h: 123px; }
-  .header-inner, .hero-inner, main > .section, .site-footer { zoom: 1.45; }
+  .header-inner, .hero-inner, .hero-cta-foto, main > .section, .site-footer { zoom: 1.45; }
 }
 @media (min-width: 3600px) {
   :root { --header-h: 140px; }
-  .header-inner, .hero-inner, main > .section, .site-footer { zoom: 1.65; }
+  .header-inner, .hero-inner, .hero-cta-foto, main > .section, .site-footer { zoom: 1.65; }
 }
 
 /* ---------- Modo revisão: itens a confirmar ----------
@@ -3345,4 +3347,48 @@ html.abertura-on { overflow: hidden; }
     --depo-w: min(400px, calc((min(100vw, var(--container-w)) - 48px - 56px) / 3), max(240px, calc((100svh - 330px) * .5625)));
     max-width: var(--container-w);
   }
+}
+
+/* ---------- Tablet (auditoria de 29/set) ----------
+   Em pé (iPad mini, Air, Pro): a primeira tela no mesmo formato do celular
+   — a foto primeiro, o título por cima do pé dela e o botão logo embaixo;
+   o parágrafo de apoio desce pro começo da segunda tela. Antes era o
+   formato antigo do celular (bloco de texto pequeno no alto, foto embaixo). */
+@media (min-width: 700px) and (orientation: portrait) and (min-height: 481px) {
+  .cinema-stage { position: relative; }
+  .hero-foto-deitada {
+    inset: 0 0 auto 0;
+    height: calc(100svh - var(--hero-base-tab, 300px));
+    background-size: cover;
+    background-position: 55% 66%;
+  }
+  .hero-foto-deitada::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(-1 * var(--hero-base-tab, 300px) - 40px);
+    height: calc(40% + var(--hero-base-tab, 300px) + 40px);
+    background: linear-gradient(180deg, rgba(11, 23, 40, 0) 0%, rgba(11, 23, 40, .8) 26%, var(--bg) 44%, var(--bg) 100%);
+  }
+  .hero-scrim { display: none; }
+  .site-header:not(.com-fundo) { background: linear-gradient(180deg, rgba(3, 10, 29, .55), rgba(3, 10, 29, 0)); }
+  .hero-primeira-tela { padding: 0 0 56px; justify-content: flex-end; }
+  .hero .hero-inner { position: static; }
+  .hero-lead-list {
+    position: absolute;
+    top: calc(100% + 48px);
+    left: 32px;
+    right: 32px;
+    margin: 0 auto;
+    max-width: 40rem;
+  }
+  .hero-cta-foto { margin-top: 1.4rem; }
+  .hero-primeira-tela .scroll-cue { display: none; }
+}
+@media (min-width: 700px) and (max-width: 1068.98px) {
+  /* Cartões da Escada: 190px sumiam numa tela de 820px. */
+  .escada-card { flex-basis: clamp(220px, 28vw, 300px); }
+  /* Botões grandes um degrau maiores no tablet (eram 47px). */
+  .btn-large { min-height: 52px; font-size: 1.125rem; font-weight: 700; }
 }

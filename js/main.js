@@ -185,7 +185,9 @@ function ajustaFotoHero() {
   if (!foto || !copy || !hero) return;
   // No celular (até 699px) a foto fica no alto e o texto por cima do pé
   // dela (ver CSS): a conta de descer a foto só vale pro tablet em pé.
-  if (!window.matchMedia("(min-width: 700px) and (max-width: 899.98px) and (orientation: portrait)").matches) {
+  // Desde set/2026 o tablet em pé também usa o formato do celular (a foto no
+  // alto, ver CSS), então a conta de descer a foto não vale em tela nenhuma.
+  if (true) {
     foto.style.backgroundPosition = "";
     return;
   }
@@ -277,7 +279,12 @@ function wireScrollEffects() {
 
     // A trilha de leitura fica parada enquanto a abertura toca.
     const introActive = root.classList.contains("abertura-on");
-    if (bar) bar.style.setProperty("--read", introActive || maxScroll <= 0 ? "0" : clamp(y / maxScroll).toFixed(4));
+    if (bar) {
+      bar.style.setProperty("--read", introActive || maxScroll <= 0 ? "0" : clamp(y / maxScroll).toFixed(4));
+      // Página que cabe inteira na tela (o Suporte numa tela 4K): não há o
+      // que rolar, então a barrinha some em vez de ficar parada no topo.
+      bar.hidden = maxScroll <= 1;
+    }
     // Fora do "cinema" também (movimento reduzido): é só opacidade, sem
     // movimento nenhum, e sem ela a foto terminaria numa borda reta.
     // Tela baixa (celular deitado): o herói vira seção normal, sem pista
@@ -1128,7 +1135,13 @@ function wireIntroStage() {
 
   // Começa só a linha do contorno, girada em 3D; o corpo do iPhone aparece depois.
   if (burstLinha) {
-    const comprimento = burstLinha.getTotalLength();
+    // O traço usa vector-effect: non-scaling-stroke, então o tracejado é
+    // medido em pixels da tela, não nas unidades do desenho: getTotalLength()
+    // dava sempre ~577 e a linha parava na metade do celular deitado do
+    // computador (contorno de ~1.230px) e deixava uma falha no de pé. O
+    // perímetro real vem do tamanho do palco na tela (sem a rotação 3D, que
+    // é transform e não mexe em offsetWidth/Height).
+    const comprimento = Math.ceil(2 * (burstStage.offsetWidth + burstStage.offsetHeight)) + 4;
     gsap.set(burstLinha, { strokeDasharray: comprimento, strokeDashoffset: comprimento });
   }
   gsap.set(burstStage, { transformPerspective: 1100, transformOrigin: "50% 50%", rotationY: -22, rotationX: 9 });
