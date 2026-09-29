@@ -128,6 +128,9 @@ test("nenhuma camada cobre os botões de compra (o ponto do toque é o próprio 
         await espera(900);
         const b = el.getBoundingClientRect();
         if (b.bottom < 0 || b.top > innerHeight) continue;
+        // No celular em pé, o botão do topo some de propósito quando sobe
+        // (a foto se dissolve no azul; o do menu continua sempre na tela).
+        if (!el.checkVisibility({ visibilityProperty: true })) continue;
         const hit = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2);
         if (!hit || !(hit === el || el.contains(hit))) ruins.push(`${el.textContent.trim()} a ${f * 100}% da tela: coberto por ${hit && hit.className}`);
       }

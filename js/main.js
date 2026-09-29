@@ -218,6 +218,11 @@ function wireScrollEffects() {
   // longo da segunda tela da pista, e a foto se dissolve no fundo (como a
   // abertura do iPad Pro na Apple) em vez de terminar numa borda reta.
   const fimFoto = hero ? hero.querySelector(".hero-fim") : null;
+  // Celular em pé: título, texto e botão ficam por cima do pé da foto presa
+  // (ver CSS). Subindo, eles passariam por cima do rosto da Vitória: somem
+  // devagar antes disso, e a foto começa a se dissolver mais cedo.
+  const heroTexto = hero ? hero.querySelector(".hero-primeira-tela") : null;
+  const celularEmPe = window.matchMedia("(max-width: 699.98px) and (min-height: 481px)");
   const bar = document.querySelector(".read-progress");
   // A classe é ligada no <head> só quando o movimento é permitido.
   const cinema = Boolean(hero && stage && root.classList.contains("cinema-on"));
@@ -281,9 +286,17 @@ function wireScrollEffects() {
       if (fotoSolta) { fotoSolta = false; stage.style.visibility = ""; }
     } else if (fimFoto && heroAltura) {
       // Começa a dissolver quando o botão do herói já está saindo pelo
-      // alto (35% da pista) e termina quando a frase entra por baixo.
-      const f = clamp(((y - heroTop) / pistaFoto - .35) / .6);
+      // alto (35% da pista) e termina quando a frase entra por baixo. No
+      // celular em pé, de 10% a 95%: o texto sobe por cima da foto.
+      const r = (y - heroTop) / pistaFoto;
+      const f = celularEmPe.matches ? clamp((r - .1) / .85) : clamp((r - .35) / .6);
       fimFoto.style.opacity = (f * f * (3 - 2 * f)).toFixed(3);
+      if (heroTexto) {
+        const o = celularEmPe.matches ? 1 - clamp((y - heroTop - 20) / 220) : 1;
+        heroTexto.style.opacity = o < 1 ? (o * o * (3 - 2 * o)).toFixed(3) : "";
+        // Sumido, também não recebe toque (o botão invisível não abre nada).
+        heroTexto.style.visibility = o <= 0 ? "hidden" : "";
+      }
       // Quando a foto solta e começa a subir, ela já é só fundo: esconde o
       // palco pra aparecer a .page-bg fixa por trás. Subindo, o degradê da
       // camada sairia do lugar em relação ao fundo fixo e marcaria uma faixa.
