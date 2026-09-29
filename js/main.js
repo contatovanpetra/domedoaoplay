@@ -755,8 +755,11 @@ function wireEscadaShowcase() {
       tocando = !tocando;
       playPauseBtn.setAttribute("aria-pressed", tocando ? "false" : "true");
       playPauseBtn.setAttribute("aria-label", tocando ? "Pausar avanço automático" : "Retomar avanço automático");
-      playPauseBtn.querySelector(".icon-pause").hidden = !tocando;
-      playPauseBtn.querySelector(".icon-play").hidden = tocando;
+      // toggleAttribute, não .hidden: nos ícones (SVG) a propriedade .hidden
+      // não existe e não mexia no atributo — o ícone de play nunca aparecia e
+      // o botão ficava vazio depois do primeiro toque.
+      playPauseBtn.querySelector(".icon-pause").toggleAttribute("hidden", !tocando);
+      playPauseBtn.querySelector(".icon-play").toggleAttribute("hidden", tocando);
       if (tocando) iniciarProgresso(true);
       else pararProgresso();
     });
@@ -1286,6 +1289,7 @@ function wireHeaderReveal() {
   if ("ResizeObserver" in window && vivi) new ResizeObserver(medeVivi).observe(vivi);
 
   let ultimoY = window.scrollY;
+  let andado = 0;
   let pedido = false;
   const confere = () => {
     pedido = false;
@@ -1301,11 +1305,20 @@ function wireHeaderReveal() {
       return;
     }
     const d = y - ultimoY;
-    if (Math.abs(d) < 8) return;
-    // Com o foco no menu (navegando pelo teclado), ele não some.
-    if (d > 0 && !header.contains(document.activeElement)) header.classList.add("is-recolhido");
-    else if (d < 0) header.classList.remove("is-recolhido");
     ultimoY = y;
+    // O "quique" do iPhone no fim e no começo da página não conta.
+    const fim = document.documentElement.scrollHeight - window.innerHeight;
+    if (y < 0 || y > fim) return;
+    // Soma o quanto andou na mesma direção (trocou de direção, zera): só
+    // esconde depois de 24px descendo e só mostra depois de 48px subindo.
+    // Com 8px por quadro, qualquer tremida do dedo ou a rolagem que
+    // desliza sozinha no celular fazia o menu sumir e voltar sem parar.
+    if (d === 0) return;
+    if ((d > 0) !== (andado > 0)) andado = 0;
+    andado += d;
+    // Com o foco no menu (navegando pelo teclado), ele não some.
+    if (andado > 24 && !header.contains(document.activeElement)) header.classList.add("is-recolhido");
+    else if (andado < -48) header.classList.remove("is-recolhido");
   };
   window.addEventListener("scroll", () => {
     if (!pedido) { pedido = true; requestAnimationFrame(confere); }

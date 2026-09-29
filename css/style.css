@@ -250,6 +250,9 @@ ul { padding: 0; margin: 0; list-style: none; }
      deixa a subida terminar antes de sumir. */
   visibility: hidden;
   transition: transform .5s ease, opacity .4s ease, visibility 0s linear .5s, background-color .3s ease;
+  /* Camada própria desde o começo: o navegador não precisa criar uma nova
+     no meio da rolagem, a cada vez que o menu sobe ou desce. */
+  will-change: transform;
 }
 /* A logo (nome em branco) e o "Quero entrar em cena" leem bem sobre o fundo
    escuro da página, mas ficam quase invisíveis quando o menu passa por cima
@@ -259,13 +262,9 @@ ul { padding: 0; margin: 0; list-style: none; }
    fundo escuro translúcido só nesse momento — mais simples e sem precisar
    de uma segunda versão da logo. */
 .site-header.on-light {
-  background: rgba(11, 23, 40, .68);
-}
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .site-header.on-light {
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-  }
+  /* Sem desfoque (backdrop-filter): ligar e desligar o desfoque de uma barra
+     fixa no meio da rolagem pesava no iPhone e dava as travadas no menu. */
+  background: rgba(11, 23, 40, .86);
 }
 /* Menu sem cor nenhuma atrás. A logo leva só uma sombra suave nas letras, pra
    continuar legível quando passa sobre uma parte clara da página. */
@@ -915,6 +914,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
     pointer-events: none;
   }
   .vivi-foto .credential-figure { font-size: 1.75rem; }
+  /* Os números descem mais perto do pé da tela (o bloco de texto desce
+     junto, colado neles). */
+  .vivi-camada { padding-bottom: max(.75rem, env(safe-area-inset-bottom)); }
   .vivi-foto .credential-item { font-size: .8125rem; }
   .vivi-foto .credential-list { row-gap: .8rem; }
 }
@@ -935,7 +937,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Cargo como nas biografias da Apple ("Tim Cook / Executive Chair"): logo
    abaixo do nome, em peso normal e tamanho de subtítulo — sem caixa-alta
    espaçada, que lia como etiqueta. */
-.vivi-cargo { display: block; margin-top: .3rem; font-family: var(--font-body); font-weight: 400; font-size: var(--t-lead); line-height: 1.25; color: rgba(255, 255, 255, .86); }
+.vivi-cargo { display: block; margin-top: .3rem; font-family: var(--font-body); font-weight: 400; font-size: var(--t-lead); line-height: 1.25; color: var(--blue-light); }
 .vivi-cargo::first-letter { text-transform: uppercase; }
 /* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
    título da seção. */
@@ -1246,7 +1248,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   transform: translateY(-50%) scale(1.08);
 }
 /* Controle único: play/pause + 7 bolinhas numeradas, cada uma com um anel
-   que preenche em laranja enquanto aquele nível fica em foco (tipo stories);
+   que preenche em vermelho (REC) enquanto aquele nível fica em foco (tipo stories);
    ao completar, avança sozinha pro próximo. Pausar congela o preenchimento. */
 .escada-progresso {
   /* Uma cápsula de vidro envolvendo o play/pause e os 7 números: lê como
@@ -1315,7 +1317,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 }
 .escada-num-ring-fill {
   fill: none;
-  stroke: var(--orange);
+  /* Vermelho do botão de gravar (o mesmo do REC do iPhone, #FF3B30): o anel
+     enchendo lê como "gravando" aquele nível. */
+  stroke: #FF3B30;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-dasharray: 97.39;
