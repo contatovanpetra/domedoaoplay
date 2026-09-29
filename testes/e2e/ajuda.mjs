@@ -1,6 +1,9 @@
 // Ferramentas comuns dos testes: vigia erros, espera a abertura e rola a página.
 import { expect } from "@playwright/test";
 
+// Origem do site em teste (local ou o endereço publicado, via BASE_URL).
+const ORIGEM = new URL(process.env.BASE_URL || "http://localhost:4173").origin;
+
 // Registra tudo o que dá errado na página: erro de JavaScript, console.error,
 // arquivo do próprio site com status HTTP >= 400 e pedido que falhou.
 // O vídeo do túnel é cortado de propósito quando a abertura acaba (a camada
@@ -10,11 +13,11 @@ export function vigia(page) {
   page.on("pageerror", (e) => problemas.js.push(e.message));
   page.on("console", (m) => { if (m.type() === "error") problemas.console.push(m.text()); });
   page.on("response", (r) => {
-    if (r.url().startsWith("http://localhost") && r.status() >= 400) problemas.http.push(`${r.status()} ${r.url()}`);
+    if (r.url().startsWith(ORIGEM) && r.status() >= 400) problemas.http.push(`${r.status()} ${r.url()}`);
   });
   page.on("requestfailed", (r) => {
     const url = r.url();
-    if (!url.startsWith("http://localhost")) return;
+    if (!url.startsWith(ORIGEM)) return;
     const erro = (r.failure() || {}).errorText || "";
     if (/\.mp4/.test(url) && /ABORTED/.test(erro)) return;
     problemas.rede.push(`${erro} ${url}`);

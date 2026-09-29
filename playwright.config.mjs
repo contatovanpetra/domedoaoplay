@@ -16,7 +16,12 @@ export default defineConfig({
   workers: process.env.CI ? 2 : 3,
   retries: 0,
   reporter: [["list"]],
-  use: { baseURL, launchOptions: { executablePath }, trace: "off" },
+  // PW_ARGS: opções extras do Chrome, separadas por espaço (por exemplo, pra
+  // rodar atrás de um proxy: --proxy-server=http://host:porta).
+  use: {
+    baseURL, trace: "off",
+    launchOptions: { executablePath, args: process.env.PW_ARGS ? process.env.PW_ARGS.split(" ") : [] },
+  },
   webServer: process.env.BASE_URL ? undefined : { command: "npm run servir", url: "http://localhost:4173/index.html", reuseExistingServer: true, timeout: 60_000 },
   projects: [
     { name: "celular", use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 } },
