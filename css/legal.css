@@ -15,51 +15,78 @@
   align-items: center;
   gap: .4rem;
   margin-bottom: 1.6rem;
-  font-size: clamp(.8rem, .75rem + .3vw, .9rem);
+  /* 14px: a nota da escala da landing (era 13px no celular). */
+  font-size: var(--t-pequeno);
   color: var(--text-muted);
   text-decoration: none;
 }
 .apoio-voltar:hover, .apoio-voltar:focus-visible { color: var(--white); }
 .apoio-voltar svg { width: 1em; height: 1em; }
-/* Escala tipográfica própria destas páginas (não reaproveita --t-titulo e
-   companhia direto): esses tokens foram calibrados pro texto curto e
-   comercial da landing, então crescem muito devagar — ficam quase parados
-   perto do tamanho mínimo do celular até a tela ficar bem larga (perto de
-   1000-1300px), o que faz um texto de leitura longa parecer pequeno demais
-   em tablet e em janelas de notebook mais estreitas. Aqui o crescimento
-   começa mais cedo e chega ao tamanho final já por volta de 700-900px. */
+/* Mesma escala da landing, em degraus (celular / tablet 700px+ /
+   computador 1069px+), como nas páginas legais da Apple: texto de leitura
+   sempre 17px, título da página 32 / 40 / 48px, títulos de bloco 21 / 24px,
+   abertura no tamanho de abertura de seção (19 / 21 / 24px). Antes cada
+   tamanho era fluido (16,7px, 18,4px, 22,3px, 33,4px) e não batia com
+   nenhum tamanho da página principal. */
 .apoio-main h1 {
   margin: 0;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(1.9rem, 1.5rem + 2.4vw, 2.75rem);
+  font-size: 2rem;
   line-height: 1.1;
   letter-spacing: -.03em;
   color: var(--white);
+  text-wrap: balance;
 }
-.apoio-data { margin: .8rem 0 0; font-size: clamp(.8rem, .75rem + .3vw, .9rem); color: var(--text-muted); }
-.apoio-intro { margin: 1.6rem 0 0; font-size: clamp(1.05rem, .9rem + 1vw, 1.3rem); line-height: 1.55; color: var(--cor-corpo); }
 .apoio-main h2 {
   margin: 2.6rem 0 .8rem;
   font-family: var(--font-head);
   font-weight: 700;
-  font-size: clamp(1.3rem, 1.05rem + 1.4vw, 1.75rem);
+  font-size: var(--t-subtitulo);
   line-height: 1.25;
   color: var(--white);
+  text-wrap: balance;
 }
 .apoio-main p,
-.apoio-main li { font-size: clamp(1rem, .92rem + .5vw, 1.15rem); line-height: 1.7; color: var(--cor-corpo); }
+.apoio-main li { font-size: var(--t-corpo); line-height: 1.65; color: var(--cor-corpo); }
 .apoio-main p { margin: 0 0 1em; }
 .apoio-main ul { margin: 0 0 1em; padding-left: 1.2rem; }
-.apoio-main li + li { margin-top: .45em; }
+.apoio-main li + li { margin-top: .5em; }
 .apoio-main strong { color: var(--white); font-weight: 600; }
 .apoio-main a { color: var(--white); text-underline-offset: 3px; }
+/* Data e abertura: com ".apoio-main p" acima (mais específico) eles ficavam
+   do tamanho do texto comum e sem o respiro próprio — a data colava no
+   título. Por isso levam o ".apoio-main" na frente. */
+.apoio-main .apoio-data { margin: .75rem 0 0; font-size: var(--t-pequeno); line-height: 1.5; color: var(--text-muted); }
+.apoio-main .apoio-intro { margin: 1.5rem 0 0; font-size: var(--t-lead); line-height: 1.5; color: var(--text); }
+@media (min-width: 700px) {
+  .apoio-main h1 { font-size: 2.5rem; }
+  .apoio-main h2 { font-size: 1.5rem; }
+}
+@media (min-width: 1069px) {
+  .apoio-main h1 { font-size: 3rem; }
+}
 /* Informação que ainda falta preencher: aparece destacada até ser trocada. */
-.apoio-pendente { padding: 0 .3em; background: rgba(215, 119, 19, .18); color: var(--white); }
+.apoio-pendente { padding: 0 .3em; border-radius: 4px; background: rgba(215, 119, 19, .18); color: var(--white); }
 
-/* Suporte: um bloco por caso, do mais comum ao menos comum. */
-.apoio-casos { display: grid; gap: 1rem; margin-top: 2.2rem; }
-.apoio-caso { padding: clamp(1.2rem, 3vw, 1.6rem); background: #0E1D31; border: 1px solid var(--border); }
-.apoio-caso h2 { margin-top: 0; }
+/* Suporte: um bloco por caso, do mais comum ao menos comum. Cantos
+   arredondados como os cards da landing (módulos, oferta). */
+.apoio-casos { display: grid; gap: .8rem; margin-top: 2.2rem; }
+.apoio-caso { padding: clamp(1.25rem, 3vw, 1.6rem); background: #0E1D31; border: 1px solid var(--border); border-radius: 18px; }
+.apoio-main .apoio-caso h2 { margin: 0 0 .5rem; }
 .apoio-caso p:last-child { margin-bottom: 0; }
-.apoio-fim { margin-top: 2.2rem; }
+.apoio-main .apoio-fim { margin-top: 2.2rem; }
+@media (min-width: 700px) {
+  .apoio-casos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+}
+
+/* O menu reaparece quando a pessoa sobe a página: aqui ele sempre passa por
+   cima de texto, então leva o mesmo fundo escuro translúcido que a landing
+   usa sobre as seções claras (sem isso as letras cruzavam por trás da logo
+   e do botão). No topo, é da mesma cor da página e não aparece. */
+.pagina-apoio .site-header { background: rgba(11, 23, 40, .9); }
+
+/* Telas muito largas: acompanha o zoom do menu e do rodapé da landing. */
+@media (min-width: 2400px) { .apoio-main { zoom: 1.2; } }
+@media (min-width: 3000px) { .apoio-main { zoom: 1.45; } }
+@media (min-width: 3600px) { .apoio-main { zoom: 1.65; } }
