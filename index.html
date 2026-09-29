@@ -43,9 +43,11 @@
      cedo, sem esperar o CSS descobrir o background-image (só depois de
      casar seletor, calcular estilo etc.). Duas versões, uma por formato de
      tela — cada visitante baixa só a que vai realmente usar (ver
-     .hero-foto-deitada no CSS: mesma condição dos dois lados). -->
-<link rel="preload" as="image" href="assets/img/vivi-hero-desktop.webp" type="image/webp" media="(min-width: 700px) and (orientation: landscape)" fetchpriority="high">
-<link rel="preload" as="image" href="assets/img/vivi-hero-mobile.webp" type="image/webp" media="(max-width: 699.98px), (orientation: portrait)" fetchpriority="high">
+     .hero-foto-deitada no CSS: mesma condição dos dois lados). Em AVIF, o
+     mesmo formato que o CSS escolhe (image-set); quem não abre AVIF pula o
+     preload e baixa o WebP pelo CSS. -->
+<link rel="preload" as="image" href="assets/img/vivi-hero-desktop.avif" type="image/avif" media="(min-width: 700px) and (orientation: landscape)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/img/vivi-hero-mobile.avif" type="image/avif" media="(max-width: 699.98px), (orientation: portrait)" fetchpriority="high">
 <!-- ?v= é pra travar o cache: sem isso, quem já visitou o site pode continuar
      recebendo o CSS/JS antigo depois de uma atualização. Bump o número aqui
      (e nas 3 páginas de apoio) toda vez que style.css ou main.js mudar: o
@@ -58,7 +60,7 @@
      sistema e troca quando elas chegam (font-display: swap), sem pular. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=94">
+<link rel="stylesheet" href="css/style.css?v=95">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- Com movimento permitido, liga a animação do herói e a abertura antes da
      primeira pintura (a página não pisca por baixo dela). A abertura toca em
@@ -73,8 +75,9 @@
      main.js; no main.js ela chegava tarde e a máscara de 92 KB já tinha sido
      pedida) e o pôster do túnel, a primeira imagem que a pessoa vê: antes ele
      só era pedido depois do main.js (1,2 s no Lighthouse). Mesmo arquivo e
-     mesma regra de tela que wireIntroStage usa. -->
-<script>(function(){var d=document.documentElement;if("IntersectionObserver"in window)d.classList.add("pausa-fora");if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");var pl=document.createElement("link");pl.rel="preload";pl.as="image";pl.href=matchMedia("(max-aspect-ratio: 1/1)").matches?"assets/video/tunel-celular-poster.webp":"assets/video/tunel-desktop-poster.webp";document.head.appendChild(pl);if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
+     mesma regra de tela que wireIntroStage usa. Prioridade baixa: sai cedo,
+     mas atrás da foto do herói (14 KB, chega logo depois dela). -->
+<script>(function(){var d=document.documentElement;if("IntersectionObserver"in window)d.classList.add("pausa-fora");if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("cinema-on");if(location.hash)return;try{var n=performance.getEntriesByType("navigation")[0],t=n?n.type:"",pag=function(u){return u.pathname.replace(/index.html$/,"")},r=document.referrer,veioDeOutraNossa=r.indexOf(location.origin+"/")===0&&pag(new URL(r))!==pag(location);if(veioDeOutraNossa||t==="back_forward")return}catch(e){}d.classList.add("abertura-on");var pl=document.createElement("link");pl.rel="preload";pl.as="image";pl.fetchPriority="low";pl.href=matchMedia("(max-aspect-ratio: 1/1)").matches?"assets/video/tunel-celular-poster.webp":"assets/video/tunel-desktop-poster.webp";document.head.appendChild(pl);if("scrollRestoration"in history)history.scrollRestoration="manual";setTimeout(function(){if(!window.aberturaAssumida)d.classList.remove("abertura-on")},5000);setTimeout(function(){d.classList.remove("abertura-on")},20000)})()</script>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
      durante uma revisão, basta descomentar a linha abaixo.

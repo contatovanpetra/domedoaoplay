@@ -1,0 +1,11 @@
+{
+  "name": "domedoaoplay",
+  "private": true,
+  "description": "Landing Do Medo ao Play. O build só copia o site pra dist/ e minifica o CSS e o JS (os arquivos daqui continuam comentados).",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0"
+  }
+}
