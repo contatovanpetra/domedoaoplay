@@ -57,13 +57,13 @@
   --t-rotulo: .75rem;         /* rótulos em maiúsculas, rodapé: 12px */
   /* Texto corrido claro (o cinza antigo deixava a leitura cansada). */
   --cor-corpo: #D8E0E8;
-  /* Texto de apoio (subtítulos e frases do "Você trava"): o próprio branco
-     da marca, suave (transparente sobre o azul-noite), e só as frases
-     principais em branco cheio (<strong>). Uma cor só em duas intensidades:
-     o destaque salta pelo claro/escuro, e o azul e o laranja continuam
-     sendo sinais. Era um cinza (#A7B6C6) fora do manual; trocado em 30/set
-     (aprovado pela Vitória). Contraste ~10:1 sobre o azul-noite. */
-  --cor-apoio: rgba(245, 245, 247, .74);
+  /* Texto de apoio (subtítulos e frases do "Você trava"): branco gelo, o
+     branco com um toque do azul da marca (não lê como cinza), e as frases
+     principais em branco puro e mais grossas (<strong>, 800). O azul e o
+     laranja continuam sendo só sinais. Aprovado pela Vitória em 30/set: era
+     um cinza (#A7B6C6) fora do manual, e o branco transparente testado antes
+     virava cinza (#B8BBC1) sobre o azul-noite. Contraste ~14:1. */
+  --cor-apoio: #DCE8F2;
 
   /* Títulos em Manrope 800 (aprovada pela Vitória em set/2026 no lugar da
      Quicksand): geométrica como a marca, mas com cantos retos e traço cheio. */
@@ -787,8 +787,11 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
    seção da Apple antes da escada. */
 /* A ponte (30/set): a caixa presa ocupa uma tela e a seção tem mais 70% de
    tela de rolagem: durante esse trecho a frase fica parada no centro e o
-   fundo clareia; depois ela sobe junto com a caixa. O respiro de baixo é o
-   que separa a ponte do capítulo novo (a escada). */
+   fundo clareia; depois ela sobe junto com a caixa, no tamanho inteiro. O
+   respiro de baixo é o que separa a ponte do capítulo novo (a escada).
+   Sem encolher (30/set, pedido da Vitória): diminuir até 65% deixava a
+   frase pequena demais antes da escada, e nenhuma das frases grandes
+   medidas na Apple (MacBook Air, AirPods Pro, iPad Pro) muda de tamanho. */
 #virada {
   position: relative;
   min-height: 170vh;
@@ -954,6 +957,9 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
    Apple faz, e não na do texto corrido — com a Nunito fina ele ficava
    "solto" do título. Os cartões, o FAQ e os botões seguem em Nunito Sans. */
 .section-lead, #metodo .texto-corrido p, .hero-lead-list p { font-family: var(--font-head); font-weight: 600; letter-spacing: -.005em; }
+/* As frases principais do subtítulo em branco puro e mais grossas: com o
+   texto em branco gelo, é a grossura que faz elas saltarem primeiro. */
+:is(.section-lead, #metodo .texto-corrido p, .hero-lead-list p) strong { font-weight: 800; }
 /* Mais respiro entre o título e o subtítulo (Apple: 28 a 48px no celular). */
 :is(#metodo, #aplicacao, .section-tone--guarantee) .section-title { margin-bottom: 1.75rem; }
 @media (min-width: 1069px) {

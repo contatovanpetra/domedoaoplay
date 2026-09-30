@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     wireViviCard, wireCountUp, wireScrollEffects, wireReadProgressBar,
     wireScrollCue, wireIntroStage, wireManterLugar, wireHeaderReveal,
     wireHeaderTema, wireAplicacaoSome, playHeroIntro, wireVoltar,
-    wireGuardaLugar, wireReviewMode, wireCorDoFundo, wirePonteEncolhe, wireBeneficiosPilha,
+    wireGuardaLugar, wireReviewMode, wireCorDoFundo, wireBeneficiosPilha,
     wirePausaForaDaTela, wireReconexao,
   ];
   partes.forEach((liga) => {
@@ -134,38 +134,6 @@ function wireCorDoFundo() {
       pageBg.style.backgroundColor = "";
       if (header) header.style.backgroundColor = "";
     }
-  };
-  confere();
-  window.addEventListener("scroll", () => {
-    if (!pedido) { pedido = true; requestAnimationFrame(confere); }
-  }, { passive: true });
-  window.addEventListener("resize", confere, { passive: true });
-}
-
-// A ponte (#virada): "Dá pra sair disso, degrau a degrau." entra grande e,
-// enquanto fica parada no meio da tela, vai diminuindo com a rolagem (até
-// 65%), abrindo caminho pra escada. Segue o dedo nos dois sentidos; só
-// mexe no transform (sem recalcular a página).
-function wirePonteEncolhe() {
-  const virada = document.getElementById("virada");
-  const frase = virada && virada.querySelector(".virada-palco > .container");
-  if (!frase || prefersReducedMotion) return;
-  const MENOR = 0.65;
-  let pedido = false;
-  let ultimo = -1;
-  const confere = () => {
-    pedido = false;
-    const r = virada.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > window.innerHeight) return;
-    const percurso = Math.max(1, r.height - window.innerHeight);
-    const p = Math.min(1, Math.max(0, -r.top / percurso));
-    // Fica inteira no primeiro quinto (dá tempo de ler), depois encolhe
-    // com a mesma curva suave do fundo.
-    const q = Math.min(1, Math.max(0, (p - 0.2) / 0.8));
-    const escala = 1 - (1 - MENOR) * q * q * (3 - 2 * q);
-    if (Math.abs(escala - ultimo) < 0.001) return;
-    ultimo = escala;
-    frase.style.transform = escala === 1 ? "" : `scale(${escala.toFixed(4)})`;
   };
   confere();
   window.addEventListener("scroll", () => {
