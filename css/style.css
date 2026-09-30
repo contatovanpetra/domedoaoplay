@@ -1181,22 +1181,7 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
    espaçada, que lia como etiqueta. */
 .vivi-cargo { display: block; margin-top: .3rem; font-family: var(--font-body); font-weight: 400; font-size: var(--t-lead); line-height: 1.25; color: var(--blue-light); }
 .vivi-cargo::first-letter { text-transform: uppercase; }
-/* Celular: o fim do cargo cai sobre a lousa clara da foto (contraste de
-   1,1:1). Uma sombra escura e difusa só atrás do nome e do cargo, como uma
-   nuvem (sem faixa reta cortando a foto), aprovada em 30/set. */
-@media (max-width: 899.98px) {
-  .vivi-assinatura { position: relative; }
-  .vivi-assinatura::before {
-    content: "";
-    position: absolute;
-    /* O degradê termina transparente exatamente na borda da caixa
-       (closest-side): nenhuma linha reta aparece na foto. */
-    inset: -56px -70px -56px -40px;
-    z-index: -1;
-    background: radial-gradient(closest-side at 50% 52%, rgba(3, 10, 29, .86) 0%, rgba(3, 10, 29, .74) 50%, rgba(3, 10, 29, .35) 78%, rgba(3, 10, 29, 0) 100%);
-    pointer-events: none;
-  }
-}
+
 /* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
    título da seção. */
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.45; color: #fff; text-shadow: 0 1px 2px rgba(3, 10, 29, .7), 0 0 16px rgba(3, 10, 29, .45); }
