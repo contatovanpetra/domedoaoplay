@@ -57,10 +57,13 @@
   --t-rotulo: .75rem;         /* rótulos em maiúsculas, rodapé: 12px */
   /* Texto corrido claro (o cinza antigo deixava a leitura cansada). */
   --cor-corpo: #D8E0E8;
-  /* Texto de apoio no padrão das páginas da Apple: o parágrafo em cinza e
-     só as frases principais em branco e seminegrito (<strong>), pra quem
-     passa o olho ler o essencial. Cinza com contraste ~8:1 sobre o azul-noite. */
-  --cor-apoio: #A7B6C6;
+  /* Texto de apoio (subtítulos e frases do "Você trava"): o próprio branco
+     da marca, suave (transparente sobre o azul-noite), e só as frases
+     principais em branco cheio (<strong>). Uma cor só em duas intensidades:
+     o destaque salta pelo claro/escuro, e o azul e o laranja continuam
+     sendo sinais. Era um cinza (#A7B6C6) fora do manual; trocado em 30/set
+     (aprovado pela Vitória). Contraste ~10:1 sobre o azul-noite. */
+  --cor-apoio: rgba(245, 245, 247, .74);
 
   /* Títulos em Manrope 800 (aprovada pela Vitória em set/2026 no lugar da
      Quicksand): geométrica como a marca, mas com cantos retos e traço cheio. */
@@ -376,7 +379,7 @@ html { scroll-padding-top: var(--header-h, 85px); }
 .section-lead {
   color: var(--cor-corpo);
   font-size: var(--t-lead);
-  line-height: 1.5;
+  line-height: 1.36;
   max-width: 640px;
 }
 .section-lead.center { margin-left: auto; margin-right: auto; }
@@ -946,6 +949,16 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
    em branco aparecer (padrão Apple). Nas seções claras (módulos,
    benefícios, bônus) o texto já é azul-escuro e o destaque vem do peso. */
 html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone--guarantee .section-lead { color: var(--cor-apoio); }
+/* Subtítulo de seção (30/set, aprovado pela Vitória, medido em 7 páginas da
+   Apple e do Spotify): na mesma família do título (Manrope 600), como a
+   Apple faz, e não na do texto corrido — com a Nunito fina ele ficava
+   "solto" do título. Os cartões, o FAQ e os botões seguem em Nunito Sans. */
+.section-lead, #metodo .texto-corrido p, .hero-lead-list p { font-family: var(--font-head); font-weight: 600; letter-spacing: -.005em; }
+/* Mais respiro entre o título e o subtítulo (Apple: 28 a 48px no celular). */
+:is(#metodo, #aplicacao, .section-tone--guarantee) .section-title { margin-bottom: 1.75rem; }
+@media (min-width: 1069px) {
+  :is(#metodo, #aplicacao, .section-tone--guarantee) .section-title { margin-bottom: 2.25rem; }
+}
 /* Destaque dentro dos textos (padrão Apple): branco e seminegrito. Vale
    pra qualquer parágrafo da página sobre o fundo escuro. */
 .hero-lead strong, .section-lead strong, .texto-corrido strong, .vivi-card strong, .bonus-item-texto p strong, .guarantee-block strong { color: var(--white); font-weight: 600; }
@@ -1294,16 +1307,20 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
 #metodo { padding-top: 0; }
 /* Título e texto à esquerda, na borda do conteúdo (padrão Apple). */
 #metodo .texto-corrido { max-width: 690px; margin-left: 0; text-align: left; }
-#metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.45; color: var(--text-muted); text-wrap: balance; }
+#metodo .texto-corrido p { font-size: var(--t-lead); line-height: 1.36; color: var(--text-muted); text-wrap: pretty; }
+/* Computador: coluna mais larga (Apple: 735 a 840px), sem espremer as linhas. */
+@media (min-width: 1069px) {
+  #metodo .texto-corrido { max-width: 780px; }
+  #metodo .texto-corrido p, .section-lead { line-height: 1.33; }
+}
 /* Celular: texto de 16px (era 19px, 5 linhas) — abre a seção sem pesar mais
    que os cartões. */
 @media (max-width: 699.98px) {
   #metodo .texto-corrido { margin-top: 1rem; }
-  #metodo .texto-corrido p { font-size: 1.0625rem; line-height: 1.45; }
-  /* Parágrafo de abertura de seção no celular: 17px em todas (o corpo da
-     Apple no celular) — escada, "Falar bem na câmera" e garantia tinham
-     16, 19 e 19px. */
-  .section-lead { font-size: 1.0625rem; line-height: 1.5; }
+  #metodo .texto-corrido p { font-size: 1.1875rem; line-height: 1.4; }
+  /* Subtítulo de seção no celular: 19px em todas (o "section-intro" da
+     Apple no celular). */
+  .section-lead { font-size: 1.1875rem; line-height: 1.4; }
   .escada-palco-wrap { margin-top: 1.25rem; }
   .escada-vitrine { padding: .5rem 0 1rem; }
   .escada-progresso { margin-top: .8rem; }
@@ -3505,6 +3522,7 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
   .hero-h1-abre { font-size: 2.3em; }
   .hero-h1-resto { font-size: .75em; }
   .hero-lead, .hero-lead-list { font-size: 1.3125rem; }
+  .hero-lead-list p { line-height: 1.4; }
   .hero-copy { max-width: min(760px, 48vw); }
   /* Cartões da Escada: de 230px pra 280–340px (os de galeria da Apple no
      computador têm 372px). */
