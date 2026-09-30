@@ -680,11 +680,42 @@ function wireDepoimentos() {
     caixa.classList.add("tem-video");
     inline.push(v);
   });
+  // Vídeos que rodam sozinhos em loop precisam de um jeito de parar (WCAG
+  // 2.2.2): um botão de pausar no canto de cada vídeo, que pausa/retoma os
+  // três. Só existe quando há vídeo de verdade no cartão.
+  let pausadosPelaPessoa = false;
+  const botoesPausa = [];
+  function atualizaPausa() {
+    botoesPausa.forEach((b) => {
+      b.setAttribute("aria-label", pausadosPelaPessoa ? "Retomar os vídeos" : "Pausar os vídeos");
+      b.classList.toggle("is-pausado", pausadosPelaPessoa);
+    });
+  }
+  let secaoVisivel = false;
+  function tocaOuPausa() {
+    inline.forEach((v) => {
+      if (secaoVisivel && !pausadosPelaPessoa) { const t = v.play(); if (t && t.catch) t.catch(() => {}); } else v.pause();
+    });
+  }
+  if (inline.length && !prefersReducedMotion) {
+    cards.forEach((card) => {
+      if (!card.querySelector(".depo-video-mudo")) return;
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "depo-pausa";
+      b.innerHTML = '<svg class="icone-pausa" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>' +
+        '<svg class="icone-tocar" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>';
+      b.addEventListener("click", () => { pausadosPelaPessoa = !pausadosPelaPessoa; atualizaPausa(); tocaOuPausa(); });
+      card.appendChild(b);
+      botoesPausa.push(b);
+    });
+    atualizaPausa();
+  }
   if (inline.length && !prefersReducedMotion && "IntersectionObserver" in window) {
     const secao = document.getElementById("depoimentos") || palco;
     new IntersectionObserver((entries) => {
-      const visivel = entries[entries.length - 1].isIntersecting;
-      inline.forEach((v) => { if (visivel) { const t = v.play(); if (t && t.catch) t.catch(() => {}); } else v.pause(); });
+      secaoVisivel = entries[entries.length - 1].isIntersecting;
+      tocaOuPausa();
     }, { threshold: 0.15 }).observe(secao);
   }
   cards.forEach((card) => {

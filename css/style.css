@@ -231,8 +231,8 @@ ul { padding: 0; margin: 0; list-style: none; }
      no tom do manual (contraste 4,7:1). Em cima, uma luz suave, como a claridade
      no fim do túnel. Sem linhas por dentro. */
   background:
-    radial-gradient(70% 100% at 50% -30%, rgba(255, 190, 105, .34), rgba(255, 190, 105, 0) 70%),
-    linear-gradient(180deg, #C4640B 0%, var(--orange-button) 55%, #A65307 100%);
+    radial-gradient(70% 100% at 50% -30%, rgba(255, 190, 105, .2), rgba(255, 190, 105, 0) 62%),
+    linear-gradient(180deg, #B95D09 0%, var(--orange-button) 40%, #A65307 100%);
   color: var(--white);
   text-shadow: 0 1px 1px rgba(60, 30, 2, .35);
   /* Sem brilho branco na borda de cima: aparecia como um risco claro no arco. */
@@ -1119,7 +1119,7 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
     position: absolute;
     inset: 34% 0 0;
     z-index: 0;
-    background: linear-gradient(180deg, rgba(3, 10, 29, 0) 0%, rgba(3, 10, 29, .55) 38%, rgba(3, 10, 29, .82) 100%);
+    background: linear-gradient(180deg, rgba(3, 10, 29, 0) 0%, rgba(3, 10, 29, .7) 22%, rgba(3, 10, 29, .86) 100%);
     pointer-events: none;
   }
   .vivi-foto .credential-figure { font-size: 1.75rem; }
@@ -1148,6 +1148,22 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
    espaçada, que lia como etiqueta. */
 .vivi-cargo { display: block; margin-top: .3rem; font-family: var(--font-body); font-weight: 400; font-size: var(--t-lead); line-height: 1.25; color: var(--blue-light); }
 .vivi-cargo::first-letter { text-transform: uppercase; }
+/* Celular: o fim do cargo cai sobre a lousa clara da foto (contraste de
+   1,1:1). Uma sombra escura e difusa só atrás do nome e do cargo, como uma
+   nuvem (sem faixa reta cortando a foto), aprovada em 30/set. */
+@media (max-width: 899.98px) {
+  .vivi-assinatura { position: relative; }
+  .vivi-assinatura::before {
+    content: "";
+    position: absolute;
+    /* O degradê termina transparente exatamente na borda da caixa
+       (closest-side): nenhuma linha reta aparece na foto. */
+    inset: -56px -70px -56px -40px;
+    z-index: -1;
+    background: radial-gradient(closest-side at 50% 52%, rgba(3, 10, 29, .86) 0%, rgba(3, 10, 29, .74) 50%, rgba(3, 10, 29, .35) 78%, rgba(3, 10, 29, 0) 100%);
+    pointer-events: none;
+  }
+}
 /* O card começa direto no texto: o nome dela, escrito no alto da foto, é o
    título da seção. */
 .vivi-card > p:not(.eyebrow) { margin: 0; font-size: var(--t-corpo); line-height: 1.45; color: #fff; text-shadow: 0 1px 2px rgba(3, 10, 29, .7), 0 0 16px rgba(3, 10, 29, .45); }
@@ -1156,7 +1172,7 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
    escurecimento da metade de baixo da foto já garante a leitura, e a
    sombra grande em cada linha pesava na rolagem. */
 @media (max-width: 699.98px) {
-  .vivi-card > p:not(.eyebrow) { font-size: 1rem; line-height: 1.45; text-shadow: 0 1px 2px rgba(3, 10, 29, .75); }
+  .vivi-card > p:not(.eyebrow) { font-size: 1rem; line-height: 1.45; text-shadow: 0 1px 2px rgba(3, 10, 29, .75), 0 0 10px rgba(3, 10, 29, .7); }
 }
 /* Celular baixo (iPhone SE, Android 360x740 e menores): o texto inteiro do
    card tem que caber entre o nome e as credenciais sem rolar por dentro —
@@ -1376,7 +1392,9 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
   border: 1px solid rgba(255, 255, 255, .09);
   transition: transform .55s cubic-bezier(.16, 1, .3, 1), opacity .55s ease, border-color .4s ease, box-shadow .4s ease;
   transform: scale(.92);
-  opacity: .38;
+  /* .55 (era .38): o texto dos cartões laterais passa de 2,9:1 pra 4,8:1
+     de contraste (acessibilidade, aprovado em 30/set). */
+  opacity: .55;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -1420,9 +1438,14 @@ html.abertura-on .escada-card-media img { display: none; }
   font-weight: 700;
   letter-spacing: .06em;
   text-transform: uppercase;
-  color: var(--cor-degrau, var(--blue-light));
+  /* Um tom mais claro que a cor do degrau: 5,3:1 ou mais em todos os
+     níveis (o azul puro do nível 1 dava 4,4:1). */
+  color: color-mix(in srgb, var(--cor-degrau, var(--blue-light)), #fff 12%);
   margin-bottom: .3rem;
 }
+/* Nos cartões laterais (apagados) o rótulo fica no cinza claro do texto:
+   a cor do degrau, apagada, não chegava ao contraste mínimo. */
+.escada-card:not(.is-active) .escada-tag { color: var(--cor-corpo); }
 .escada-card-title {
   margin: 0 0 .35rem;
   /* Título de cartão: 21px, 24px no computador (era 17 / 19px, quase o
@@ -1707,6 +1730,8 @@ html.abertura-on .escada-card-media img { display: none; }
   color: var(--text-muted);
   text-align: right;
 }
+/* No fundo claro, um tom mais escuro (3,7:1 → 5,4:1). */
+html.fundo-claro #modulos .aula-num { color: #2C4054; }
 .aula-nivel {
   display: inline-block;
   margin-left: .45rem;
@@ -1978,6 +2003,9 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
   /* Um respiro pro degradê não cortar o pé do "2". */
   padding-bottom: .04em;
 }
+/* No fundo azul claro, laranja queimado: o laranja da marca dava 1,6:1
+   (mínimo 3:1 pra texto grande). No fundo escuro continua o de sempre. */
+html.fundo-claro #beneficios .bonus-num { background-image: linear-gradient(180deg, #9A4A00 0%, #8A4200 100%); }
 .bonus-lista {
   display: grid;
   gap: clamp(2rem, 6vw, 4.5rem);
@@ -2088,10 +2116,35 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 .depo-palco::-webkit-scrollbar { display: none; }
 .depo-palco:focus-visible { outline: 2px solid var(--orange); outline-offset: 6px; }
 .depo-card {
+  position: relative;
   flex: 0 0 var(--depo-w);
   margin: 0;
   scroll-snap-align: start;
 }
+/* Pausar os vídeos (só aparece quando o cartão tem vídeo de verdade): no
+   canto de cima à esquerda, no mesmo formato do ícone de som da direita. */
+.depo-pausa {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(6, 14, 28, .6);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+}
+.depo-pausa svg { width: 18px; height: 18px; }
+.depo-pausa .icone-tocar, .depo-pausa.is-pausado .icone-pausa { display: none; }
+.depo-pausa.is-pausado .icone-tocar { display: block; }
+@media (forced-colors: active) { .depo-pausa { border: 2px solid ButtonText; } }
 /* Computador: os três lado a lado, sem precisar deslizar. */
 @media (min-width: 900px) {
   .depo-palco {
@@ -2131,7 +2184,9 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 .depo-pontos {
   display: flex;
   justify-content: center;
-  gap: 8px;
+  /* 16px entre as bolinhas: cada uma tem 24px de área de toque sem
+     encostar na vizinha (WCAG 2.5.8). */
+  gap: 16px;
   margin-top: 1.1rem;
 }
 .depo-ponto {
@@ -2147,7 +2202,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 }
 .depo-ponto.is-ativo { width: 22px; background: rgba(255, 255, 255, .9); }
 /* Área de toque maior que o pontinho desenhado. */
-.depo-ponto::after { content: ""; position: absolute; inset: -12px -4px; }
+.depo-ponto::after { content: ""; position: absolute; inset: -12px -8px; }
 @media (min-width: 900px) { .depo-pontos { display: none; } }
 /* Ícone de som desligado no canto do vídeo: os vídeos rodam sozinhos e
    mudos; o ícone é o convite pra tocar e ouvir. */

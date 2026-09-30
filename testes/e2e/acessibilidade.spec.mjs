@@ -1,33 +1,50 @@
 // Acessibilidade (auditoria pré-lançamento, 30/set, WCAG 2.2 A/AA). O que dá
-// pra conferir de forma objetiva: nenhuma violação automática do axe (fora as
-// que dependem de mudança visual ainda sem aprovação), teclado, foco, abas da
-// escada, perguntas, vídeo aberto e o que o leitor de tela recebe. Contraste
-// sobre foto, leitor de tela de verdade e julgamento humano ficam no
+// pra conferir de forma objetiva: nenhuma violação automática do axe,
+// teclado, foco, abas da escada, perguntas, vídeo aberto, pausa dos vídeos e
+// o que o leitor de tela recebe. Contraste sobre foto (medido à parte, pixel
+// a pixel), leitor de tela de verdade e julgamento humano ficam no
 // relatório, não aqui.
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { abre, percorre } from "./ajuda.mjs";
 
-// Dependem de mudança visual e estão na lista "ALTERAÇÕES VISUAIS QUE EXIGEM
-// APROVAÇÃO" do relatório: contraste do "Nível 1" e dos cartões apagados da
-// escada, e o tamanho das bolinhas dos depoimentos no celular. Quando forem
-// aprovadas e feitas, é só tirar daqui.
-const PENDENTES_DE_APROVACAO = ["color-contrast", "target-size"];
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"];
 
-for (const pagina of ["index.html", "termos.html", "privacidade.html"]) {
+for (const pagina of ["index.html", "termos.html", "privacidade.html", "suporte.html"]) {
   test(`axe: nenhuma violação WCAG A/AA em ${pagina}`, async ({ page }) => {
     await abre(page, "/" + pagina);
     await percorre(page);
-    const r = await new AxeBuilder({ page }).withTags(TAGS).disableRules(PENDENTES_DE_APROVACAO).analyze();
+    const r = await new AxeBuilder({ page }).withTags(TAGS).analyze();
     expect(r.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
   });
 }
 
-test("axe: suporte.html só com o link sem sublinhado (pendente de aprovação)", async ({ page }) => {
-  await abre(page, "/suporte.html");
-  const r = await new AxeBuilder({ page }).withTags(TAGS).disableRules(PENDENTES_DE_APROVACAO).analyze();
-  expect(r.violations.map((v) => v.id).filter((id) => id !== "link-in-text-block")).toEqual([]);
+test("vídeos dos depoimentos: com vídeo de verdade, há um botão pra pausar e retomar os três (2.2.2)", async ({ page }) => {
+  // Os vídeos ainda não foram gravados: simula os três cartões com vídeo.
+  await page.route(/\/index\.html/, async (rota) => {
+    const r = await rota.fetch();
+    const html = (await r.text()).replaceAll('<figure class="depo-card">', '<figure class="depo-card" data-video="amostra.webm">');
+    await rota.fulfill({ response: r, body: html });
+  });
+  await page.route(/amostra\.webm/, (rota) => rota.fulfill({ path: "testes/amostras/tunel-vp9.webm", contentType: "video/webm" }));
+  await abre(page);
+  const botoes = page.locator(".depo-pausa");
+  await expect(botoes).toHaveCount(3);
+  await page.locator("#depoimentos").scrollIntoViewIfNeeded();
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll(".depo-video-mudo")].some((v) => !v.paused))).toBe(true);
+  await expect(botoes.first()).toHaveAccessibleName("Pausar os vídeos");
+  await botoes.first().click();
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll(".depo-video-mudo")].every((v) => v.paused))).toBe(true);
+  await expect(botoes.nth(1)).toHaveAccessibleName("Retomar os vídeos");
+  // Pausado pela pessoa, sair e voltar à seção não liga de novo.
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.waitForTimeout(500);
+  await page.locator("#depoimentos").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
+  expect(await page.evaluate(() => [...document.querySelectorAll(".depo-video-mudo")].every((v) => v.paused))).toBe(true);
+  await botoes.first().focus();
+  await page.keyboard.press("Enter");
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll(".depo-video-mudo")].some((v) => !v.paused))).toBe(true);
 });
 
 test("todo botão e link visível tem nome, e o nome contém o texto que aparece", async ({ page }) => {
