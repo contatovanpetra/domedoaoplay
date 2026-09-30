@@ -126,7 +126,7 @@
      sistema e troca quando elas chegam (font-display: swap), sem pular. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=109">
+<link rel="stylesheet" href="css/style.css?v=110">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
@@ -254,12 +254,16 @@
     </div>
   </section>
 
-  <!-- A virada: seção própria pra ser ela que acende a luz (o fundo volta do
-       quase-preto do capítulo "Você trava." pro azul da marca quando esta
-       frase passa de 40% da tela, ver wireCorDoFundo). -->
+  <!-- A virada, a ponte pra sair do capítulo escuro (como as frases de
+       virada da Apple no AirPods Pro): a frase entra, fica parada no meio da
+       tela (.virada-palco, sticky) enquanto o fundo clareia aos poucos, do
+       quase-preto pro azul da marca, acompanhando a rolagem (ver
+       wireCorDoFundo), e sai subindo; depois de um respiro, a escada. -->
   <section class="section" id="virada" aria-labelledby="reconhecimento-title">
-    <div class="container">
-      <p class="statement-title situacoes-fecho"><span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></p>
+    <div class="virada-palco">
+      <div class="container">
+        <p class="statement-title situacoes-fecho"><span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></p>
+      </div>
     </div>
   </section>
 
@@ -1041,6 +1045,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=58"></script>
+<script src="js/main.js?v=59"></script>
 </body>
 </html>

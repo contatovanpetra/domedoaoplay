@@ -92,7 +92,16 @@ function wirePausaForaDaTela() {
 // se não, volta ao azul-noite. A cor dos textos dessas seções muda junto.
 function wireCorDoFundo() {
   const claras = ["modulos", "beneficios"];
-  const noite = ["reconhecimento", "situacoes"];
+  const noite = ["reconhecimento", "situacoes", "virada"];
+  // A ponte (#virada): enquanto a frase fica parada no meio da tela, o fundo
+  // vai do quase-preto pro azul da marca acompanhando a rolagem, em vez de
+  // trocar de uma vez. Cores iguais às do CSS (--noite e --bg).
+  const virada = document.getElementById("virada");
+  const pageBg = document.querySelector(".page-bg");
+  const header = document.querySelector(".site-header");
+  const DE = [4, 8, 14], PARA = [11, 23, 40];
+  const mistura = (t) => DE.map((c, i) => Math.round(c + (PARA[i] - c) * t));
+  let pintando = false;
   const secoes = [...document.querySelectorAll("main > section, main > div > section")].filter((s) => s.id || s.classList.contains("section"));
   if (!secoes.length) return;
   const root = document.documentElement;
@@ -107,6 +116,24 @@ function wireCorDoFundo() {
     root.classList.toggle("fundo-claro", !!atual && claras.includes(atual.id));
     // Capítulo do problema ("Você trava." e as situações) em quase-preto.
     root.classList.toggle("fundo-noite", !!atual && noite.includes(atual.id));
+    // Na ponte: a cor segue a rolagem (0 quando a caixa da frase gruda no
+    // alto, 1 quando ela solta), com a mesma curva suave no começo e no fim.
+    if (virada && pageBg && atual === virada) {
+      const r = virada.getBoundingClientRect();
+      const percurso = Math.max(1, r.height - window.innerHeight);
+      const p = Math.min(1, Math.max(0, -r.top / percurso));
+      const t = p * p * (3 - 2 * p);
+      const [vr, vg, vb] = mistura(t);
+      pageBg.style.transition = "none";
+      pageBg.style.backgroundColor = `rgb(${vr}, ${vg}, ${vb})`;
+      if (header) header.style.backgroundColor = header.classList.contains("com-fundo") ? `rgba(${vr}, ${vg}, ${vb}, .9)` : "";
+      pintando = true;
+    } else if (pintando) {
+      pintando = false;
+      pageBg.style.transition = "";
+      pageBg.style.backgroundColor = "";
+      if (header) header.style.backgroundColor = "";
+    }
   };
   confere();
   window.addEventListener("scroll", () => {

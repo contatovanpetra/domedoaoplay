@@ -768,7 +768,30 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
 #situacoes { padding-top: 0; padding-bottom: 0; }
 /* A virada ("Dá pra sair disso"), logo depois das situações, e o respiro de
    seção da Apple antes da escada. */
-#virada { padding-top: 0; padding-bottom: clamp(128px, 14vw, 200px); }
+/* A ponte (30/set): a caixa presa ocupa uma tela e a seção tem mais 70% de
+   tela de rolagem: durante esse trecho a frase fica parada no centro e o
+   fundo clareia; depois ela sobe junto com a caixa. O respiro de baixo é o
+   que separa a ponte do capítulo novo (a escada). */
+#virada {
+  position: relative;
+  min-height: 170vh;
+  min-height: 170svh;
+  padding-top: 0;
+  padding-bottom: clamp(64px, 8vw, 120px);
+}
+.virada-palco {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+}
+.virada-palco > .container { width: 100%; }
+/* Respiros medidos nas trocas de capítulo da Apple e do Spotify (30/set):
+   35–65% da tela no celular, 45–75% no computador. No computador, antes da
+   ponte, sobravam 40%: mais 10% de tela. */
+@media (min-width: 700px) { #virada { margin-top: 10vh; margin-top: 10svh; } }
 .situacoes {
   list-style: none;
   margin: 0 auto;
@@ -801,7 +824,6 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
 }
 .situacoes-item strong { color: var(--white); font-weight: 800; }
 /* A virada, na mesma frase grande de "Você trava.", já com o degradê da escada. */
-#virada { margin-top: clamp(72px, 9vw, 128px); }
 #virada .situacoes-fecho { margin: 0; }
 @media (min-width: 700px) {
   .situacoes { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(40px, 6vw, 80px); row-gap: 56px; }
