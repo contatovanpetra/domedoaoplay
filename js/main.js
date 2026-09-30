@@ -290,8 +290,10 @@ function wireScrollEffects() {
   const heroApoio = hero ? [...hero.querySelectorAll("#hero-lead p")] : [];
   const some = (els, o) => els.forEach((el) => {
     el.style.opacity = o < 1 ? (o * o * (3 - 2 * o)).toFixed(3) : "";
-    // Sumido, também não recebe toque (o botão invisível não abre nada).
-    el.style.visibility = o <= 0 ? "hidden" : "";
+    // Sumido, o botão também não recebe toque nem Tab (o botão invisível
+    // não abre nada). O texto (título e apoio) só fica transparente: continua
+    // na página pro leitor de tela, que antes perdia o H1 ao rolar.
+    el.style.visibility = o <= 0 && el.querySelector("a[href], button") ? "hidden" : "";
   });
   const celularEmPe = window.matchMedia("(max-width: 699.98px) and (min-height: 481px)");
   const bar = document.querySelector(".read-progress");
@@ -717,14 +719,34 @@ function wireDepoimentos() {
     if (v) v.pause();
     m.classList.remove("is-aberto");
     document.documentElement.style.overflow = "";
+    fundoInerte(false);
     document.removeEventListener("keydown", teclaModal);
     setTimeout(() => m.remove(), prefersReducedMotion ? 0 : 300);
     if (focoAntes) focoAntes.focus({ preventScroll: true });
   }
+  // Com o vídeo aberto, o resto da página fica inerte: o leitor de tela e o
+  // Tab não saem do vídeo (o aria-modal sozinho não garante isso em todo lugar).
+  let inertes = [];
+  function fundoInerte(liga) {
+    if (liga) {
+      inertes = [...document.body.children].filter((el) => el !== modal && !el.inert && el.tagName !== "SCRIPT");
+      inertes.forEach((el) => { el.inert = true; });
+    } else {
+      inertes.forEach((el) => { el.inert = false; });
+      inertes = [];
+    }
+  }
   function teclaModal(e) {
     if (e.key === "Escape") { e.preventDefault(); fecha(); }
     // Com o vídeo aberto, o Tab não sai de dentro dele.
-    if (e.key === "Tab" && modal) { e.preventDefault(); modal.querySelector(".depo-modal-fechar").focus(); }
+    // Com o vídeo aberto, o Tab circula entre o × e os controles do vídeo.
+    if (e.key === "Tab" && modal) {
+      const focaveis = [...modal.querySelectorAll("button, video[controls]")];
+      const i = focaveis.indexOf(document.activeElement);
+      e.preventDefault();
+      const prox = e.shiftKey ? (i <= 0 ? focaveis.length - 1 : i - 1) : (i + 1) % focaveis.length;
+      focaveis[prox].focus();
+    }
   }
   function abre(card) {
     if (!card || modal) return;
@@ -760,6 +782,7 @@ function wireDepoimentos() {
     modal.querySelector(".depo-modal-fundo").addEventListener("click", fechaPeloClique);
     modal.querySelector(".depo-modal-fechar").addEventListener("click", fechaPeloClique);
     document.body.appendChild(modal);
+    fundoInerte(true);
     document.documentElement.style.overflow = "hidden";
     document.addEventListener("keydown", teclaModal);
     requestAnimationFrame(() => {
@@ -797,6 +820,7 @@ function wireEscadaShowcase() {
   let progressoAoPausar = 0; // 0..1, guardado ao pausar pra retomar do mesmo ponto
   let rafId = 0;
   let naTela = false;         // só conta com algum pedaço da escada na tela
+  let focoDentro = false;     // foco do teclado nos níveis: o avanço espera
 
   function anelDe(i) {
     return nums[i] && nums[i].querySelector(".escada-num-ring-fill");
@@ -824,7 +848,7 @@ function wireEscadaShowcase() {
   }
   function iniciarProgresso(retomarDoPonto) {
     pararProgresso();
-    if (!tocando || !naTela || prefersReducedMotion) return;
+    if (!tocando || !naTela || focoDentro || prefersReducedMotion) return;
     const jaFeito = retomarDoPonto ? progressoAoPausar : 0;
     inicioProgresso = performance.now() - jaFeito * DURACAO_MS;
     rafId = requestAnimationFrame(passoProgresso);
@@ -866,6 +890,8 @@ function wireEscadaShowcase() {
       const isActive = i === activeIndex;
       num.classList.toggle("is-active", isActive);
       num.setAttribute("aria-selected", isActive ? "true" : "false");
+      // Só a aba ativa entra no Tab; as outras, pelas setas (padrão de abas).
+      num.tabIndex = isActive ? 0 : -1;
       preencheAnel(i, 0);
     });
 
@@ -895,12 +921,20 @@ function wireEscadaShowcase() {
     num.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") {
         e.preventDefault();
+        marcaEscolha();
         goToIndex(i + 1);
         nums[(i + 1) % nums.length].focus();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
+        marcaEscolha();
         goToIndex(i - 1);
         nums[(i - 1 + nums.length) % nums.length].focus();
+      } else if (e.key === "Home" || e.key === "End") {
+        e.preventDefault();
+        const alvo = e.key === "Home" ? 0 : nums.length - 1;
+        marcaEscolha();
+        goToIndex(alvo);
+        nums[alvo].focus();
       }
     });
   });
@@ -919,7 +953,6 @@ function wireEscadaShowcase() {
     playPauseBtn.addEventListener("click", () => {
       marcaEscolha();
       tocando = !tocando;
-      playPauseBtn.setAttribute("aria-pressed", tocando ? "false" : "true");
       playPauseBtn.setAttribute("aria-label", tocando ? "Pausar avanço automático" : "Retomar avanço automático");
       // toggleAttribute, não .hidden: nos ícones (SVG) a propriedade .hidden
       // não existe e não mexia no atributo — o ícone de play nunca aparecia e
@@ -930,6 +963,26 @@ function wireEscadaShowcase() {
       else pararProgresso();
     });
   }
+
+  // Com o foco do teclado nos níveis (ou no pausar), o avanço automático
+  // espera: não troca o nível nem desce a página enquanto a pessoa lê ou
+  // escolhe (padrão de carrossel acessível). Ao sair, continua de onde estava.
+  const areaFoco = [palco, document.querySelector(".escada-progresso")].filter(Boolean);
+  areaFoco.forEach((area) => {
+    area.addEventListener("focusin", (e) => {
+      // Só o foco do teclado (o clique com mouse/dedo segue como antes).
+      let teclado = true;
+      try { teclado = e.target.matches(":focus-visible"); } catch (x) {}
+      if (!teclado) return;
+      focoDentro = true;
+      pararProgresso();
+    });
+    area.addEventListener("focusout", (e) => {
+      if (!focoDentro || areaFoco.some((a) => a.contains(e.relatedTarget))) return;
+      focoDentro = false;
+      if (tocando) iniciarProgresso(true);
+    });
+  });
 
   // Arrastar no celular (sem travar a rolagem vertical da página).
   let touchStartX = 0;
@@ -1081,6 +1134,12 @@ function wireScrollReveal() {
 
   targets.forEach((el) => el.classList.add("reveal"));
   targets.forEach((el) => observer.observe(el));
+  // Quem navega pelo teclado não espera a entrada: o bloco que recebe o
+  // foco aparece na hora (antes o botão focado podia estar ainda invisível).
+  document.addEventListener("focusin", (e) => {
+    const bloco = e.target.closest && e.target.closest(".reveal:not(.is-visible)");
+    if (bloco) { bloco.classList.add("is-visible", "entra-ja"); observer.unobserve(bloco); }
+  });
 }
 
 // Números de destaque ("4 medos", "7 níveis") contam de 0 até o valor final
@@ -1099,6 +1158,15 @@ function wireCountUp() {
   // O número começa zerado. Antes ele aparecia pronto ("4"), caía pra 0 quando a
   // contagem começava e subia de novo: dava uma piscada.
   const zera = (el) => { el.textContent = "0" + (el.dataset.suffix || ""); };
+  // O leitor de tela lê sempre o número final ("13 anos"), nunca a
+  // contagem ("0 anos"): o número animado fica só pra quem vê.
+  targets.forEach((el) => {
+    const fixo = document.createElement("span");
+    fixo.className = "sr-only";
+    fixo.textContent = el.dataset.count + (el.dataset.suffix || "");
+    el.setAttribute("aria-hidden", "true");
+    el.parentNode.insertBefore(fixo, el);
+  });
   targets.forEach(zera);
   const rodando = new Map();
 

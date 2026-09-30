@@ -9,7 +9,9 @@
     "checar-lancamento": "node build.mjs && node testes/checar-lancamento.mjs"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "1.56.1",
+    "axe-core": "^4.13.0",
     "esbuild": "0.25.12"
   }
 }

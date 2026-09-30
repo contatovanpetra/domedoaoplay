@@ -173,6 +173,20 @@ ul { padding: 0; margin: 0; list-style: none; }
   border-radius: 0 0 8px 0;
 }
 .skip-link:focus { left: 0; }
+/* O "Pular para o conteúdo" leva o foco pro <main> (tabindex="-1"): o
+   próximo Tab já é o botão do topo. O <main> não é um controle, então não
+   ganha contorno de foco. */
+#conteudo-principal:focus { outline: none; }
+
+/* Texto só para leitor de tela (acessibilidade, 30/set): some da tela mas
+   continua sendo lido. */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
 
 :focus-visible {
   outline: 2px solid var(--orange-light);
@@ -1436,6 +1450,7 @@ html.abertura-on .escada-card-media img { display: none; }
 /* Controle único: play/pause + 7 bolinhas numeradas, cada uma com um anel
    que preenche em vermelho (REC) enquanto aquele nível fica em foco (tipo stories);
    ao completar, avança sozinha pro próximo. Pausar congela o preenchimento. */
+.escada-abas { display: flex; align-items: center; gap: inherit; }
 .escada-progresso {
   /* Uma cápsula de vidro envolvendo o play/pause e os 7 números: lê como
      um controle só (como a barra de mídia da Apple), não 8 bolinhas soltas. */
@@ -1582,6 +1597,7 @@ html.abertura-on .escada-card-media img { display: none; }
     0 2px 6px -2px rgba(11, 40, 70, .14),
     0 18px 40px -18px rgba(11, 40, 70, .45);
 }
+.accordion-titulo { margin: 0; font: inherit; line-height: inherit; letter-spacing: normal; }
 .accordion-trigger {
   width: 100%;
   display: flex;
@@ -1663,7 +1679,10 @@ html.abertura-on .escada-card-media img { display: none; }
 .accordion-panel {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows .3s ease, padding-bottom .3s ease;
+  /* Fechado, o conteúdo também sai do leitor de tela (visibility), só
+     depois de a animação de fechar terminar. */
+  visibility: hidden;
+  transition: grid-template-rows .3s ease, padding-bottom .3s ease, visibility 0s linear .3s;
   padding: 0 1.4rem;
 }
 .accordion-panel > ul,
@@ -1671,7 +1690,7 @@ html.abertura-on .escada-card-media img { display: none; }
   min-height: 0;
   overflow: hidden;
 }
-.accordion-item.open .accordion-panel { grid-template-rows: 1fr; padding-bottom: 1.3rem; }
+.accordion-item.open .accordion-panel { grid-template-rows: 1fr; padding-bottom: 1.3rem; visibility: visible; transition-delay: 0s; }
 .accordion-panel ul { display: grid; gap: .55rem; }
 .accordion-panel li { font-size: var(--t-corpo); color: var(--cor-corpo); }
 .accordion-panel p { font-size: var(--t-corpo); margin: 0; color: var(--cor-corpo); }
@@ -2894,6 +2913,8 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
   transition: opacity .7s cubic-bezier(0, 0, .3, 1), transform .7s cubic-bezier(0, 0, .3, 1);
 }
 .reveal.is-visible { opacity: 1; transform: none; }
+/* Bloco que recebeu o foco do teclado antes de entrar: aparece na hora. */
+.reveal.entra-ja { transition: none !important; }
 
 /* ---------- Cards no mouse (como na Apple) ----------
    Crescem de leve e a sombra abre um pouco: sem subir, sem balançar. Só em
@@ -3547,4 +3568,20 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
   .escada-card { flex-basis: clamp(220px, 28vw, 300px); }
   /* Botões grandes um degrau maiores no tablet (eram 47px). */
   .btn-large { min-height: 52px; font-size: 1.125rem; font-weight: 700; }
+}
+
+/* ---------- Acessibilidade (auditoria de 30/set) ----------
+   Nada disto aparece no uso normal da página. */
+/* Alto contraste do Windows: o botão perde o fundo laranja; a borda mostra
+   onde ele começa e termina. A logo (letras brancas) ganha o fundo escuro
+   dela, senão some no fundo branco do modo. */
+@media (forced-colors: active) {
+  .btn { border: 2px solid ButtonText; }
+  .logo { forced-color-adjust: none; background: #0B1728; border-radius: 8px; }
+}
+/* Com espaçamento de texto aumentado pela pessoa (WCAG 1.4.12) numa tela
+   bem estreita, o botão pode quebrar linha em vez de sair da tela. Com o
+   espaçamento normal ele cabe numa linha e nada muda (conferido em 320px). */
+@media (max-width: 359.98px) {
+  .btn { white-space: normal; }
 }

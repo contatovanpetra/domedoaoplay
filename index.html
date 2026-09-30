@@ -126,7 +126,7 @@
      sistema e troca quando elas chegam (font-display: swap), sem pular. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=111">
+<link rel="stylesheet" href="css/style.css?v=112">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
@@ -160,7 +160,7 @@
   </div>
 </header>
 
-<main id="conteudo-principal">
+<main id="conteudo-principal" tabindex="-1">
 
 
 
@@ -231,7 +231,7 @@
        foto do herói (ajustaRunwayHero mede a altura dela), e aqui o texto
        entra só depois de a foto terminar de se dissolver, no azul liso.
        Frases dos cards de 23/set, trazidas de volta a pedido do sócio (30/set). -->
-  <section class="section" id="situacoes" aria-labelledby="reconhecimento-title">
+  <section class="section" id="situacoes">
     <div class="container">
       <ul class="situacoes">
         <li class="situacoes-item">
@@ -259,7 +259,7 @@
        tela (.virada-palco, sticky) enquanto o fundo clareia aos poucos, do
        quase-preto pro azul da marca, acompanhando a rolagem (ver
        wireCorDoFundo), e sai subindo; depois de um respiro, a escada. -->
-  <section class="section" id="virada" aria-labelledby="reconhecimento-title">
+  <section class="section" id="virada">
     <div class="virada-palco">
       <div class="container">
         <p class="statement-title situacoes-fecho"><span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></p>
@@ -282,7 +282,7 @@
     <div class="escada-palco-wrap" role="region" aria-label="Vitrine dos 7 níveis da Escada de Exposição">
       <div class="escada-vitrine">
         <div class="escada-track">
-          <article class="escada-card is-active" id="escada-card-1" role="tabpanel" aria-labelledby="tab-escada-1" style="--cor-degrau: var(--blue)" data-index="0">
+          <div class="escada-card is-active" id="escada-card-1" role="tabpanel" aria-labelledby="tab-escada-1" style="--cor-degrau: var(--blue)" data-index="0">
             <div class="escada-card-media">
               <img src="assets/img/escada/foto-nivel-1.webp?v=2" alt="Homem sentado à mesa, apertando o gravar no celular preso no tripé" width="700" height="875" loading="lazy" decoding="async">
             </div>
@@ -291,9 +291,9 @@
               <h3 class="escada-card-title">Ponto de partida</h3>
               <p>Sua evolução começa aqui.</p>
             </div>
-          </article>
+          </div>
 
-          <article class="escada-card" id="escada-card-2" role="tabpanel" aria-labelledby="tab-escada-2" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 18%)" data-index="1">
+          <div class="escada-card" id="escada-card-2" role="tabpanel" aria-labelledby="tab-escada-2" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 18%)" data-index="1">
             <div class="escada-card-media">
               <img src="assets/img/escada/foto-nivel-2.webp?v=2" alt="Mulher sentada à mesa, conversando com o celular no tripé" width="700" height="875" loading="lazy" decoding="async">
             </div>
@@ -302,9 +302,9 @@
               <h3 class="escada-card-title">Conexão</h3>
               <p>Mais conexão com quem está do outro lado da câmera.</p>
             </div>
-          </article>
+          </div>
 
-          <article class="escada-card" id="escada-card-3" role="tabpanel" aria-labelledby="tab-escada-3" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 36%)" data-index="2">
+          <div class="escada-card" id="escada-card-3" role="tabpanel" aria-labelledby="tab-escada-3" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 36%)" data-index="2">
             <div class="escada-card-media">
               <img src="assets/img/escada/foto-nivel-3.webp?v=2" alt="Homem sentado à mesa, gravando com o celular num tripé pequeno" width="700" height="875" loading="lazy" decoding="async">
             </div>
@@ -313,9 +313,9 @@
               <h3 class="escada-card-title">Organização</h3>
               <p>Ideias organizadas em uma mensagem fácil de acompanhar.</p>
             </div>
-          </article>
+          </div>
 
-          <article class="escada-card" id="escada-card-4" role="tabpanel" aria-labelledby="tab-escada-4" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 54%)" data-index="3">
+          <div class="escada-card" id="escada-card-4" role="tabpanel" aria-labelledby="tab-escada-4" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 54%)" data-index="3">
             <div class="escada-card-media">
               <img src="assets/img/escada/foto-nivel-4.webp?v=2" alt="Mulher gravando de perto, falando para o celular com naturalidade" width="700" height="875" loading="lazy" decoding="async">
             </div>
@@ -324,9 +324,9 @@
               <h3 class="escada-card-title">Expressividade</h3>
               <p>Uma voz com mais firmeza, ritmo e intenção.</p>
             </div>
-          </article>
+          </div>
 
-          <article class="escada-card" id="escada-card-5" role="tabpanel" aria-labelledby="tab-escada-5" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 72%)" data-index="4">
+          <div class="escada-card" id="escada-card-5" role="tabpanel" aria-labelledby="tab-escada-5" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 72%)" data-index="4">
             <div class="escada-card-media">
               <img src="assets/img/escada/foto-nivel-5.webp?v=2" alt="Homem gravando de perto, falando para o celular" width="700" height="875" loading="lazy" decoding="async">
             </div>
@@ -335,9 +335,9 @@
               <h3 class="escada-card-title">Clareza</h3>
               <p>Palavras mais nítidas e uma fala mais compreensível.</p>
             </div>
-          </article>
+          </div>
 
-          <article class="escada-card" id="escada-card-6" role="tabpanel" aria-labelledby="tab-escada-6" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 88%)" data-index="5">
+          <div class="escada-card" id="escada-card-6" role="tabpanel" aria-labelledby="tab-escada-6" style="--cor-degrau: color-mix(in srgb, var(--blue), var(--orange) 88%)" data-index="5">
             <div class="escada-card-media">
               <img src="assets/img/escada/foto-nivel-6.webp?v=2" alt="Mulher em pé ao lado do celular no tripé, gravando um vídeo" width="700" height="875" loading="lazy" decoding="async">
             </div>
@@ -346,9 +346,9 @@
               <h3 class="escada-card-title">Presença</h3>
               <p>Voz, corpo e expressão em sintonia diante da câmera.</p>
             </div>
-          </article>
+          </div>
 
-          <article class="escada-card escada-card--final" id="escada-card-7" role="tabpanel" aria-labelledby="tab-escada-7" style="--cor-degrau: var(--orange)" data-index="6">
+          <div class="escada-card escada-card--final" id="escada-card-7" role="tabpanel" aria-labelledby="tab-escada-7" style="--cor-degrau: var(--orange)" data-index="6">
             <div class="escada-card-media">
               <img src="assets/img/escada/foto-nivel-7.webp?v=2" alt="Homem em pé na sala, falando com o celular no tripé" width="700" height="875" loading="lazy" decoding="async">
             </div>
@@ -357,7 +357,7 @@
               <h3 class="escada-card-title">Autonomia</h3>
               <p>Mais autonomia para gravar, aparecer e publicar.</p>
             </div>
-          </article>
+          </div>
         </div>
       </div>
 
@@ -365,60 +365,62 @@
            preenche em vermelho/laranja enquanto o nível fica em foco e, ao
            completar, avança sozinha pro próximo (como os stories). Clicar
            num número pula direto pra ele. -->
-      <div class="escada-progresso" role="tablist" aria-label="Progresso da Escada de Exposição">
-        <button type="button" class="escada-play-pause" aria-label="Pausar avanço automático" aria-pressed="false">
+      <div class="escada-progresso">
+        <button type="button" class="escada-play-pause" aria-label="Pausar avanço automático">
           <svg class="icon-pause" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
           <svg class="icon-play" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" hidden><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <button type="button" class="escada-num is-active" role="tab" aria-selected="true" aria-controls="escada-card-1" id="tab-escada-1" data-index="0">
+        <div class="escada-abas" role="tablist" aria-label="Níveis da Escada de Exposição">
+        <button type="button" class="escada-num is-active" role="tab" aria-selected="true" aria-controls="escada-card-1" id="tab-escada-1" data-index="0" aria-label="Nível 1">
           <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
             <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
             <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
           </svg>
           <span class="escada-num-label">1</span>
         </button>
-        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-2" id="tab-escada-2" data-index="1">
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-2" id="tab-escada-2" data-index="1" aria-label="Nível 2" tabindex="-1">
           <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
             <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
             <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
           </svg>
           <span class="escada-num-label">2</span>
         </button>
-        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-3" id="tab-escada-3" data-index="2">
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-3" id="tab-escada-3" data-index="2" aria-label="Nível 3" tabindex="-1">
           <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
             <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
             <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
           </svg>
           <span class="escada-num-label">3</span>
         </button>
-        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-4" id="tab-escada-4" data-index="3">
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-4" id="tab-escada-4" data-index="3" aria-label="Nível 4" tabindex="-1">
           <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
             <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
             <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
           </svg>
           <span class="escada-num-label">4</span>
         </button>
-        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-5" id="tab-escada-5" data-index="4">
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-5" id="tab-escada-5" data-index="4" aria-label="Nível 5" tabindex="-1">
           <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
             <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
             <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
           </svg>
           <span class="escada-num-label">5</span>
         </button>
-        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-6" id="tab-escada-6" data-index="5">
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-6" id="tab-escada-6" data-index="5" aria-label="Nível 6" tabindex="-1">
           <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
             <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
             <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
           </svg>
           <span class="escada-num-label">6</span>
         </button>
-        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-7" id="tab-escada-7" data-index="6">
+        <button type="button" class="escada-num" role="tab" aria-selected="false" aria-controls="escada-card-7" id="tab-escada-7" data-index="6" aria-label="Nível 7" tabindex="-1">
           <svg class="escada-num-ring" viewBox="0 0 36 36" aria-hidden="true">
             <circle class="escada-num-ring-bg" cx="18" cy="18" r="15.5"></circle>
             <circle class="escada-num-ring-fill" cx="18" cy="18" r="15.5"></circle>
           </svg>
           <span class="escada-num-label">7</span>
         </button>
+        </div>
       </div>
     </div>
     <div class="container metodo-fecho">
@@ -579,10 +581,10 @@
       <div class="accordion" id="accordion-modulos">
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">0</span><span class="accordion-title-text">Boas-vindas</span><span class="module-count">3 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">1</span><span class="aula-nome">Comece por aqui</span></li>
@@ -595,10 +597,10 @@
         </div>
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">1</span><span class="accordion-title-text">Fundamentos</span><span class="module-count">5 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">4</span><span class="aula-nome">Conexão com a câmera</span></li>
@@ -611,10 +613,10 @@
         </div>
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">2</span><span class="accordion-title-text">Conteúdo e estrutura</span><span class="module-count">5 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">9</span><span class="aula-nome">Ideias para vídeos</span></li>
@@ -627,10 +629,10 @@
         </div>
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">3</span><span class="accordion-title-text">Voz</span><span class="module-count">4 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">14</span><span class="aula-nome">Firmeza vocal</span></li>
@@ -642,10 +644,10 @@
         </div>
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">4</span><span class="accordion-title-text">Dicção</span><span class="module-count">3 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">18</span><span class="aula-nome">Articulação</span></li>
@@ -656,10 +658,10 @@
         </div>
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">5</span><span class="accordion-title-text">Corpo e rosto na câmera</span><span class="module-count">4 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">21</span><span class="aula-nome">Enquadramento e postura</span></li>
@@ -671,10 +673,10 @@
         </div>
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">6</span><span class="accordion-title-text">Prática e publicação</span><span class="module-count">4 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">25</span><span class="aula-nome">Credibilidade na fala</span></li>
@@ -686,10 +688,10 @@
         </div>
 
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span><span class="accordion-tag">7</span><span class="accordion-title-text">Encerramento e continuidade</span><span class="module-count">3 aulas</span></span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel">
             <ul>
               <li><span class="aula-num">29</span><span class="aula-nome">Fala espontânea</span></li>
@@ -855,73 +857,73 @@
 
       <div class="accordion" id="accordion-faq">
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>Nunca gravei conteúdo. Consigo acompanhar?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Sim. A Escada de Exposição começa no primeiro nível e avança gradualmente. Você não precisa chegar ao curso sabendo gravar ou dominar técnicas de comunicação diante da câmera.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>Já consigo gravar, mas ainda não me sinto natural. O curso serve para mim?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Sim. O curso trabalha diferentes aspectos da comunicação diante da câmera, como estrutura da fala, voz, dicção, corpo e expressão. Você pode entrar já tendo alguma experiência e desenvolver os pontos que ainda interferem nas suas gravações.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>Preciso de câmera ou equipamento profissional?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Não. A formação foi pensada para quem grava com o celular, então você começa com o que já tem. O bônus de equipamentos serve para quando você quiser deixar suas gravações com um resultado mais profissional: ele indica opções para três momentos (iniciante, intermediário e avançado), para você melhorar o seu equipamento no seu ritmo e dentro do seu orçamento, sem gastar com o que não precisa.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>Quando tenho acesso ao curso?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Assim que o pagamento é aprovado, a Hotmart envia para o seu e-mail os dados de acesso ao curso. É só entrar na área de membros com esse e-mail e começar a assistir às aulas.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>Por quanto tempo tenho acesso ao curso?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>O acesso é vitalício: uma vez matriculada, você pode assistir às aulas quando quiser, sem prazo de expiração.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>As aulas são gravadas? Posso fazer no meu ritmo?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Sim. As aulas são gravadas e, como o acesso é vitalício, você avança no seu próprio ritmo, sem prazo pra terminar.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>Como funciona o acompanhamento?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Os alunos têm acesso ao grupo exclusivo no WhatsApp para tirar dúvidas relacionadas às aulas e acompanhar o processo durante a formação.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>O curso tem certificado?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Sim. Ao concluir a formação, você recebe o certificado do Do Medo ao Play.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>O Do Medo ao Play é um curso de oratória?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>O curso utiliza técnicas de comunicação e oratória aplicadas especificamente à gravação de vídeos para a internet. O foco não é preparar discursos formais, apresentações de palco ou entrevistas de emprego.</p></div>
         </div>
         <div class="accordion-item">
-          <button class="accordion-trigger" aria-expanded="false">
+          <h3 class="accordion-titulo"><button class="accordion-trigger" aria-expanded="false">
             <span>Preciso já ter seguidores ou trabalhar com internet?</span>
             <span class="accordion-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></span>
-          </button>
+          </button></h3>
           <div class="accordion-panel"><p>Não. Você pode estar começando agora. A habilidade de se comunicar diante da câmera pode ser usada por quem vende produtos, presta serviços, cria conteúdo, trabalha como afiliado ou precisa começar a aparecer profissionalmente na internet.</p></div>
         </div>
       </div>
@@ -1045,6 +1047,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=60"></script>
+<script src="js/main.js?v=61"></script>
 </body>
 </html>
