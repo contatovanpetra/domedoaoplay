@@ -169,8 +169,6 @@ não foi validado no Safari.
   é preciso banner/consentimento e Consent Mode. Não foi configurado nada.
 - A Política de Privacidade (privacidade.html) hoje não fala de pixels
   nem de cookies de medição; precisa ser atualizada quando eles entrarem.
-  Ela também diz que as fontes vêm do Google Fonts, mas as fontes hoje
-  são do próprio site (nenhuma chamada ao Google): ajustar esse trecho.
 - Dados guardados pela landing: só sessionStorage "dmap-parametros"
   (parâmetros de rastreio da aba) e "dmap-lugar" (posição da rolagem, para
   voltar ao mesmo lugar). Nenhum dado pessoal.
