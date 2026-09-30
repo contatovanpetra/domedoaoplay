@@ -5,11 +5,13 @@
 // do plano da Vercel); ligue com VIDEO=1.
 //
 // Como rodar:
-//   k6 run testes/carga-k6.js                         # fumaça: 1 usuário, 30 s
-//   k6 run -e PERFIL=carga testes/carga-k6.js         # sobe até 30 usuários ao mesmo tempo
-//   k6 run -e PERFIL=pico -e ALVO=100 testes/carga-k6.js   # pico curto até ALVO usuários
-//   k6 run -e PERFIL=campanha -e ALVO=100 testes/carga-k6.js  # poucos → pico → mantém → cai
-//   k6 run -e BASE_URL=https://seu-dominio.com.br testes/carga-k6.js
+//   k6 run -e BASE_URL=https://seu-dominio.com.br testes/carga-k6.js   # fumaça: 1 usuário, 30 s
+//   ... -e PERFIL=carga                  # sobe até 30 usuários ao mesmo tempo
+//   ... -e PERFIL=pico -e ALVO=100       # pico curto até ALVO usuários
+//   ... -e PERFIL=campanha -e ALVO=100   # poucos → pico → mantém → cai
+// Resultado de 30/set na prévia da Vercel (já desativada): campanha com 100
+// usuários, 39.127 pedidos, 0,005% de erro, p95 114 ms; pico de 300 usuários,
+// 60.973 pedidos, 0,007% de erro, p95 108 ms.
 //
 // Aprovação (thresholds): menos de 1% de erro, HTML com p95 abaixo de 800 ms e
 // arquivos com p95 abaixo de 1,5 s. O k6 sai com erro se algum critério falhar.
@@ -18,7 +20,9 @@ import http from "k6/http";
 import { check, sleep } from "k6";
 import { Trend } from "k6/metrics";
 
-const BASE = (__ENV.BASE_URL || "https://domedoaoplay.vercel.app").replace(/\/$/, "");
+// Sem endereço padrão: a prévia da Vercel foi desativada na entrega.
+if (!__ENV.BASE_URL) throw new Error("Defina o endereço: k6 run -e BASE_URL=https://seu-dominio.com.br testes/carga-k6.js");
+const BASE = __ENV.BASE_URL.replace(/\/$/, "");
 const PERFIL = __ENV.PERFIL || "fumaca";
 const ALVO = Number(__ENV.ALVO || 100);
 

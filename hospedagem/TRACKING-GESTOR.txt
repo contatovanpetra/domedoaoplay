@@ -23,10 +23,11 @@ definida aqui. Nenhum ID foi inventado.
 - Landing: domínio final ainda não definido (no código aparece
   COLOQUE-SEU-DOMINIO-AQUI). Páginas: index.html (a landing),
   termos.html, privacidade.html, suporte.html.
-- Prévia: https://domedoaoplay.vercel.app — só para revisão, fora do
-  Google (noindex). Não use em campanha. Recomendação: fazer as tags
-  dispararem só no domínio final (condição de hostname no GTM, por
-  exemplo), senão as visitas de revisão entram nos dados.
+- Prévia: https://domedoaoplay.vercel.app — foi só para revisão, fora do
+  Google (noindex), e foi desativada na entrega (30/set). Se alguma prévia
+  voltar a existir, fazer as tags dispararem só no domínio final (condição
+  de hostname no GTM, por exemplo), senão as visitas de revisão entram nos
+  dados.
 - Checkout: https://pay.hotmart.com/... (domínio diferente da landing:
   a jornada é CROSS-DOMAIN). Os 8 botões de compra (5 na landing, 1 em
   cada página de apoio) ainda estão com o link provisório
