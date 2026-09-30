@@ -1023,13 +1023,13 @@ html #metodo .texto-corrido p, html #aplicacao .section-lead, html .section-tone
      da rolagem: a foto começa um pouco menor que a tela (ícones mais perto
      do meio, longe do botão) e cresce devagar até cobrir a tela conforme
      rola. */
-  background: #010719 url("../assets/img/vivi-hero-mobile.webp") 60% 30% / cover no-repeat;
+  background: #010719 url("../assets/img/vivi-hero-mobile.webp?v=2") 60% 30% / cover no-repeat;
 
 }
 /* AVIF (41 KB contra 68 KB do WebP, mesma cor e o mesmo detalhe no rosto,
    conferido no Chrome) só quando o <head> marcou o <html> com "avif": a
    mesma decisão que escolheu o preload da foto, então nunca baixa as duas. */
-html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mobile.avif"); }
+html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mobile.avif?v=2"); }
 .hero-scrim {
   display: block;
   position: absolute;
@@ -3204,9 +3204,9 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
   /* A foto horizontal é o fundo do herói inteiro. O lado esquerdo dela já é
      escuro: o degradê só reforça a leitura, sem virar faixa. */
   .hero-foto-deitada {
-    background: #010719 url("../assets/img/vivi-hero-desktop.webp") 70% 35% / cover no-repeat;
+    background: #010719 url("../assets/img/vivi-hero-desktop.webp?v=2") 70% 35% / cover no-repeat;
   }
-  html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-desktop.avif"); }
+  html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-desktop.avif?v=2"); }
   .hero-scrim {
     background: linear-gradient(100deg, rgba(1, 7, 25, .5) 0%, rgba(1, 7, 25, .22) 40%, transparent 60%);
   }
