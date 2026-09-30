@@ -302,8 +302,11 @@ function wireScrollEffects() {
       fimFoto.style.opacity = (f * f * (3 - 2 * f)).toFixed(3);
       const emPe = celularEmPe.matches;
       const tela = window.innerHeight;
-      some(heroTopo, emPe ? 1 - clamp((y - heroTop - 20) / 220) : 1);
-      some(heroApoio, emPe ? 1 - clamp((y - heroTop - .45 * tela) / (.2 * tela)) : 1);
+      // Título e botão somem devagar (de 6% a 46% da tela de rolagem; era
+      // de 20 a 240px e parecia rápido demais, 30/set); o parágrafo, que
+      // chega depois, some de 52% a 78%, antes de "Você trava." subir.
+      some(heroTopo, emPe ? 1 - clamp((y - heroTop - .06 * tela) / (.4 * tela)) : 1);
+      some(heroApoio, emPe ? 1 - clamp((y - heroTop - .52 * tela) / (.26 * tela)) : 1);
       // Quando a foto solta e começa a subir, ela já é só fundo: esconde o
       // palco pra aparecer a .page-bg fixa por trás. Subindo, o degradê da
       // camada sairia do lugar em relação ao fundo fixo e marcaria uma faixa.

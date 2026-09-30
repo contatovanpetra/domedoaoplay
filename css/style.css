@@ -2919,6 +2919,18 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
        fica maior e sobe, com menos céu vazio em cima. */
     background-size: 110% auto;
     background-position: 55% 90%;
+    /* Telas mais altas que as do celular comum (janela estreita no
+       computador, celulares compridos): só pela largura, a foto não chegava
+       no alto e o céu escuro dela (37% de cima da imagem) virava uma faixa
+       vazia grande embaixo do menu. Agora ela também cresce pela altura
+       (--fw) e nunca deixa mais céu que o iPhone de 390x844 mostra: os arcos
+       começam no máximo 162px abaixo do menu. Nos celulares comuns fica
+       exatamente como antes (o min() escolhe a posição de antes). A imagem
+       é 941x1672 (altura = 1,7768 x largura). */
+    --fh: calc(100svh - var(--hero-base, 150px));
+    --fw: max(110vw, calc(var(--fh) * .5628));
+    background-size: var(--fw) auto;
+    background-position: 55% min(calc((var(--fh) - var(--fw) * 1.7768) * .9), calc(var(--header-h, 60px) + 162px - var(--fw) * .661));
   }
   /* O degradê desce além do pé da foto e continua liso até o fim da tela:
      sem ele sobrava uma emenda reta onde a foto terminava. */
