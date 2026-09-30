@@ -126,7 +126,7 @@
      sistema e troca quando elas chegam (font-display: swap), sem pular. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=115">
+<link rel="stylesheet" href="css/style.css?v=116">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
@@ -254,21 +254,20 @@
     </div>
   </section>
 
-  <!-- A virada, a ponte pra sair do capítulo escuro (como as frases de
-       virada da Apple no AirPods Pro): a frase entra, fica parada no meio da
-       tela (.virada-palco, sticky) enquanto o fundo clareia aos poucos, do
-       quase-preto pro azul da marca, acompanhando a rolagem (ver
-       wireCorDoFundo), e sai subindo; depois de um respiro, a escada. -->
-  <section class="section" id="virada">
-    <div class="virada-palco">
-      <div class="container">
-        <p class="statement-title situacoes-fecho"><span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></p>
-      </div>
-    </div>
-  </section>
-
   <!-- ===== MÉTODO / ESCADA DE EXPOSIÇÃO ===== -->
+  <!-- A ponte (30/set, ideia da Vitória): "Dá pra sair disso" e o começo da
+       escada dividem o mesmo palco (.metodo-palco, preso na tela). Rolando,
+       a frase some e a escada aparece no mesmo lugar, enquanto o fundo sai
+       do quase-preto pro azul da marca (ver wirePonte e wireCorDoFundo);
+       só depois a página segue. Sem JS ou com "reduzir movimento", a frase
+       fica no fluxo, antes do título, e nada fica preso. -->
   <section class="section" id="metodo" aria-labelledby="metodo-title">
+    <div class="metodo-ponte">
+    <div class="metodo-palco">
+    <div class="container ponte-frase-box">
+      <p class="statement-title situacoes-fecho"><span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></p>
+    </div>
+    <div class="metodo-conteudo">
     <div class="container">
       <h2 id="metodo-title" class="section-title">A Escada de Exposição</h2>
       <div class="texto-corrido">
@@ -422,6 +421,10 @@
         </button>
         </div>
       </div>
+    </div>
+    </div>
+    </div>
+    <div class="metodo-ponte-trilho" aria-hidden="true"></div>
     </div>
     <div class="container metodo-fecho">
       <p class="metodo-frase"><span class="metodo-frase-linha">Um nível de cada vez.</span> <span class="metodo-frase-linha text-orange">Até dar o play.</span></p>
@@ -1048,6 +1051,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=65"></script>
+<script src="js/main.js?v=66"></script>
 </body>
 </html>

@@ -783,35 +783,51 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
    nem borda. Uma embaixo da outra no celular; 2 x 2 do tablet em diante.
    Cada item entra sozinho na rolagem (.reveal). */
 #situacoes { padding-top: 0; padding-bottom: 0; }
-/* A virada ("Dá pra sair disso"), logo depois das situações, e o respiro de
-   seção da Apple antes da escada. */
-/* A ponte (30/set): a caixa presa ocupa uma tela e a seção tem mais 70% de
-   tela de rolagem: durante esse trecho a frase fica parada no centro e o
-   fundo clareia; depois ela sobe junto com a caixa, no tamanho inteiro. O
-   respiro de baixo é o que separa a ponte do capítulo novo (a escada).
-   Sem encolher (30/set, pedido da Vitória): diminuir até 65% deixava a
-   frase pequena demais antes da escada, e nenhuma das frases grandes
-   medidas na Apple (MacBook Air, AirPods Pro, iPad Pro) muda de tamanho. */
-#virada {
-  position: relative;
-  min-height: 170vh;
-  min-height: 170svh;
-  padding-top: 0;
-  padding-bottom: clamp(64px, 8vw, 120px);
-}
-.virada-palco {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
-  display: flex;
-  align-items: center;
-}
-.virada-palco > .container { width: 100%; }
+/* A ponte (30/set, ideia da Vitória): "Dá pra sair disso" e o começo da
+   escada no mesmo palco, preso na tela. A frase entra subindo com a página
+   e para no meio; rolando, ela some, a escada aparece no mesmo lugar (sem a
+   página descer) e o fundo sai do quase-preto pro azul da marca; depois a
+   página segue. O palco fica preso durante a altura do trilho
+   (.metodo-ponte-trilho). As opacidades vêm do JS (--frase-op e
+   --escada-op, ver wirePonte). Sem a classe ponte-ativa (sem JS ou com
+   "reduzir movimento"), a frase fica no fluxo, antes do título, com
+   respiro, e nada fica preso. */
+.ponte-frase-box { padding: 26vh 0 22vh; padding: 26svh 0 22svh; }
+.ponte-frase-box .situacoes-fecho { margin: 0; }
 /* Respiros medidos nas trocas de capítulo da Apple e do Spotify (30/set):
    35–65% da tela no celular, 45–75% no computador. No computador, antes da
-   ponte, sobravam 40%: mais 10% de tela. */
-@media (min-width: 700px) { #virada { margin-top: 10vh; margin-top: 10svh; } }
+   frase, mais 10% de tela. */
+@media (min-width: 700px) { .metodo-ponte { margin-top: 10vh; margin-top: 10svh; } }
+html.ponte-ativa .metodo-palco {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  /* O título da escada fica logo abaixo do menu, onde ela vai aparecer. */
+  padding-top: calc(var(--header-h, 68px) + clamp(1rem, 4vh, 2.5rem));
+}
+html.ponte-ativa .ponte-frase-box {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100svh;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  pointer-events: none;
+  opacity: var(--frase-op, 1);
+  transform: translateY(calc((1 - var(--frase-op, 1)) * -24px));
+}
+html.ponte-ativa .ponte-frase-box > .situacoes-fecho { width: 100%; }
+html.ponte-ativa .metodo-conteudo {
+  opacity: var(--escada-op, 0);
+  transform: translateY(calc((1 - var(--escada-op, 0)) * 28px));
+}
+html.ponte-ativa .metodo-ponte-trilho { height: 120vh; height: 120svh; }
 .situacoes {
   list-style: none;
   margin: 0 auto;
@@ -843,8 +859,6 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
   text-wrap: pretty;
 }
 .situacoes-item strong { color: var(--white); font-weight: 800; }
-/* A virada, na mesma frase grande de "Você trava.", já com o degradê da escada. */
-#virada .situacoes-fecho { margin: 0; }
 @media (min-width: 700px) {
   .situacoes { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(40px, 6vw, 80px); row-gap: 56px; }
   /* Na mesma linha, o da direita entra um instante depois do da esquerda. */

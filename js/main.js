@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     wireViviCard, wireCountUp, wireScrollEffects, wireReadProgressBar,
     wireScrollCue, wireIntroStage, wireManterLugar, wireHeaderReveal,
     wireHeaderTema, wireAplicacaoSome, playHeroIntro, wireVoltar,
-    wireGuardaLugar, wireReviewMode, wireCorDoFundo, wireBeneficiosPilha,
+    wireGuardaLugar, wireReviewMode, wirePonte, wireCorDoFundo, wireBeneficiosPilha,
     wirePausaForaDaTela, wireReconexao,
   ];
   partes.forEach((liga) => {
@@ -92,11 +92,13 @@ function wirePausaForaDaTela() {
 // se não, volta ao azul-noite. A cor dos textos dessas seções muda junto.
 function wireCorDoFundo() {
   const claras = ["modulos", "beneficios"];
-  const noite = ["reconhecimento", "situacoes", "virada"];
-  // A ponte (#virada): enquanto a frase fica parada no meio da tela, o fundo
-  // vai do quase-preto pro azul da marca acompanhando a rolagem, em vez de
-  // trocar de uma vez. Cores iguais às do CSS (--noite e --bg).
-  const virada = document.getElementById("virada");
+  const noite = ["reconhecimento", "situacoes"];
+  // A ponte (.metodo-ponte, no começo da escada): enquanto o palco fica preso
+  // e a frase dá lugar à escada, o fundo vai do quase-preto pro azul da marca
+  // acompanhando a rolagem, em vez de trocar de uma vez. Cores iguais às do
+  // CSS (--noite e --bg). Sem a ponte ativa, a troca é a de sempre (CSS).
+  const ponte = document.querySelector(".metodo-ponte");
+  const trilho = ponte && ponte.querySelector(".metodo-ponte-trilho");
   const pageBg = document.querySelector(".page-bg");
   const header = document.querySelector(".site-header");
   const DE = [4, 8, 14], PARA = [11, 23, 40];
@@ -116,13 +118,13 @@ function wireCorDoFundo() {
     root.classList.toggle("fundo-claro", !!atual && claras.includes(atual.id));
     // Capítulo do problema ("Você trava." e as situações) em quase-preto.
     root.classList.toggle("fundo-noite", !!atual && noite.includes(atual.id));
-    // Na ponte: a cor segue a rolagem (0 quando a caixa da frase gruda no
-    // alto, 1 quando ela solta), com a mesma curva suave no começo e no fim.
-    if (virada && pageBg && atual === virada) {
-      const r = virada.getBoundingClientRect();
-      const percurso = Math.max(1, r.height - window.innerHeight);
-      const p = Math.min(1, Math.max(0, -r.top / percurso));
-      const t = p * p * (3 - 2 * p);
+    // Na ponte: a cor segue a rolagem (0 quando o palco gruda no alto, 1 aos
+    // 70% do trilho, quando a escada já apareceu), com uma curva suave.
+    const naPonte = ponte && trilho && pageBg && root.classList.contains("ponte-ativa") && atual && atual.contains(ponte);
+    const pp = naPonte ? Math.min(1, Math.max(0, -ponte.getBoundingClientRect().top / Math.max(1, trilho.offsetHeight))) : 1;
+    if (naPonte && pp < 1) {
+      const q = Math.min(1, pp / .7);
+      const t = q * q * (3 - 2 * q);
       const [vr, vg, vb] = mistura(t);
       pageBg.style.transition = "none";
       pageBg.style.backgroundColor = `rgb(${vr}, ${vg}, ${vb})`;
@@ -140,6 +142,60 @@ function wireCorDoFundo() {
     if (!pedido) { pedido = true; requestAnimationFrame(confere); }
   }, { passive: true });
   window.addEventListener("resize", confere, { passive: true });
+}
+
+// A ponte (30/set, ideia da Vitória): "Dá pra sair disso, degrau a degrau."
+// e o começo da escada dividem o mesmo palco preso (ver .metodo-palco no
+// CSS). Ao longo do trilho de rolagem, a frase some (de 12% a 45%) e a
+// escada aparece no mesmo lugar (de 38% a 75%); a cor do fundo acompanha
+// (wireCorDoFundo). Só mexe em opacidade e transform (nada de recalcular a
+// página). Com "reduzir movimento", nada disso liga: a frase fica no fluxo,
+// antes do título. Enquanto a escada está escondida, o avanço automático
+// dela espera (evento "dmap:escada-visivel").
+function wirePonte() {
+  const ponte = document.querySelector(".metodo-ponte");
+  const trilho = ponte && ponte.querySelector(".metodo-ponte-trilho");
+  const conteudo = ponte && ponte.querySelector(".metodo-conteudo");
+  if (!ponte || !trilho || !conteudo || prefersReducedMotion) return;
+  document.documentElement.classList.add("ponte-ativa");
+  let foco = false;     // foco do teclado na escada: mostra na hora
+  let visivel = null;
+  let pedido = false;
+  const aplica = () => {
+    pedido = false;
+    const p = clamp(-ponte.getBoundingClientRect().top / Math.max(1, trilho.offsetHeight));
+    const suave = (x) => x * x * (3 - 2 * x);
+    const frase = foco ? 0 : 1 - suave(clamp((p - .12) / .33));
+    const escada = foco ? 1 : suave(clamp((p - .38) / .37));
+    ponte.style.setProperty("--frase-op", frase.toFixed(3));
+    ponte.style.setProperty("--escada-op", escada.toFixed(3));
+    const agora = escada > .5;
+    if (agora !== visivel) {
+      visivel = agora;
+      document.dispatchEvent(new CustomEvent("dmap:escada-visivel", { detail: agora }));
+    }
+  };
+  conteudo.addEventListener("focusin", (e) => {
+    foco = true;
+    aplica();
+    // Com o palco preso, o que fica abaixo da borda da tela (os controles da
+    // escada, por exemplo) não sobe com a rolagem: o foco do teclado ficava
+    // fora da tela. A página vai pro fim da ponte (a escada solta, no lugar
+    // dela) e mostra o que recebeu o foco.
+    requestAnimationFrame(() => {
+      const r = e.target.getBoundingClientRect();
+      if (r.bottom <= window.innerHeight && r.top >= 0) return;
+      const fim = ponte.getBoundingClientRect().top + window.scrollY + trilho.offsetHeight;
+      if (window.scrollY < fim) window.scrollTo(0, fim);
+      e.target.scrollIntoView({ block: "nearest" });
+    });
+  });
+  conteudo.addEventListener("focusout", (e) => { if (!conteudo.contains(e.relatedTarget)) { foco = false; aplica(); } });
+  aplica();
+  window.addEventListener("scroll", () => {
+    if (!pedido) { pedido = true; requestAnimationFrame(aplica); }
+  }, { passive: true });
+  window.addEventListener("resize", aplica, { passive: true });
 }
 
 // Modo revisão (classe "modo-revisao" no <html>, ligada por uma linha no <head>):
@@ -886,6 +942,7 @@ function wireEscadaShowcase() {
   let rafId = 0;
   let naTela = false;         // só conta com algum pedaço da escada na tela
   let focoDentro = false;     // foco do teclado nos níveis: o avanço espera
+  let escondida = false;      // a ponte ainda não mostrou a escada: o avanço espera
 
   function anelDe(i) {
     return nums[i] && nums[i].querySelector(".escada-num-ring-fill");
@@ -913,7 +970,7 @@ function wireEscadaShowcase() {
   }
   function iniciarProgresso(retomarDoPonto) {
     pararProgresso();
-    if (!tocando || !naTela || focoDentro || prefersReducedMotion) return;
+    if (!tocando || !naTela || focoDentro || escondida || prefersReducedMotion) return;
     const jaFeito = retomarDoPonto ? progressoAoPausar : 0;
     inicioProgresso = performance.now() - jaFeito * DURACAO_MS;
     rafId = requestAnimationFrame(passoProgresso);
@@ -1047,6 +1104,12 @@ function wireEscadaShowcase() {
       focoDentro = false;
       if (tocando) iniciarProgresso(true);
     });
+  });
+
+  document.addEventListener("dmap:escada-visivel", (e) => {
+    escondida = !e.detail;
+    if (escondida) pararProgresso();
+    else if (tocando) iniciarProgresso(true);
   });
 
   // Arrastar no celular (sem travar a rolagem vertical da página).
