@@ -97,7 +97,20 @@ for (const nome of await readdir(SAIDA)) {
 // Fora da Vercel (a pasta vai pra Hostinger ou outra hospedagem Apache/
 // LiteSpeed): as regras de cache, compressão e https vão num .htaccess.
 // Na Vercel isso vem do vercel.json e o .htaccess não é publicado.
+// Os cabeçalhos de segurança (CSP, X-Frame-Options, Permissions-Policy...) saem
+// do vercel.json, a fonte única: assim a Hostinger recebe os mesmos valores e
+// o hash novo de um script inline chega nos dois lugares de uma vez.
 if (!process.env.VERCEL) {
-  await cp(join(RAIZ, "hospedagem", "htaccess"), join(SAIDA, ".htaccess"));
-  console.log(".htaccess: criado");
+  const regras = await readFile(join(RAIZ, "hospedagem", "htaccess"), "utf8");
+  const geral = JSON.parse(await readFile(join(RAIZ, "vercel.json"), "utf8")).headers
+    .find((h) => h.source === "/(.*)" && !h.has);
+  const ja = new Set([...regras.matchAll(/Header always set (\S+)/g)].map((m) => m[1].toLowerCase()));
+  const linhas = geral.headers
+    .filter((h) => !ja.has(h.key.toLowerCase()))
+    .map((h) => `  Header always set ${h.key} "${h.value.replace(/"/g, '\\"')}"`);
+  const bloco = linhas.length
+    ? "\n# Cabeçalhos de segurança: copiados do vercel.json pelo build (não editar aqui).\n<IfModule mod_headers.c>\n" + linhas.join("\n") + "\n</IfModule>\n"
+    : "";
+  await writeFile(join(SAIDA, ".htaccess"), regras + bloco);
+  console.log(`.htaccess: criado (${linhas.length} cabeçalhos de segurança do vercel.json)`);
 }

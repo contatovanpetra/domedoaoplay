@@ -95,6 +95,19 @@ test("os cabeçalhos de segurança chegam em todas as páginas e arquivos", asyn
   }
 });
 
+// A pasta que vai pra Hostinger (dist/.htaccess, gerado pelo build) manda os
+// mesmos cabeçalhos do vercel.json: sem isso, lá a página ficaria sem a
+// proteção contra quadro (clickjacking) e sem a Permissions-Policy.
+test("a pasta da Hostinger (.htaccess) manda os mesmos cabeçalhos de segurança do vercel.json", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const htaccess = await readFile(new URL("../../dist/.htaccess", import.meta.url), "utf8");
+  const vercel = JSON.parse(await readFile(new URL("../../vercel.json", import.meta.url), "utf8"));
+  const geral = vercel.headers.find((h) => h.source === "/(.*)" && !h.has).headers;
+  expect(geral.length).toBeGreaterThan(4);
+  for (const { key, value } of geral) expect(htaccess, key).toContain(`Header always set ${key} "${value}"`);
+  expect(htaccess, "HSTS só depois do https do domínio final").not.toContain("Strict-Transport-Security");
+});
+
 test("outro site não consegue abrir a página dentro de um quadro (clickjacking)", async ({ page, baseURL }) => {
   await page.setContent(`<iframe src="${baseURL}/index.html" width="400" height="400"></iframe>`);
   await page.waitForTimeout(3000);

@@ -7,6 +7,11 @@ final deve mandar os MESMOS cabeçalhos em todas as respostas do site (o
 jeito de configurar muda de uma hospedagem pra outra: .htaccess no Apache/
 LiteSpeed, painel da hospedagem, Cloudflare, Netlify, Nginx...).
 
+HOSTINGER (ou outro Apache/LiteSpeed): a pasta gerada pelo build (dist/) já
+leva um .htaccess com os itens 1 a 6 abaixo, copiados do vercel.json na hora
+do build (auditoria final de 30/set). Nada a configurar à mão, só conferir
+depois de publicar que eles chegam (o item 7 continua manual).
+
 Os valores exatos estão no vercel.json, no bloco "source": "/(.*)". São eles:
 
 1. Content-Security-Policy
