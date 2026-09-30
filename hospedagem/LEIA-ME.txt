@@ -17,7 +17,8 @@ DO MEDO AO PLAY — COMO PUBLICAR
      arquivos: os 4 .html, robots.txt e sitemap.xml ("localizar e substituir"
      em todos). Ele aparece no endereço oficial pro Google (canonical), na
      prévia do WhatsApp/Instagram e no sitemap.
-   - Pixels e rastreamento (Meta, Google): colar no <head> do index.html.
+   - Pixels e rastreamento (Meta, Google): quem instala é o gestor de tráfego;
+     tudo o que ele precisa saber está em hospedagem/TRACKING-GESTOR.txt.
 5. Depois de subir, abra o site no celular e no computador e teste o botão
    "Quero entrar em cena".
 

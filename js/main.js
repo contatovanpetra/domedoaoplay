@@ -472,29 +472,82 @@ function wireReadProgressBar() {
 // Os parâmetros ficam guardados na aba (sessionStorage) durante a visita: quem
 // chega do anúncio, abre os Termos ou a Política e compra de lá (ou volta pela
 // logo, que leva a index.html sem parâmetros) chegava na Hotmart sem origem.
-// Os do endereço atual valem mais; os guardados só completam o que faltar.
+// Uma visita nova com parâmetros de rastreio (outro anúncio, na mesma aba)
+// substitui o conjunto inteiro guardado: vale o último anúncio da aba.
+//
+// Só seguem (e só ficam guardados) os parâmetros de rastreio: utm_* e os da
+// lista abaixo (auditoria de tracking, 30/set). Antes ia tudo o que estivesse
+// no endereço, inclusive um "email=" (dado pessoal indo pra Hotmart) ou um
+// "off=" (que troca a oferta no checkout da Hotmart). O valor vai exatamente
+// como chegou (sem recodificar: "%20" continua "%20"). Pra incluir outro
+// parâmetro, acrescente aqui E na cópia da lista no <script> do <head> do
+// index.html (o que atende o clique antes deste arquivo carregar).
+const PARAMETROS_DE_RASTREIO = [
+  "src", "sck", "xcod",                                        // Hotmart
+  "gclid", "gbraid", "wbraid", "gad_source", "gad_campaignid", "dclid", // Google
+  "fbclid",                                                    // Meta
+  "msclkid", "ttclid", "twclid", "li_fat_id", "epik",          // Microsoft, TikTok, X, LinkedIn, Pinterest
+];
 const CHAVE_PARAMETROS = "dmap-parametros";
+function ehDeRastreio(chave) {
+  return /^utm_[a-z0-9_]+$/.test(chave) || PARAMETROS_DE_RASTREIO.includes(chave);
+}
+// Os pares de rastreio de um "?a=1&b=2", como vieram: [chave, "chave=valor"].
+// Chave repetida: vale a primeira.
+function paresDeRastreio(busca) {
+  const pares = [];
+  String(busca || "").replace(/^\?/, "").split("&").forEach((parte) => {
+    if (!parte) return;
+    const i = parte.indexOf("=");
+    let chave;
+    try { chave = decodeURIComponent((i < 0 ? parte : parte.slice(0, i)).replace(/\+/g, " ")); } catch { return; }
+    if (!ehDeRastreio(chave) || pares.some((p) => p[0] === chave)) return;
+    pares.push([chave, parte]);
+  });
+  return pares;
+}
 function parametrosDaVisita() {
-  const atuais = new URLSearchParams(window.location.search);
-  let guardados = new URLSearchParams();
+  const atuais = paresDeRastreio(window.location.search);
+  let guardados = [];
   try {
-    if ([...atuais.keys()].length) sessionStorage.setItem(CHAVE_PARAMETROS, atuais.toString());
-    guardados = new URLSearchParams(sessionStorage.getItem(CHAVE_PARAMETROS) || "");
+    if (atuais.length) sessionStorage.setItem(CHAVE_PARAMETROS, atuais.map((p) => p[1]).join("&"));
+    guardados = paresDeRastreio(sessionStorage.getItem(CHAVE_PARAMETROS) || "");
   } catch { /* sem armazenamento (navegação privada restrita): vale só o endereço atual */ }
-  guardados.forEach((value, key) => { if (!atuais.has(key)) atuais.set(key, value); });
+  guardados.forEach((p) => { if (!atuais.some((a) => a[0] === p[0])) atuais.push(p); });
   return atuais;
 }
 function checkoutHref(base, parametros) {
   try {
     const url = new URL(base);
-    parametros.forEach((value, key) => {
-      if (!url.searchParams.has(key)) url.searchParams.set(key, value);
-    });
-    return url.toString();
+    const pares = Array.isArray(parametros) ? parametros : paresDeRastreio(String(parametros || ""));
+    // Um parâmetro que já vem no link do botão (a oferta, por exemplo) nunca
+    // é trocado pelo do endereço.
+    const extras = pares.filter(([chave]) => !url.searchParams.has(chave)).map((p) => p[1]);
+    if (!extras.length) return url.toString();
+    return url.origin + url.pathname + (url.search ? url.search + "&" : "?") + extras.join("&") + url.hash;
   } catch {
     // Endereço do botão inválido: mantém o que está no HTML.
     return base;
   }
+}
+
+// Pontos de medição (auditoria de tracking, 30/set). Nenhuma ferramenta de
+// anúncio ou analytics está instalada: isto só avisa que algo aconteceu, de
+// um jeito que qualquer uma delas (a escolha é do gestor de tráfego) consegue
+// ouvir. Nada é enviado pra fora daqui:
+//  - evento "dmap:evento" no document (detail = { evento, ...dados });
+//  - se já existir um dataLayer (só existe se o GTM/gtag for instalado),
+//    um push { event: "dmap_<evento>", ...dados }.
+// Nunca atrasa nem impede a ação da pessoa: qualquer erro aqui é engolido.
+function registraEvento(evento, dados) {
+  const detalhe = Object.assign({ evento }, dados);
+  try { document.dispatchEvent(new CustomEvent("dmap:evento", { detail: detalhe })); } catch { /* sem CustomEvent: segue */ }
+  try {
+    if (Array.isArray(window.dataLayer)) window.dataLayer.push(Object.assign({ event: "dmap_" + evento }, dados));
+  } catch { /* dataLayer quebrado ou bloqueado: segue */ }
+}
+function paginaAtual() {
+  return (location.pathname.split("/").pop() || "index.html").replace(/\.html$/, "") || "index";
 }
 
 // Links ainda sem destino (href="#", como os do rodapé enquanto as páginas de
@@ -546,11 +599,24 @@ function wireCheckoutLinks() {
   // Clique duplo (ou dois toques seguidos) abria duas abas do checkout: o
   // segundo clique dentro de 1 s é ignorado. Um clique normal não muda nada.
   let ultimoClique = -Infinity;
+  // Um clique que abre o checkout = um evento "clique_checkout" (o clique
+  // ignorado do clique duplo não conta). Não é compra nem início de checkout
+  // confirmado: só que a pessoa tocou no botão. Botão do meio do mouse
+  // (abrir em aba nova) também abre o checkout, então também conta.
+  const abriu = (link) => registraEvento("clique_checkout", { posicao: link.dataset.trackId || "", pagina: paginaAtual() });
   links.forEach((link) => {
     link.addEventListener("click", (e) => {
       const agora = performance.now();
       if (agora - ultimoClique < 1000) { e.preventDefault(); return; }
       ultimoClique = agora;
+      abriu(link);
+    });
+    link.addEventListener("auxclick", (e) => {
+      if (e.button !== 1) return;
+      const agora = performance.now();
+      if (agora - ultimoClique < 1000) return;
+      ultimoClique = agora;
+      abriu(link);
     });
   });
 }

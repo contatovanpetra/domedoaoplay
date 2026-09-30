@@ -1,0 +1,207 @@
+DO MEDO AO PLAY — TRACKING: O QUE A LANDING JÁ ENTREGA E O QUE FALTA CONFIGURAR
+(auditoria de tracking de 30/set/2026 — documento para o gestor de tráfego)
+
+Este documento é técnico: diz o que a página faz hoje, onde medir e o que
+ainda depende de você. Não há nenhuma campanha, conversão ou estratégia
+definida aqui. Nenhum ID foi inventado.
+
+
+1. ESTADO ATUAL
+---------------
+- Nenhuma ferramenta de medição instalada: sem Google Tag, GTM, GA4,
+  Google Ads, Meta Pixel, CAPI, TikTok, Clarity, Hotjar ou outra.
+- A página não chama nenhum domínio de fora (conferido no navegador), não
+  grava cookie e não usa localStorage.
+- Não existe dataLayer. A landing não cria um sozinha.
+- Não existe banner de cookies/consentimento (CMP) nem Consent Mode.
+- Não há formulário, lead, login nem página de obrigado na landing.
+- A compra acontece fora da landing, no checkout da Hotmart.
+
+
+2. ENDEREÇOS
+------------
+- Landing: domínio final ainda não definido (no código aparece
+  COLOQUE-SEU-DOMINIO-AQUI). Páginas: index.html (a landing),
+  termos.html, privacidade.html, suporte.html.
+- Prévia: https://domedoaoplay.vercel.app — só para revisão, fora do
+  Google (noindex). Não use em campanha. Recomendação: fazer as tags
+  dispararem só no domínio final (condição de hostname no GTM, por
+  exemplo), senão as visitas de revisão entram nos dados.
+- Checkout: https://pay.hotmart.com/... (domínio diferente da landing:
+  a jornada é CROSS-DOMAIN). Os 8 botões de compra (5 na landing, 1 em
+  cada página de apoio) ainda estão com o link provisório
+  https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI.
+- Redirecionamentos sob nosso controle: só http → https (Vercel: 308;
+  .htaccess da Hostinger: 301). Os dois mantêm o endereço inteiro com
+  os parâmetros (testado).
+
+
+3. PARÂMETROS DOS ANÚNCIOS
+--------------------------
+A página aceita qualquer parâmetro no endereço sem quebrar, sem
+redirecionar e sem apagar nada do endereço (testado com UTMs, gclid,
+gbraid, wbraid, fbclid, msclkid, ttclid, src, sck, xcod, valores
+codificados, repetidos e com #).
+
+Ao carregar, os botões de compra recebem os parâmetros de RASTREIO que
+vieram no endereço:
+  - todo parâmetro que começa com utm_ (utm_source, utm_medium,
+    utm_campaign, utm_content, utm_term, utm_id, utm_source_platform...);
+  - Hotmart: src, sck, xcod;
+  - Google: gclid, gbraid, wbraid, gad_source, gad_campaignid, dclid;
+  - Meta: fbclid;
+  - outros: msclkid (Microsoft), ttclid (TikTok), twclid (X),
+    li_fat_id (LinkedIn), epik (Pinterest).
+Qualquer outro parâmetro NÃO vai para o checkout (por exemplo, um
+email= num link, ou off=, que trocaria a oferta na Hotmart).
+
+Regras:
+  - O valor vai exatamente como chegou, sem recodificar (%20 continua %20).
+  - Parâmetro repetido no endereço: vale o primeiro.
+  - Um parâmetro que já está no link do botão (ex.: off= da oferta) nunca é
+    trocado pelo do endereço.
+  - Os parâmetros ficam guardados na ABA (sessionStorage, chave
+    "dmap-parametros", só os de rastreio) enquanto a pessoa navega pelas
+    páginas: quem abre os Termos e compra de lá mantém a origem.
+  - Na mesma aba, um endereço novo COM parâmetros de rastreio substitui o
+    conjunto inteiro (vale o último anúncio da aba; não mistura campanhas).
+    Um endereço sem parâmetros de rastreio mantém o que estava guardado.
+  - Aba nova, ou fechar e voltar direto: começa vazio. A landing não guarda
+    origem entre visitas (nada de first-touch/last-touch entre visitas).
+    Se isso for necessário, é decisão de estratégia (sua), não do código.
+
+Para incluir outro parâmetro: acrescentar na lista PARAMETROS_DE_RASTREIO
+(js/main.js) E na cópia da lista no <script> do <head> do index.html.
+Mudou o <script> do head? O build avisa o hash novo para a CSP (item 6).
+
+DECISÃO SUA: hoje também seguem para a Hotmart os identificadores de clique
+(gclid, fbclid etc.), além das UTMs e de src/sck. Isso ajuda um pixel/tag
+configurado DENTRO da Hotmart a reconhecer o clique, mas cabe a você
+confirmar se quer esse comportamento. Tirar é só remover da lista.
+
+
+4. BOTÕES DE COMPRA (pontos de medição estáveis)
+------------------------------------------------
+Todos são <a data-checkout-link> que abrem o checkout em aba nova.
+Seletor recomendado: [data-track-id="..."] (não depende de classe nem de
+posição na página).
+
+  data-track-id   onde                                        texto
+  cta-menu        menu do topo (fixo, em todas as páginas)    Quero entrar em cena
+  cta-topo        primeira tela (herói)                       Quero entrar em cena
+  cta-escada      depois da Escada de Exposição               Quero entrar em cena
+  cta-oferta      card da oferta (preço)                      Quero entrar em cena
+  cta-final       última seção ("Sua versão que aparece...")  Quero entrar em cena
+
+Nas páginas termos, privacidade e suporte: um botão, data-track-id="cta-menu".
+
+Clique duplo (ou dois toques seguidos) abre uma aba só: o segundo clique
+dentro de 1 s é ignorado.
+
+
+5. EVENTO QUE A LANDING JÁ AVISA
+--------------------------------
+Um único evento, neutro (não é de nenhuma plataforma):
+
+  clique_checkout — a pessoa clicou/tocou num botão de compra (ou Enter,
+  ou botão do meio do mouse) e o checkout foi aberto. Um clique = um evento
+  (testado: clique duplo e Enter não duplicam; nada se acumula).
+  Dados: { posicao: "cta-oferta" (o data-track-id), pagina: "index" }.
+  Nenhum dado pessoal, nenhum valor, nenhuma moeda.
+
+Como ouvir:
+  a) GTM: se existir um dataLayer na página (o snippet do GTM cria), a
+     landing faz dataLayer.push({ event: "dmap_clique_checkout",
+     posicao, pagina }). Use um acionador de Evento personalizado
+     "dmap_clique_checkout".
+  b) Qualquer outro código: document.addEventListener("dmap:evento",
+     function (e) { e.detail.evento, e.detail.posicao, e.detail.pagina }).
+
+ATENÇÃO:
+  - clique_checkout NÃO é compra (Purchase) e NÃO é confirmação de início de
+    checkout. É só o clique no botão. Se ele virar conversão em alguma
+    plataforma, isso é decisão sua, sabendo que conta cliques, não vendas.
+  - A compra (Purchase) só existe na Hotmart. A landing nunca recebe a
+    confirmação e nunca vai disparar Purchase. Evento de compra confiável
+    tem que vir da Hotmart: pixel/tag configurado no próprio produto da
+    Hotmart e/ou envio pelo servidor (webhook/postback da Hotmart para a
+    API de conversões da plataforma). Essa integração não existe hoje.
+  - Se a página ainda não terminou de carregar (rede muito lenta) e a pessoa
+    clica, o checkout abre com os parâmetros certos, mas o evento
+    clique_checkout não é avisado nesse clique.
+
+Outros pontos que PODEM ser medidos (não implementados, de propósito —
+só se você precisar): abrir um vídeo de depoimento, abrir uma pergunta do
+FAQ, escolher um nível da Escada, profundidade de rolagem. Page view é o
+carregamento normal de cada página (o site não é SPA: cada página é um
+carregamento). Voltar, avançar e atualizar recarregaram a página nos
+testes (Chromium). Alguns navegadores (Safari, principalmente) podem
+restaurar a página do cache ao voltar (bfcache), sem novo carregamento:
+não foi validado no Safari.
+
+
+6. ONDE E COMO INSTALAR AS TAGS
+-------------------------------
+- Colar o snippet oficial (GTM ou Google Tag, Meta Pixel...) no <head> dos
+  4 arquivos: index.html, termos.html, privacidade.html, suporte.html
+  (se a medição tiver que cobrir as páginas de apoio). Usar a versão
+  assíncrona oficial. Uma instalação de cada ferramenta só — não colocar o
+  mesmo pixel direto no HTML E pelo GTM (duplica tudo).
+- Segurança: o site manda uma política (CSP) em modo SÓ RELATO
+  (Content-Security-Policy-Report-Only). Ela NÃO bloqueia nada: os pixels
+  funcionam. O console vai mostrar avisos "[Report Only]" com os domínios
+  deles — é esperado. Antes de um dia tornar essa política obrigatória, é
+  preciso acrescentar os domínios das tags e o hash de qualquer <script>
+  colado direto no HTML (ver hospedagem/SEGURANCA.txt).
+- Referrer-Policy: strict-origin-when-cross-origin. A Hotmart recebe só a
+  origem da landing como referência (sem caminho nem parâmetros) — por
+  isso os parâmetros vão no próprio link do botão.
+- Nada na página espera medição para funcionar: testado com o dataLayer
+  quebrado e com GTM/pixel bloqueados (como um bloqueador de anúncios):
+  o botão abre o checkout normalmente e não aparece erro.
+
+
+7. CONSENTIMENTO E PRIVACIDADE (validar com quem cuida da parte jurídica)
+-------------------------------------------------------------------------
+- Hoje não há banner, CMP nem Consent Mode, e também não há cookie de
+  medição (nenhuma ferramenta instalada).
+- Ao instalar pixels/tags, avaliar com o responsável por privacidade se
+  é preciso banner/consentimento e Consent Mode. Não foi configurado nada.
+- A Política de Privacidade (privacidade.html) hoje não fala de pixels
+  nem de cookies de medição; precisa ser atualizada quando eles entrarem.
+  Ela também diz que as fontes vêm do Google Fonts, mas as fontes hoje
+  são do próprio site (nenhuma chamada ao Google): ajustar esse trecho.
+- Dados guardados pela landing: só sessionStorage "dmap-parametros"
+  (parâmetros de rastreio da aba) e "dmap-lugar" (posição da rolagem, para
+  voltar ao mesmo lugar). Nenhum dado pessoal.
+- Enhanced Conversions / Advanced Matching / CAPI: não implementados.
+  Dependem de configuração sua e da Hotmart (a landing não coleta e-mail
+  nem telefone).
+
+
+8. O QUE DEPENDE DE VOCÊ
+------------------------
+  - Escolher e instalar as ferramentas (GTM ou Google Tag, Meta Pixel...)
+    e os IDs (GTM-..., G-..., AW-..., Pixel ID).
+  - Definir quais eventos viram conversão, prioridades, janelas e modelo
+    de atribuição.
+  - Conversão de compra: configurar pixel/tag na Hotmart e/ou integração
+    server-side (webhook/postback → API de conversões). Deduplicação
+    entre navegador e servidor, se usar os dois.
+  - Cross-domain (landing → pay.hotmart.com): avaliar com as ferramentas
+    escolhidas (vinculação de domínios no GA4/Google Tag, por exemplo).
+  - Consentimento/Consent Mode (com o jurídico).
+  - Restringir as tags ao domínio final (não medir a prévia vercel.app).
+  - Confirmar se os identificadores de clique devem seguir para a
+    Hotmart (item 3).
+  - Vincular contas (GA4 ↔ Google Ads etc.) e verificar domínio no Meta.
+  - Link real do checkout nos 8 botões e domínio final (hospedagem/LEIA-ME.txt).
+
+
+9. COMO CONFERIR
+----------------
+  npm test -- testes/e2e/tracking.spec.mjs
+Testa: parâmetros intactos nos 5 botões, filtro dos que não são de
+rastreio, repetidos, visita seguinte na mesma aba, clique antes do
+main.js carregar, um clique = um evento, dataLayer, medição bloqueada
+ou quebrada, sem armazenamento, e nenhuma chamada externa.
