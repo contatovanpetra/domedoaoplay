@@ -60,18 +60,19 @@ export const options = {
 const htmlMs = new Trend("html_ms", true);
 const arquivosMs = new Trend("arquivos_ms", true);
 
-// Os arquivos da primeira tela no celular (conferidos na aba Rede do navegador).
+// Os arquivos da primeira tela no celular (conferidos no Lighthouse de 30/set).
 // Quando o ?v= mudar no index.html, o teste continua valendo: o servidor
 // entrega o mesmo arquivo com qualquer ?v=.
 const PRIMEIRA_TELA = [
-  "/css/style.css?v=100",
+  "/css/style.css?v=118",
   "/js/vendor/gsap.min.js?v=3.12.5",
-  "/js/main.js?v=49",
-  "/assets/img/vivi-hero-mobile.webp",
+  "/js/main.js?v=66",
+  "/assets/img/vivi-hero-mobile.avif?v=2",
   "/assets/video/tunel-celular-poster.webp",
   "/assets/fonts/manrope-v20-latin.woff2",
   "/assets/fonts/nunito-sans-v19-latin.woff2",
   "/assets/img/logo.svg",
+  "/assets/img/logo-escuro.svg",
   "/assets/img/favicon.svg",
 ];
 
