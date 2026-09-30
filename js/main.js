@@ -1413,8 +1413,16 @@ function wireIntroStage() {
     // computador (contorno de ~1.230px) e deixava uma falha no de pé. O
     // perímetro real vem do tamanho do palco na tela (sem a rotação 3D, que
     // é transform e não mexe em offsetWidth/Height).
-    const comprimento = Math.ceil(2 * (burstStage.offsetWidth + burstStage.offsetHeight)) + 4;
-    gsap.set(burstLinha, { strokeDasharray: comprimento, strokeDashoffset: comprimento });
+    gsap.set(burstLinha, { strokeDasharray: medeContorno(), strokeDashoffset: medeContorno() });
+  }
+  // Mede de novo na hora de desenhar (ver o .call em "celular"): a página
+  // aberta dentro de um quadro ainda escondido (uma prévia carregando, por
+  // exemplo) tem o palco com 0px no começo — o traço ficava com 4px e o
+  // contorno aparecia pontilhado. Sem tamanho nenhum, vale o perímetro da
+  // janela, que é sempre maior que o do celular: a linha sai inteira.
+  function medeContorno() {
+    const c = Math.ceil(2 * (burstStage.offsetWidth + burstStage.offsetHeight)) + 4;
+    return c > 40 ? c : Math.ceil(2 * (window.innerWidth + window.innerHeight)) + 4;
   }
   gsap.set(burstStage, { transformPerspective: 1100, transformOrigin: "50% 50%", rotationY: -22, rotationX: 9 });
   // O contorno também começa escondido por opacidade, não só pelo traço
@@ -1461,6 +1469,7 @@ function wireIntroStage() {
     // corpo, a tela e a câmera, cada um entrando atrás do outro.
     .addLabel("celular", 1.7)
     .to(burstContorno, { opacity: 1, duration: .15 }, "celular")
+    .call(() => { if (burstLinha) { const c = medeContorno(); gsap.set(burstLinha, { strokeDasharray: c, strokeDashoffset: c }); } }, null, "celular")
     .to(burstLinha, { strokeDashoffset: 0, duration: .7, ease: "power2.inOut" }, "celular")
     .to(burstStage, { rotationY: -5, rotationX: 2, duration: 1, ease: "power2.out" }, "celular")
     .to(burstAparelho, { opacity: 1, duration: .3, ease: "power1.out" }, "celular+=.6")
