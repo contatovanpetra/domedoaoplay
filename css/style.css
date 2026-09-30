@@ -21,6 +21,7 @@
 :root {
   --black: #0A0A0A;
   --bg: #0B1728;
+  --noite: #04080E;
   --white: #FFFFFF;
   --blue: #4682B4;
   --blue-deep: #14456B;
@@ -516,7 +517,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
    parecida do lado de fora antes da seção acabar de vez. */
 #aplicacao { padding-top: 40px; padding-bottom: 0; }
 @media (min-width: 700px) {
-  #aplicacao { padding-top: 176px; }
+  /* Era 176px: somado aos 200px do fim da escada e à meia tela da caixa
+     presa, dava quase uma tela vazia antes da frase (30/set). */
+  #aplicacao { padding-top: 40px; }
 }
 /* Estilo Apple (referência: apple.com/br/apple-podcasts): a tela principal
    (azul escuro) tem o conteúdo se movendo por cima dela; as duas telas de
@@ -570,14 +573,23 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
   margin-top: -100svh;
 }
 #aplicacao .container { width: 100%; }
-/* Título mais chamativo (pedido da Vitória): azul claro da marca em vez do
-   texto escuro padrão da seção, maior, e uma sombra suave na mesma cor pra
-   dar destaque sem depender só do tamanho. */
+/* Título de capítulo como nas páginas da Apple (MacBook Air: "Chip M5. Faz
+   do Air um vendaval." em duas cores): sem sombra nem brilho (a sombra azul
+   borrada parecia fumaça), a primeira parte em branco e o resto no azul
+   claro da marca, no tamanho das frases de destaque (32px no celular, 64px
+   no computador), letras um pouco mais juntas. Chamativo pela escala e pelo
+   contraste, não por efeito. */
 #aplicacao-title {
+  max-width: 18ch;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(2rem, 6.2vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -.025em;
   color: var(--blue-light);
-  font-size: var(--t-titulo);
-  text-shadow: 0 2px 28px rgba(70, 130, 180, .35);
+  text-wrap: balance;
 }
+#aplicacao-title .titulo-forte { color: var(--white); }
 /* Com o fundo claro ligado, os textos dessas seções passam pra escuro;
    sem ele (a seção ainda entrando, ou já saindo), ficam claros — a cor dos
    textos muda junto com a do fundo, como no Spotify, e nada fica ilegível. */
@@ -654,6 +666,15 @@ html.fundo-claro #modulos, html.fundo-claro #beneficios {
    quando chega a oferta (ver wireCorDoFundo em main.js). */
 .page-bg { transition: background-color .7s cubic-bezier(.4, 0, .2, 1); }
 html.fundo-claro .page-bg { background-color: var(--blue-light); }
+/* "Mundos" dos capítulos, como no Spotify Premium (cada seção com o fundo
+   dela, trocando em 0,7s quando a seguinte passa de 40% da tela): a foto do
+   topo se dissolve num quase-preto, o capítulo do problema ("Você trava." e
+   as situações); a escada (a saída) volta pro azul da marca — do escuro pra
+   luz, como o túnel da abertura. A camada que dissolve a foto (.hero-fim)
+   segue a mesma cor, senão marcaria uma emenda quando a foto solta. */
+html.fundo-noite .page-bg, html.fundo-noite .hero-fim { background-color: var(--noite); }
+.hero-fim { transition: background-color .7s cubic-bezier(.4, 0, .2, 1); }
+html.fundo-noite .site-header.com-fundo { background: rgba(4, 8, 14, .9); }
 /* O título da oferta entra enquanto o fundo ainda está azul claro: troca
    de cor junto com ele. */
 #oferta .section-title { transition: color .7s cubic-bezier(.4, 0, .2, 1), opacity .7s cubic-bezier(0, 0, .3, 1), transform .7s cubic-bezier(0, 0, .3, 1); }
@@ -744,7 +765,10 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
    a frase com o começo em branco seminegrito e o resto em cinza, sem caixa
    nem borda. Uma embaixo da outra no celular; 2 x 2 do tablet em diante.
    Cada item entra sozinho na rolagem (.reveal). */
-#situacoes { padding-top: 0; padding-bottom: clamp(128px, 14vw, 200px); }
+#situacoes { padding-top: 0; padding-bottom: 0; }
+/* A virada ("Dá pra sair disso"), logo depois das situações, e o respiro de
+   seção da Apple antes da escada. */
+#virada { padding-top: 0; padding-bottom: clamp(128px, 14vw, 200px); }
 .situacoes {
   list-style: none;
   margin: 0 auto;
@@ -777,7 +801,8 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
 }
 .situacoes-item strong { color: var(--white); font-weight: 800; }
 /* A virada, na mesma frase grande de "Você trava.", já com o degradê da escada. */
-#situacoes .situacoes-fecho { margin-top: clamp(72px, 9vw, 128px); }
+#virada { margin-top: clamp(72px, 9vw, 128px); }
+#virada .situacoes-fecho { margin: 0; }
 @media (min-width: 700px) {
   .situacoes { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(40px, 6vw, 80px); row-gap: 56px; }
   /* Na mesma linha, o da direita entra um instante depois do da esquerda. */
@@ -792,6 +817,19 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
 @media (max-width: 699.98px) {
   .hero { min-height: 185vh; min-height: 185svh; }
   #reconhecimento { margin-top: -85vh; margin-top: -85svh; min-height: 85vh; min-height: 85svh; }
+}
+/* Continuidade (30/set): com a frase só ("Você trava.") no pé de um bloco de
+   85% (celular) ou 100% (computador) da tela, sobravam ~490px (celular) e
+   uma tela inteira (computador) de azul vazio entre o topo e a frase. Com
+   55% / 60%, a frase entra enquanto a foto ainda termina de se dissolver e
+   o parágrafo do topo ainda está sumindo: uma coisa puxa a outra. A pista
+   da foto acompanha sozinha (ajustaRunwayHero mede esta altura); os valores
+   de .hero e margin-top são só a estimativa antes do JS. */
+#reconhecimento { min-height: 60vh; min-height: 60svh; margin-top: -60vh; margin-top: -60svh; }
+.hero { min-height: 160vh; min-height: 160svh; }
+@media (max-width: 699.98px) {
+  #reconhecimento { min-height: 55vh; min-height: 55svh; margin-top: -55vh; margin-top: -55svh; }
+  .hero { min-height: 155vh; min-height: 155svh; }
 }
 .hero-fim {
   position: absolute;

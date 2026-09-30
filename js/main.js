@@ -92,6 +92,7 @@ function wirePausaForaDaTela() {
 // se não, volta ao azul-noite. A cor dos textos dessas seções muda junto.
 function wireCorDoFundo() {
   const claras = ["modulos", "beneficios"];
+  const noite = ["reconhecimento", "situacoes"];
   const secoes = [...document.querySelectorAll("main > section, main > div > section")].filter((s) => s.id || s.classList.contains("section"));
   if (!secoes.length) return;
   const root = document.documentElement;
@@ -104,6 +105,8 @@ function wireCorDoFundo() {
       if (s.getBoundingClientRect().top <= linha) atual = s; else break;
     }
     root.classList.toggle("fundo-claro", !!atual && claras.includes(atual.id));
+    // Capítulo do problema ("Você trava." e as situações) em quase-preto.
+    root.classList.toggle("fundo-noite", !!atual && noite.includes(atual.id));
   };
   confere();
   window.addEventListener("scroll", () => {

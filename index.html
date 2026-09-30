@@ -126,7 +126,7 @@
      sistema e troca quando elas chegam (font-display: swap), sem pular. -->
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/manrope-v20-latin.woff2" crossorigin fetchpriority="low">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/nunito-sans-v19-latin.woff2" crossorigin fetchpriority="low">
-<link rel="stylesheet" href="css/style.css?v=108">
+<link rel="stylesheet" href="css/style.css?v=109">
 <noscript><style>#hero-headline,#hero-lead,#hero-actions-el,#hero-scrollcue{opacity:1!important}</style></noscript>
 <!-- MODO REVISÃO: marcava na página (contorno tracejado + contador flutuante)
      tudo que ainda está a confirmar no briefing. Desligado. Pra ligar de novo
@@ -251,6 +251,14 @@
           <p><strong>Não sabe por onde começar.</strong> Nunca teve prática de falar sozinho pra uma lente e não sabe nem o primeiro passo.</p>
         </li>
       </ul>
+    </div>
+  </section>
+
+  <!-- A virada: seção própria pra ser ela que acende a luz (o fundo volta do
+       quase-preto do capítulo "Você trava." pro azul da marca quando esta
+       frase passa de 40% da tela, ver wireCorDoFundo). -->
+  <section class="section" id="virada" aria-labelledby="reconhecimento-title">
+    <div class="container">
       <p class="statement-title situacoes-fecho"><span class="statement-grad">Dá pra sair disso, degrau a degrau.</span></p>
     </div>
   </section>
@@ -419,7 +427,7 @@
   <section class="section" id="aplicacao" aria-labelledby="aplicacao-title">
     <div class="aplicacao-preso">
       <div class="container">
-        <h2 id="aplicacao-title" class="section-title center">Falar bem na câmera vira venda, autoridade e oportunidade.</h2>
+        <h2 id="aplicacao-title" class="section-title center"><span class="titulo-forte">Falar bem na câmera</span> vira venda, autoridade e oportunidade.</h2>
         <p class="section-lead center">Quando você se comunica bem diante da câmera, <strong>fica mais fácil vender, divulgar seu trabalho, criar conteúdo</strong> e aproveitar as oportunidades que dependem da sua presença.</p>
       </div>
     </div>
@@ -933,7 +941,7 @@
         <h2 id="final-cta-title" class="section-title">Sua versão que aparece já existe.</h2>
         <p class="final-frase">Atravesse o medo.</p>
         <a href="https://pay.hotmart.com/COLOQUE-SEU-CODIGO-AQUI" target="_blank" rel="noopener" data-checkout-link class="btn btn-primary btn-large">Quero entrar em cena</a>
-        <p class="hero-microcopy">10x de R$ 23,68 ou R$ 197 à vista · acesso vitalício</p>
+        <p class="hero-microcopy">Acesso vitalício</p>
       </div>
     </div>
   </section>
@@ -1033,6 +1041,6 @@
 </div>
 
 <script src="js/vendor/gsap.min.js?v=3.12.5"></script>
-<script src="js/main.js?v=57"></script>
+<script src="js/main.js?v=58"></script>
 </body>
 </html>
