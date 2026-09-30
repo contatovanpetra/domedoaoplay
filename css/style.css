@@ -351,8 +351,8 @@ html { scroll-padding-top: var(--header-h, 85px); }
 /* ---------- Eyebrow / Section titles ---------- */
 .section-title {
   font-size: var(--t-titulo);
-  line-height: 1.1;
-  letter-spacing: -.035em;
+  line-height: 1.08;
+  letter-spacing: -.03em;
   max-width: 820px;
 }
 .section-title.center { margin-left: auto; margin-right: auto; }
@@ -576,16 +576,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { width: 0; height: 0; display:
 /* Título de capítulo como nas páginas da Apple (MacBook Air: "Chip M5. Faz
    do Air um vendaval." em duas cores): sem sombra nem brilho (a sombra azul
    borrada parecia fumaça), a primeira parte em branco e o resto no azul
-   claro da marca, no tamanho das frases de destaque (32px no celular, 64px
-   no computador), letras um pouco mais juntas. Chamativo pela escala e pelo
-   contraste, não por efeito. */
+   claro da marca. Chamativo pelo contraste, não por efeito. No tamanho dos
+   outros títulos de seção (28 / 48 / 56px, aprovado em 30/set): antes era
+   32 / 64px e destoava de "Vitória Caroline" e dos demais. */
 #aplicacao-title {
-  max-width: 18ch;
+  max-width: 20ch;
   margin-left: auto;
   margin-right: auto;
-  font-size: clamp(2rem, 6.2vw, 4rem);
+  font-size: var(--t-titulo);
   line-height: 1.08;
-  letter-spacing: -.025em;
+  letter-spacing: -.03em;
   color: var(--blue-light);
   text-wrap: balance;
 }
@@ -896,7 +896,12 @@ html.fundo-claro #oferta .section-title { color: #0B1728; }
    subtítulo; a frase de abertura é um múltiplo dele. */
 .hero-headline { font-size: var(--hero-resto, 2rem); }
 .hero-h1-abre { font-size: 2.1em; line-height: 1; letter-spacing: -.03em; white-space: nowrap; }
-.hero-h1-resto { display: block; margin-top: .45em; line-height: 1.18; letter-spacing: -.015em; }
+/* A segunda frase é subtítulo, não título (30/set): mais leve (600), um
+   pouco menor e num branco mais suave, com o laranja do resultado. O
+   contraste entre a frase enorme e a leve é o que faz "Domine a câmera."
+   saltar — como "A melhor coisa que você nunca ouviu." na Apple. Com as
+   duas em 800 elas liam como um bloco pesado só. */
+.hero-h1-resto { display: block; margin-top: .5em; font-size: .9em; font-weight: 600; line-height: 1.22; letter-spacing: -.01em; color: var(--cor-corpo); }
 .hero-inner {
   position: relative;
   z-index: 4;
@@ -1122,7 +1127,7 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
   flex-direction: column;
   text-shadow: 0 1px 3px rgba(3, 10, 29, .65), 0 2px 18px rgba(3, 10, 29, .5);
 }
-.vivi-nome { font-family: var(--font-head); font-weight: 800; font-size: var(--t-titulo); line-height: 1.05; letter-spacing: -.015em; color: var(--white); }
+.vivi-nome { font-family: var(--font-head); font-weight: 800; font-size: var(--t-titulo); line-height: 1.08; letter-spacing: -.03em; color: var(--white); }
 .vivi-nome { display: block; }
 /* Cargo como nas biografias da Apple ("Tim Cook / Executive Chair"): logo
    abaixo do nome, em peso normal e tamanho de subtítulo — sem caixa-alta
@@ -1223,7 +1228,7 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
      diante — a escala das frases de destaque da Apple. */
   font-size: clamp(2.5rem, 7.8vw, 5rem);
   line-height: 1.05;
-  letter-spacing: -.025em;
+  letter-spacing: -.03em;
   margin: 0;
   color: var(--white);
   text-align: center;
@@ -1272,7 +1277,7 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
   .escada-palco-wrap { margin-top: 1.25rem; }
   .escada-vitrine { padding: .5rem 0 1rem; }
   .escada-progresso { margin-top: .8rem; }
-  .metodo-frase { font-size: 1.5rem; }
+  .metodo-frase { font-size: 1.75rem; }
 }
 /* Ressalva da aplicação: um fio laranja ao lado, como citação. */
 
@@ -1299,14 +1304,16 @@ html.avif .hero-foto-deitada { background-image: url("../assets/img/vivi-hero-mo
   margin: 0;
   font-family: var(--font-head);
   font-weight: 800;
-  /* Frase de fecho: 21px no celular, 28px no computador (degraus da Apple). */
-  font-size: var(--t-subtitulo);
-  line-height: 1.2;
-  letter-spacing: -.01em;
+  /* Frase de fecho no degrau de título de cartão grande: 28px no celular,
+     32px no tablet, 36px no computador. */
+  font-size: 1.75rem;
+  line-height: 1.1;
+  letter-spacing: -.02em;
   color: var(--white);
   text-wrap: balance;
 }
-@media (min-width: 1069px) { .metodo-frase { font-size: 1.75rem; } }
+@media (min-width: 700px) { .metodo-frase { font-size: 2rem; } }
+@media (min-width: 1069px) { .metodo-frase { font-size: 2.25rem; } }
 /* Uma frase por linha: "Um nível de cada vez." em cima e "Até dar o
    play." embaixo, em laranja — cada uma inteira na sua linha, nunca
    quebrada no meio (era o "estranho" de antes: "Um nível de cada / vez."). */
@@ -1404,9 +1411,12 @@ html.abertura-on .escada-card-media img { display: none; }
 }
 .escada-card-title {
   margin: 0 0 .35rem;
-  font-size: var(--t-card);
+  /* Título de cartão: 21px, 24px no computador (era 17 / 19px, quase o
+     tamanho do texto corrido). */
+  font-size: 1.3125rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.15;
+  letter-spacing: -.015em;
   color: var(--white);
 }
 .escada-card-body {
@@ -1519,7 +1529,7 @@ html.abertura-on .escada-card-media img { display: none; }
     max-width: 210px;
   }
   .escada-card-body { padding: .8rem .9rem .95rem; }
-  .escada-card-title { font-size: 1.0625rem; margin-bottom: .25rem; }
+  .escada-card-title { margin-bottom: .25rem; }
   .escada-tag { margin-bottom: .2rem; }
   .escada-card-body p { font-size: .8125rem; line-height: 1.4; }
   .escada-progresso {
@@ -1792,6 +1802,7 @@ html .beneficio h3 {
   font-size: min(var(--t-titulo), 7.9vw);
   font-weight: 800;
   line-height: 1.1;
+  letter-spacing: -.02em;
   color: #fff;
 }
 html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; color: rgba(255, 255, 255, .86); }
@@ -1996,7 +2007,10 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
 }
 /* Sem card: o texto fica direto sobre o azul da seção (como os títulos e
    corpo de texto em volta), não mais numa caixa escura própria. */
-.bonus-item-texto h3 { margin: 0 0 .85rem; font-size: var(--t-subtitulo); line-height: 1.15; color: var(--white); }
+/* Título de cartão grande, o mesmo de "Formação completa" logo acima
+   (28px no celular, até 36px no computador, 800). */
+.bonus-item-texto h3 { margin: 0 0 .85rem; font-family: var(--font-head); font-weight: 800; font-size: 1.75rem; line-height: 1.1; letter-spacing: -.02em; color: var(--white); }
+@media (min-width: 700px) { .bonus-item-texto h3 { font-size: clamp(1.75rem, 3vw, 2.25rem); } }
 .bonus-item-texto p { margin: 0; font-size: var(--t-corpo); line-height: 1.5; color: var(--cor-corpo); }
 .bonus-item-texto p + p { margin-top: .8em; }
 /* Celular: como a Apple faz no celular — a imagem em cima e o texto
@@ -2012,7 +2026,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
      cima): parágrafo longo centralizado obriga o olho a procurar onde cada
      linha começa — a Apple só centraliza frase curta. */
   .bonus-item-texto { text-align: left; }
-  .bonus-item-texto h3 { font-size: 1.3125rem; margin-bottom: .5rem; }
+  .bonus-item-texto h3 { margin-bottom: .5rem; }
   .bonus-item-texto p { font-size: 1.0625rem; line-height: 1.5; text-wrap: pretty; }
 }
 
@@ -2168,7 +2182,7 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
   padding: 1.6rem .9rem .8rem;
   background: linear-gradient(180deg, transparent 0%, rgba(6, 14, 28, .75) 55%, rgba(6, 14, 28, .96) 100%);
 }
-.depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 800; color: var(--white); }
+.depo-nome { font-family: var(--font-head); font-size: var(--t-corpo); font-weight: 800; letter-spacing: -.01em; color: var(--white); }
 .depo-cargo { font-size: var(--t-pequeno); color: var(--text-muted); }
 .depo-card figcaption { margin-top: .75rem; }
 /* O resultado é legenda do vídeo, não título: no tamanho do texto dos
@@ -2177,7 +2191,6 @@ html .beneficio p { margin: 0; font-size: var(--t-corpo); line-height: 1.45; col
    pesava mais que o próprio nome dentro do vídeo. */
 .depo-card figcaption .depo-resultado { margin: 0; font-size: var(--t-corpo); line-height: 1.4; color: var(--cor-corpo); text-wrap: pretty; }
 @media (max-width: 699.98px) {
-  .depo-nome { font-size: .9375rem; }
   .depo-cargo { font-size: .75rem; }
   .depo-legenda { padding: 1.4rem .8rem .7rem; }
   .depo-card figcaption .depo-resultado { font-size: .875rem; line-height: 1.43; }
@@ -3411,10 +3424,16 @@ html.sem-main #hero-headline, html.sem-main #hero-lead, html.sem-main #hero-acti
   .btn-large { min-height: 56px; padding: .95em 2.3em .85em; font-size: 1.125rem; font-weight: 700; min-width: 15rem; }
   /* Título do topo acompanha a tela: 67px no 1280, 73px no 1440, 84px no 1920. */
   .hero-headline { --hero-resto: clamp(2rem, 2.4vw, 2.5rem); }
+  /* "Domine a câmera." em 80px no 1440 (o tamanho de "Você trava."), o
+     subtítulo em 26px e o apoio em 21px: três degraus bem separados. */
+  .hero-h1-abre { font-size: 2.3em; }
+  .hero-h1-resto { font-size: .75em; }
+  .hero-lead, .hero-lead-list { font-size: 1.3125rem; }
   .hero-copy { max-width: min(760px, 48vw); }
   /* Cartões da Escada: de 230px pra 280–340px (os de galeria da Apple no
      computador têm 372px). */
   .escada-card { flex-basis: clamp(260px, 21vw, 340px); }
+  .escada-card-title { font-size: 1.5rem; }
 }
 @media (min-width: 1400px) {
   /* 1260px de conteúdo, como a Apple do 1440 pra cima. */
